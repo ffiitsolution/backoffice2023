@@ -5,6 +5,7 @@
 package com.ffi.api.backoffice;
 
 import com.ffi.api.backoffice.model.ParameterLogin;
+import com.ffi.api.backoffice.services.ProcessServices;
 import com.ffi.api.backoffice.services.ViewServices;
 import com.ffi.paging.Response;
 import com.ffi.paging.ResponseMessage;
@@ -41,6 +42,8 @@ public class IndexController {
 
     @Autowired
     ViewServices viewServices;
+        @Autowired
+    ProcessServices processServices;
 
 //    @Autowired
 //    TransServices transServices;
@@ -97,4 +100,39 @@ public class IndexController {
 //    }
 //    
 
+    ///////////////new method from dona 27-02-2023////////////////////////////
+    
+    //INSERT SUPPLIER================================================================================================
+    @RequestMapping(value = "/insert-supplier", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk update mpcs", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage insertSupplier(@RequestBody String param) throws  IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        ResponseMessage rm = new ResponseMessage();
+        try {
+            processServices.insertSupplier(balance);
+            rm.setSuccess(true);
+            rm.setMessage("Insert Success Successfuly");
+
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Insert Failed Successfuly: " + e.getMessage());
+        }
+
+        rm.setItem(list);
+
+        return rm;
+    }
+
+    
+    
+    ///////////////done 
 }
