@@ -21,6 +21,8 @@ public class ViewServices {
     @Autowired
     ViewDao viewDao;
     
-    
+    public List<Map<String, Object>> loginJson(ParameterLogin ref) {
+        return viewDao.loginJson(ref);
+    }
     
 }

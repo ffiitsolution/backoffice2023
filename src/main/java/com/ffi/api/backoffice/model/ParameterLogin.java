@@ -12,6 +12,17 @@ public class ParameterLogin {
     
     String userName;
     String password;
+    String outletCode;
+
+    public String getOutletCode() {
+        return outletCode;
+    }
+
+    public void setOutletCode(String outletCode) {
+        this.outletCode = outletCode;
+    }
+    
+    
 
     public String getUserName() {
         return userName;

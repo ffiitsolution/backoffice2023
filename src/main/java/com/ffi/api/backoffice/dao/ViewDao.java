@@ -14,6 +14,6 @@ import java.util.Map;
  */
 public interface ViewDao {
     
-    
+    List<Map<String, Object>> loginJson(ParameterLogin ref);
     
 }
