@@ -18,8 +18,8 @@ import org.springframework.stereotype.Repository;
  * @author IT
  */
 @Repository
-public class ProcessDaoImpl implements ProcessDao{
-    
+public class ProcessDaoImpl implements ProcessDao {
+
     private final NamedParameterJdbcTemplate jdbcTemplate;
     String timeStamp = new SimpleDateFormat("HHmmss").format(Calendar.getInstance().getTime());
     String dateNow = new SimpleDateFormat("dd-MMM-yyyy").format(Calendar.getInstance().getTime());
@@ -28,7 +28,8 @@ public class ProcessDaoImpl implements ProcessDao{
     public ProcessDaoImpl(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-    
+    ///////////////new method from dona 27-02-2023////////////////////////////
+
     @Override
     public void insertSupplier(Map<String, String> balancing) {
         String sql = "INSERT INTO M_SUPPLIER (CD_SUPPLIER,SUPPLIER_NAME,ADDRESS_1,ADDRESS_2,CITY,ZIP_CODE,PHONE,\n"
@@ -59,6 +60,55 @@ public class ProcessDaoImpl implements ProcessDao{
         param.put("timeUpd", timeStamp);
         jdbcTemplate.update(sql, param);
     }
+    /////////////////////////////////done
+    ///////////////new method from dona 28-02-2023////////////////////////////
     
-    
+    @Override
+    public void updateSupplier(Map<String, String> balancing) {
+        //String qy = "UPDATE BUDGET_HEADER SET STATUS=:status where trans_no=:transNo ";
+        String qy = "update m_supplier set SUPPLIER_NAME=:supplierName,\n"
+                + "ADDRESS_1=:address1,\n"
+                + "ADDRESS_2=:address2,\n"
+                + "CITY=:city,\n"
+                + "ZIP_CODE=:zipCode,\n"
+                + "PHONE=:phone,\n"
+                + "FAX=:fax,\n"
+                + "HOMEPAGE=:homepage,\n"
+                + "CP_NAME=:cpName,\n"
+                + "CP_TITLE=:cpTitle,\n"
+                + "CP_PHONE=:cpPhone,\n"
+                + "CP_PHONE_EXT=:cpPhoneExt,\n"
+                + "CP_MOBILE=:cpMobile,\n"
+                + "CP_EMAIL=:cpEmail,\n"
+                + "FLAG_CANVASING=:flagCanvasing,\n"
+                + "STATUS=:status,\n"
+                + "USER_UPD=:userUpd,\n"
+                + "DATE_UPD=:dateUpd,\n"
+                + "TIME_UPD=:timeUpd "
+                + "where CD_SUPPLIER =:cdSupplier";
+        Map param = new HashMap();
+        param.put("cdSupplier", balancing.get("cdSupplier"));
+        param.put("supplierName", balancing.get("supplierName"));
+        param.put("address1", balancing.get("address1"));
+        param.put("address2", balancing.get("address2"));
+        param.put("city", balancing.get("city"));
+        param.put("zipCode", balancing.get("zipCode"));
+        param.put("phone", balancing.get("phone"));
+        param.put("fax", balancing.get("fax"));
+        param.put("homepage", balancing.get("homepage"));
+        param.put("cpName", balancing.get("cpName"));
+        param.put("cpTitle", balancing.get("cpTitle"));
+        param.put("cpPhone", balancing.get("cpPhone"));
+        param.put("cpPhoneExt", balancing.get("cpPhoneExt"));
+        param.put("cpMobile", balancing.get("cpMobile"));
+        param.put("cpEmail", balancing.get("cpEmail"));
+        param.put("flagCanvasing", balancing.get("flagCanvasing"));
+        param.put("status", balancing.get("status"));
+        param.put("userUpd", balancing.get("userUpd"));
+        param.put("dateUpd", dateNow);
+        param.put("timeUpd", timeStamp);
+        jdbcTemplate.update(qy, param);
+    }
+
+    /////////////////////////////////done
 }

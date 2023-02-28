@@ -11,7 +11,11 @@ import java.util.Map;
  * @author IT
  */
 public interface ProcessDao {
-    
+
     public void insertSupplier(Map<String, String> mapping);
-    
+    ///////////////new method from dona 28-02-2023////////////////////////////
+
+    public void updateSupplier(Map<String, String> mapping);
+    /////////////done
+
 }

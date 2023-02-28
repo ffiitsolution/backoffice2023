@@ -18,9 +18,16 @@ public class ProcessServices {
 
     @Autowired
     ProcessDao dao;
+    ///////////////new method from dona 27-02-2023////////////////////////////
 
     public void insertSupplier(Map<String, String> balancing) {
         dao.insertSupplier(balancing);
     }
+    ////////////////////done
 
+    ///////////////new method from dona 28-02-2023////////////////////////////
+    public void updateSupplier(Map<String, String> balancing) {
+        dao.updateSupplier(balancing);
+    }
+    ///////////////////////done
 }
