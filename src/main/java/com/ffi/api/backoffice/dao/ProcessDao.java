@@ -17,5 +17,10 @@ public interface ProcessDao {
 
     public void updateSupplier(Map<String, String> mapping);
     /////////////done
+    ///////////////new method from dona 03-03-2023////////////////////////////
+    public void insertItemSupplier(Map<String, String> mapping);
 
+    public void updateItemSupplier(Map<String, String> mapping);
+
+    /////////////done
 }

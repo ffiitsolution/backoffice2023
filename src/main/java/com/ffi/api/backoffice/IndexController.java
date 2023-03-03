@@ -151,7 +151,8 @@ public class IndexController {
         return res;
 
     }
-@RequestMapping(value = "/update-supplier", produces = MediaType.APPLICATION_JSON_VALUE)
+
+    @RequestMapping(value = "/update-supplier", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk update mpcs", response = Object.class)
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
@@ -179,4 +180,116 @@ public class IndexController {
         return rm;
     }
     ///////////done
+
+    ///////////////new method from dona 03-03-2023////////////////////////////
+    @RequestMapping(value = "/list-item-supplier", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view list supplier item", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listItemSupplier(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+
+        Response res = new Response();
+        res.setData(viewServices.listItemSupplier(balance));
+        return res;
+    }
+
+    @RequestMapping(value = "/update-item-supplier", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view list supplier item", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage updateItemSupplier(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        ResponseMessage rm = new ResponseMessage();
+        try {
+            processServices.updateItemSupplier(balance);
+            rm.setSuccess(true);
+            rm.setMessage("Update Success Successfuly");
+
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Update Failed Successfuly: " + e.getMessage());
+        }
+
+        rm.setItem(list);
+
+        return rm;
+    }
+
+    @RequestMapping(value = "/insert-item-supplier", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view list supplier item", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage insertItemSupplier(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        ResponseMessage rm = new ResponseMessage();
+        try {
+            processServices.insertItemSupplier(balance);
+            rm.setSuccess(true);
+            rm.setMessage("Update Success Successfuly");
+
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Update Failed Successfuly: " + e.getMessage());
+        }
+
+        rm.setItem(list);
+
+        return rm;
+    }
+
+    @RequestMapping(value = "/list-master-item", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view master item", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listMasterItem(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response res = new Response();
+        res.setData(viewServices.listMasterItem(balance));
+        return res;
+    }
+
+    @RequestMapping(value = "/list-supplier-item", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view mpcs", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listDataItemSupplier(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response res = new Response();
+        res.setData(viewServices.listDataItemSupplier(balance));
+        return res;
+
+    }
+
+    ///////////////done 
 }

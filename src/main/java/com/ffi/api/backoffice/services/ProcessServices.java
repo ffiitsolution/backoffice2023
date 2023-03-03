@@ -30,4 +30,14 @@ public class ProcessServices {
         dao.updateSupplier(balancing);
     }
     ///////////////////////done
+        ///////////////new method from dona 03-03-2023////////////////////////////
+        public void insertItemSupplier(Map<String, String> balancing) {
+        dao.insertItemSupplier(balancing);
+    }
+
+    public void updateItemSupplier(Map<String, String> balancing) {
+        dao.updateItemSupplier(balancing);
+    }
+
+        ///////////////////////done
 }

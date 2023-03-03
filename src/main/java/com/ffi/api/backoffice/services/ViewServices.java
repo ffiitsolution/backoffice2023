@@ -17,12 +17,33 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ViewServices {
-    
+
     @Autowired
     ViewDao viewDao;
-    
+
     public List<Map<String, Object>> loginJson(ParameterLogin ref) {
         return viewDao.loginJson(ref);
     }
-    
+    ///////////////new method from dona 28-02-2023////////////////////////////
+
+    public List<Map<String, Object>> listSupplier(Map<String, String> ref) {
+        return viewDao.listSupplier(ref);
+    }
+    ///////////////done
+    ///////////////new method from dona 03-03-2023////////////////////////////
+
+    public List<Map<String, Object>> listItemSupplier(Map<String, String> ref) {
+        return viewDao.listItemSupplier(ref);
+    }
+
+    public List<Map<String, Object>> listMasterItem(Map<String, String> ref) {
+        return viewDao.listMasterItem(ref);
+
+    }
+
+    public List<Map<String, Object>> listDataItemSupplier(Map<String, String> ref) {
+        return viewDao.listDataItemSupplier(ref);
+
+    }
+    ///////////////done
 }

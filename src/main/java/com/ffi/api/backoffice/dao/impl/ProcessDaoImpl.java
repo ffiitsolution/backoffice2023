@@ -62,7 +62,7 @@ public class ProcessDaoImpl implements ProcessDao {
     }
     /////////////////////////////////done
     ///////////////new method from dona 28-02-2023////////////////////////////
-    
+
     @Override
     public void updateSupplier(Map<String, String> balancing) {
         //String qy = "UPDATE BUDGET_HEADER SET STATUS=:status where trans_no=:transNo ";
@@ -110,5 +110,35 @@ public class ProcessDaoImpl implements ProcessDao {
         jdbcTemplate.update(qy, param);
     }
 
+    /////////////////////////////////done
+    ///////////////new method from dona 28-02-2023////////////////////////////
+    @Override
+    public void insertItemSupplier(Map<String, String> balance) {
+        //String qy = "UPDATE BUDGET_HEADER SET STATUS=:status where trans_no=:transNo ";
+        String qy = "INSERT INTO M_ITEM_SUPPLIER (ITEM_CODE,CD_SUPPLIER,STATUS,USER_UPD, DATE_UPD,TIME_UPD )VALUES ("
+                + ":itemCode,:cdSupplier,:status,:userUpd,:dateUpd,:timeUpd)";
+        Map param = new HashMap();
+        param.put("itemCode", balance.get("itemCode"));
+        param.put("cdSupplier", balance.get("cdSupplier"));
+        param.put("status", balance.get("status"));
+        param.put("userUpd", balance.get("userUpd"));
+        param.put("dateUpd", dateNow);
+        param.put("timeUpd", timeStamp);
+        jdbcTemplate.update(qy, param);
+    }
+
+    @Override
+    public void updateItemSupplier(Map<String, String> balance) {
+        //String qy = "UPDATE BUDGET_HEADER SET STATUS=:status where trans_no=:transNo ";
+        String qy = "UPDATE M_ITEM_SUPPLIER SET STATUS=:status,USER_UPD= :userUpd,DATE_UPD = :dateUpd,TIME_UPD=:timeUpd where ITEM_CODE=:itemCode and CD_SUPPLIER=:cdSupplier";
+        Map param = new HashMap();
+        param.put("itemCode", balance.get("itemCode"));
+        param.put("cdSupplier", balance.get("cdSupplier"));
+        param.put("status", balance.get("status"));
+        param.put("userUpd", balance.get("userUpd"));
+        param.put("dateUpd", dateNow);
+        param.put("timeUpd", timeStamp);
+        jdbcTemplate.update(qy, param);
+    }
     /////////////////////////////////done
 }
