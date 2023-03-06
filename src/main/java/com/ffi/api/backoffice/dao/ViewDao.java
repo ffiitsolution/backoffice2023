@@ -27,4 +27,10 @@ public interface ViewDao {
 
     List<Map<String, Object>> listDataItemSupplier(Map<String, String> ref);
     /////////////////////////////done
+
+    ///////////////new method from dona 06-03-2023////////////////////////////
+    List<Map<String, Object>> listMpcs(Map<String, String> ref);
+
+    List<Map<String, Object>> listItemCost(Map<String, String> ref);
+    /////////////////////////////done
 }

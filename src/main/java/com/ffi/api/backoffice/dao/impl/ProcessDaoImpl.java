@@ -31,31 +31,31 @@ public class ProcessDaoImpl implements ProcessDao {
     ///////////////new method from dona 27-02-2023////////////////////////////
 
     @Override
-    public void insertSupplier(Map<String, String> balancing) {
+    public void insertSupplier(Map<String, String> balance) {
         String sql = "INSERT INTO M_SUPPLIER (CD_SUPPLIER,SUPPLIER_NAME,ADDRESS_1,ADDRESS_2,CITY,ZIP_CODE,PHONE,\n"
                 + "FAX,HOMEPAGE,CP_NAME,CP_TITLE,CP_PHONE,CP_PHONE_EXT,CP_MOBILE,CP_EMAIL,FLAG_CANVASING,\n"
                 + "STATUS,USER_UPD,DATE_UPD,TIME_UPD)\n"
                 + "values(:cdSupplier,:supplierName,:address1,:address2,:city,:zipCode,:phone,:fax,:homepage,\n"
                 + ":cpName,:cpTitle,:cpPhone,:cpPhoneExt,:cpMobile,:cpEmail,:flagCanvasing,:status,:userUpd,:dateUpd,:timeUpd)\n";
         Map param = new HashMap();
-        param.put("cdSupplier", balancing.get("cdSupplier"));
-        param.put("supplierName", balancing.get("supplierName"));
-        param.put("address1", balancing.get("address1"));
-        param.put("address2", balancing.get("address2"));
-        param.put("city", balancing.get("city"));
-        param.put("zipCode", balancing.get("zipCode"));
-        param.put("phone", balancing.get("phone"));
-        param.put("fax", balancing.get("fax"));
-        param.put("homepage", balancing.get("homepage"));
-        param.put("cpName", balancing.get("cpName"));
-        param.put("cpTitle", balancing.get("cpTitle"));
-        param.put("cpPhone", balancing.get("cpPhone"));
-        param.put("cpPhoneExt", balancing.get("cpPhoneExt"));
-        param.put("cpMobile", balancing.get("cpMobile"));
-        param.put("cpEmail", balancing.get("cpEmail"));
-        param.put("flagCanvasing", balancing.get("flagCanvasing"));
-        param.put("status", balancing.get("status"));
-        param.put("userUpd", balancing.get("userUpd"));
+        param.put("cdSupplier", balance.get("cdSupplier"));
+        param.put("supplierName", balance.get("supplierName"));
+        param.put("address1", balance.get("address1"));
+        param.put("address2", balance.get("address2"));
+        param.put("city", balance.get("city"));
+        param.put("zipCode", balance.get("zipCode"));
+        param.put("phone", balance.get("phone"));
+        param.put("fax", balance.get("fax"));
+        param.put("homepage", balance.get("homepage"));
+        param.put("cpName", balance.get("cpName"));
+        param.put("cpTitle", balance.get("cpTitle"));
+        param.put("cpPhone", balance.get("cpPhone"));
+        param.put("cpPhoneExt", balance.get("cpPhoneExt"));
+        param.put("cpMobile", balance.get("cpMobile"));
+        param.put("cpEmail", balance.get("cpEmail"));
+        param.put("flagCanvasing", balance.get("flagCanvasing"));
+        param.put("status", balance.get("status"));
+        param.put("userUpd", balance.get("userUpd"));
         param.put("dateUpd", dateNow);
         param.put("timeUpd", timeStamp);
         jdbcTemplate.update(sql, param);
@@ -64,7 +64,7 @@ public class ProcessDaoImpl implements ProcessDao {
     ///////////////new method from dona 28-02-2023////////////////////////////
 
     @Override
-    public void updateSupplier(Map<String, String> balancing) {
+    public void updateSupplier(Map<String, String> balance) {
         //String qy = "UPDATE BUDGET_HEADER SET STATUS=:status where trans_no=:transNo ";
         String qy = "update m_supplier set SUPPLIER_NAME=:supplierName,\n"
                 + "ADDRESS_1=:address1,\n"
@@ -87,24 +87,24 @@ public class ProcessDaoImpl implements ProcessDao {
                 + "TIME_UPD=:timeUpd "
                 + "where CD_SUPPLIER =:cdSupplier";
         Map param = new HashMap();
-        param.put("cdSupplier", balancing.get("cdSupplier"));
-        param.put("supplierName", balancing.get("supplierName"));
-        param.put("address1", balancing.get("address1"));
-        param.put("address2", balancing.get("address2"));
-        param.put("city", balancing.get("city"));
-        param.put("zipCode", balancing.get("zipCode"));
-        param.put("phone", balancing.get("phone"));
-        param.put("fax", balancing.get("fax"));
-        param.put("homepage", balancing.get("homepage"));
-        param.put("cpName", balancing.get("cpName"));
-        param.put("cpTitle", balancing.get("cpTitle"));
-        param.put("cpPhone", balancing.get("cpPhone"));
-        param.put("cpPhoneExt", balancing.get("cpPhoneExt"));
-        param.put("cpMobile", balancing.get("cpMobile"));
-        param.put("cpEmail", balancing.get("cpEmail"));
-        param.put("flagCanvasing", balancing.get("flagCanvasing"));
-        param.put("status", balancing.get("status"));
-        param.put("userUpd", balancing.get("userUpd"));
+        param.put("cdSupplier", balance.get("cdSupplier"));
+        param.put("supplierName", balance.get("supplierName"));
+        param.put("address1", balance.get("address1"));
+        param.put("address2", balance.get("address2"));
+        param.put("city", balance.get("city"));
+        param.put("zipCode", balance.get("zipCode"));
+        param.put("phone", balance.get("phone"));
+        param.put("fax", balance.get("fax"));
+        param.put("homepage", balance.get("homepage"));
+        param.put("cpName", balance.get("cpName"));
+        param.put("cpTitle", balance.get("cpTitle"));
+        param.put("cpPhone", balance.get("cpPhone"));
+        param.put("cpPhoneExt", balance.get("cpPhoneExt"));
+        param.put("cpMobile", balance.get("cpMobile"));
+        param.put("cpEmail", balance.get("cpEmail"));
+        param.put("flagCanvasing", balance.get("flagCanvasing"));
+        param.put("status", balance.get("status"));
+        param.put("userUpd", balance.get("userUpd"));
         param.put("dateUpd", dateNow);
         param.put("timeUpd", timeStamp);
         jdbcTemplate.update(qy, param);
@@ -141,4 +141,20 @@ public class ProcessDaoImpl implements ProcessDao {
         jdbcTemplate.update(qy, param);
     }
     /////////////////////////////////done
+    
+ 
+    ///////////////new method from dona 06-03-2023////////////////////////////
+        public void updateMpcs(Map<String, String> balance) {
+        //String qy = "UPDATE BUDGET_HEADER SET STATUS=:status where trans_no=:transNo ";
+        String qy = "UPDATE M_MPCS_DETAIL SET STATUS=:stattus,USER_UPD:userUpd,DATE_UPD=:dateUpd:,TIME_UPD:timeUpd where fryer_type=:fryerType and fryer_type_seq=:fryerTypeSeq";
+        Map param = new HashMap();
+        param.put("stattus", balance.get("stattus"));
+        param.put("fryerType", balance.get("fryerType"));
+        param.put("fryerTypeSeq", balance.get("fryerTypeSeq"));
+        param.put("userUpd", balance.get("userUpd"));
+        param.put("dateUpd", dateNow);
+        param.put("timeUpd", timeStamp);
+        jdbcTemplate.update(qy, param);
+    }
+       /////////////////////////////////done
 }

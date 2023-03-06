@@ -46,4 +46,16 @@ public class ViewServices {
 
     }
     ///////////////done
+
+    ///////////////new method from dona 06-03-2023////////////////////////////
+    public List<Map<String, Object>> listMpcs(Map<String, String> ref) {
+        return viewDao.listMpcs(ref);
+
+    }
+
+    public List<Map<String, Object>> listItemCost(Map<String, String> ref) {
+        return viewDao.listItemCost(ref);
+    
+    }
+        ///////////////done
 }

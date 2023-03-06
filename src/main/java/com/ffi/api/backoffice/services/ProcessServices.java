@@ -20,24 +20,29 @@ public class ProcessServices {
     ProcessDao dao;
     ///////////////new method from dona 27-02-2023////////////////////////////
 
-    public void insertSupplier(Map<String, String> balancing) {
-        dao.insertSupplier(balancing);
+    public void insertSupplier(Map<String, String> balance) {
+        dao.insertSupplier(balance);
     }
     ////////////////////done
 
     ///////////////new method from dona 28-02-2023////////////////////////////
-    public void updateSupplier(Map<String, String> balancing) {
-        dao.updateSupplier(balancing);
+    public void updateSupplier(Map<String, String> balance) {
+        dao.updateSupplier(balance);
     }
     ///////////////////////done
-        ///////////////new method from dona 03-03-2023////////////////////////////
-        public void insertItemSupplier(Map<String, String> balancing) {
-        dao.insertItemSupplier(balancing);
+    ///////////////new method from dona 03-03-2023////////////////////////////
+    public void insertItemSupplier(Map<String, String> balance) {
+        dao.insertItemSupplier(balance);
     }
 
-    public void updateItemSupplier(Map<String, String> balancing) {
-        dao.updateItemSupplier(balancing);
+    public void updateItemSupplier(Map<String, String> balance) {
+        dao.updateItemSupplier(balance);
     }
 
-        ///////////////////////done
+    ///////////////////////done
+    ///////////////new method from dona 06-03-2023////////////////////////////
+    public void updateMpcs(Map<String, String> balance) {
+        dao.updateMpcs(balance);
+    }
+    ///////////////////////done
 }
