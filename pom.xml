@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.ffi.api</groupId>
-    <artifactId>pos</artifactId>
+    <artifactId>boffi</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>backoffice</name>
     <description>Api Back Office</description>
@@ -59,7 +59,7 @@
             <type>jar</type>
         </dependency>
         <dependency>
-            <groupId>ffi.paging</groupId>
+            <groupId>com.ffi.paging</groupId>
             <artifactId>paging</artifactId>
             <version>1.0</version>
             <type>jar</type>
