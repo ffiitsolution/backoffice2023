@@ -525,5 +525,24 @@ public class IndexController {
         res.setData(viewServices.listMpcsHeader(ref));
         return res;
     }
+    
+        @RequestMapping(value = "/list-master-item-for-supplier", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view master item", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listMasterItemSupplier(@RequestBody String param) throws  IOException, Exception {
+        Gson gsn = new Gson();
+            Map<String, String> ref = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+
+        Response res = new Response();
+        res.setData(viewServices.listMasterItemSupplier(ref));
+        return res;
+    }
     ///////////////done
 }

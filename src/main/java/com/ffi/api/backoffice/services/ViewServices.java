@@ -86,7 +86,6 @@ public class ViewServices {
     ///////////////done
 
     ///////////////new method from cona 14-03-2023//////////////////////////// 
-    
     public List<Map<String, Object>> listMasterCity(Map<String, String> ref) {
         return viewDao.listMasterCity(ref);
 
@@ -99,7 +98,10 @@ public class ViewServices {
     public List<Map<String, Object>> listMpcsHeader(Map<String, String> ref) {
         return viewDao.listMpcsHeader(ref);
     }
-    
-    
+
+    public List<Map<String, Object>> listMasterItemSupplier(Map<String, String> ref) {
+        return viewDao.listMasterItemSupplier(ref);
+
+    }
     ///////////////done
 }
