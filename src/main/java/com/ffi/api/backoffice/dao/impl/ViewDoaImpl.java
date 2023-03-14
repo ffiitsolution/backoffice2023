@@ -62,11 +62,13 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listSupplier(Map<String, String> balance) {
-        String qry = "SELECT  CD_SUPPLIER, SUPPLIER_NAME, CP_NAME, FLAG_CANVASING, STATUS, ADDRESS_1, \n"
-                + "ADDRESS_2, CITY, ZIP_CODE, PHONE, FAX, HOMEPAGE, CP_TITLE, CP_MOBILE, CP_PHONE, \n"
-                + "CP_PHONE_EXT, CP_EMAIL, USER_UPD, DATE_UPD, TIME_UPD FROM m_supplier \n"
+        String qry = "SELECT  CD_SUPPLIER, SUPPLIER_NAME, CP_NAME, FLAG_CANVASING, STATUS, ADDRESS_1, "
+                + "ADDRESS_2, CITY, ZIP_CODE, PHONE, FAX, HOMEPAGE, CP_TITLE, CP_MOBILE, CP_PHONE, "
+                + "CP_PHONE_EXT, CP_EMAIL, USER_UPD, DATE_UPD, TIME_UPD FROM m_supplier WHERE STATUS LIKE :status and FLAG_CANVASING=:flagCanvasing "
                 + "ORDER BY CD_SUPPLIER  ASC";
         Map prm = new HashMap();
+        prm.put("status", "%" + balance.get("status") + "%");
+        prm.put("flagCanvasing", balance.get("flagCanvasing"));
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
@@ -208,12 +210,23 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listItemCost(Map<String, String> balance) {
-        String qry = "SELECT  ITEM_CODE, ITEM_DESCRIPTION, FLAG_MATERIAL, FLAG_HALF_FINISH, \n"
-                + "FLAG_FINISHED_GOOD, STATUS FROM m_item WHERE STATUS =:stattus   ORDER BY \n"
-                + "ITEM_CODE  ASC";
-        Map prm = new HashMap();
-        prm.put("stattus", balance.get("stattus"));
+        String qry = "SELECT A.ITEM_CODE,A.ITEM_DESCRIPTION,B.ITEM_COST,A.STATUS FROM M_ITEM A LEFT JOIN M_ITEM_COST B ON A.ITEM_CODE=B.ITEM_CODE "
+                + "WHERE A.ITEM_CODE IS NOT NULL AND A.ITEM_CODE <>' ' "
+                + "and a.flag_material =:flagMaterial  AND A.STATUS='A' ORDER  BY A.ITEM_CODE ASC ";
 
+//          String qry ="SELECT * FROM M_ITEM WHERE FLAG_MATERIAL= :TES ORDER BY ITEM_CODE ASC";
+        if (balance.get("flagMaterial").equalsIgnoreCase("A")) {
+            qry = "SELECT A.ITEM_CODE,A.ITEM_DESCRIPTION,B.ITEM_COST,A.STATUS FROM M_ITEM A LEFT JOIN M_ITEM_COST B ON A.ITEM_CODE=B.ITEM_CODE "
+                    + "WHERE A.ITEM_CODE IS NOT NULL AND A.ITEM_CODE <>' ' "
+                    + "and a.FLAG_HALF_FINISH ='Y' AND A.STATUS='A' ORDER  BY A.ITEM_CODE ASC ";
+        }
+        if (balance.get("flagMaterial").equalsIgnoreCase("B")) {
+            qry = "SELECT A.ITEM_CODE,A.ITEM_DESCRIPTION,B.ITEM_COST,A.STATUS FROM M_ITEM A LEFT JOIN M_ITEM_COST B ON A.ITEM_CODE=B.ITEM_CODE "
+                    + "WHERE A.ITEM_CODE IS NOT NULL AND A.ITEM_CODE <>' ' "
+                    + "and a.FLAG_FINISHED_GOOD ='Y' AND A.STATUS='A' ORDER  BY A.ITEM_CODE ASC ";
+        }
+        Map prm = new HashMap();
+        prm.put("flagMaterial", balance.get("flagMaterial"));
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
@@ -233,7 +246,7 @@ public class ViewDoaImpl implements ViewDao {
     }
     ///////////////////done
 
-    /* LIST MENU GROUP BY BUDHI*/    
+    ///////////////new method from dona 14-03-2023////////////////////////////
     @Override
     public List<Map<String, Object>> ListMenuGroup(Map<String, String> ref) {
         String qry = "SELECT  \n" +
@@ -260,7 +273,6 @@ public class ViewDoaImpl implements ViewDao {
         return list;
         
     }     
-/* END LIST MENU GROUP */    
 
     @Override
     public List<Map<String, Object>> ListPrice(Map<String, String> ref) {
@@ -281,7 +293,7 @@ public class ViewDoaImpl implements ViewDao {
                     "ORDER BY G1.CODE";
         Map prm = new HashMap();
         prm.put("item_code", ref.get("item_code"));
-//        prm.put("type", ref.get("type"));
+
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
@@ -300,7 +312,7 @@ public class ViewDoaImpl implements ViewDao {
     }        
 
 
-/* LIST ITEM PRICE BY BUDHI */    
+
     @Override
     public List<Map<String, Object>> ListItemPrice(Map<String, String> ref) {
         String qry = "SELECT\n" +
@@ -332,8 +344,6 @@ public class ViewDoaImpl implements ViewDao {
         Map prm = new HashMap();
             prm.put("Outlet_Code","%"+ref.get("outlet_code")+"%");
             prm.put("Menu_Group_Code","%"+ref.get("menu_group_code")+"%");
-//        prm.put("item_code", ref.get("item_code"));
-//        prm.put("type", ref.get("type"));
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
@@ -351,9 +361,7 @@ public class ViewDoaImpl implements ViewDao {
         return list;
         
     }        
-/* END LIST ITEM PRICE */
-    
-/* LIST ITEM DETAIL BY BUDHI */    
+ 
     @Override
     public List<Map<String, Object>> ListItemDetail(Map<String, String> ref) {
         String qry = "SELECT \n" +
@@ -408,9 +416,7 @@ public class ViewDoaImpl implements ViewDao {
         return list;
         
     }        
-/* END LIST ITEM PRICE */
-
-/* LIST MODIFIER BY BUDHI */    
+   
     @Override
     public List<Map<String, Object>> ListModifier(Map<String, String> ref) {
         String qry = "SELECT \n" +
@@ -436,10 +442,7 @@ public class ViewDoaImpl implements ViewDao {
         Map prm = new HashMap();
             prm.put("Outlet_Code","%"+ref.get("outlet_code")+"%");
             prm.put("Menu_Group_Code","%"+ref.get("menu_group_code")+"%");
-//            prm.put("Menu_Item_Code","%"+ref.get("menu_item_code")+"%");
             prm.put("Menu_Item_Code", ref.get("menu_item_code"));
-//        prm.put("item_code", ref.get("item_code"));
-//        prm.put("type", ref.get("type"));
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
@@ -449,17 +452,14 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("itemdescription", rs.getString("item_description"));
                 rt.put("modifieritemcode", rs.getString("modifier_item_code"));
                 rt.put("modifieritemname", rs.getString("modifier_item_name"));
-//                rt.put("pricetypecode", rs.getString("price_type_code"));
-//                rt.put("orderdescription", rs.getString("order_description"));
+
                 return rt;
             }
         });
         return list;
         
     }        
-/* END LIST MODIFIER */
-    
-/* LIST SPECIAL PRICE BY BUDHI */    
+
     @Override
     public List<Map<String, Object>> ListSpecialPrice(Map<String, String> ref) {
         String qry = "SELECT  \n" +
@@ -477,12 +477,6 @@ public class ViewDoaImpl implements ViewDao {
                 "AND DATE_END BETWEEN TRUNC(SYSDATE, 'MM') AND LAST_DAY(SYSDATE) \n" +
                 "AND MSP.OUTLET_CODE IN (SELECT OUTLET_CODE FROM M_OUTLET_PROFILE WHERE DEFAULT_SITE = 'YES')";
         Map prm = new HashMap();
-//            prm.put("Outlet_Code","%"+ref.get("outlet_code")+"%");
-//            prm.put("Menu_Group_Code","%"+ref.get("menu_group_code")+"%");
-//            prm.put("Menu_Item_Code","%"+ref.get("menu_item_code")+"%");
-//            prm.put("Menu_Item_Code", ref.get("menu_item_code"));
-//        prm.put("item_code", ref.get("item_code"));
-//        prm.put("type", ref.get("type"));
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
@@ -493,15 +487,14 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("datestart", rs.getString("date_start"));
                 rt.put("dateend", rs.getString("date_end"));
                 rt.put("outletcode", rs.getString("outlet_code"));
-//                rt.put("pricetypecode", rs.getString("price_type_code"));
-//                rt.put("orderdescription", rs.getString("order_description"));
+
                 return rt;
             }
         });
         return list;
         
     }        
-/* END LIST SPECIAL PRICE */    
+//////////////done
     
 
 
