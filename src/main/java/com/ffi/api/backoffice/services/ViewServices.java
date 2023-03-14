@@ -58,4 +58,31 @@ public class ViewServices {
     
     }
         ///////////////done
+    
+    ///// budhi
+    public List<Map<String, Object>> ListPrice(Map<String, String> ref) {
+        return viewDao.ListPrice(ref);
+    } 
+    
+    public List<Map<String, Object>> ListMenuGroup(Map<String, String> ref) {
+        return viewDao.ListMenuGroup(ref);
+    }      
+     
+    public List<Map<String, Object>> ListItemPrice(Map<String, String> ref) {
+        return viewDao.ListItemPrice(ref);
+    }      
+    
+    public List<Map<String, Object>> ListItemDetail(Map<String, String> ref) {
+        return viewDao.ListItemDetail(ref);
+    }       
+    
+    public List<Map<String, Object>> ListModifier(Map<String, String> ref) {
+        return viewDao.ListModifier(ref);
+    }      
+    
+    public List<Map<String, Object>> ListSpecialPrice(Map<String, String> ref) {
+        return viewDao.ListSpecialPrice(ref);
+    }        
+    ///// end budhi
+    
 }

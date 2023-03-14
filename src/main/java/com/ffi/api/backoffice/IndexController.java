@@ -372,6 +372,121 @@ public class IndexController {
     
     //////////////testlani
     
+    /* BUDHI LIST MENU GROUP */
+
+    @RequestMapping(value = "/List-Menu-Group", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Menampilkan List Group Menu ", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK")
+        ,
+        @ApiResponse(code = 404, message = "The resource not found")
+    }
+    )
     
-    ///// in uu yg rubah
+    public @ResponseBody
+    Response ListMenuGroup(@RequestBody String param) {
+        Gson gsn = new Gson();
+        Map<String, String> ref = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        Map<String, Object> map = new LinkedHashMap<String, Object>();
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response res = new Response();
+        res.setData(viewServices.ListMenuGroup(ref));
+        return res;
+    }         
+/* END LIST MENU GROUP */    
+
+/* BUDHI LIST ITEM PRICE */    
+    @RequestMapping(value = "/List-Item-Price", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Menampilkan Harga ITEM ", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK")
+        ,
+        @ApiResponse(code = 404, message = "The resource not found")
+    }
+    )
+    
+    public @ResponseBody
+    Response ListItemPrice(@RequestBody String param) {
+        Gson gsn = new Gson();
+        Map<String, String> ref = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        Map<String, Object> map = new LinkedHashMap<String, Object>();
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response res = new Response();
+        res.setData(viewServices.ListItemPrice(ref));
+        return res;
+    }         
+/* END LIST ITEM PRICE */    
+    
+/* BUDHI LIST ITEM DETAIL */    
+    @RequestMapping(value = "/List-Item-Detail", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Menampilkan Detail Item ", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK")
+        ,
+        @ApiResponse(code = 404, message = "The resource not found")
+    }
+    )
+    
+    public @ResponseBody
+    Response ListItemDetail(@RequestBody String param) {
+        Gson gsn = new Gson();
+        Map<String, String> ref = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        Map<String, Object> map = new LinkedHashMap<String, Object>();
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response res = new Response();
+        res.setData(viewServices.ListItemDetail(ref));
+        return res;
+    }         
+/* END LIST ITEM DETAIL */ 
+    
+/* BUDHI LIST MODIFIER */    
+    @RequestMapping(value = "/List-Modifier", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Menampilkan Modifier Item ", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK")
+        ,
+        @ApiResponse(code = 404, message = "The resource not found")
+    }
+    )
+    
+    public @ResponseBody
+    Response ListModifier(@RequestBody String param) {
+        Gson gsn = new Gson();
+        Map<String, String> ref = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        Map<String, Object> map = new LinkedHashMap<String, Object>();
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response res = new Response();
+        res.setData(viewServices.ListModifier(ref));
+        return res;
+    }         
+/* END LIST MODIFIER */   
+    
+/* BUDHI LIST OUTLET SPECIAL PRICE */    
+    @RequestMapping(value = "/List-Special-Price", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Menampilkan Modifier Item ", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK")
+        ,
+        @ApiResponse(code = 404, message = "The resource not found")
+    }
+    )
+    
+    public @ResponseBody
+    Response ListSpecialPrice(@RequestBody String param) {
+        Gson gsn = new Gson();
+        Map<String, String> ref = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        Map<String, Object> map = new LinkedHashMap<String, Object>();
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response res = new Response();
+        res.setData(viewServices.ListSpecialPrice(ref));
+        return res;
+    }         
+/* END LIST MODIFIER */     
+    
+    
 }

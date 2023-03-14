@@ -233,4 +233,277 @@ public class ViewDoaImpl implements ViewDao {
     }
     ///////////////////done
 
+    /* LIST MENU GROUP BY BUDHI*/    
+    @Override
+    public List<Map<String, Object>> ListMenuGroup(Map<String, String> ref) {
+        String qry = "SELECT  \n" +
+                    "    M.MENU_GROUP_CODE,\n" +
+                    "    G.DESCRIPTION AS MENU_GROUP\n" +
+                    "FROM M_MENU_GROUP M \n" +
+                    "JOIN M_GLOBAL G \n" +
+                    "ON M.MENU_GROUP_CODE = G.CODE \n" +
+                    "WHERE G.COND = 'GROUP' AND M.OUTLET_CODE LIKE :outlet_code \n" +
+                    "ORDER BY MENU_GROUP_CODE";
+        Map prm = new HashMap();
+       prm.put("outlet_code","%"+ref.get("outlet_code")+"%");
+//        prm.put("type", ref.get("type"));
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("menugroupcode", rs.getString("menu_group_code"));
+                rt.put("menugroup", rs.getString("menu_group"));
+                return rt;
+            }
+        });
+        return list;
+        
+    }     
+/* END LIST MENU GROUP */    
+
+    @Override
+    public List<Map<String, Object>> ListPrice(Map<String, String> ref) {
+        String qry = "SELECT \n" +
+                    "    G1.CODE AS ITEM_CODE,\n" +
+                    "    G1.DESCRIPTION AS ITEM_NAME,\n" +
+                    "    MP.PRICE AS PRICE,\n" +
+                    "    MP.PRICE_TYPE_CODE AS PRICE_TYPE_CODE,\n" +
+                    "    G2.DESCRIPTION AS ORDER_DESCRIPTION\n" +
+                    "FROM M_GLOBAL G1\n" +
+                    "LEFT JOIN M_PRICE MP\n" +
+                    "ON G1.CODE = MP.MENU_ITEM_CODE\n" +
+                    "LEFT JOIN M_OUTLET_PRICE OP\n" +
+                    "ON OP.PRICE_TYPE_CODE = MP.PRICE_TYPE_CODE AND OP.OUTLET_CODE LIKE '%%'\n" +
+                    "LEFT JOIN M_GLOBAL G2\n" +
+                    "ON OP.ORDER_TYPE = G2.CODE AND G2.COND = 'ORDER_TYPE'\n" +
+                    "WHERE G1.COND = 'ITEM' AND G1.STATUS = 'A' AND MP.PRICE_TYPE_CODE IN (SELECT PRICE_TYPE_CODE FROM M_OUTLET_PRICE)\n" +
+                    "ORDER BY G1.CODE";
+        Map prm = new HashMap();
+        prm.put("item_code", ref.get("item_code"));
+//        prm.put("type", ref.get("type"));
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("itemcode", rs.getString("item_code"));
+                rt.put("itemname", rs.getString("item_name"));
+                rt.put("price", rs.getString("price"));
+                rt.put("pricetypecode", rs.getString("price_type_code"));
+                rt.put("oderdescription", rs.getString("order_description"));
+                return rt;
+            }
+        });
+        return list;
+        
+    }        
+
+
+/* LIST ITEM PRICE BY BUDHI */    
+    @Override
+    public List<Map<String, Object>> ListItemPrice(Map<String, String> ref) {
+        String qry = "SELECT\n" +
+                    "    MMI.MENU_ITEM_CODE,\n" +
+                    "    MI.ITEM_DESCRIPTION,\n" +
+                    "    -- MMI.MENU_GROUP_CODE,\n" +
+                    "    MG.DESCRIPTION AS MENU_GROUP_NAME,\n" +
+                    "    MP.PRICE,\n" +
+                    "    MP.PRICE_TYPE_CODE AS PRICE_TYPE_CODE,\n" +
+                    "    MMI.TAXABLE\n" +
+                    "    -- MG.DESCRIPTION AS ORDER_DESCRIPTION\n" +
+                    "FROM M_MENU_ITEM MMI\n" +
+                    "LEFT JOIN M_ITEM MI\n" +
+                    "ON MMI.MENU_ITEM_CODE = MI.ITEM_CODE \n" +
+                    "LEFT JOIN M_PRICE MP\n" +
+                    "ON MMI.MENU_ITEM_CODE = MP.MENU_ITEM_CODE\n" +
+                    "LEFT JOIN M_OUTLET_PRICE MOP\n" +
+                    "ON MOP.PRICE_TYPE_CODE = MP.PRICE_TYPE_CODE \n" +
+                    "LEFT JOIN M_GLOBAL MG\n" +
+                    "ON MMI.MENU_GROUP_CODE = MG.CODE AND MG.COND = 'GROUP'\n" +
+                    "WHERE MMI.MENU_GROUP_CODE LIKE :Menu_Group_Code \n" +
+                    "AND MMI.MENU_ITEM_CODE LIKE '%%'\n" +
+                    "AND MMI.STATUS = 'A' \n" +
+                    "AND MI.STATUS = 'A' \n" +
+                    "AND MMI.OUTLET_CODE LIKE :Outlet_Code \n" +
+                    "AND MOP.OUTLET_CODE LIKE :Outlet_Code \n" +
+                    "AND MOP.ORDER_TYPE = 'ETA'\n" +
+                    "ORDER BY MMI.MENU_ITEM_CODE";
+        Map prm = new HashMap();
+            prm.put("Outlet_Code","%"+ref.get("outlet_code")+"%");
+            prm.put("Menu_Group_Code","%"+ref.get("menu_group_code")+"%");
+//        prm.put("item_code", ref.get("item_code"));
+//        prm.put("type", ref.get("type"));
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("menuitemcode", rs.getString("menu_item_code"));
+                rt.put("itemdescription", rs.getString("item_description"));
+                rt.put("menugroupname", rs.getString("menu_group_name"));
+                rt.put("price", rs.getString("price"));
+                rt.put("pricetypecode", rs.getString("price_type_code"));
+                rt.put("taxable", rs.getString("taxable"));
+                return rt;
+            }
+        });
+        return list;
+        
+    }        
+/* END LIST ITEM PRICE */
+    
+/* LIST ITEM DETAIL BY BUDHI */    
+    @Override
+    public List<Map<String, Object>> ListItemDetail(Map<String, String> ref) {
+        String qry = "SELECT \n" +
+                    "    MMI.MENU_ITEM_CODE, \n" +
+                    "    MI.ITEM_DESCRIPTION, \n" +
+                    "    -- MMI.MENU_GROUP_CODE, \n" +
+                    "    MG2.DESCRIPTION AS MENU_GROUP_NAME, \n" +
+                    "    MP.PRICE, \n" +
+                    "    MP.PRICE_TYPE_CODE AS PRICE_TYPE_CODE, \n" +
+                    "    MG.DESCRIPTION AS ORDER_DESCRIPTION, \n" +
+                    "    NVL2(MMI.MODIFIER_GROUP1_CODE, 'Y', 'N') AS MODIFIER_STATUS \n" +
+                    "FROM M_MENU_ITEM MMI \n" +
+                    "LEFT JOIN M_ITEM MI \n" +
+                    "ON MMI.MENU_ITEM_CODE = MI.ITEM_CODE \n" +
+                    "LEFT JOIN M_PRICE MP \n" +
+                    "ON MMI.MENU_ITEM_CODE = MP.MENU_ITEM_CODE \n" +
+                    "LEFT JOIN M_OUTLET_PRICE MOP \n" +
+                    "ON MOP.PRICE_TYPE_CODE = MP.PRICE_TYPE_CODE \n" +
+                    "LEFT JOIN M_GLOBAL MG \n" +
+                    "ON MOP.ORDER_TYPE = MG.CODE AND MG.COND = 'ORDER_TYPE' \n" +
+                    "LEFT JOIN M_GLOBAL MG2 \n" +
+                    "ON MMI.MENU_GROUP_CODE = MG2.CODE AND MG2.COND = 'GROUP' \n" +
+                    "WHERE MMI.MENU_GROUP_CODE LIKE :Menu_Group_Code \n" +
+                    "AND MMI.MENU_ITEM_CODE = :Menu_Item_Code \n" +
+                    "AND MMI.STATUS = 'A' \n" +
+                    "AND MI.STATUS = 'A' \n" +
+                    "AND MMI.OUTLET_CODE LIKE :Outlet_Code \n" +
+                    "AND MOP.OUTLET_CODE LIKE :Outlet_Code \n" +
+                    "ORDER BY MMI.MENU_ITEM_CODE";
+        Map prm = new HashMap();
+            prm.put("Outlet_Code","%"+ref.get("outlet_code")+"%");
+            prm.put("Menu_Group_Code","%"+ref.get("menu_group_code")+"%");
+//            prm.put("Menu_Item_Code","%"+ref.get("menu_item_code")+"%");
+            prm.put("Menu_Item_Code", ref.get("menu_item_code"));
+//        prm.put("item_code", ref.get("item_code"));
+//        prm.put("type", ref.get("type"));
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("menuitemcode", rs.getString("menu_item_code"));
+                rt.put("itemdescription", rs.getString("item_description"));
+                rt.put("menugroupname", rs.getString("menu_group_name"));
+                rt.put("price", rs.getString("price"));
+                rt.put("pricetypecode", rs.getString("price_type_code"));
+                rt.put("orderdescription", rs.getString("order_description"));
+                rt.put("modifierstatus", rs.getString("modifier_status"));
+                return rt;
+            }
+        });
+        return list;
+        
+    }        
+/* END LIST ITEM PRICE */
+
+/* LIST MODIFIER BY BUDHI */    
+    @Override
+    public List<Map<String, Object>> ListModifier(Map<String, String> ref) {
+        String qry = "SELECT \n" +
+                    "    MMI.MENU_ITEM_CODE, \n" +
+                    "    MI.ITEM_DESCRIPTION, \n" +
+                    "    --- MMI.MENU_GROUP_CODE, \n" +
+                    "    --- MMI.MODIFIER_GROUP1_CODE AS MODIFIER_GROUP_CODE, \n" +
+                    "    MOD.MODIFIER_ITEM_CODE, \n" +
+                    "    MI2.ITEM_DESCRIPTION AS MODIFIER_ITEM_NAME \n" +
+                    "FROM M_MENU_ITEM MMI \n" +
+                    "LEFT JOIN M_ITEM MI \n" +
+                    "ON MMI.MENU_ITEM_CODE = MI.ITEM_CODE \n" +
+                    "LEFT JOIN M_MODIFIER_ITEM MOD \n" +
+                    "ON MMI.MODIFIER_GROUP1_CODE = MOD.MODIFIER_GROUP_CODE \n" +
+                    "LEFT JOIN M_ITEM MI2 \n" +
+                    "ON MOD.MODIFIER_ITEM_CODE = MI2.ITEM_CODE \n" +
+                    "WHERE MMI.MENU_GROUP_CODE LIKE :Menu_Group_Code \n" +
+                    "AND MMI.MENU_ITEM_CODE = :Menu_Item_Code \n" +
+                    "AND MMI.STATUS = 'A' \n" +
+                    "AND MI.STATUS = 'A' \n" +
+                    "AND MMI.OUTLET_CODE LIKE :Outlet_Code \n" +
+                    "ORDER BY MMI.MENU_ITEM_CODE";
+        Map prm = new HashMap();
+            prm.put("Outlet_Code","%"+ref.get("outlet_code")+"%");
+            prm.put("Menu_Group_Code","%"+ref.get("menu_group_code")+"%");
+//            prm.put("Menu_Item_Code","%"+ref.get("menu_item_code")+"%");
+            prm.put("Menu_Item_Code", ref.get("menu_item_code"));
+//        prm.put("item_code", ref.get("item_code"));
+//        prm.put("type", ref.get("type"));
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("menuitemcode", rs.getString("menu_item_code"));
+                rt.put("itemdescription", rs.getString("item_description"));
+                rt.put("modifieritemcode", rs.getString("modifier_item_code"));
+                rt.put("modifieritemname", rs.getString("modifier_item_name"));
+//                rt.put("pricetypecode", rs.getString("price_type_code"));
+//                rt.put("orderdescription", rs.getString("order_description"));
+                return rt;
+            }
+        });
+        return list;
+        
+    }        
+/* END LIST MODIFIER */
+    
+/* LIST SPECIAL PRICE BY BUDHI */    
+    @Override
+    public List<Map<String, Object>> ListSpecialPrice(Map<String, String> ref) {
+        String qry = "SELECT  \n" +
+                "    MSP.MENU_ITEM_CODE, \n" +
+                "    MG.DESCRIPTION, \n" +
+                "    MSP.DATE_START, \n" +
+                "    MSP.DATE_END, \n" +
+                "    MSP.TIME_START, \n" +
+                "    MSP.TIME_END, \n" +
+                "    MSP.OUTLET_CODE \n" +
+                "FROM M_OUTLET_SPECIAL_PRICE MSP \n" +
+                "JOIN M_GLOBAL MG \n" +
+                "ON MSP.MENU_ITEM_CODE = MG.CODE AND MG.COND = 'ITEM' \n" +
+                "WHERE DATE_START BETWEEN TRUNC(SYSDATE, 'MM') AND LAST_DAY(SYSDATE) \n" +
+                "AND DATE_END BETWEEN TRUNC(SYSDATE, 'MM') AND LAST_DAY(SYSDATE) \n" +
+                "AND MSP.OUTLET_CODE IN (SELECT OUTLET_CODE FROM M_OUTLET_PROFILE WHERE DEFAULT_SITE = 'YES')";
+        Map prm = new HashMap();
+//            prm.put("Outlet_Code","%"+ref.get("outlet_code")+"%");
+//            prm.put("Menu_Group_Code","%"+ref.get("menu_group_code")+"%");
+//            prm.put("Menu_Item_Code","%"+ref.get("menu_item_code")+"%");
+//            prm.put("Menu_Item_Code", ref.get("menu_item_code"));
+//        prm.put("item_code", ref.get("item_code"));
+//        prm.put("type", ref.get("type"));
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("menuitemcode", rs.getString("menu_item_code"));
+                rt.put("description", rs.getString("description"));
+                rt.put("datestart", rs.getString("date_start"));
+                rt.put("dateend", rs.getString("date_end"));
+                rt.put("outletcode", rs.getString("outlet_code"));
+//                rt.put("pricetypecode", rs.getString("price_type_code"));
+//                rt.put("orderdescription", rs.getString("order_description"));
+                return rt;
+            }
+        });
+        return list;
+        
+    }        
+/* END LIST SPECIAL PRICE */    
+    
+
+
+    
 }
