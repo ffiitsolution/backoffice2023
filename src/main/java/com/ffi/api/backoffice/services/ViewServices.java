@@ -55,34 +55,51 @@ public class ViewServices {
 
     public List<Map<String, Object>> listItemCost(Map<String, String> ref) {
         return viewDao.listItemCost(ref);
-    
+
     }
-        ///////////////done
-    
-    ///// budhi
+    ///////////////done
+    ///////////////new method from budhi 14-03-2023//////////////////////////// 
+
     public List<Map<String, Object>> ListPrice(Map<String, String> ref) {
         return viewDao.ListPrice(ref);
-    } 
-    
+    }
+
     public List<Map<String, Object>> ListMenuGroup(Map<String, String> ref) {
         return viewDao.ListMenuGroup(ref);
-    }      
-     
+    }
+
     public List<Map<String, Object>> ListItemPrice(Map<String, String> ref) {
         return viewDao.ListItemPrice(ref);
-    }      
-    
+    }
+
     public List<Map<String, Object>> ListItemDetail(Map<String, String> ref) {
         return viewDao.ListItemDetail(ref);
-    }       
-    
+    }
+
     public List<Map<String, Object>> ListModifier(Map<String, String> ref) {
         return viewDao.ListModifier(ref);
-    }      
-    
+    }
+
     public List<Map<String, Object>> ListSpecialPrice(Map<String, String> ref) {
         return viewDao.ListSpecialPrice(ref);
-    }        
-    ///// end budhi
+    }
+    ///////////////done
+
+    ///////////////new method from cona 14-03-2023//////////////////////////// 
     
+    public List<Map<String, Object>> listMasterCity(Map<String, String> ref) {
+        return viewDao.listMasterCity(ref);
+
+    }
+
+    public List<Map<String, Object>> listPosition(Map<String, String> ref) {
+        return viewDao.listPosition(ref);
+    }
+
+    public List<Map<String, Object>> listMpcsHeader(Map<String, String> ref) {
+        return viewDao.listMpcsHeader(ref);
+    }
+    
+    
+    ///////////////done
 }

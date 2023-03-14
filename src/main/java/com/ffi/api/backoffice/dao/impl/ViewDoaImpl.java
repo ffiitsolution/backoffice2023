@@ -246,7 +246,7 @@ public class ViewDoaImpl implements ViewDao {
     }
     ///////////////////done
 
-    ///////////////new method from dona 14-03-2023////////////////////////////
+    ///////////////new method from budi 14-03-2023////////////////////////////
     @Override
     public List<Map<String, Object>> ListMenuGroup(Map<String, String> ref) {
         String qry = "SELECT  \n" +
@@ -394,10 +394,8 @@ public class ViewDoaImpl implements ViewDao {
         Map prm = new HashMap();
             prm.put("Outlet_Code","%"+ref.get("outlet_code")+"%");
             prm.put("Menu_Group_Code","%"+ref.get("menu_group_code")+"%");
-//            prm.put("Menu_Item_Code","%"+ref.get("menu_item_code")+"%");
             prm.put("Menu_Item_Code", ref.get("menu_item_code"));
-//        prm.put("item_code", ref.get("item_code"));
-//        prm.put("type", ref.get("type"));
+
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
@@ -495,8 +493,62 @@ public class ViewDoaImpl implements ViewDao {
         
     }        
 //////////////done
-    
+///////////////new method from dona 14-03-2023////////////////////////////
+    @Override
+    public List<Map<String, Object>> listMasterCity(Map<String, String> logan) {
+        String qry = "select code,description from m_global where cond='CITY' AND STATUS='A'";
+        Map prm = new HashMap();
+        System.err.println("q :" + qry);
 
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("code", rs.getString("CODE"));
+                rt.put("description", rs.getString("DESCRIPTION"));
+                return rt;
+            }
+        });
+        return list;
+    }
 
+    @Override
+    public List<Map<String, Object>> listPosition(Map<String, String> logan) {
+        String qry = "select code,description from m_global where cond='POSITION' AND STATUS='A'";
+        Map prm = new HashMap();
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("code", rs.getString("CODE"));
+                rt.put("description", rs.getString("DESCRIPTION"));
+                return rt;
+            }
+        });
+        return list;
+    }
+
+    @Override
+    public List<Map<String, Object>> listMpcsHeader(Map<String, String> logan) {
+        String qry = "select * from m_mpcs_header WHERE OUTLET_CODE='5244'";
+        Map prm = new HashMap();
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("outletCode", rs.getString("Outlet_Code"));
+                rt.put("description", rs.getString("DESCRIPTION"));
+                rt.put("mpcsGroup", rs.getString("MPCS_GROUP"));
+                rt.put("fryerType", rs.getString("FRYER_TYPE"));
+                rt.put("qtyConv", rs.getString("QTY_CONV"));
+                rt.put("status", rs.getString("STATUS"));
+                return rt;
+            }
+        });
+        return list;
+    }
+//////////////done
     
 }

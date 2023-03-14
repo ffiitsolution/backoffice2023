@@ -33,18 +33,25 @@ public interface ViewDao {
 
     List<Map<String, Object>> listItemCost(Map<String, String> ref);
     /////////////////////////////done
-    
-    /* ADD BY BUDHI */    
+    ///////////////new method from budhi 14-03-2023////////////////////////////
+
     List<Map<String, Object>> ListPrice(Map<String, String> ref);
-    
+
     List<Map<String, Object>> ListMenuGroup(Map<String, String> ref);
-    
+
     List<Map<String, Object>> ListItemPrice(Map<String, String> ref);
-    
+
     List<Map<String, Object>> ListItemDetail(Map<String, String> ref);
-    
+
     List<Map<String, Object>> ListModifier(Map<String, String> ref);
-    
+
     List<Map<String, Object>> ListSpecialPrice(Map<String, String> ref);
-/* END ADD BY BUDHI */ 
+    /////////////////////////////done 
+    ///////////////new method from budhi 14-03-2023////////////////////////////
+    List<Map<String, Object>> listMasterCity(Map<String, String> ref);
+
+    List<Map<String, Object>> listPosition(Map<String, String> ref);
+
+    List<Map<String, Object>> listMpcsHeader(Map<String, String> ref);
+    /////////////////////////////done 
 }

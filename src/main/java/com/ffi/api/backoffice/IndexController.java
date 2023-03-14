@@ -369,7 +369,7 @@ public class IndexController {
     }
 
      ///////////////new method from budhi 14-MAR-2023 ////////////// 
-    @RequestMapping(value = "/List-Menu-Group", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/list-menu-group", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan List Group Menu ", response = Object.class)
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
@@ -389,7 +389,7 @@ public class IndexController {
         return res;
     }
 
-    @RequestMapping(value = "/List-Item-Price", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/list-item-price", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan Harga ITEM ", response = Object.class)
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
@@ -409,7 +409,7 @@ public class IndexController {
         return res;
     }
 
-    @RequestMapping(value = "/List-Item-Detail", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/list-item-detail", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan Detail Item ", response = Object.class)
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
@@ -429,7 +429,7 @@ public class IndexController {
         return res;
     }
 
-    @RequestMapping(value = "/List-Modifier", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/list-modifier", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan Modifier Item ", response = Object.class)
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
@@ -449,7 +449,7 @@ public class IndexController {
         return res;
     }
 
-    @RequestMapping(value = "/List-Special-Price", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/list-special-price", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan Modifier Item ", response = Object.class)
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
@@ -469,5 +469,61 @@ public class IndexController {
         return res;
     }
     ///////////////done
+    
+     ///////////////new method from dona 14-MAR-2023 ////////////// 
+        @RequestMapping(value = "/list-master-city", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view master item", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listMasterCity(@RequestBody String param)throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> ref = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
 
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+
+        Response res = new Response();
+        res.setData(viewServices.listMasterCity(ref));
+        return res;
+    }
+
+    @RequestMapping(value = "/list-position", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view master item", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listPosition(@RequestBody String param)throws IOException, Exception {
+        Gson gsn = new Gson();
+   Map<String, String> ref = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+
+        Response res = new Response();
+        res.setData(viewServices.listPosition(ref));
+        return res;
+    }
+
+    @RequestMapping(value = "/list-mpcs-header", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view master item", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listMpcsHeader(@RequestBody String param)  throws IOException, Exception {
+        Gson gsn = new Gson();
+          Map<String, String> ref = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response res = new Response();
+        res.setData(viewServices.listMpcsHeader(ref));
+        return res;
+    }
+    ///////////////done
 }
