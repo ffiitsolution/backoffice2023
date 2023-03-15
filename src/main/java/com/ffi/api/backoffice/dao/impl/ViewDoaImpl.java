@@ -212,21 +212,13 @@ public class ViewDoaImpl implements ViewDao {
     public List<Map<String, Object>> listItemCost(Map<String, String> balance) {
         String qry = "SELECT A.ITEM_CODE,A.ITEM_DESCRIPTION,B.ITEM_COST,A.STATUS FROM M_ITEM A LEFT JOIN M_ITEM_COST B ON A.ITEM_CODE=B.ITEM_CODE "
                 + "WHERE A.ITEM_CODE IS NOT NULL AND A.ITEM_CODE <>' ' "
-                + "and a.flag_material =:flagMaterial  AND A.STATUS='A' ORDER  BY A.ITEM_CODE ASC ";
+                + "and a.flag_material like :flagMaterial AND a.FLAG_HALF_FINISH LIKE :flagHalfFinish "
+                + "AND a.FLAG_FINISHED_GOOD LIKE :flagFinishGood AND A.STATUS='A' ORDER  BY A.ITEM_CODE ASC";
 
-//          String qry ="SELECT * FROM M_ITEM WHERE FLAG_MATERIAL= :TES ORDER BY ITEM_CODE ASC";
-        if (balance.get("flagMaterial").equalsIgnoreCase("A")) {
-            qry = "SELECT A.ITEM_CODE,A.ITEM_DESCRIPTION,B.ITEM_COST,A.STATUS FROM M_ITEM A LEFT JOIN M_ITEM_COST B ON A.ITEM_CODE=B.ITEM_CODE "
-                    + "WHERE A.ITEM_CODE IS NOT NULL AND A.ITEM_CODE <>' ' "
-                    + "and a.FLAG_HALF_FINISH ='Y' AND A.STATUS='A' ORDER  BY A.ITEM_CODE ASC ";
-        }
-        if (balance.get("flagMaterial").equalsIgnoreCase("B")) {
-            qry = "SELECT A.ITEM_CODE,A.ITEM_DESCRIPTION,B.ITEM_COST,A.STATUS FROM M_ITEM A LEFT JOIN M_ITEM_COST B ON A.ITEM_CODE=B.ITEM_CODE "
-                    + "WHERE A.ITEM_CODE IS NOT NULL AND A.ITEM_CODE <>' ' "
-                    + "and a.FLAG_FINISHED_GOOD ='Y' AND A.STATUS='A' ORDER  BY A.ITEM_CODE ASC ";
-        }
         Map prm = new HashMap();
-        prm.put("flagMaterial", balance.get("flagMaterial"));
+        prm.put("flagMaterial", "%"+balance.get("flagMaterial")+"%");
+        prm.put("flagFinishGood", "%"+balance.get("flagFinishGood")+"%");
+        prm.put("flagHalfFinish", "%"+balance.get("flagHalfFinish")+"%");
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
@@ -234,9 +226,9 @@ public class ViewDoaImpl implements ViewDao {
                 Map<String, Object> rt = new HashMap<String, Object>();
                 rt.put("itemCode", rs.getString("ITEM_CODE"));
                 rt.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
-                rt.put("flagMaterial", rs.getString("FLAG_MATERIAL"));
-                rt.put("flagHalfFinish", rs.getString("FLAG_HALF_FINISH"));
-                rt.put("flagFinishedGood", rs.getString("FLAG_FINISHED_GOOD"));
+                //rt.put("flagMaterial", rs.getString("FLAG_MATERIAL"));
+                rt.put("itemCost", rs.getString("ITEM_COST"));
+                //rt.put("flagFinishedGood", rs.getString("FLAG_FINISHED_GOOD"));
                 rt.put("status", rs.getString("STATUS"));
 
                 return rt;
