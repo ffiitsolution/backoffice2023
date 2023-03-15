@@ -64,11 +64,12 @@ public class ViewDoaImpl implements ViewDao {
     public List<Map<String, Object>> listSupplier(Map<String, String> balance) {
         String qry = "SELECT  CD_SUPPLIER, SUPPLIER_NAME, CP_NAME, FLAG_CANVASING, STATUS, ADDRESS_1, "
                 + "ADDRESS_2, CITY, ZIP_CODE, PHONE, FAX, HOMEPAGE, CP_TITLE, CP_MOBILE, CP_PHONE, "
-                + "CP_PHONE_EXT, CP_EMAIL, USER_UPD, DATE_UPD, TIME_UPD FROM m_supplier WHERE STATUS LIKE :status and FLAG_CANVASING=:flagCanvasing "
+                + "CP_PHONE_EXT, CP_EMAIL, USER_UPD, DATE_UPD, TIME_UPD FROM m_supplier WHERE STATUS LIKE :status and FLAG_CANVASING like :flagCanvasing AND CITY LIKE :city "
                 + "ORDER BY CD_SUPPLIER  ASC";
         Map prm = new HashMap();
         prm.put("status", "%" + balance.get("status") + "%");
-        prm.put("flagCanvasing", balance.get("flagCanvasing"));
+        prm.put("city", "%" + balance.get("city") + "%");
+        prm.put("flagCanvasing", "%"+balance.get("flagCanvasing")+"%");
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
