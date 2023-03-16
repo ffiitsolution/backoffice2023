@@ -658,4 +658,62 @@ public class ViewDoaImpl implements ViewDao {
         return list;
     }    
 //done
+    
+    // List Menu Group & Menu Item (done by KP) 16-03-2023
+    @Override
+    public List<Map<String, Object>> listMenu(Map<String, String> ref) {
+        String qry = "select distinct mg.description, mmi.plu, " +
+                    "mmi.seq, " +
+                    "mmi.status " +
+                    "from m_menu_item mmi join m_global mg on mmi.menu_item_code = mg.code " +
+                    "join m_color mc on mmi.color_code = mc.color_code " +
+                    "join m_outlet_price mop on mmi.outlet_code = mop.outlet_code " +
+                    "join m_price mp on mmi.menu_item_code = mp.menu_item_code and mop.price_type_code = mp.price_type_code " +
+                    "join m_menu_item_limit mmil on mmi.outlet_code = mmil.outlet_code and mmi.menu_item_code = mmil.menu_item_code " +
+                    "left join m_item_coffee mic on mic.menu_item_code = mmi.menu_item_code " +
+                    "where mg.cond = 'ITEM' " +
+                    "and mmi.menu_group_code = :groupCode " +
+                    "order by mmi.seq, mmi.plu";
+        Map prm = new HashMap();
+        prm.put("groupCode", ref.get("groupCode"));     
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("menuPlu", rs.getString("plu"));
+                rt.put("menuName", rs.getString("description"));
+                rt.put("seq", rs.getInt("seq"));
+                rt.put("status", rs.getString("status"));
+                return rt;
+            }
+        });
+        return list;
+    }
+    
+    @Override
+    public List<Map<String, Object>> listMenuGroup(Map<String, String> ref) {
+        String qry = "select distinct mmg.menu_group_code, mg.description, mmg.seq, mc.r_value, mc.g_value, mc.b_value, mmg.status "
+                + "from m_menu_group mmg "
+                + "join m_global mg on mmg.menu_group_code = mg.code "
+                + "join m_color mc on mmg.color_code = mc.color_code "
+                + "left join m_menu_group_limit mmgl on mmg.outlet_code = mmgl.outlet_code and mmg.menu_group_code = mmgl.menu_group_code "
+                + "where mg.cond = 'GROUP' "
+                + "order by mmg.seq, mmg.menu_group_code";
+        Map prm = new HashMap();      
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("groupCode", rs.getString("menu_group_code"));
+                rt.put("seq", rs.getInt("seq"));
+                rt.put("groupName", rs.getString("description"));
+                rt.put("status", rs.getString("status"));
+                return rt;
+            }
+        });
+        return list;
+    }
+    // Done by KP
 }

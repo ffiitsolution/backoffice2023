@@ -118,4 +118,13 @@ public class ViewServices {
         return viewDao.item(ref);
     }
      ///////////////done
+    
+    // List Menu Group & Menu Item (done by KP) 16-03-2023
+    public List<Map<String, Object>> listMenuGroup(Map<String, String> ref) {
+        return viewDao.listMenuGroup(ref);
+    }
+    public List<Map<String, Object>> listMenu(Map<String, String> ref) {
+        return viewDao.listMenu(ref);
+    }
+    ///////////////////////// Done by KP
 }

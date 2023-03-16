@@ -64,4 +64,8 @@ public interface ViewDao {
     List<Map<String, Object>> item(Map<String, String> ref);
     /////////////////////////////done
     
+    // List Menu Group & Menu Item (done by KP) 16-03-2023
+    List<Map<String, Object>> listMenuGroup(Map<String, String> ref);
+    List<Map<String, Object>> listMenu(Map<String, String> ref);
+    ///////////////////////// Done by KP
 }
