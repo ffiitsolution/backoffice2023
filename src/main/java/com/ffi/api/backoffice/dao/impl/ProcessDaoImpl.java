@@ -157,10 +157,9 @@ public class ProcessDaoImpl implements ProcessDao {
         jdbcTemplate.update(qy, param);
     }
        /////////////////////////////////done
-// outlet & item (Asep)16-03-2023   
-        //insert pos
+   ///////////////new method from asep 16-mar-2023 ////////////// 
      @Override
-    public void insertpos(Map<String, String> balance) {
+    public void insertPos(Map<String, String> balance) {
         String sql = "Insert into M_POS "
                 + "(REGION_CODE, OUTLET_CODE, POS_CODE, POS_DESCRIPTION, REF_NO, STATUS, USER_UPD, DATE_UPD, TIME_UPD, POS_TYPE) "
                 + "Values "
@@ -178,7 +177,7 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("posType", balance.get("posType"));
         jdbcTemplate.update(sql, param);
     }
-    //update pos
+
      public void updatePos(Map<String, String> balance) {
         String qy = "update m_pos set ref_no=:refNo,status=:status,pos_type=:posType where region_code=:regionCode and outlet_code=:outletCode and pos_code=:posCode";        Map param = new HashMap();
         param.put("regionCode", balance.get("regionCode"));
@@ -193,5 +192,6 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("posType", balance.get("posType"));
         jdbcTemplate.update(qy, param);
     }
+     ////////////done
 
 }

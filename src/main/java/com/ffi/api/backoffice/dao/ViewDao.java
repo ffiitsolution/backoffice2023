@@ -35,17 +35,17 @@ public interface ViewDao {
     /////////////////////////////done
     ///////////////new method from budhi 14-03-2023////////////////////////////
 
-    List<Map<String, Object>> ListPrice(Map<String, String> ref);
+    List<Map<String, Object>> listPrice(Map<String, String> ref);
 
-    List<Map<String, Object>> ListMenuGroup(Map<String, String> ref);
+    List<Map<String, Object>> listMenuGroup(Map<String, String> ref);
 
-    List<Map<String, Object>> ListItemPrice(Map<String, String> ref);
+    List<Map<String, Object>> listItemPrice(Map<String, String> ref);
 
-    List<Map<String, Object>> ListItemDetail(Map<String, String> ref);
+    List<Map<String, Object>> listItemDetail(Map<String, String> ref);
 
-    List<Map<String, Object>> ListModifier(Map<String, String> ref);
+    List<Map<String, Object>> listModifier(Map<String, String> ref);
 
-    List<Map<String, Object>> ListSpecialPrice(Map<String, String> ref);
+    List<Map<String, Object>> listSpecialPrice(Map<String, String> ref);
 
     /////////////////////////////done 
     ///////////////new method from budhi 14-03-2023////////////////////////////
@@ -56,16 +56,23 @@ public interface ViewDao {
     List<Map<String, Object>> listMpcsHeader(Map<String, String> ref);
 
     List<Map<String, Object>> listMasterItemSupplier(Map<String, String> ref);
+
+
     /////////////////////////////done 
-    // outlet & item (Asep)16-03-2023    
-    List<Map<String, Object>> Outlet(Map<String, String> ref);
+      ///////////////new method from asep 16-mar-2023 //////////////   
+    List<Map<String, Object>> listOutlet(Map<String, String> ref);
+
     List<Map<String, Object>> listPos(Map<String, String> ref);
-    List<Map<String, Object>> typepos(Map<String, String> ref);
-    List<Map<String, Object>> item(Map<String, String> ref);
+
+    List<Map<String, Object>> listTypePos(Map<String, String> ref);
+
+    List<Map<String, Object>> listItem(Map<String, String> ref);
+
     /////////////////////////////done
-    
-    // List Menu Group & Menu Item (done by KP) 16-03-2023
-    List<Map<String, Object>> listMenuGroup(Map<String, String> ref);
-    List<Map<String, Object>> listMenu(Map<String, String> ref);
-    ///////////////////////// Done by KP
+
+      ///////////////new method from kevin 16-mar-2023 ////////////// 
+    List<Map<String, Object>> listMenuGroups(Map<String, String> ref);
+
+    List<Map<String, Object>> listItemMenus(Map<String, String> ref);
+    ///////////////////////// done
 }

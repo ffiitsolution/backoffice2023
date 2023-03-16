@@ -60,32 +60,32 @@ public class ViewServices {
     ///////////////done
     ///////////////new method from budhi 14-03-2023//////////////////////////// 
 
-    public List<Map<String, Object>> ListPrice(Map<String, String> ref) {
-        return viewDao.ListPrice(ref);
+    public List<Map<String, Object>> listPrice(Map<String, String> ref) {
+        return viewDao.listPrice(ref);
     }
 
-    public List<Map<String, Object>> ListMenuGroup(Map<String, String> ref) {
-        return viewDao.ListMenuGroup(ref);
+    public List<Map<String, Object>> listMenuGroup(Map<String, String> ref) {
+        return viewDao.listMenuGroup(ref);
     }
 
-    public List<Map<String, Object>> ListItemPrice(Map<String, String> ref) {
-        return viewDao.ListItemPrice(ref);
+    public List<Map<String, Object>> listItemPrice(Map<String, String> ref) {
+        return viewDao.listItemPrice(ref);
     }
 
-    public List<Map<String, Object>> ListItemDetail(Map<String, String> ref) {
-        return viewDao.ListItemDetail(ref);
+    public List<Map<String, Object>> listItemDetail(Map<String, String> ref) {
+        return viewDao.listItemDetail(ref);
     }
 
-    public List<Map<String, Object>> ListModifier(Map<String, String> ref) {
-        return viewDao.ListModifier(ref);
+    public List<Map<String, Object>> listModifier(Map<String, String> ref) {
+        return viewDao.listModifier(ref);
     }
 
-    public List<Map<String, Object>> ListSpecialPrice(Map<String, String> ref) {
-        return viewDao.ListSpecialPrice(ref);
+    public List<Map<String, Object>> listSpecialPrice(Map<String, String> ref) {
+        return viewDao.listSpecialPrice(ref);
     }
     ///////////////done
 
-    ///////////////new method from cona 14-03-2023//////////////////////////// 
+    ///////////////new method from dona 14-03-2023//////////////////////////// 
     public List<Map<String, Object>> listMasterCity(Map<String, String> ref) {
         return viewDao.listMasterCity(ref);
 
@@ -104,27 +104,27 @@ public class ViewServices {
 
     }
     ///////////////done
-     // outlet & item (Asep)16-03-2023    
-        public List<Map<String, Object>> Outlet(Map<String, String> ref) {
-        return viewDao.Outlet(ref);
+     ///////////////new method from asep 16-03-2023////////////////////////////
+        public List<Map<String, Object>> listOutlet(Map<String, String> ref) {
+        return viewDao.listOutlet(ref);
     }
     public List<Map<String, Object>> listPos(Map<String, String> ref) {
         return viewDao.listPos(ref);
     }
-    public List<Map<String, Object>> typepos(Map<String, String> ref) {
-        return viewDao.typepos(ref);
+    public List<Map<String, Object>> listTypePos(Map<String, String> ref) {
+        return viewDao.listTypePos(ref);
     }
-    public List<Map<String, Object>> item(Map<String, String> ref) {
-        return viewDao.item(ref);
+    public List<Map<String, Object>> listItem(Map<String, String> ref) {
+        return viewDao.listItem(ref);
     }
      ///////////////done
     
-    // List Menu Group & Menu Item (done by KP) 16-03-2023
-    public List<Map<String, Object>> listMenuGroup(Map<String, String> ref) {
+       ///////////////new method from kevin 16-03-2023////////////////////////////
+    public List<Map<String, Object>> listMenuGroups(Map<String, String> ref) {
         return viewDao.listMenuGroup(ref);
     }
-    public List<Map<String, Object>> listMenu(Map<String, String> ref) {
-        return viewDao.listMenu(ref);
+    public List<Map<String, Object>> listItemMenus(Map<String, String> ref) {
+        return viewDao.listItemMenus(ref);
     }
-    ///////////////////////// Done by KP
+    ////////////////done
 }
