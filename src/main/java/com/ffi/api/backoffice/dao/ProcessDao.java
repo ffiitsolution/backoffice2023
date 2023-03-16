@@ -27,4 +27,9 @@ public interface ProcessDao {
     ///////////////new method from dona 06-03-2023////////////////////////////
     public void updateMpcs(Map<String, String> mapping);
     /////////////done
+      // outlet & item (Asep)16-03-2023    
+    public void insertpos(Map<String, String> mapping);
+    
+    public void updatePos(Map<String, String> mapping);
+    //done
 }

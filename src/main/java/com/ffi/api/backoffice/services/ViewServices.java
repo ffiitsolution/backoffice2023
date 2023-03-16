@@ -104,4 +104,18 @@ public class ViewServices {
 
     }
     ///////////////done
+     // outlet & item (Asep)16-03-2023    
+        public List<Map<String, Object>> Outlet(Map<String, String> ref) {
+        return viewDao.Outlet(ref);
+    }
+    public List<Map<String, Object>> listPos(Map<String, String> ref) {
+        return viewDao.listPos(ref);
+    }
+    public List<Map<String, Object>> typepos(Map<String, String> ref) {
+        return viewDao.typepos(ref);
+    }
+    public List<Map<String, Object>> item(Map<String, String> ref) {
+        return viewDao.item(ref);
+    }
+     ///////////////done
 }

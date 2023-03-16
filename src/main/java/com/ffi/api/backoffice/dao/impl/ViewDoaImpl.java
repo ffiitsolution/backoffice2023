@@ -563,5 +563,99 @@ public class ViewDoaImpl implements ViewDao {
         return list;
     }
 //////////////done
-    
+
+// outlet & item (Asep)16-03-2023       
+    //list outlet    
+     @Override
+    public List<Map<String, Object>> Outlet(Map<String, String> Logan) {
+        String qry = "SELECT region_code,outlet_code, initial_outlet, outlet_name, type, status FROM M_OUTLET where type <>'HO' and status='A'";
+        Map prm = new HashMap();
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("region", rs.getString("region_code"));
+                rt.put("outlet", rs.getString("outlet_code"));
+                rt.put("Initial", rs.getString("initial_outlet"));
+                rt.put("Name", rs.getString("outlet_name"));
+                rt.put("Type", rs.getString("type"));
+                rt.put("Status", rs.getString("status"));
+                return rt;
+            }
+        });
+        return list;
+    }
+    // list pos
+     @Override
+    public List<Map<String, Object>> listPos(Map<String, String> Logan) {
+        String qry = "SELECT region_code,outlet_code,pos_code,pos_description,ref_no,a.status,pos_type,description FROM M_pos a join m_global b on b.code=a.pos_type  where outlet_code= :outletcode and cond='POS_TYPE'";
+        Map prm = new HashMap();
+        prm.put("outletcode", Logan.get("OutletCode"));
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("Region", rs.getString("region_code"));
+                rt.put("Outlet", rs.getString("outlet_code"));
+                rt.put("Pos", rs.getString("pos_code"));
+                rt.put("Posdesc", rs.getString("pos_description"));
+                rt.put("Ref", rs.getString("ref_no"));
+                rt.put("Status", rs.getString("status"));
+                rt.put("PosType", rs.getString("pos_type"));
+                rt.put("Description", rs.getString("description"));                
+                return rt;
+            }
+        });
+        return list;
+    }
+    // list type pos
+     @Override
+    public List<Map<String, Object>> typepos(Map<String, String> Logan) {
+        String qry = "select * from m_global where cond='POS_TYPE' and status= :Status";
+        Map prm = new HashMap();
+        prm.put("Status", Logan.get("status"));
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("code", rs.getString("code"));
+                rt.put("description", rs.getString("description"));
+                return rt;
+            }
+        });
+        return list;
+    }
+    //Item
+  @Override
+    public List<Map<String, Object>> item(Map<String, String> Logan) {
+        String qry = "select * from m_item where status='A' and flag_paket= :FlagPaket  and item_code not like'88-%' order by item_code asc";
+        if(Logan.get("paket").equalsIgnoreCase("C")){
+            qry = "select * from m_item where status='A' and flag_material= 'Y'  and item_code not like'88-%' order by item_code asc";
+        }
+        if(Logan.get("paket").equalsIgnoreCase("D")){
+                qry = "select * from m_item where status='A' and item_code like'88-%' order by item_code asc";
+        }
+        Map prm = new HashMap();
+        prm.put("FlagPaket", Logan.get("paket"));
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("code", rs.getString("item_code"));
+                rt.put("description", rs.getString("item_description"));
+                rt.put("besar", rs.getString("uom_warehouse"));
+                rt.put("kecil", rs.getString("uom_stock"));
+                rt.put("status", rs.getString("status"));
+                
+                
+                return rt;
+            }
+        });
+        return list;
+    }    
+//done
 }

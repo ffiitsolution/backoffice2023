@@ -57,4 +57,11 @@ public interface ViewDao {
 
     List<Map<String, Object>> listMasterItemSupplier(Map<String, String> ref);
     /////////////////////////////done 
+    // outlet & item (Asep)16-03-2023    
+    List<Map<String, Object>> Outlet(Map<String, String> ref);
+    List<Map<String, Object>> listPos(Map<String, String> ref);
+    List<Map<String, Object>> typepos(Map<String, String> ref);
+    List<Map<String, Object>> item(Map<String, String> ref);
+    /////////////////////////////done
+    
 }
