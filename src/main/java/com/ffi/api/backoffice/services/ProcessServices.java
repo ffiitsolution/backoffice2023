@@ -45,4 +45,14 @@ public class ProcessServices {
         dao.updateMpcs(balance);
     }
     ///////////////////////done
+    ///////////////new method from asep 16-mar-2023 //////////////  
+
+    public void insertPos(Map<String, String> balance) {
+        dao.insertPos(balance);
+    }
+
+   public void updatePos(Map<String, String> balance) {
+        dao.updatePos(balance);
+    }
+   ///////////////////////done
 }

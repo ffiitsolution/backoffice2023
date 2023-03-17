@@ -157,4 +157,41 @@ public class ProcessDaoImpl implements ProcessDao {
         jdbcTemplate.update(qy, param);
     }
        /////////////////////////////////done
+   ///////////////new method from asep 16-mar-2023 ////////////// 
+     @Override
+    public void insertPos(Map<String, String> balance) {
+        String sql = "Insert into M_POS "
+                + "(REGION_CODE, OUTLET_CODE, POS_CODE, POS_DESCRIPTION, REF_NO, STATUS, USER_UPD, DATE_UPD, TIME_UPD, POS_TYPE) "
+                + "Values "
+                + "(:regionCode,:outletCode,:posCode,:posDescription,:refNo,:status,:userUpd,:dateUpd,:timeUpd,:posType)";
+        Map param = new HashMap();
+        param.put("regionCode", balance.get("regionCode"));
+        param.put("outletCode", balance.get("outletCode"));
+        param.put("posCode", balance.get("posCode"));
+        param.put("posDescription", balance.get("posDescription"));
+        param.put("refNo", balance.get("refNo")); 
+        param.put("status", balance.get("status"));
+        param.put("userUpd", balance.get("userUpd"));
+        param.put("dateUpd", dateNow);
+        param.put("timeUpd", timeStamp);
+        param.put("posType", balance.get("posType"));
+        jdbcTemplate.update(sql, param);
+    }
+
+     public void updatePos(Map<String, String> balance) {
+        String qy = "update m_pos set ref_no=:refNo,status=:status,pos_type=:posType where region_code=:regionCode and outlet_code=:outletCode and pos_code=:posCode";        Map param = new HashMap();
+        param.put("regionCode", balance.get("regionCode"));
+        param.put("outletCode", balance.get("outletCode"));
+        param.put("posCode", balance.get("posCode"));
+        param.put("posDescription", balance.get("posDescription"));
+        param.put("refNo", balance.get("refNo")); 
+        param.put("status", balance.get("status"));
+        param.put("userUpd", balance.get("userUpd"));
+        param.put("dateUpd", dateNow);
+        param.put("timeUpd", timeStamp);
+        param.put("posType", balance.get("posType"));
+        jdbcTemplate.update(qy, param);
+    }
+     ////////////done
+
 }
