@@ -825,4 +825,302 @@ public class IndexController {
         return rm;
     }
     /////////////////done
+  ///////////////Updated By Pandu 14-03-2023////////////////////////////  
+ // ========================================================== MODULE MASTER STAFF (M_STAFF) ==========================================================================================================//   
+ //PERCOBAAN VIEW DATA MASTER STAFF (M_STAFF)
+    @RequestMapping(value = "/post-viewstaff", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk View Data", response = Object.class)
+    @ApiResponses(value = 
+        {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 404, message = "The resource not found")
+        }
+    )    
+    public @ResponseBody
+
+    Response view(@RequestBody String param) throws JRException, IOException, Exception 
+    {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() 
+        {}.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response res = new Response();
+        res.setData(viewServices.listUserStaff(balance));
+        return res;
+    }    
+    
+ //PERCOBAAN INSERT TO TABLE MASTER STAFF (M_STAFF)
+    @RequestMapping(value = "/post-testinsert", produces = MediaType.APPLICATION_JSON_VALUE)
+  //  @RequestMapping(value = "/insert-staff", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk Insert Data", response = Object.class)
+    @ApiResponses(value = 
+        {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 404, message = "The resource not found")
+        }
+    )    
+    public @ResponseBody
+    ResponseMessage postInsertStaff(@RequestBody String param) throws JRException, IOException, Exception 
+    {
+        Gson gsn = new Gson();
+        Map<String, String> balancetest1 = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        ResponseMessage rm = new ResponseMessage();
+        try 
+        {         
+            processServices.postInsertStaff(balancetest1);
+            rm.setSuccess(true);
+            rm.setMessage("Insert Success");
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Insert Failed : " + e.getMessage());
+        }
+        rm.setItem(list);
+        return rm;
+    }
+    
+ //PERCOBAAN UPDATE TO TABLE MASTER STAFF (M_STAFF)
+    @RequestMapping(value = "/update-staff", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk Update Data", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK")
+        ,
+        @ApiResponse(code = 404, message = "The resource not found")
+    }
+    )    
+    public @ResponseBody
+    ResponseMessage postUpdateStaff(@RequestBody String param) throws JRException, IOException, Exception 
+    {
+        Gson gsn = new Gson();
+        Map<String, String> balancetest = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        ResponseMessage rm = new ResponseMessage();
+        try 
+        {         
+            processServices.postUpdateStaff(balancetest);
+            rm.setSuccess(true);
+            rm.setMessage("Update Success");
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Update Failed : " + e.getMessage());
+        }
+        rm.setItem(list);
+        return rm;
+    }
+
+ //PERCOBAAN DELETE TABLE MASTER STAFF (M_STAFF)
+    @RequestMapping(value = "/post-deletestaff", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk Delete Data", response = Object.class)
+    @ApiResponses(value = 
+        {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 404, message = "The resource not found")
+        }
+    )    
+    public @ResponseBody
+    ResponseMessage postDeleteStaff(@RequestBody String param) throws JRException, IOException, Exception 
+    {
+        Gson gsn = new Gson();
+        Map<String, String> balancetest = gsn.fromJson(param, new TypeToken<Map<String, Object>>() 
+        {}.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        ResponseMessage rm = new ResponseMessage();
+        try 
+        {
+            processServices.postDeleteStaff(balancetest);
+            rm.setSuccess(true);
+            rm.setMessage("Delete Success");
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Delete Failed : " + e.getMessage());
+        }
+        rm.setItem(list);
+        return rm;
+    }   
+    //==================================================================================================================================================================================================//
+
+  //PERCOBAAN VIEW REGION CODE, REGION NAME DI TABLE MASTER GLOBAL (M_GLOBAL)
+    @RequestMapping(value = "/post-viewregion", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk View Data", response = Object.class)
+    @ApiResponses(value = 
+        {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 404, message = "The resource not found")
+        }
+    )    
+    public @ResponseBody 
+    Response viewRegion(@RequestBody String param) throws JRException, IOException, Exception 
+    {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() 
+        {}.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response res = new Response();
+        res.setData(viewServices.listUserRegion(balance));
+        return res;
+    } 
+    
+  //PERCOBAAN VIEW OUTLET CODE, OUTLET NAME DI TABLE MASTER GLOBAL (M_GLOBAL)
+    @RequestMapping(value = "/post-viewoutlet", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk View Data", response = Object.class)
+    @ApiResponses(value = 
+        {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 404, message = "The resource not found")
+        }
+    )    
+    
+    public @ResponseBody 
+    Response viewOutlet(@RequestBody String param) throws JRException, IOException, Exception 
+    {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() 
+        {}.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response res = new Response();
+        res.setData(viewServices.listUserOutlet(balance));
+        return res;
+    }    
+    
+  //PERCOBAAN VIEW STAFF CODE, STAFF NAME DI TABLE MASTER GLOBAL (M_GLOBAL)
+    @RequestMapping(value = "/post-viewformstaff", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk View Data", response = Object.class)
+    @ApiResponses(value = 
+        {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 404, message = "The resource not found")
+        }
+    )    
+    public @ResponseBody
+
+    Response viewFormStaff(@RequestBody String param) throws JRException, IOException, Exception 
+    {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() 
+        {}.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response res = new Response();
+        res.setData(viewServices.listUserFormStaff(balance));
+        return res;
+    } 
+    
+  //PERCOBAAN VIEW CITY -> CODE, DESCRIPTION DI TABLE MASTER GLOBAL (M_GLOBAL) COND = 'CITY';
+
+    @RequestMapping(value = "/post-viewcity", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk View Data", response = Object.class)
+    @ApiResponses(value = 
+        {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 404, message = "The resource not found")
+        }
+    )    
+    public @ResponseBody
+
+    Response viewCity(@RequestBody String param) throws JRException, IOException, Exception 
+    {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() 
+        {}.getType());
+        List<Map<String, Object>> list = new ArrayList<>();
+        Response res = new Response();
+        res.setData(viewServices.listCity(balance));
+        return res;
+    }     
+
+  //PERCOBAAN VIEW POSITION -> CODE, DESCRIPTION DI TABLE MASTER GLOBAL (M_GLOBAL) COND = 'CITY';
+
+    @RequestMapping(value = "/post-viewposition", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk View Data", response = Object.class)
+    @ApiResponses(value = 
+        {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 404, message = "The resource not found")
+        }
+    )    
+    public @ResponseBody
+
+    Response viewPosition(@RequestBody String param) throws JRException, IOException, Exception 
+    {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() 
+        {}.getType());
+        List<Map<String, Object>> list = new ArrayList<>();
+        Response res = new Response();
+        res.setData(viewServices.listPosition(balance));
+        return res;
+    }     
+    
+  //PERCOBAAN VIEW ACCESS LEVEL -> CODE, DESCRIPTION DI TABLE MASTER GLOBAL (M_GLOBAL) COND = 'CITY';
+
+    @RequestMapping(value = "/post-viewaccesslevel", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk View Data", response = Object.class)
+    @ApiResponses(value = 
+        {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 404, message = "The resource not found")
+        }
+    )    
+    public @ResponseBody
+
+    Response viewAccessLevel(@RequestBody String param) throws JRException, IOException, Exception 
+    {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() 
+        {}.getType());
+        List<Map<String, Object>> list = new ArrayList<>();
+        Response res = new Response();
+        res.setData(viewServices.listAccessLevel(balance));
+        return res;
+    }     
+    
+  //PERCOBAAN VIEW GROUP USER -> CODE, DESCRIPTION DI TABLE MASTER GLOBAL (M_GLOBAL) COND = 'CITY';
+
+    @RequestMapping(value = "/post-viewgroupuser", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk View Data", response = Object.class)
+    @ApiResponses(value = 
+        {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 404, message = "The resource not found")
+        }
+    )    
+    public @ResponseBody
+
+    Response viewGroupUser(@RequestBody String param) throws JRException, IOException, Exception 
+    {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() 
+        {}.getType());
+        List<Map<String, Object>> list = new ArrayList<>();
+        Response res = new Response();
+        res.setData(viewServices.listGroupUser(balance));
+        return res;
+    }     
+    ///////////////Done////////////////////////////    
+
+  ///////////////Updated By Pandu 16-03-2023////////////////////////////  
+ // ========================================================== MODULE MASTER STAFF (M_STAFF) ==========================================================================================================//   
+ //PERCOBAAN VIEW DATA MASTER SALES RECIPE (M_SALES_RECIPE, M_RECIPE_HEADER, M_RECIPE_DETAIL)
+    @RequestMapping(value = "/post-viewsalesrecipe", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk View Data", response = Object.class)
+    @ApiResponses(value = 
+        {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 404, message = "The resource not found")
+        }
+    )    
+    public @ResponseBody
+
+    Response viewSalesRecipe(@RequestBody String param) throws JRException, IOException, Exception 
+    {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() 
+        {}.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response res = new Response();
+        res.setData(viewServices.listSalesRecipe(balance));
+        return res;
+    }    
+    ///////////////Done////////////////////////////        
 }

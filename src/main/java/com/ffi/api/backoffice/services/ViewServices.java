@@ -141,4 +141,66 @@ public class ViewServices {
         return viewDao.listRecipeProduct(ref);
     }
     ////////////////done
+         ///////////////Updated By Pandu 14-03-2023////////////////////////////
+    // ========================================================== MODULE MASTER STAFF (M_STAFF) =========================================================================================//
+    //PERCOBAAN VIEW SELECT
+    public List<Map<String, Object>> listUserStaff(Map<String, String> ref) 
+    {
+        return viewDao.listUserStaff(ref);
+    }
+    // ========================================================== MODULE MASTER REGION (M_GLOBAL) =========================================================================================//
+    //PERCOBAAN VIEW REGION
+    public List<Map<String, Object>> listUserRegion(Map<String, String> ref) 
+    {
+        return viewDao.listUserRegion(ref);
+    }
+    // ========================================================== MODULE MASTER OUTLET (M_GLOBAL) =========================================================================================//
+    //PERCOBAAN VIEW OUTLET
+    public List<Map<String, Object>> listUserOutlet(Map<String, String> ref) 
+    {
+        return viewDao.listUserOutlet(ref);
+    }
+    // ========================================================== MODULE MASTER STAFF (M_STAFF) =========================================================================================//
+    //PERCOBAAN VIEW SELECT
+    public List<Map<String, Object>> listUserFormStaff(Map<String, String> ref) 
+    {
+        return viewDao.listUserFormStaff(ref);
+    }  
+    // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL) =========================================================================================//
+    //PERCOBAAN VIEW SELECT
+    public List<Map<String, Object>> listCity(Map<String, String> ref) 
+    {
+        return viewDao.listCity(ref);
+    }    
+    // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL) =========================================================================================//
+    //PERCOBAAN VIEW SELECT
+    public List<Map<String, Object>> listPositionUser(Map<String, String> ref) 
+    {
+        return viewDao.listPositionUser(ref);
+    }   
+    // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL) =========================================================================================//
+    //PERCOBAAN VIEW SELECT
+    public List<Map<String, Object>> listAccessLevel(Map<String, String> ref) 
+    {
+        return viewDao.listAccessLevel(ref);
+    }   
+    
+    // ========================================================== MODULE MASTER MENU GROUP (M_MENUGRP) =========================================================================================//
+    //PERCOBAAN VIEW SELECT
+    public List<Map<String, Object>> listGroupUser(Map<String, String> ref) 
+    {
+        return viewDao.listGroupUser(ref);
+    }     
+    
+    // ==================================================================================================================================================================================//
+        ///////////////done
+    
+    ///////////////Updated By Pandu 16-03-2023////////////////////////////
+    // ========================================================== MODULE MASTER SALES RECIPE (M_SALES_RECIPE, M_RECIPE_HEADER, M_RECIPE_DETAIL) =========================================================================================//
+    //PERCOBAAN VIEW SELECT
+    public List<Map<String, Object>> listSalesRecipe(Map<String, String> ref) 
+    {
+        return viewDao.listSalesRecipe(ref);
+    }
+    ///////////////Done////////////////////////////  
 }

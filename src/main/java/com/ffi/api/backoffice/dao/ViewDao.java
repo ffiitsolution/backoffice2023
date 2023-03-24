@@ -83,4 +83,37 @@ public interface ViewDao {
     
     List<Map<String, Object>> listRecipeProduct(Map<String, String> ref);
     ///////////////////////// done
+        ///////////////Updated By Pandu 14-03-2023////////////////////////////
+    // ========================================================== MODULE MASTER STAFF (M_STAFF) =========================================================================================//
+    //VIEW USER STAFF
+     List<Map<String, Object>> listUserStaff(Map<String, String> ref);
+    // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL) =========================================================================================//
+    //VIEW USER REGION
+     List<Map<String, Object>> listUserRegion(Map<String, String> ref);
+    // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL) =========================================================================================//
+    //VIEW USER OUTLET
+     List<Map<String, Object>> listUserOutlet(Map<String, String> ref);
+    // ========================================================== MODULE MASTER STAFF (M_STAFF) =========================================================================================//
+    //VIEW USER FORM STAFF
+     List<Map<String, Object>> listUserFormStaff(Map<String, String> ref);
+    // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL COND = 'CITY') =========================================================================================//
+    //VIEW CITY FORM STAFF
+     List<Map<String, Object>> listCity(Map<String, String> ref);
+    // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL COND = 'POSITION') =========================================================================================//
+    //VIEW POSITION FORM STAFF
+     List<Map<String, Object>> listPositionUser(Map<String, String> ref);
+     // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL COND = 'ACCEES') =========================================================================================//
+    //VIEW ACCESS LEVEL FORM STAFF
+     List<Map<String, Object>> listAccessLevel(Map<String, String> ref);
+    // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL COND = 'ACCEES') =========================================================================================//
+    //VIEW ACCESS LEVEL FORM STAFF
+     List<Map<String, Object>> listGroupUser(Map<String, String> ref);
+      
+    // ==================================================================================================================================================================================// 
+    /////////////////////////////done
+    ///////////////Updated By Pandu 16-03-2023////////////////////////////
+    // ========================================================== MODULE MASTER SALES RECIPE (M_SALES_RECIPE , M_RECIPE_HEADER , M_RECIPE_DETAIL) =========================================================================================//
+    //VIEW SALES RECIPE
+     List<Map<String, Object>> listSalesRecipe(Map<String, String> ref);    
+    ///////////////Done////////////////////////////    
 }
