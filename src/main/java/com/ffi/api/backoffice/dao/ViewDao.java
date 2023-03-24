@@ -70,9 +70,17 @@ public interface ViewDao {
 
     /////////////////////////////done
 
-      ///////////////new method from kevin 16-mar-2023 ////////////// 
+    /////////////////new method from kevin 16-mar-2023 ////////////// 
     List<Map<String, Object>> listMenuGroups(Map<String, String> ref);
 
     List<Map<String, Object>> listItemMenus(Map<String, String> ref);
+    ///////////////////////// done
+    
+    /////////////////new method from kevin 24-mar-2023 ////////////// 
+    List<Map<String, Object>> listRecipeHeader(Map<String, String> ref);
+    
+    List<Map<String, Object>> listRecipeDetail(Map<String, String> ref);
+    
+    List<Map<String, Object>> listRecipeProduct(Map<String, String> ref);
     ///////////////////////// done
 }

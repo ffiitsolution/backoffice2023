@@ -119,12 +119,26 @@ public class ViewServices {
     }
      ///////////////done
     
-       ///////////////new method from kevin 16-03-2023////////////////////////////
+    //////////////////new method from kevin 16-03-2023////////////////////////////
     public List<Map<String, Object>> listMenuGroups(Map<String, String> ref) {
         return viewDao.listMenuGroup(ref);
     }
     public List<Map<String, Object>> listItemMenus(Map<String, String> ref) {
         return viewDao.listItemMenus(ref);
+    }
+    ////////////////done
+    
+    //////////////////new method from kevin 24-03-2023////////////////////////////
+    public List<Map<String, Object>> listRecipeHeader(Map<String, String> ref) {
+        return viewDao.listRecipeHeader(ref);
+    }
+    
+    public List<Map<String, Object>> listRecipeDetail(Map<String, String> ref) {
+        return viewDao.listRecipeDetail(ref);
+    }
+    
+    public List<Map<String, Object>> listRecipeProduct(Map<String, String> ref) {
+        return viewDao.listRecipeProduct(ref);
     }
     ////////////////done
 }

@@ -732,4 +732,76 @@ public class ViewDoaImpl implements ViewDao {
         return list;
     }
     ///////////done
+    
+    ///////////////new method from kevin 24-mar-2023 //////////////
+    @Override
+    public List<Map<String, Object>> listRecipeHeader(Map<String, String> ref) {
+        String qry = "select rh.recipe_code, rh.recipe_remark, rh.mpcs_group, mh.description, rh.status "
+                + "from m_recipe_header rh "
+                + "join m_mpcs_header mh on mh.mpcs_group = rh.mpcs_group "
+                + "order by rh.status, rh.recipe_code";
+        Map prm = new HashMap();      
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("reCode", rs.getString("recipe_code"));
+                rt.put("reMark", rs.getString("recipe_remark"));
+                rt.put("mpGrp", rs.getString("mpcs_group"));
+                rt.put("description", rs.getString("description"));
+                rt.put("status", rs.getString("status"));
+                return rt;
+            }
+        });
+        return list;
+    }
+    
+    @Override
+    public List<Map<String, Object>> listRecipeDetail(Map<String, String> ref) {
+        String qry = "select rd.recipe_code, rd.item_code, i.item_description, rd.qty_stock, rd.uom_stock "
+                + "from m_recipe_detail rd "
+                + "join m_item i on i.item_code = rd.item_code "
+                + "where rd.recipe_code = :reCode ";
+        Map prm = new HashMap();
+        prm.put("reCode", ref.get("reCode"));   
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("reCode", rs.getString("recipe_code"));
+                rt.put("itemCode", rs.getString("item_code"));
+                rt.put("description", rs.getString("item_description"));
+                rt.put("qty", rs.getString("qty_stock"));
+                rt.put("uom", rs.getString("uom_stock"));
+                return rt;
+            }
+        });
+        return list;
+    }
+    
+    @Override
+    public List<Map<String, Object>> listRecipeProduct(Map<String, String> ref) {
+        String qry = "select rp.recipe_code, rp.product_code, rp.product_remark, rp.qty_stock, rp.uom_stock "
+                + "from m_recipe_product rp "
+                + "where rp.recipe_code = :reCode ";
+        Map prm = new HashMap();
+        prm.put("reCode", ref.get("reCode"));   
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("reCode", rs.getString("recipe_code"));
+                rt.put("proCode", rs.getString("product_code"));
+                rt.put("description", rs.getString("product_remark"));
+                rt.put("qty", rs.getString("qty_stock"));
+                rt.put("uom", rs.getString("uom_stock"));
+                return rt;
+            }
+        });
+        return list;
+    }
+    ///////////done
 }
