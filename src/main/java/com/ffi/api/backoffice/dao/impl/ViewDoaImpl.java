@@ -212,15 +212,34 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listItemCost(Map<String, String> balance) {
+//        String qry = "SELECT A.ITEM_CODE,A.ITEM_DESCRIPTION,B.ITEM_COST,A.STATUS FROM M_ITEM A LEFT JOIN M_ITEM_COST B ON A.ITEM_CODE=B.ITEM_CODE "
+//                + "WHERE A.ITEM_CODE IS NOT NULL AND A.ITEM_CODE <>' ' "
+//                + "and a.flag_material like :flagMaterial AND a.FLAG_HALF_FINISH LIKE :flagHalfFinish "
+//                + "AND a.FLAG_FINISHED_GOOD LIKE :flagFinishGood AND A.STATUS='A' ORDER  BY A.ITEM_CODE ASC";
+////
+//        Map prm = new HashMap();
+//        prm.put("flagMaterial", "%" + balance.get("flagMaterial") + "%");
+//        prm.put("flagFinishGood", "%" + balance.get("flagFinishGood") + "%");
+//        prm.put("flagHalfFinish", "%" + balance.get("flagHalfFinish") + "%");
         String qry = "SELECT A.ITEM_CODE,A.ITEM_DESCRIPTION,B.ITEM_COST,A.STATUS FROM M_ITEM A LEFT JOIN M_ITEM_COST B ON A.ITEM_CODE=B.ITEM_CODE "
                 + "WHERE A.ITEM_CODE IS NOT NULL AND A.ITEM_CODE <>' ' "
-                + "and a.flag_material like :flagMaterial AND a.FLAG_HALF_FINISH LIKE :flagHalfFinish "
-                + "AND a.FLAG_FINISHED_GOOD LIKE :flagFinishGood AND A.STATUS='A' ORDER  BY A.ITEM_CODE ASC";
+                + "and a.flag_material =:flagMaterial  AND A.STATUS='A' ORDER  BY A.ITEM_CODE ASC ";
 
+//          String qry ="SELECT * FROM M_ITEM WHERE FLAG_MATERIAL= :TES ORDER BY ITEM_CODE ASC";
+        if (balance.get("flagMaterial").equalsIgnoreCase("A")) {
+            qry = "SELECT A.ITEM_CODE,A.ITEM_DESCRIPTION,B.ITEM_COST,A.STATUS FROM M_ITEM A LEFT JOIN M_ITEM_COST B ON A.ITEM_CODE=B.ITEM_CODE "
+                    + "WHERE A.ITEM_CODE IS NOT NULL AND A.ITEM_CODE <>' ' "
+                    + "and a.FLAG_HALF_FINISH ='Y' AND A.STATUS='A' ORDER  BY A.ITEM_CODE ASC ";
+        }
+        if (balance.get("flagMaterial").equalsIgnoreCase("B")) {
+            qry = "SELECT A.ITEM_CODE,A.ITEM_DESCRIPTION,B.ITEM_COST,A.STATUS FROM M_ITEM A LEFT JOIN M_ITEM_COST B ON A.ITEM_CODE=B.ITEM_CODE "
+                    + "WHERE A.ITEM_CODE IS NOT NULL AND A.ITEM_CODE <>' ' "
+                    + "and a.FLAG_FINISHED_GOOD ='Y' AND A.STATUS='A' ORDER  BY A.ITEM_CODE ASC ";
+        }
         Map prm = new HashMap();
-        prm.put("flagMaterial", "%" + balance.get("flagMaterial") + "%");
-        prm.put("flagFinishGood", "%" + balance.get("flagFinishGood") + "%");
-        prm.put("flagHalfFinish", "%" + balance.get("flagHalfFinish") + "%");
+        prm.put("flagMaterial", balance.get("flagMaterial"));
+
+        
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
@@ -713,4 +732,355 @@ public class ViewDoaImpl implements ViewDao {
         return list;
     }
     ///////////done
+    
+    ///////////////new method from kevin 24-mar-2023 //////////////
+    @Override
+    public List<Map<String, Object>> listRecipeHeader(Map<String, String> ref) {
+        String qry = "select rh.recipe_code, rh.recipe_remark, rh.mpcs_group, mh.description, rh.status "
+                + "from m_recipe_header rh "
+                + "join m_mpcs_header mh on mh.mpcs_group = rh.mpcs_group "
+                + "order by rh.status, rh.recipe_code";
+        Map prm = new HashMap();      
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("reCode", rs.getString("recipe_code"));
+                rt.put("reMark", rs.getString("recipe_remark"));
+                rt.put("mpGrp", rs.getString("mpcs_group"));
+                rt.put("description", rs.getString("description"));
+                rt.put("status", rs.getString("status"));
+                return rt;
+            }
+        });
+        return list;
+    }
+    
+    @Override
+    public List<Map<String, Object>> listRecipeDetail(Map<String, String> ref) {
+        String qry = "select rd.recipe_code, rd.item_code, i.item_description, rd.qty_stock, rd.uom_stock "
+                + "from m_recipe_detail rd "
+                + "join m_item i on i.item_code = rd.item_code "
+                + "where rd.recipe_code = :reCode ";
+        Map prm = new HashMap();
+        prm.put("reCode", ref.get("reCode"));   
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("reCode", rs.getString("recipe_code"));
+                rt.put("itemCode", rs.getString("item_code"));
+                rt.put("description", rs.getString("item_description"));
+                rt.put("qty", rs.getString("qty_stock"));
+                rt.put("uom", rs.getString("uom_stock"));
+                return rt;
+            }
+        });
+        return list;
+    }
+    
+    @Override
+    public List<Map<String, Object>> listRecipeProduct(Map<String, String> ref) {
+        String qry = "select rp.recipe_code, rp.product_code, rp.product_remark, rp.qty_stock, rp.uom_stock "
+                + "from m_recipe_product rp "
+                + "where rp.recipe_code = :reCode ";
+        Map prm = new HashMap();
+        prm.put("reCode", ref.get("reCode"));   
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("reCode", rs.getString("recipe_code"));
+                rt.put("proCode", rs.getString("product_code"));
+                rt.put("description", rs.getString("product_remark"));
+                rt.put("qty", rs.getString("qty_stock"));
+                rt.put("uom", rs.getString("uom_stock"));
+                return rt;
+            }
+        });
+        return list;
+    }
+    ///////////done
+         ///////////////Updated By Pandu 14-03-2023////////////////////////////
+  // ========================================================== MODULE MASTER STAFF (M_STAFF) ==========================================================================================//  
+    //VIEW USER STAFF DATA MASTER STAFF (M_STAFF)
+  
+    @Override
+    public List<Map<String, Object>> listUserStaff(Map<String, String> ref) 
+    {
+        String qry = "SELECT DISTINCT * FROM M_STAFF WHERE OUTLET_CODE =:outletCode"; 
+        Map prm = new HashMap();
+    
+        // PARAMETER YG DIGUNAKAN SETELAH WHERE DIDALAM QUERY //
+        prm.put("outletCode", ref.get("outletCode"));     
+        
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                
+                // PARAMETER YG DIGUNAKAN UNTUK MENAMPILKAN VALUE YANG ADA DIDALAM FIELD(KOLOM) SAAT MENGGUNAKAN QUERY //
+                rt.put("regionCode", rs.getString("REGION_CODE"));
+                rt.put("outletCode", rs.getString("OUTLET_CODE"));
+                rt.put("staffCode", rs.getString("STAFF_CODE"));
+                rt.put("staffName", rs.getString("STAFF_NAME"));
+                rt.put("staffFullName", rs.getString("STAFF_FULL_NAME"));
+                rt.put("passwordCode", rs.getString("PASSWORD"));
+                rt.put("idCard", rs.getString("ID_CARD"));
+                rt.put("sexType", rs.getString("SEX"));
+                rt.put("dateOfBirth", rs.getString("DATE_OF_BIRTH"));
+                rt.put("address1", rs.getString("ADDRESS_1"));
+                rt.put("address2", rs.getString("ADDRESS_2"));
+                rt.put("cityCode", rs.getString("CITY"));
+                rt.put("phoneNumber", rs.getString("PHONE_NO"));
+                rt.put("mobilePhoneNumber", rs.getString("MOBILE_PHONE_NO"));
+                rt.put("employDate", rs.getString("EMPLOY_DATE"));
+                rt.put("resignDate", rs.getString("RESIGN_DATE"));
+                rt.put("positionName", rs.getString("POSITION"));
+                rt.put("accessLevel", rs.getString("ACCESS_LEVEL"));
+                rt.put("riderFlag", rs.getString("RIDER_FLAG"));
+                rt.put("groupId", rs.getString("GROUP_ID"));
+                rt.put("statusName", rs.getString("STATUS"));
+                
+            //    rt.put("staffName", rs.getString("STAFF_NAME"));               
+                return rt;
+            }
+        });
+        return list;
+    }
+  // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL) ==========================================================================================//  
+    //VIEW REGION DATA MASTER GLOBAL (M_GLOBAL)
+  
+    @Override
+    public List<Map<String, Object>> listUserRegion(Map<String, String> ref) 
+    {
+       // String qry = "SELECT DISTINCT REGION_CODE FROM M_OUTLET WHERE type =:typeCode order by region_code asc"; 
+        //String qry = "SELECT COND,CODE,DESCRIPTION,STATUS FROM M_GLOBAL WHERE COND =:condCode ORDER BY CODE ASC"; 
+        String qry = "SELECT COND,CODE,DESCRIPTION,STATUS FROM M_GLOBAL WHERE COND ='REG_OUTLET' ORDER BY CODE ASC"; 
+        Map prm = new HashMap();
+    
+        // PARAMETER YG DIGUNAKAN SETELAH WHERE DIDALAM QUERY //
+        prm.put("condCode", ref.get("condCode"));     
+        
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                
+                // PARAMETER YG DIGUNAKAN UNTUK MENAMPILKAN VALUE YANG ADA DIDALAM FIELD(KOLOM) SAAT MENGGUNAKAN QUERY //
+                rt.put("regionCode", rs.getString("CODE"));
+                rt.put("regionName", rs.getString("DESCRIPTION"));
+                rt.put("statusName", rs.getString("STATUS"));
+                 rt.put("condCode", rs.getString("COND"));             
+                return rt;
+            }
+        });
+        return list;
+    }
+
+    // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL) ==========================================================================================//  
+    //VIEW USER OUTLET DATA MASTER GLOBAL (M_GLOBAL)
+  
+    @Override
+    public List<Map<String, Object>> listUserOutlet(Map<String, String> ref) 
+    {
+       // String qry = "SELECT DISTINCT REGION_CODE FROM M_OUTLET WHERE type =:typeCode order by region_code asc"; 
+        //String qry = "SELECT COND,CODE,DESCRIPTION,STATUS FROM M_GLOBAL WHERE COND =:condCode ORDER BY CODE ASC"; 
+        String qry = "SELECT OUTLET_CODE, OUTLET_NAME, STATUS, TYPE FROM M_OUTLET WHERE TYPE = 'MS' ORDER BY OUTLET_NAME ASC"; 
+        Map prm = new HashMap();
+    
+        // PARAMETER YG DIGUNAKAN SETELAH WHERE DIDALAM QUERY //
+        prm.put("typeCode", ref.get("typeCode"));     
+        
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                
+                // PARAMETER YG DIGUNAKAN UNTUK MENAMPILKAN VALUE YANG ADA DIDALAM FIELD(KOLOM) SAAT MENGGUNAKAN QUERY //
+                rt.put("outletCode", rs.getString("OUTLET_CODE"));
+                rt.put("outletName", rs.getString("OUTLET_NAME"));
+                rt.put("statusName", rs.getString("STATUS"));
+                rt.put("typeCode", rs.getString("TYPE"));            
+                return rt;
+            }
+        });
+        return list;
+    }
+
+    // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL) ==========================================================================================//  
+    //VIEW USER staff DATA MASTER GLOBAL (M_GLOBAL)
+  
+    public List<Map<String, Object>> listUserFormStaff(Map<String, String> ref) 
+    {
+        String qry = "SELECT DISTINCT * FROM M_STAFF WHERE OUTLET_CODE =:outletCode AND STAFF_CODE =:staffCode"; 
+        Map prm = new HashMap();
+    
+        // PARAMETER YG DIGUNAKAN SETELAH WHERE DIDALAM QUERY //
+       prm.put("outletCode", ref.get("outletCode"));   
+       prm.put("staffCode", ref.get("staffCode"));   
+        
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                
+                // PARAMETER YG DIGUNAKAN UNTUK MENAMPILKAN VALUE YANG ADA DIDALAM FIELD(KOLOM) SAAT MENGGUNAKAN QUERY //
+                rt.put("regionCode", rs.getString("REGION_CODE"));
+                rt.put("outletCode", rs.getString("OUTLET_CODE"));
+                rt.put("staffCode", rs.getString("STAFF_CODE"));
+                rt.put("staffName", rs.getString("STAFF_NAME"));
+                rt.put("staffFullName", rs.getString("STAFF_FULL_NAME"));
+                return rt;
+            }
+        });
+        return list;
+    }
+    // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL) ==========================================================================================//  
+    //VIEW CITY DATA MASTER GLOBAL (M_GLOBAL)
+  
+    public List<Map<String, Object>> listCity(Map<String, String> ref) 
+    {
+        String qry = "SELECT DISTINCT COND,CODE,DESCRIPTION,STATUS FROM M_GLOBAL WHERE COND =:condName"; 
+        Map prm = new HashMap();
+    
+        // PARAMETER YG DIGUNAKAN SETELAH WHERE DIDALAM QUERY //
+        prm.put("condName", ref.get("condName"));     
+        
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override   
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                
+                // PARAMETER YG DIGUNAKAN UNTUK MENAMPILKAN VALUE YANG ADA DIDALAM FIELD(KOLOM) SAAT MENGGUNAKAN QUERY //
+                rt.put("condName", rs.getString("COND"));
+                rt.put("cityCode", rs.getString("CODE"));
+                rt.put("cityName", rs.getString("DESCRIPTION"));
+                rt.put("statusName", rs.getString("STATUS"));
+                return rt;
+            }
+        });
+        return list;
+    }
+   
+    //VIEW ACCESS LEVEL DATA MASTER GLOBAL (M_GLOBAL)
+  
+    public List<Map<String, Object>> listAccessLevel(Map<String, String> ref) 
+    {
+        String qry = "SELECT DISTINCT COND,CODE,DESCRIPTION,STATUS FROM M_GLOBAL WHERE COND =:condName AND CODE NOT IN('SRG')"; 
+        Map prm = new HashMap();
+    
+        // PARAMETER YG DIGUNAKAN SETELAH WHERE DIDALAM QUERY //
+        prm.put("condName", ref.get("condName"));     
+        
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override   
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                
+                // PARAMETER YG DIGUNAKAN UNTUK MENAMPILKAN VALUE YANG ADA DIDALAM FIELD(KOLOM) SAAT MENGGUNAKAN QUERY //
+                rt.put("condName", rs.getString("COND"));
+                rt.put("accesslevelCode", rs.getString("CODE"));
+                rt.put("accesslevelName", rs.getString("DESCRIPTION"));
+                rt.put("statusName", rs.getString("STATUS"));
+                return rt;
+            }
+        });
+        return list;
+    }
+    
+    //VIEW POSITION DATA MASTER GLOBAL (M_GLOBAL)
+  
+    public List<Map<String, Object>> listPositionUser(Map<String, String> ref) 
+    {
+        String qry = "SELECT DISTINCT COND,CODE,DESCRIPTION,STATUS FROM M_GLOBAL WHERE COND =:condName AND CODE NOT IN('SRG','3591','3590')"; 
+        Map prm = new HashMap();
+    
+        // PARAMETER YG DIGUNAKAN SETELAH WHERE DIDALAM QUERY //
+        prm.put("condName", ref.get("condName"));     
+        
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override   
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                
+                // PARAMETER YG DIGUNAKAN UNTUK MENAMPILKAN VALUE YANG ADA DIDALAM FIELD(KOLOM) SAAT MENGGUNAKAN QUERY //
+                rt.put("condName", rs.getString("COND"));
+                rt.put("accesslevelCode", rs.getString("CODE"));
+                rt.put("accesslevelName", rs.getString("DESCRIPTION"));
+                rt.put("statusName", rs.getString("STATUS"));
+                return rt;
+            }
+        });
+        return list;
+    }
+    //VIEW GROUP USER DATA MASTER MENU GROUP (M_MENUGRP)
+  
+    public List<Map<String, Object>> listGroupUser(Map<String, String> ref) 
+    {
+        String qry = "SELECT DISTINCT GROUP_ID,TYPE_MENU FROM M_MENUGRP WHERE TYPE_MENU = 'MENU'"; 
+        Map prm = new HashMap();
+    
+        // PARAMETER YG DIGUNAKAN SETELAH WHERE DIDALAM QUERY //
+        prm.put("typemenuName", ref.get("typemenuName"));     
+        
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override   
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                
+                // PARAMETER YG DIGUNAKAN UNTUK MENAMPILKAN VALUE YANG ADA DIDALAM FIELD(KOLOM) SAAT MENGGUNAKAN QUERY //
+                rt.put("groupidName", rs.getString("GROUP_ID"));
+                rt.put("typemenuName", rs.getString("TYPE_MENU"));
+                return rt;
+            }
+        });
+        return list;
+    }  
+    ///////////////////done    
+    ///////////////Updated By Pandu 14-03-2023////////////////////////////
+  // ========================================================== MODULE MASTER SALES RECIPE (M_SALES_RECIPE , M_RECIPE_HEADER , M_RECIPE_DETAIL) ==========================================================================================//  
+    //VIEW SALES RECIPE DATA MASTER SALES RECIPE (M_SALES_RECIPE , M_RECIPE_HEADER , M_RECIPE_DETAIL)
+  
+    @Override
+    public List<Map<String, Object>> listSalesRecipe(Map<String, String> ref) 
+    {
+        String qry = "SELECT ITEM_CODE,ITEM_DESCRIPTION,PLU_CODE,QTY_EI,QTY_TA,UOM_STOCK FROM M_SALES_RECIPE WHERE ITEM_CODE =:itemCode"; 
+        Map prm = new HashMap();
+    
+        // PARAMETER YG DIGUNAKAN SETELAH WHERE DIDALAM QUERY //
+        prm.put("itemCode", ref.get("itemCode"));     
+        
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                
+                // PARAMETER YG DIGUNAKAN UNTUK MENAMPILKAN VALUE YANG ADA DIDALAM FIELD(KOLOM) SAAT MENGGUNAKAN QUERY //
+                rt.put("itemCode", rs.getString("ITEM_CODE"));
+                rt.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
+                rt.put("pluCode", rs.getString("PLU_CODE"));
+                rt.put("qtyEi", rs.getString("QTY_EI"));
+                rt.put("qtyTa", rs.getString("QTY_TA"));
+                rt.put("uomStock", rs.getString("UOM_STOCK"));
+                
+            //    rt.put("staffName", rs.getString("STAFF_NAME"));               
+                return rt;
+            }
+        });
+        return list;
+    }
+    ///////////////Done////////////////////////////   
 }
