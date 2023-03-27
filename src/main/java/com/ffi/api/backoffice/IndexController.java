@@ -55,7 +55,7 @@ public class IndexController {
         map.put("output", "welcome");
         return map;
     }
-
+////////////UPDATE 27 MAR 23 BY LANI 
     @RequestMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk login department", response = Object.class)
     @ApiResponses(value = {
