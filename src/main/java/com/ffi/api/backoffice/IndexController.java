@@ -828,7 +828,8 @@ public class IndexController {
   ///////////////Updated By Pandu 14-03-2023////////////////////////////  
  // ========================================================== MODULE MASTER STAFF (M_STAFF) ==========================================================================================================//   
  //PERCOBAAN VIEW DATA MASTER STAFF (M_STAFF)
-    @RequestMapping(value = "/post-viewstaff", produces = MediaType.APPLICATION_JSON_VALUE)
+//    @RequestMapping(value = "/post-viewstaff", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/list-viewstaff", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk View Data", response = Object.class)
     @ApiResponses(value = 
         {
@@ -850,8 +851,8 @@ public class IndexController {
     }    
     
  //PERCOBAAN INSERT TO TABLE MASTER STAFF (M_STAFF)
-    @RequestMapping(value = "/post-testinsert", produces = MediaType.APPLICATION_JSON_VALUE)
-  //  @RequestMapping(value = "/insert-staff", produces = MediaType.APPLICATION_JSON_VALUE)
+//    @RequestMapping(value = "/post-testinsert", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/insert-staff", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk Insert Data", response = Object.class)
     @ApiResponses(value = 
         {
@@ -860,7 +861,7 @@ public class IndexController {
         }
     )    
     public @ResponseBody
-    ResponseMessage postInsertStaff(@RequestBody String param) throws JRException, IOException, Exception 
+    ResponseMessage InsertStaff(@RequestBody String param) throws JRException, IOException, Exception 
     {
         Gson gsn = new Gson();
         Map<String, String> balancetest1 = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
@@ -869,7 +870,7 @@ public class IndexController {
         ResponseMessage rm = new ResponseMessage();
         try 
         {         
-            processServices.postInsertStaff(balancetest1);
+            processServices.InsertStaff(balancetest1);
             rm.setSuccess(true);
             rm.setMessage("Insert Success");
         } catch (Exception e) {
@@ -890,7 +891,7 @@ public class IndexController {
     }
     )    
     public @ResponseBody
-    ResponseMessage postUpdateStaff(@RequestBody String param) throws JRException, IOException, Exception 
+    ResponseMessage UpdateStaff(@RequestBody String param) throws JRException, IOException, Exception 
     {
         Gson gsn = new Gson();
         Map<String, String> balancetest = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
@@ -899,7 +900,7 @@ public class IndexController {
         ResponseMessage rm = new ResponseMessage();
         try 
         {         
-            processServices.postUpdateStaff(balancetest);
+            processServices.UpdateStaff(balancetest);
             rm.setSuccess(true);
             rm.setMessage("Update Success");
         } catch (Exception e) {
@@ -911,7 +912,7 @@ public class IndexController {
     }
 
  //PERCOBAAN DELETE TABLE MASTER STAFF (M_STAFF)
-    @RequestMapping(value = "/post-deletestaff", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/delete-staff", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk Delete Data", response = Object.class)
     @ApiResponses(value = 
         {
@@ -920,7 +921,7 @@ public class IndexController {
         }
     )    
     public @ResponseBody
-    ResponseMessage postDeleteStaff(@RequestBody String param) throws JRException, IOException, Exception 
+    ResponseMessage DeleteStaff(@RequestBody String param) throws JRException, IOException, Exception 
     {
         Gson gsn = new Gson();
         Map<String, String> balancetest = gsn.fromJson(param, new TypeToken<Map<String, Object>>() 
@@ -929,7 +930,7 @@ public class IndexController {
         ResponseMessage rm = new ResponseMessage();
         try 
         {
-            processServices.postDeleteStaff(balancetest);
+            processServices.DeleteStaff(balancetest);
             rm.setSuccess(true);
             rm.setMessage("Delete Success");
         } catch (Exception e) {
@@ -942,7 +943,7 @@ public class IndexController {
     //==================================================================================================================================================================================================//
 
   //PERCOBAAN VIEW REGION CODE, REGION NAME DI TABLE MASTER GLOBAL (M_GLOBAL)
-    @RequestMapping(value = "/post-viewregion", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/list-viewregion", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk View Data", response = Object.class)
     @ApiResponses(value = 
         {
@@ -963,7 +964,7 @@ public class IndexController {
     } 
     
   //PERCOBAAN VIEW OUTLET CODE, OUTLET NAME DI TABLE MASTER GLOBAL (M_GLOBAL)
-    @RequestMapping(value = "/post-viewoutlet", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/list-viewoutlet", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk View Data", response = Object.class)
     @ApiResponses(value = 
         {
@@ -985,7 +986,7 @@ public class IndexController {
     }    
     
   //PERCOBAAN VIEW STAFF CODE, STAFF NAME DI TABLE MASTER GLOBAL (M_GLOBAL)
-    @RequestMapping(value = "/post-viewformstaff", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/list-viewformstaff", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk View Data", response = Object.class)
     @ApiResponses(value = 
         {
@@ -1008,7 +1009,7 @@ public class IndexController {
     
   //PERCOBAAN VIEW CITY -> CODE, DESCRIPTION DI TABLE MASTER GLOBAL (M_GLOBAL) COND = 'CITY';
 
-    @RequestMapping(value = "/post-viewcity", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/list-viewcity", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk View Data", response = Object.class)
     @ApiResponses(value = 
         {
@@ -1031,7 +1032,7 @@ public class IndexController {
 
   //PERCOBAAN VIEW POSITION -> CODE, DESCRIPTION DI TABLE MASTER GLOBAL (M_GLOBAL) COND = 'CITY';
 
-    @RequestMapping(value = "/post-viewposition", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/list-viewposition", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk View Data", response = Object.class)
     @ApiResponses(value = 
         {
@@ -1054,7 +1055,7 @@ public class IndexController {
     
   //PERCOBAAN VIEW ACCESS LEVEL -> CODE, DESCRIPTION DI TABLE MASTER GLOBAL (M_GLOBAL) COND = 'CITY';
 
-    @RequestMapping(value = "/post-viewaccesslevel", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/list-viewaccesslevel", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk View Data", response = Object.class)
     @ApiResponses(value = 
         {
@@ -1077,7 +1078,7 @@ public class IndexController {
     
   //PERCOBAAN VIEW GROUP USER -> CODE, DESCRIPTION DI TABLE MASTER GLOBAL (M_GLOBAL) COND = 'CITY';
 
-    @RequestMapping(value = "/post-viewgroupuser", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/list-viewgroupuser", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk View Data", response = Object.class)
     @ApiResponses(value = 
         {
@@ -1102,7 +1103,7 @@ public class IndexController {
   ///////////////Updated By Pandu 16-03-2023////////////////////////////  
  // ========================================================== MODULE MASTER STAFF (M_STAFF) ==========================================================================================================//   
  //PERCOBAAN VIEW DATA MASTER SALES RECIPE (M_SALES_RECIPE, M_RECIPE_HEADER, M_RECIPE_DETAIL)
-    @RequestMapping(value = "/post-viewsalesrecipe", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/list-viewsalesrecipe", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk View Data", response = Object.class)
     @ApiResponses(value = 
         {
@@ -1122,5 +1123,5 @@ public class IndexController {
         res.setData(viewServices.listSalesRecipe(balance));
         return res;
     }    
-    ///////////////Done////////////////////////////        
+    ///////////////Done////////////////////////////    
 }
