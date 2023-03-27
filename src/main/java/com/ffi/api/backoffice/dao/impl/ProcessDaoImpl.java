@@ -196,7 +196,7 @@ public class ProcessDaoImpl implements ProcessDao {
              ///////////////Updated By Pandu 14-03-2023////////////////////////////
     // ========================================================== MODULE MASTER STAFF (M_STAFF) =========================================================================================//   
     @Override
-    public void InsertStaff(Map<String, String> balancetest1) 
+    public void insertStaff(Map<String, String> balancetest1) 
     {
             String qy = "INSERT INTO M_STAFF(REGION_CODE,OUTLET_CODE,STAFF_CODE,STAFF_NAME,STAFF_FULL_NAME,PASSWORD,ID_CARD,SEX,DATE_OF_BIRTH,ADDRESS_1,ADDRESS_2,CITY,"
                     + "PHONE_NO,MOBILE_PHONE_NO,EMPLOY_DATE,RESIGN_DATE,POSITION,ACCESS_LEVEL,RIDER_FLAG,GROUP_ID,STATUS)"
@@ -232,7 +232,7 @@ public class ProcessDaoImpl implements ProcessDao {
     }
     
     @Override
-    public void UpdateStaff(Map<String, String> balancetest) 
+    public void updateStaff(Map<String, String> balancetest) 
     {
             String qy = "UPDATE M_STAFF SET STAFF_NAME=:staffName, STAFF_FULL_NAME=:staffFullName, PASSWORD=:passwordCode, ID_CARD=:idCard, "
                 + "SEX=:sexType, DATE_OF_BIRTH=:dateOfBirth, ADDRESS_1=:address1, ADDRESS_2=:address2, CITY=:cityCode, PHONE_NO=:phoneNumber, "
@@ -276,7 +276,7 @@ public class ProcessDaoImpl implements ProcessDao {
     }
 
     @Override
-    public void DeleteStaff(Map<String, String> balancetest) 
+    public void deleteStaff(Map<String, String> balancetest) 
     {
        // DELETE DATA KE DALAM TABLE YG PERTAMA
         String qy = "DELETE FROM M_STAFF WHERE STAFF_CODE=:staffCode ";

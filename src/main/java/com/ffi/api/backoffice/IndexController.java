@@ -828,8 +828,7 @@ public class IndexController {
   ///////////////Updated By Pandu 14-03-2023////////////////////////////  
  // ========================================================== MODULE MASTER STAFF (M_STAFF) ==========================================================================================================//   
  //PERCOBAAN VIEW DATA MASTER STAFF (M_STAFF)
-//    @RequestMapping(value = "/post-viewstaff", produces = MediaType.APPLICATION_JSON_VALUE)
-    @RequestMapping(value = "/list-viewstaff", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/list-staff", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk View Data", response = Object.class)
     @ApiResponses(value = 
         {
@@ -839,19 +838,17 @@ public class IndexController {
     )    
     public @ResponseBody
 
-    Response view(@RequestBody String param) throws JRException, IOException, Exception 
+    Response listStaff(@RequestBody String param) throws JRException, IOException, Exception 
     {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() 
         {}.getType());
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         Response res = new Response();
-        res.setData(viewServices.listUserStaff(balance));
+        res.setData(viewServices.listStaff(balance));
         return res;
     }    
     
- //PERCOBAAN INSERT TO TABLE MASTER STAFF (M_STAFF)
-//    @RequestMapping(value = "/post-testinsert", produces = MediaType.APPLICATION_JSON_VALUE)
     @RequestMapping(value = "/insert-staff", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk Insert Data", response = Object.class)
     @ApiResponses(value = 
@@ -861,7 +858,7 @@ public class IndexController {
         }
     )    
     public @ResponseBody
-    ResponseMessage InsertStaff(@RequestBody String param) throws JRException, IOException, Exception 
+    ResponseMessage insertStaff(@RequestBody String param) throws JRException, IOException, Exception 
     {
         Gson gsn = new Gson();
         Map<String, String> balancetest1 = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
@@ -870,7 +867,7 @@ public class IndexController {
         ResponseMessage rm = new ResponseMessage();
         try 
         {         
-            processServices.InsertStaff(balancetest1);
+            processServices.insertStaff(balancetest1);
             rm.setSuccess(true);
             rm.setMessage("Insert Success");
         } catch (Exception e) {
@@ -891,7 +888,7 @@ public class IndexController {
     }
     )    
     public @ResponseBody
-    ResponseMessage UpdateStaff(@RequestBody String param) throws JRException, IOException, Exception 
+    ResponseMessage updateStaff(@RequestBody String param) throws JRException, IOException, Exception 
     {
         Gson gsn = new Gson();
         Map<String, String> balancetest = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
@@ -900,7 +897,7 @@ public class IndexController {
         ResponseMessage rm = new ResponseMessage();
         try 
         {         
-            processServices.UpdateStaff(balancetest);
+            processServices.updateStaff(balancetest);
             rm.setSuccess(true);
             rm.setMessage("Update Success");
         } catch (Exception e) {
@@ -921,7 +918,7 @@ public class IndexController {
         }
     )    
     public @ResponseBody
-    ResponseMessage DeleteStaff(@RequestBody String param) throws JRException, IOException, Exception 
+    ResponseMessage deleteStaff(@RequestBody String param) throws JRException, IOException, Exception 
     {
         Gson gsn = new Gson();
         Map<String, String> balancetest = gsn.fromJson(param, new TypeToken<Map<String, Object>>() 
@@ -930,7 +927,7 @@ public class IndexController {
         ResponseMessage rm = new ResponseMessage();
         try 
         {
-            processServices.DeleteStaff(balancetest);
+            processServices.deleteStaff(balancetest);
             rm.setSuccess(true);
             rm.setMessage("Delete Success");
         } catch (Exception e) {
@@ -943,7 +940,7 @@ public class IndexController {
     //==================================================================================================================================================================================================//
 
   //PERCOBAAN VIEW REGION CODE, REGION NAME DI TABLE MASTER GLOBAL (M_GLOBAL)
-    @RequestMapping(value = "/list-viewregion", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/list-region", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk View Data", response = Object.class)
     @ApiResponses(value = 
         {
@@ -952,19 +949,19 @@ public class IndexController {
         }
     )    
     public @ResponseBody 
-    Response viewRegion(@RequestBody String param) throws JRException, IOException, Exception 
+    Response listRegion(@RequestBody String param) throws JRException, IOException, Exception 
     {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() 
         {}.getType());
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         Response res = new Response();
-        res.setData(viewServices.listUserRegion(balance));
+        res.setData(viewServices.listRegion(balance));
         return res;
     } 
     
   //PERCOBAAN VIEW OUTLET CODE, OUTLET NAME DI TABLE MASTER GLOBAL (M_GLOBAL)
-    @RequestMapping(value = "/list-viewoutlet", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/list-outlets", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk View Data", response = Object.class)
     @ApiResponses(value = 
         {
@@ -974,14 +971,14 @@ public class IndexController {
     )    
     
     public @ResponseBody 
-    Response viewOutlet(@RequestBody String param) throws JRException, IOException, Exception 
+    Response listOutlets(@RequestBody String param) throws JRException, IOException, Exception 
     {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() 
         {}.getType());
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         Response res = new Response();
-        res.setData(viewServices.listUserOutlet(balance));
+        res.setData(viewServices.listOutlets(balance));
         return res;
     }    
     
@@ -996,14 +993,14 @@ public class IndexController {
     )    
     public @ResponseBody
 
-    Response viewFormStaff(@RequestBody String param) throws JRException, IOException, Exception 
+    Response listViewFormStaff(@RequestBody String param) throws JRException, IOException, Exception 
     {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() 
         {}.getType());
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         Response res = new Response();
-        res.setData(viewServices.listUserFormStaff(balance));
+        res.setData(viewServices.listViewFormStaff(balance));
         return res;
     } 
     
@@ -1019,14 +1016,14 @@ public class IndexController {
     )    
     public @ResponseBody
 
-    Response viewCity(@RequestBody String param) throws JRException, IOException, Exception 
+    Response listViewCity(@RequestBody String param) throws JRException, IOException, Exception 
     {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() 
         {}.getType());
         List<Map<String, Object>> list = new ArrayList<>();
         Response res = new Response();
-        res.setData(viewServices.listCity(balance));
+        res.setData(viewServices.listViewCity(balance));
         return res;
     }     
 
@@ -1042,14 +1039,14 @@ public class IndexController {
     )    
     public @ResponseBody
 
-    Response viewPosition(@RequestBody String param) throws JRException, IOException, Exception 
+    Response listViewPosition(@RequestBody String param) throws JRException, IOException, Exception 
     {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() 
         {}.getType());
         List<Map<String, Object>> list = new ArrayList<>();
         Response res = new Response();
-        res.setData(viewServices.listPosition(balance));
+        res.setData(viewServices.listViewPosition(balance));
         return res;
     }     
     
@@ -1065,14 +1062,14 @@ public class IndexController {
     )    
     public @ResponseBody
 
-    Response viewAccessLevel(@RequestBody String param) throws JRException, IOException, Exception 
+    Response listViewAccessLevel(@RequestBody String param) throws JRException, IOException, Exception 
     {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() 
         {}.getType());
         List<Map<String, Object>> list = new ArrayList<>();
         Response res = new Response();
-        res.setData(viewServices.listAccessLevel(balance));
+        res.setData(viewServices.listViewAccessLevel(balance));
         return res;
     }     
     
@@ -1088,20 +1085,20 @@ public class IndexController {
     )    
     public @ResponseBody
 
-    Response viewGroupUser(@RequestBody String param) throws JRException, IOException, Exception 
+    Response listViewGroupUser(@RequestBody String param) throws JRException, IOException, Exception 
     {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() 
         {}.getType());
         List<Map<String, Object>> list = new ArrayList<>();
         Response res = new Response();
-        res.setData(viewServices.listGroupUser(balance));
+        res.setData(viewServices.listViewGroupUser(balance));
         return res;
     }     
     ///////////////Done////////////////////////////    
 
   ///////////////Updated By Pandu 16-03-2023////////////////////////////  
- // ========================================================== MODULE MASTER STAFF (M_STAFF) ==========================================================================================================//   
+ // ========================================================== MODULE MASTER SALES RECIPE (M_SALES_RECIPE) ==========================================================================================================//   
  //PERCOBAAN VIEW DATA MASTER SALES RECIPE (M_SALES_RECIPE, M_RECIPE_HEADER, M_RECIPE_DETAIL)
     @RequestMapping(value = "/list-viewsalesrecipe", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk View Data", response = Object.class)
@@ -1113,14 +1110,14 @@ public class IndexController {
     )    
     public @ResponseBody
 
-    Response viewSalesRecipe(@RequestBody String param) throws JRException, IOException, Exception 
+    Response listViewSalesRecipe(@RequestBody String param) throws JRException, IOException, Exception 
     {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() 
         {}.getType());
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         Response res = new Response();
-        res.setData(viewServices.listSalesRecipe(balance));
+        res.setData(viewServices.listViewSalesRecipe(balance));
         return res;
     }    
     ///////////////Done////////////////////////////    

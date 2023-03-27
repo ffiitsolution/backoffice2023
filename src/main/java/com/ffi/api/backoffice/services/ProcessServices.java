@@ -58,18 +58,18 @@ public class ProcessServices {
         ///////////////Updated By Pandu 14-03-2023////////////////////////////
 // ========================================================== MODULE MASTER STAFF (M_STAFF) =============================================================================================//    
     //PERCOBAAN INSERT DATA MASTER STAFF (M_STAFF)
-    public void InsertStaff(Map<String, String> balancetest1) {
-        dao.InsertStaff(balancetest1);
+    public void insertStaff(Map<String, String> balancetest1) {
+        dao.insertStaff(balancetest1);
     }  
     
     //PERCOBAAN UPDATE DATA MASTER STAFF (M_STAFF)
-    public void UpdateStaff(Map<String, String> balancetest) {
-        dao.UpdateStaff(balancetest);
+    public void updateStaff(Map<String, String> balancetest) {
+        dao.updateStaff(balancetest);
     }    
     
     //PERCOBAAN DELETE DATA MASTER STAFF (M_STAFF)
-    public void DeleteStaff(Map<String, String> balancetest) {
-        dao.DeleteStaff(balancetest);
+    public void deleteStaff(Map<String, String> balancetest) {
+        dao.deleteStaff(balancetest);
     }  
 // ======================================================================================================================================================================================//    
 ///////////////Done////////////////////////////    

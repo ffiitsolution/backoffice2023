@@ -809,7 +809,7 @@ public class ViewDoaImpl implements ViewDao {
     //VIEW USER STAFF DATA MASTER STAFF (M_STAFF)
   
     @Override
-    public List<Map<String, Object>> listUserStaff(Map<String, String> ref) 
+    public List<Map<String, Object>> listStaff(Map<String, String> ref) 
     {
         String qry = "SELECT DISTINCT * FROM M_STAFF WHERE OUTLET_CODE =:outletCode"; 
         Map prm = new HashMap();
@@ -856,10 +856,8 @@ public class ViewDoaImpl implements ViewDao {
     //VIEW REGION DATA MASTER GLOBAL (M_GLOBAL)
   
     @Override
-    public List<Map<String, Object>> listUserRegion(Map<String, String> ref) 
+    public List<Map<String, Object>> listRegion(Map<String, String> ref) 
     {
-       // String qry = "SELECT DISTINCT REGION_CODE FROM M_OUTLET WHERE type =:typeCode order by region_code asc"; 
-        //String qry = "SELECT COND,CODE,DESCRIPTION,STATUS FROM M_GLOBAL WHERE COND =:condCode ORDER BY CODE ASC"; 
         String qry = "SELECT COND,CODE,DESCRIPTION,STATUS FROM M_GLOBAL WHERE COND ='REG_OUTLET' ORDER BY CODE ASC"; 
         Map prm = new HashMap();
     
@@ -887,7 +885,7 @@ public class ViewDoaImpl implements ViewDao {
     //VIEW USER OUTLET DATA MASTER GLOBAL (M_GLOBAL)
   
     @Override
-    public List<Map<String, Object>> listUserOutlet(Map<String, String> ref) 
+    public List<Map<String, Object>> listOutlets(Map<String, String> ref) 
     {
        // String qry = "SELECT DISTINCT REGION_CODE FROM M_OUTLET WHERE type =:typeCode order by region_code asc"; 
         //String qry = "SELECT COND,CODE,DESCRIPTION,STATUS FROM M_GLOBAL WHERE COND =:condCode ORDER BY CODE ASC"; 
@@ -917,7 +915,7 @@ public class ViewDoaImpl implements ViewDao {
     // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL) ==========================================================================================//  
     //VIEW USER staff DATA MASTER GLOBAL (M_GLOBAL)
   
-    public List<Map<String, Object>> listUserFormStaff(Map<String, String> ref) 
+    public List<Map<String, Object>> listViewFormStaff(Map<String, String> ref) 
     {
         String qry = "SELECT DISTINCT * FROM M_STAFF WHERE OUTLET_CODE =:outletCode AND STAFF_CODE =:staffCode"; 
         Map prm = new HashMap();
@@ -946,7 +944,7 @@ public class ViewDoaImpl implements ViewDao {
     // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL) ==========================================================================================//  
     //VIEW CITY DATA MASTER GLOBAL (M_GLOBAL)
   
-    public List<Map<String, Object>> listCity(Map<String, String> ref) 
+    public List<Map<String, Object>> listViewCity(Map<String, String> ref) 
     {
         String qry = "SELECT DISTINCT COND,CODE,DESCRIPTION,STATUS FROM M_GLOBAL WHERE COND =:condName"; 
         Map prm = new HashMap();
@@ -973,7 +971,7 @@ public class ViewDoaImpl implements ViewDao {
    
     //VIEW ACCESS LEVEL DATA MASTER GLOBAL (M_GLOBAL)
   
-    public List<Map<String, Object>> listAccessLevel(Map<String, String> ref) 
+    public List<Map<String, Object>> listViewAccessLevel(Map<String, String> ref) 
     {
         String qry = "SELECT DISTINCT COND,CODE,DESCRIPTION,STATUS FROM M_GLOBAL WHERE COND =:condName AND CODE NOT IN('SRG')"; 
         Map prm = new HashMap();
@@ -1000,7 +998,7 @@ public class ViewDoaImpl implements ViewDao {
     
     //VIEW POSITION DATA MASTER GLOBAL (M_GLOBAL)
   
-    public List<Map<String, Object>> listPositionUser(Map<String, String> ref) 
+    public List<Map<String, Object>> listViewPosition(Map<String, String> ref) 
     {
         String qry = "SELECT DISTINCT COND,CODE,DESCRIPTION,STATUS FROM M_GLOBAL WHERE COND =:condName AND CODE NOT IN('SRG','3591','3590')"; 
         Map prm = new HashMap();
@@ -1026,7 +1024,7 @@ public class ViewDoaImpl implements ViewDao {
     }
     //VIEW GROUP USER DATA MASTER MENU GROUP (M_MENUGRP)
   
-    public List<Map<String, Object>> listGroupUser(Map<String, String> ref) 
+    public List<Map<String, Object>> listViewGroupUser(Map<String, String> ref) 
     {
         String qry = "SELECT DISTINCT GROUP_ID,TYPE_MENU FROM M_MENUGRP WHERE TYPE_MENU = 'MENU'"; 
         Map prm = new HashMap();
@@ -1054,7 +1052,7 @@ public class ViewDoaImpl implements ViewDao {
     //VIEW SALES RECIPE DATA MASTER SALES RECIPE (M_SALES_RECIPE , M_RECIPE_HEADER , M_RECIPE_DETAIL)
   
     @Override
-    public List<Map<String, Object>> listSalesRecipe(Map<String, String> ref) 
+    public List<Map<String, Object>> listViewSalesRecipe(Map<String, String> ref) 
     {
         String qry = "SELECT ITEM_CODE,ITEM_DESCRIPTION,PLU_CODE,QTY_EI,QTY_TA,UOM_STOCK FROM M_SALES_RECIPE WHERE ITEM_CODE =:itemCode"; 
         Map prm = new HashMap();
