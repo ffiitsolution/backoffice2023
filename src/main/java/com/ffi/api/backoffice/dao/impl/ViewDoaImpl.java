@@ -587,7 +587,8 @@ public class ViewDoaImpl implements ViewDao {
     ///////////////new method from asep 16-mar-2023 //////////////      
     @Override
     public List<Map<String, Object>> listOutlet(Map<String, String> Logan) {
-        String qry = "SELECT region_code,outlet_code, initial_outlet, outlet_name, type, status FROM M_OUTLET where type <>'HO' and status='A'";
+        String qry = "SELECT a.region_code,b.description,a.outlet_code, a.initial_outlet, a.outlet_name, a.type, a.status \n" +
+        "FROM M_OUTLET a join m_global b on a.region_code=b.code where a.type <>'HO' and a.status='A' and cond='REG_OUTLET'";
         Map prm = new HashMap();
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
@@ -595,6 +596,7 @@ public class ViewDoaImpl implements ViewDao {
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
                 rt.put("region", rs.getString("region_code"));
+                rt.put("regionname", rs.getString("description"));
                 rt.put("outlet", rs.getString("outlet_code"));
                 rt.put("Initial", rs.getString("initial_outlet"));
                 rt.put("Name", rs.getString("outlet_name"));
