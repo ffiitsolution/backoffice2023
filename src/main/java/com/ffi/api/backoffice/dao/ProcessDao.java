@@ -37,9 +37,9 @@ public interface ProcessDao {
 //    public void PostTesInsert(Map<String, String> mapping);
 //    public void PostTesUpdate(Map<String, String> mapping);
 //    public void PostTesDelete(Map<String, String> mapping);
-    public void PostInsertStaff(Map<String, String> mapping);
-    public void PostUpdateStaff(Map<String, String> mapping);
-    public void PostDeleteStaff(Map<String, String> mapping);    
+    public void insertStaff(Map<String, String> mapping);
+    public void updateStaff(Map<String, String> mapping);
+    public void deleteStaff(Map<String, String> mapping);    
     // ==================================================================================================================================================================================//
     ///////////////Done////////////////////////////      
 }
