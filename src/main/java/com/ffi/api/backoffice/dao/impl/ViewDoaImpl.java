@@ -600,9 +600,9 @@ public class ViewDoaImpl implements ViewDao {
                 + "where a.type <>'HO' and a.status='A' and  a.REGION_CODE LIKE :region AND a.AREA_CODE LIKE :area AND a.TYPE LIKE :type";
         Map prm = new HashMap();
         System.err.println("q :" + qry);
-        prm.put("region", "%" + balance.get("region") + "%");
-        prm.put("area", "%" + balance.get("area") + "%");
-        prm.put("type", "%" + balance.get("type") + "%");
+            prm.put("region", "%" + balance.get("region") + "%");
+            prm.put("area", "%" + balance.get("area") + "%");
+            prm.put("type", "%" + balance.get("type") + "%");
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
