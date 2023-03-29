@@ -589,23 +589,33 @@ public class ViewDoaImpl implements ViewDao {
     }
 //////////////done
 
-    ///////////////new method from asep 16-mar-2023 //////////////      
+    ///////////////new method from asep 29-mar-2023 //////////////      
     @Override
-    public List<Map<String, Object>> listOutlet(Map<String, String> Logan) {
-        String qry = "SELECT a.region_code,b.description,a.outlet_code, a.initial_outlet, a.outlet_name, a.type, a.status \n"
-                + "FROM M_OUTLET a join m_global b on a.region_code=b.code where a.type <>'HO' and a.status='A' and cond='REG_OUTLET'";
+    public List<Map<String, Object>> listOutlet(Map<String, String> balance) {
+        String qry = "SELECT a.region_code,b.description region_name,a.outlet_code,a.area_code,c.description area_name, a.initial_outlet, a.outlet_name, a.type,d.description type_store, a.status "
+                + "FROM M_OUTLET a "
+                + "join m_global b on a.region_code=b.code and b.cond='REG_OUTLET'"
+                + "join m_global c on a.area_code=c.code  and c.cond='AREACODE'"
+                + "join m_global d on a.type=d.code  and d.cond='OUTLET_TP'"
+                + "where a.type <>'HO' and a.status='A' and  a.REGION_CODE LIKE :region AND a.AREA_CODE LIKE :area AND a.TYPE LIKE :type";
         Map prm = new HashMap();
         System.err.println("q :" + qry);
+        prm.put("region", "%" + balance.get("region") + "%");
+        prm.put("area", "%" + balance.get("area") + "%");
+        prm.put("type", "%" + balance.get("type") + "%");
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
                 rt.put("region", rs.getString("region_code"));
                 rt.put("regionname", rs.getString("description"));
+                rt.put("area", rs.getString("area_code"));
+                rt.put("areaname", rs.getString("area_name")); 
                 rt.put("outlet", rs.getString("outlet_code"));
                 rt.put("Initial", rs.getString("initial_outlet"));
                 rt.put("Name", rs.getString("outlet_name"));
                 rt.put("Type", rs.getString("type"));
+                rt.put("typename", rs.getString("type_store"));
                 rt.put("Status", rs.getString("status"));
                 return rt;
             }
