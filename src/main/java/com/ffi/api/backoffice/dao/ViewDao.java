@@ -123,4 +123,7 @@ public interface ViewDao {
     
     List<Map<String, Object>> listGroupItem(Map<String, String> ref);
     //////////DONE
+     // update outlet 29-03-23
+    List<Map<String, Object>> viewArea(Map<String, String> ref);
+    List<Map<String, Object>> viewTypeStore(Map<String, String> ref);
 }
