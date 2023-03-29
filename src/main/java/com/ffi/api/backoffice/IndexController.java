@@ -1003,31 +1003,7 @@ public class IndexController {
         res.setData(viewServices.listViewFormStaff(balance));
         return res;
     } 
-    
-  //PERCOBAAN VIEW CITY -> CODE, DESCRIPTION DI TABLE MASTER GLOBAL (M_GLOBAL) COND = 'CITY';
-
-//    @RequestMapping(value = "/list-viewcity", produces = MediaType.APPLICATION_JSON_VALUE)
-//    @ApiOperation(value = "Digunakan untuk View Data", response = Object.class)
-//    @ApiResponses(value = 
-//        {
-//            @ApiResponse(code = 200, message = "OK"),
-//            @ApiResponse(code = 404, message = "The resource not found")
-//        }
-//    )    
-//    public @ResponseBody
-//
-//    Response listViewCity(@RequestBody String param) throws JRException, IOException, Exception 
-//    {
-//        Gson gsn = new Gson();
-//        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() 
-//        {}.getType());
-//        List<Map<String, Object>> list = new ArrayList<>();
-//        Response res = new Response();
-//        res.setData(viewServices.listViewCity(balance));
-//        return res;
-//    }     
-
-  //PERCOBAAN VIEW POSITION -> CODE, DESCRIPTION DI TABLE MASTER GLOBAL (M_GLOBAL) COND = 'CITY';
+       
 
     @RequestMapping(value = "/list-viewposition", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk View Data", response = Object.class)
@@ -1096,29 +1072,5 @@ public class IndexController {
         return res;
     }     
     ///////////////Done////////////////////////////    
-
-  ///////////////Updated By Pandu 16-03-2023////////////////////////////  
- // ========================================================== MODULE MASTER SALES RECIPE (M_SALES_RECIPE) ==========================================================================================================//   
- //PERCOBAAN VIEW DATA MASTER SALES RECIPE (M_SALES_RECIPE, M_RECIPE_HEADER, M_RECIPE_DETAIL)
-    @RequestMapping(value = "/list-viewsalesrecipe", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Digunakan untuk View Data", response = Object.class)
-    @ApiResponses(value = 
-        {
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 404, message = "The resource not found")
-        }
-    )    
-    public @ResponseBody
-
-    Response listViewSalesRecipe(@RequestBody String param) throws JRException, IOException, Exception 
-    {
-        Gson gsn = new Gson();
-        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() 
-        {}.getType());
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        Response res = new Response();
-        res.setData(viewServices.listViewSalesRecipe(balance));
-        return res;
-    }    
-    ///////////////Done////////////////////////////    
+  
 }

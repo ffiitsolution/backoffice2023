@@ -941,33 +941,7 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
-    // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL) ==========================================================================================//  
-    //VIEW CITY DATA MASTER GLOBAL (M_GLOBAL)
-  
-//    public List<Map<String, Object>> listViewCity(Map<String, String> ref) 
-//    {
-//        String qry = "SELECT DISTINCT COND,CODE,DESCRIPTION,STATUS FROM M_GLOBAL WHERE COND =:condName"; 
-//        Map prm = new HashMap();
-//    
-//        // PARAMETER YG DIGUNAKAN SETELAH WHERE DIDALAM QUERY //
-//        prm.put("condName", ref.get("condName"));     
-//        
-//        System.err.println("q :" + qry);
-//        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
-//            @Override   
-//            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
-//                Map<String, Object> rt = new HashMap<String, Object>();
-//                
-//                // PARAMETER YG DIGUNAKAN UNTUK MENAMPILKAN VALUE YANG ADA DIDALAM FIELD(KOLOM) SAAT MENGGUNAKAN QUERY //
-//                rt.put("condName", rs.getString("COND"));
-//                rt.put("cityCode", rs.getString("CODE"));
-//                rt.put("cityName", rs.getString("DESCRIPTION"));
-//                rt.put("statusName", rs.getString("STATUS"));
-//                return rt;
-//            }
-//        });
-//        return list;
-//    }
+
    
     //VIEW ACCESS LEVEL DATA MASTER GLOBAL (M_GLOBAL)
   
@@ -1047,38 +1021,5 @@ public class ViewDoaImpl implements ViewDao {
         return list;
     }  
     ///////////////////done    
-    ///////////////Updated By Pandu 14-03-2023////////////////////////////
-  // ========================================================== MODULE MASTER SALES RECIPE (M_SALES_RECIPE , M_RECIPE_HEADER , M_RECIPE_DETAIL) ==========================================================================================//  
-    //VIEW SALES RECIPE DATA MASTER SALES RECIPE (M_SALES_RECIPE , M_RECIPE_HEADER , M_RECIPE_DETAIL)
-  
-    @Override
-    public List<Map<String, Object>> listViewSalesRecipe(Map<String, String> ref) 
-    {
-        String qry = "SELECT ITEM_CODE,ITEM_DESCRIPTION,PLU_CODE,QTY_EI,QTY_TA,UOM_STOCK FROM M_SALES_RECIPE WHERE ITEM_CODE =:itemCode"; 
-        Map prm = new HashMap();
-    
-        // PARAMETER YG DIGUNAKAN SETELAH WHERE DIDALAM QUERY //
-        prm.put("itemCode", ref.get("itemCode"));     
-        
-        System.err.println("q :" + qry);
-        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
-            @Override
-            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
-                Map<String, Object> rt = new HashMap<String, Object>();
-                
-                // PARAMETER YG DIGUNAKAN UNTUK MENAMPILKAN VALUE YANG ADA DIDALAM FIELD(KOLOM) SAAT MENGGUNAKAN QUERY //
-                rt.put("itemCode", rs.getString("ITEM_CODE"));
-                rt.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
-                rt.put("pluCode", rs.getString("PLU_CODE"));
-                rt.put("qtyEi", rs.getString("QTY_EI"));
-                rt.put("qtyTa", rs.getString("QTY_TA"));
-                rt.put("uomStock", rs.getString("UOM_STOCK"));
-                
-            //    rt.put("staffName", rs.getString("STAFF_NAME"));               
-                return rt;
-            }
-        });
-        return list;
-    }
-    ///////////////Done////////////////////////////   
+
 }

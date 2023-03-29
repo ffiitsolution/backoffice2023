@@ -168,12 +168,6 @@ public class ViewServices {
     }  
     // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL) =========================================================================================//
     //PERCOBAAN VIEW SELECT
-//    public List<Map<String, Object>> listViewCity(Map<String, String> ref) 
-//    {
-//        return viewDao.listViewCity(ref);
-//    }    
-    // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL) =========================================================================================//
-    //PERCOBAAN VIEW SELECT
     public List<Map<String, Object>> listViewPosition(Map<String, String> ref) 
     {
         return viewDao.listViewPosition(ref);
@@ -195,12 +189,4 @@ public class ViewServices {
     // ==================================================================================================================================================================================//
         ///////////////done
     
-    ///////////////Updated By Pandu 16-03-2023////////////////////////////
-    // ========================================================== MODULE MASTER SALES RECIPE (M_SALES_RECIPE, M_RECIPE_HEADER, M_RECIPE_DETAIL) =========================================================================================//
-    //PERCOBAAN VIEW SELECT
-    public List<Map<String, Object>> listViewSalesRecipe(Map<String, String> ref) 
-    {
-        return viewDao.listViewSalesRecipe(ref);
-    }
-    ///////////////Done////////////////////////////  
 }
