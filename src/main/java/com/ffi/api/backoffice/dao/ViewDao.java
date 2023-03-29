@@ -98,7 +98,7 @@ public interface ViewDao {
      List<Map<String, Object>> listViewFormStaff(Map<String, String> ref);
     // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL COND = 'CITY') =========================================================================================//
     //VIEW CITY FORM STAFF
-     List<Map<String, Object>> listViewCity(Map<String, String> ref);
+//     List<Map<String, Object>> listViewCity(Map<String, String> ref);
     // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL COND = 'POSITION') =========================================================================================//
     //VIEW POSITION FORM STAFF
      List<Map<String, Object>> listViewPosition(Map<String, String> ref);

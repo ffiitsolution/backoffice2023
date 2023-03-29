@@ -944,30 +944,30 @@ public class ViewDoaImpl implements ViewDao {
     // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL) ==========================================================================================//  
     //VIEW CITY DATA MASTER GLOBAL (M_GLOBAL)
   
-    public List<Map<String, Object>> listViewCity(Map<String, String> ref) 
-    {
-        String qry = "SELECT DISTINCT COND,CODE,DESCRIPTION,STATUS FROM M_GLOBAL WHERE COND =:condName"; 
-        Map prm = new HashMap();
-    
-        // PARAMETER YG DIGUNAKAN SETELAH WHERE DIDALAM QUERY //
-        prm.put("condName", ref.get("condName"));     
-        
-        System.err.println("q :" + qry);
-        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
-            @Override   
-            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
-                Map<String, Object> rt = new HashMap<String, Object>();
-                
-                // PARAMETER YG DIGUNAKAN UNTUK MENAMPILKAN VALUE YANG ADA DIDALAM FIELD(KOLOM) SAAT MENGGUNAKAN QUERY //
-                rt.put("condName", rs.getString("COND"));
-                rt.put("cityCode", rs.getString("CODE"));
-                rt.put("cityName", rs.getString("DESCRIPTION"));
-                rt.put("statusName", rs.getString("STATUS"));
-                return rt;
-            }
-        });
-        return list;
-    }
+//    public List<Map<String, Object>> listViewCity(Map<String, String> ref) 
+//    {
+//        String qry = "SELECT DISTINCT COND,CODE,DESCRIPTION,STATUS FROM M_GLOBAL WHERE COND =:condName"; 
+//        Map prm = new HashMap();
+//    
+//        // PARAMETER YG DIGUNAKAN SETELAH WHERE DIDALAM QUERY //
+//        prm.put("condName", ref.get("condName"));     
+//        
+//        System.err.println("q :" + qry);
+//        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+//            @Override   
+//            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+//                Map<String, Object> rt = new HashMap<String, Object>();
+//                
+//                // PARAMETER YG DIGUNAKAN UNTUK MENAMPILKAN VALUE YANG ADA DIDALAM FIELD(KOLOM) SAAT MENGGUNAKAN QUERY //
+//                rt.put("condName", rs.getString("COND"));
+//                rt.put("cityCode", rs.getString("CODE"));
+//                rt.put("cityName", rs.getString("DESCRIPTION"));
+//                rt.put("statusName", rs.getString("STATUS"));
+//                return rt;
+//            }
+//        });
+//        return list;
+//    }
    
     //VIEW ACCESS LEVEL DATA MASTER GLOBAL (M_GLOBAL)
   

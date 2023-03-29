@@ -1006,26 +1006,26 @@ public class IndexController {
     
   //PERCOBAAN VIEW CITY -> CODE, DESCRIPTION DI TABLE MASTER GLOBAL (M_GLOBAL) COND = 'CITY';
 
-    @RequestMapping(value = "/list-viewcity", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Digunakan untuk View Data", response = Object.class)
-    @ApiResponses(value = 
-        {
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 404, message = "The resource not found")
-        }
-    )    
-    public @ResponseBody
-
-    Response listViewCity(@RequestBody String param) throws JRException, IOException, Exception 
-    {
-        Gson gsn = new Gson();
-        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() 
-        {}.getType());
-        List<Map<String, Object>> list = new ArrayList<>();
-        Response res = new Response();
-        res.setData(viewServices.listViewCity(balance));
-        return res;
-    }     
+//    @RequestMapping(value = "/list-viewcity", produces = MediaType.APPLICATION_JSON_VALUE)
+//    @ApiOperation(value = "Digunakan untuk View Data", response = Object.class)
+//    @ApiResponses(value = 
+//        {
+//            @ApiResponse(code = 200, message = "OK"),
+//            @ApiResponse(code = 404, message = "The resource not found")
+//        }
+//    )    
+//    public @ResponseBody
+//
+//    Response listViewCity(@RequestBody String param) throws JRException, IOException, Exception 
+//    {
+//        Gson gsn = new Gson();
+//        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() 
+//        {}.getType());
+//        List<Map<String, Object>> list = new ArrayList<>();
+//        Response res = new Response();
+//        res.setData(viewServices.listViewCity(balance));
+//        return res;
+//    }     
 
   //PERCOBAAN VIEW POSITION -> CODE, DESCRIPTION DI TABLE MASTER GLOBAL (M_GLOBAL) COND = 'CITY';
 

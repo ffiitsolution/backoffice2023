@@ -168,10 +168,10 @@ public class ViewServices {
     }  
     // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL) =========================================================================================//
     //PERCOBAAN VIEW SELECT
-    public List<Map<String, Object>> listViewCity(Map<String, String> ref) 
-    {
-        return viewDao.listViewCity(ref);
-    }    
+//    public List<Map<String, Object>> listViewCity(Map<String, String> ref) 
+//    {
+//        return viewDao.listViewCity(ref);
+//    }    
     // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL) =========================================================================================//
     //PERCOBAAN VIEW SELECT
     public List<Map<String, Object>> listViewPosition(Map<String, String> ref) 
