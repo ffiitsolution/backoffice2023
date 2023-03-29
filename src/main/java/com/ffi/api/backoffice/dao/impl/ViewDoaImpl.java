@@ -35,8 +35,11 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> loginJson(ParameterLogin ref) {
-        String qry = "select OUTLET_CODE,STAFF_CODE,STAFF_NAME,STAFF_FULL_NAME,ID_CARD,POSITION,GROUP_ID from M_STAFF \n"
-                + "where STAFF_CODE = :staffCode and PASSWORD = :pass and OUTLET_CODE = :outletCode and STATUS = 'A'";
+        String qry = "select S.REGION_CODE,G.DESCRIPTION REG_NAME,S.OUTLET_CODE,O.OUTLET_NAME,S.STAFF_CODE,S.STAFF_NAME,S.STAFF_FULL_NAME,S.ID_CARD,S.POSITION,S.GROUP_ID \n"
+                + "from M_STAFF S\n"
+                + "JOIN M_OUTLET O ON O.OUTLET_CODE = S.OUTLET_CODE\n"
+                + "JOIN M_GLOBAL G ON G.CODE = S.REGION_CODE AND G.COND = 'REG_OUTLET' \n"
+                + "where S.STAFF_CODE = :staffCode and S.PASSWORD = :pass and S.OUTLET_CODE = :outletCode and S.STATUS = 'A'";
         Map prm = new HashMap();
         prm.put("staffCode", ref.getUserName());
         prm.put("pass", ref.getPassword());
@@ -46,7 +49,10 @@ public class ViewDoaImpl implements ViewDao {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<>();
+                rt.put("regCode", rs.getString("REGION_CODE"));
+                rt.put("regName", rs.getString("REG_NAME"));
                 rt.put("outletCode", rs.getString("OUTLET_CODE"));
+                rt.put("outletName", rs.getString("OUTLET_NAME"));
                 rt.put("staffCode", rs.getString("STAFF_CODE"));
                 rt.put("staffName", rs.getString("STAFF_NAME"));
                 rt.put("staffFullName", rs.getString("STAFF_FULL_NAME"));
