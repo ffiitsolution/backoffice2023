@@ -189,4 +189,8 @@ public class ViewServices {
     // ==================================================================================================================================================================================//
         ///////////////done
     
+    //////////////////new method by Lani 29-03-2023//////////////////////////
+    public List<Map<String, Object>> listSalesRecipe(Map<String, String> ref) {
+        return viewDao.listSalesRecipe(ref);
+    }
 }

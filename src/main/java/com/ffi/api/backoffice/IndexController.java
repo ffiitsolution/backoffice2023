@@ -1071,6 +1071,25 @@ public class IndexController {
         res.setData(viewServices.listViewGroupUser(balance));
         return res;
     }     
-    ///////////////Done////////////////////////////    
+    ///////////////Done////////////////////////////  
+    
+    @RequestMapping(value = "/list-sales-recipe", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk menampilkan list rom", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK")
+        ,
+        @ApiResponse(code = 404, message = "The resource not found")
+    }
+    )
+    public @ResponseBody
+    Response listSalesRecipe(@RequestBody String param) {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response res = new Response();
+        res.setData(viewServices.listSalesRecipe(balance));
+        return res;
+    }
   
 }

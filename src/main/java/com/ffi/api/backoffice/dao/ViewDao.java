@@ -57,9 +57,8 @@ public interface ViewDao {
 
     List<Map<String, Object>> listMasterItemSupplier(Map<String, String> ref);
 
-
     /////////////////////////////done 
-      ///////////////new method from asep 16-mar-2023 //////////////   
+    ///////////////new method from asep 16-mar-2023 //////////////   
     List<Map<String, Object>> listOutlet(Map<String, String> ref);
 
     List<Map<String, Object>> listPos(Map<String, String> ref);
@@ -69,47 +68,53 @@ public interface ViewDao {
     List<Map<String, Object>> listItem(Map<String, String> ref);
 
     /////////////////////////////done
-
     /////////////////new method from kevin 16-mar-2023 ////////////// 
     List<Map<String, Object>> listMenuGroups(Map<String, String> ref);
 
     List<Map<String, Object>> listItemMenus(Map<String, String> ref);
     ///////////////////////// done
-    
+
     /////////////////new method from kevin 24-mar-2023 ////////////// 
     List<Map<String, Object>> listRecipeHeader(Map<String, String> ref);
-    
+
     List<Map<String, Object>> listRecipeDetail(Map<String, String> ref);
-    
+
     List<Map<String, Object>> listRecipeProduct(Map<String, String> ref);
     ///////////////////////// done
-        ///////////////Updated By Pandu 14-03-2023////////////////////////////
+    ///////////////Updated By Pandu 14-03-2023////////////////////////////
     // ========================================================== MODULE MASTER STAFF (M_STAFF) =========================================================================================//
     //VIEW USER STAFF
-     List<Map<String, Object>> listStaff(Map<String, String> ref);
+    List<Map<String, Object>> listStaff(Map<String, String> ref);
+
     // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL) =========================================================================================//
     //VIEW USER REGION
-     List<Map<String, Object>> listRegion(Map<String, String> ref);
+    List<Map<String, Object>> listRegion(Map<String, String> ref);
+
     // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL) =========================================================================================//
     //VIEW USER OUTLET
-     List<Map<String, Object>> listOutlets(Map<String, String> ref);
+    List<Map<String, Object>> listOutlets(Map<String, String> ref);
+
     // ========================================================== MODULE MASTER STAFF (M_STAFF) =========================================================================================//
     //VIEW USER FORM STAFF
-     List<Map<String, Object>> listViewFormStaff(Map<String, String> ref);
+    List<Map<String, Object>> listViewFormStaff(Map<String, String> ref);
+
     // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL COND = 'CITY') =========================================================================================//
     //VIEW CITY FORM STAFF
 //     List<Map<String, Object>> listViewCity(Map<String, String> ref);
     // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL COND = 'POSITION') =========================================================================================//
     //VIEW POSITION FORM STAFF
-     List<Map<String, Object>> listViewPosition(Map<String, String> ref);
-     // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL COND = 'ACCEES') =========================================================================================//
-    //VIEW ACCESS LEVEL FORM STAFF
-     List<Map<String, Object>> listViewAccessLevel(Map<String, String> ref);
+    List<Map<String, Object>> listViewPosition(Map<String, String> ref);
     // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL COND = 'ACCEES') =========================================================================================//
     //VIEW ACCESS LEVEL FORM STAFF
-     List<Map<String, Object>> listViewGroupUser(Map<String, String> ref);
-      
+
+    List<Map<String, Object>> listViewAccessLevel(Map<String, String> ref);
+
+    // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL COND = 'ACCEES') =========================================================================================//
+    //VIEW ACCESS LEVEL FORM STAFF
+    List<Map<String, Object>> listViewGroupUser(Map<String, String> ref);
+
     // ==================================================================================================================================================================================// 
     /////////////////////////////done
-
+    //////////////////new method by Lani 29-03-2023////////////////////////// 
+    List<Map<String, Object>> listSalesRecipe(Map<String, String> ref);
 }

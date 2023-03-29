@@ -239,7 +239,6 @@ public class ViewDoaImpl implements ViewDao {
         Map prm = new HashMap();
         prm.put("flagMaterial", balance.get("flagMaterial"));
 
-        
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
@@ -587,8 +586,8 @@ public class ViewDoaImpl implements ViewDao {
     ///////////////new method from asep 16-mar-2023 //////////////      
     @Override
     public List<Map<String, Object>> listOutlet(Map<String, String> Logan) {
-        String qry = "SELECT a.region_code,b.description,a.outlet_code, a.initial_outlet, a.outlet_name, a.type, a.status \n" +
-        "FROM M_OUTLET a join m_global b on a.region_code=b.code where a.type <>'HO' and a.status='A' and cond='REG_OUTLET'";
+        String qry = "SELECT a.region_code,b.description,a.outlet_code, a.initial_outlet, a.outlet_name, a.type, a.status \n"
+                + "FROM M_OUTLET a join m_global b on a.region_code=b.code where a.type <>'HO' and a.status='A' and cond='REG_OUTLET'";
         Map prm = new HashMap();
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
@@ -737,7 +736,7 @@ public class ViewDoaImpl implements ViewDao {
         return list;
     }
     ///////////done
-    
+
     ///////////////new method from kevin 24-mar-2023 //////////////
     @Override
     public List<Map<String, Object>> listRecipeHeader(Map<String, String> ref) {
@@ -745,7 +744,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "from m_recipe_header rh "
                 + "join m_mpcs_header mh on mh.mpcs_group = rh.mpcs_group "
                 + "order by rh.status, rh.recipe_code";
-        Map prm = new HashMap();      
+        Map prm = new HashMap();
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
@@ -761,7 +760,7 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
-    
+
     @Override
     public List<Map<String, Object>> listRecipeDetail(Map<String, String> ref) {
         String qry = "select rd.recipe_code, rd.item_code, i.item_description, rd.qty_stock, rd.uom_stock "
@@ -769,7 +768,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "join m_item i on i.item_code = rd.item_code "
                 + "where rd.recipe_code = :reCode ";
         Map prm = new HashMap();
-        prm.put("reCode", ref.get("reCode"));   
+        prm.put("reCode", ref.get("reCode"));
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
@@ -785,14 +784,14 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
-    
+
     @Override
     public List<Map<String, Object>> listRecipeProduct(Map<String, String> ref) {
         String qry = "select rp.recipe_code, rp.product_code, rp.product_remark, rp.qty_stock, rp.uom_stock "
                 + "from m_recipe_product rp "
                 + "where rp.recipe_code = :reCode ";
         Map prm = new HashMap();
-        prm.put("reCode", ref.get("reCode"));   
+        prm.put("reCode", ref.get("reCode"));
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
@@ -809,25 +808,24 @@ public class ViewDoaImpl implements ViewDao {
         return list;
     }
     ///////////done
-         ///////////////Updated By Pandu 14-03-2023////////////////////////////
-  // ========================================================== MODULE MASTER STAFF (M_STAFF) ==========================================================================================//  
+    ///////////////Updated By Pandu 14-03-2023////////////////////////////
+    // ========================================================== MODULE MASTER STAFF (M_STAFF) ==========================================================================================//  
     //VIEW USER STAFF DATA MASTER STAFF (M_STAFF)
-  
+
     @Override
-    public List<Map<String, Object>> listStaff(Map<String, String> ref) 
-    {
-        String qry = "SELECT DISTINCT * FROM M_STAFF WHERE OUTLET_CODE =:outletCode"; 
+    public List<Map<String, Object>> listStaff(Map<String, String> ref) {
+        String qry = "SELECT DISTINCT * FROM M_STAFF WHERE OUTLET_CODE =:outletCode";
         Map prm = new HashMap();
-    
+
         // PARAMETER YG DIGUNAKAN SETELAH WHERE DIDALAM QUERY //
-        prm.put("outletCode", ref.get("outletCode"));     
-        
+        prm.put("outletCode", ref.get("outletCode"));
+
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
-                
+
                 // PARAMETER YG DIGUNAKAN UNTUK MENAMPILKAN VALUE YANG ADA DIDALAM FIELD(KOLOM) SAAT MENGGUNAKAN QUERY //
                 rt.put("regionCode", rs.getString("REGION_CODE"));
                 rt.put("outletCode", rs.getString("OUTLET_CODE"));
@@ -850,36 +848,35 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("riderFlag", rs.getString("RIDER_FLAG"));
                 rt.put("groupId", rs.getString("GROUP_ID"));
                 rt.put("statusName", rs.getString("STATUS"));
-                
-            //    rt.put("staffName", rs.getString("STAFF_NAME"));               
+
+                //    rt.put("staffName", rs.getString("STAFF_NAME"));               
                 return rt;
             }
         });
         return list;
     }
-  // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL) ==========================================================================================//  
+    // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL) ==========================================================================================//  
     //VIEW REGION DATA MASTER GLOBAL (M_GLOBAL)
-  
+
     @Override
-    public List<Map<String, Object>> listRegion(Map<String, String> ref) 
-    {
-        String qry = "SELECT COND,CODE,DESCRIPTION,STATUS FROM M_GLOBAL WHERE COND ='REG_OUTLET' ORDER BY CODE ASC"; 
+    public List<Map<String, Object>> listRegion(Map<String, String> ref) {
+        String qry = "SELECT COND,CODE,DESCRIPTION,STATUS FROM M_GLOBAL WHERE COND ='REG_OUTLET' ORDER BY CODE ASC";
         Map prm = new HashMap();
-    
+
         // PARAMETER YG DIGUNAKAN SETELAH WHERE DIDALAM QUERY //
-        prm.put("condCode", ref.get("condCode"));     
-        
+        prm.put("condCode", ref.get("condCode"));
+
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
-                
+
                 // PARAMETER YG DIGUNAKAN UNTUK MENAMPILKAN VALUE YANG ADA DIDALAM FIELD(KOLOM) SAAT MENGGUNAKAN QUERY //
                 rt.put("regionCode", rs.getString("CODE"));
                 rt.put("regionName", rs.getString("DESCRIPTION"));
                 rt.put("statusName", rs.getString("STATUS"));
-                 rt.put("condCode", rs.getString("COND"));             
+                rt.put("condCode", rs.getString("COND"));
                 return rt;
             }
         });
@@ -888,29 +885,27 @@ public class ViewDoaImpl implements ViewDao {
 
     // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL) ==========================================================================================//  
     //VIEW USER OUTLET DATA MASTER GLOBAL (M_GLOBAL)
-  
     @Override
-    public List<Map<String, Object>> listOutlets(Map<String, String> ref) 
-    {
-       // String qry = "SELECT DISTINCT REGION_CODE FROM M_OUTLET WHERE type =:typeCode order by region_code asc"; 
+    public List<Map<String, Object>> listOutlets(Map<String, String> ref) {
+        // String qry = "SELECT DISTINCT REGION_CODE FROM M_OUTLET WHERE type =:typeCode order by region_code asc"; 
         //String qry = "SELECT COND,CODE,DESCRIPTION,STATUS FROM M_GLOBAL WHERE COND =:condCode ORDER BY CODE ASC"; 
-        String qry = "SELECT OUTLET_CODE, OUTLET_NAME, STATUS, TYPE FROM M_OUTLET WHERE TYPE = 'MS' ORDER BY OUTLET_NAME ASC"; 
+        String qry = "SELECT OUTLET_CODE, OUTLET_NAME, STATUS, TYPE FROM M_OUTLET WHERE TYPE = 'MS' ORDER BY OUTLET_NAME ASC";
         Map prm = new HashMap();
-    
+
         // PARAMETER YG DIGUNAKAN SETELAH WHERE DIDALAM QUERY //
-        prm.put("typeCode", ref.get("typeCode"));     
-        
+        prm.put("typeCode", ref.get("typeCode"));
+
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
-                
+
                 // PARAMETER YG DIGUNAKAN UNTUK MENAMPILKAN VALUE YANG ADA DIDALAM FIELD(KOLOM) SAAT MENGGUNAKAN QUERY //
                 rt.put("outletCode", rs.getString("OUTLET_CODE"));
                 rt.put("outletName", rs.getString("OUTLET_NAME"));
                 rt.put("statusName", rs.getString("STATUS"));
-                rt.put("typeCode", rs.getString("TYPE"));            
+                rt.put("typeCode", rs.getString("TYPE"));
                 return rt;
             }
         });
@@ -919,22 +914,20 @@ public class ViewDoaImpl implements ViewDao {
 
     // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL) ==========================================================================================//  
     //VIEW USER staff DATA MASTER GLOBAL (M_GLOBAL)
-  
-    public List<Map<String, Object>> listViewFormStaff(Map<String, String> ref) 
-    {
-        String qry = "SELECT DISTINCT * FROM M_STAFF WHERE OUTLET_CODE =:outletCode AND STAFF_CODE =:staffCode"; 
+    public List<Map<String, Object>> listViewFormStaff(Map<String, String> ref) {
+        String qry = "SELECT DISTINCT * FROM M_STAFF WHERE OUTLET_CODE =:outletCode AND STAFF_CODE =:staffCode";
         Map prm = new HashMap();
-    
+
         // PARAMETER YG DIGUNAKAN SETELAH WHERE DIDALAM QUERY //
-       prm.put("outletCode", ref.get("outletCode"));   
-       prm.put("staffCode", ref.get("staffCode"));   
-        
+        prm.put("outletCode", ref.get("outletCode"));
+        prm.put("staffCode", ref.get("staffCode"));
+
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
-                
+
                 // PARAMETER YG DIGUNAKAN UNTUK MENAMPILKAN VALUE YANG ADA DIDALAM FIELD(KOLOM) SAAT MENGGUNAKAN QUERY //
                 rt.put("regionCode", rs.getString("REGION_CODE"));
                 rt.put("outletCode", rs.getString("OUTLET_CODE"));
@@ -947,23 +940,20 @@ public class ViewDoaImpl implements ViewDao {
         return list;
     }
 
-   
     //VIEW ACCESS LEVEL DATA MASTER GLOBAL (M_GLOBAL)
-  
-    public List<Map<String, Object>> listViewAccessLevel(Map<String, String> ref) 
-    {
-        String qry = "SELECT DISTINCT COND,CODE,DESCRIPTION,STATUS FROM M_GLOBAL WHERE COND =:condName AND CODE NOT IN('SRG')"; 
+    public List<Map<String, Object>> listViewAccessLevel(Map<String, String> ref) {
+        String qry = "SELECT DISTINCT COND,CODE,DESCRIPTION,STATUS FROM M_GLOBAL WHERE COND =:condName AND CODE NOT IN('SRG')";
         Map prm = new HashMap();
-    
+
         // PARAMETER YG DIGUNAKAN SETELAH WHERE DIDALAM QUERY //
-        prm.put("condName", ref.get("condName"));     
-        
+        prm.put("condName", ref.get("condName"));
+
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
-            @Override   
+            @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
-                
+
                 // PARAMETER YG DIGUNAKAN UNTUK MENAMPILKAN VALUE YANG ADA DIDALAM FIELD(KOLOM) SAAT MENGGUNAKAN QUERY //
                 rt.put("condName", rs.getString("COND"));
                 rt.put("accesslevelCode", rs.getString("CODE"));
@@ -974,23 +964,21 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
-    
+
     //VIEW POSITION DATA MASTER GLOBAL (M_GLOBAL)
-  
-    public List<Map<String, Object>> listViewPosition(Map<String, String> ref) 
-    {
-        String qry = "SELECT DISTINCT COND,CODE,DESCRIPTION,STATUS FROM M_GLOBAL WHERE COND =:condName AND CODE NOT IN('SRG','3591','3590')"; 
+    public List<Map<String, Object>> listViewPosition(Map<String, String> ref) {
+        String qry = "SELECT DISTINCT COND,CODE,DESCRIPTION,STATUS FROM M_GLOBAL WHERE COND =:condName AND CODE NOT IN('SRG','3591','3590')";
         Map prm = new HashMap();
-    
+
         // PARAMETER YG DIGUNAKAN SETELAH WHERE DIDALAM QUERY //
-        prm.put("condName", ref.get("condName"));     
-        
+        prm.put("condName", ref.get("condName"));
+
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
-            @Override   
+            @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
-                
+
                 // PARAMETER YG DIGUNAKAN UNTUK MENAMPILKAN VALUE YANG ADA DIDALAM FIELD(KOLOM) SAAT MENGGUNAKAN QUERY //
                 rt.put("condName", rs.getString("COND"));
                 rt.put("accesslevelCode", rs.getString("CODE"));
@@ -1002,21 +990,20 @@ public class ViewDoaImpl implements ViewDao {
         return list;
     }
     //VIEW GROUP USER DATA MASTER MENU GROUP (M_MENUGRP)
-  
-    public List<Map<String, Object>> listViewGroupUser(Map<String, String> ref) 
-    {
-        String qry = "SELECT DISTINCT GROUP_ID,TYPE_MENU FROM M_MENUGRP WHERE TYPE_MENU = 'MENU'"; 
+
+    public List<Map<String, Object>> listViewGroupUser(Map<String, String> ref) {
+        String qry = "SELECT DISTINCT GROUP_ID,TYPE_MENU FROM M_MENUGRP WHERE TYPE_MENU = 'MENU'";
         Map prm = new HashMap();
-    
+
         // PARAMETER YG DIGUNAKAN SETELAH WHERE DIDALAM QUERY //
-        prm.put("typemenuName", ref.get("typemenuName"));     
-        
+        prm.put("typemenuName", ref.get("typemenuName"));
+
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
-            @Override   
+            @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
-                
+
                 // PARAMETER YG DIGUNAKAN UNTUK MENAMPILKAN VALUE YANG ADA DIDALAM FIELD(KOLOM) SAAT MENGGUNAKAN QUERY //
                 rt.put("groupidName", rs.getString("GROUP_ID"));
                 rt.put("typemenuName", rs.getString("TYPE_MENU"));
@@ -1024,7 +1011,41 @@ public class ViewDoaImpl implements ViewDao {
             }
         });
         return list;
-    }  
+    }
+
     ///////////////////done    
+    //////////////////new method by Lani 29-03-2023//////////////////////////
+    @Override
+    public List<Map<String, Object>> listSalesRecipe(Map<String, String> ref) {
+        String qry = "SELECT A.PLU_CODE,d.description,A.ITEM_CODE,B.ITEM_DESCRIPTION,A.QTY_EI,A.QTY_TA,A.UOM_STOCK, A.user_upd, A.date_upd, A.time_upd \n"
+                + "FROM M_SALES_RECIPE A\n"
+                + "JOIN M_ITEM B ON a.item_code=b.item_code\n"
+                + "join m_menu_item c on a.plu_code=c.menu_Item_code\n"
+                + "join m_global d on a.plu_code=d.code\n"
+                + "WHERE c.status='A' and d.cond='ITEM' AND d.status='A' and c.outlet_code=:outletCode\n"
+                + "GROUP BY c.menu_group_code,A.PLU_CODE,d.description,A.ITEM_CODE,B.ITEM_DESCRIPTION,A.QTY_EI,A.QTY_TA,A.UOM_STOCK, A.user_upd, A.date_upd, A.time_upd\n"
+                + "ORDER BY c.menu_group_code,A.PLU_CODE,d.description,A.ITEM_CODE,B.ITEM_DESCRIPTION,A.QTY_EI,A.QTY_TA,A.UOM_STOCK, A.user_upd, A.date_upd, A.time_upd ";
+        Map prm = new HashMap();
+        prm.put("outletCode", ref.get("outletCode"));
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("pluCode", rs.getString("PLU_CODE"));
+                rt.put("description", rs.getString("description"));
+                rt.put("itemCode", rs.getString("ITEM_CODE"));
+                rt.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
+                rt.put("qtyEi", rs.getString("QTY_EI"));
+                rt.put("qtyTa", rs.getString("QTY_TA"));
+                rt.put("uomStock", rs.getString("UOM_STOCK"));
+                rt.put("userUpd", rs.getString("user_upd"));
+                rt.put("dateUpd", rs.getString("date_upd"));
+                rt.put("timeUpd", rs.getString("time_upd"));
+                return rt;
+            }
+        });
+        return list;
+    }
 
 }
