@@ -193,4 +193,14 @@ public class ViewServices {
     public List<Map<String, Object>> listSalesRecipe(Map<String, String> ref) {
         return viewDao.listSalesRecipe(ref);
     }
+    
+    //////////Group Items by Kevin 29-03-2023
+    public List<Map<String, Object>> listMenuItem(Map<String, String> ref) {
+        return viewDao.listMenuItem(ref);
+    }
+    
+    public List<Map<String, Object>> listGroupItem(Map<String, String> ref) {
+        return viewDao.listGroupItem(ref);
+    }
+    //////////DONE
 }

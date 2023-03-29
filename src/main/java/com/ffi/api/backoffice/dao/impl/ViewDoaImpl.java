@@ -1053,5 +1053,76 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
+    
+    //////////Group Items by Kevin 29-03-2023
+    @Override
+    public List<Map<String, Object>> listMenuItem(Map<String, String> ref) {
+        String qry = "select i.menu_item_code, g.description, i.status "
+                + "from m_menu_item i "
+                + "join m_global g on g.code = i.menu_item_code "
+                + "where g.cond = 'ITEM' "
+                + "and g.status = 'A' ";
+        if(ref.get("status").equalsIgnoreCase("A")){
+            qry = qry + "and i.status = 'A' ";
+        } else if(ref.get("status").equalsIgnoreCase("I")){
+            qry = qry + "and i.status = 'I' ";
+        }
+        qry = qry
+                + "order by i.menu_item_code";
+        Map prm = new HashMap();
+        //prm.put("status", ref.get("status"));
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("menuCode", rs.getString("menu_item_code"));
+                rt.put("menuName", rs.getString("description"));
+                rt.put("status", rs.getString("status"));
+                return rt;
+            }
+        });
+        return list;
+    }
+    
+    @Override
+    public List<Map<String, Object>> listGroupItem(Map<String, String> ref) {
+        String qry = "SELECT A.ITEM_CODE,B.ITEM_DESCRIPTION, "
+                + "A.QTY_stock,A.QTY_stock_e,A.QTY_stock_t,A.UOM_STOCK, A.status "
+                + "FROM M_group_item A "
+                + "JOIN M_ITEM B ON a.item_code=b.item_code "
+                + "join m_menu_item c on a.group_item_code=c.menu_Item_code "
+                + "join m_global d on a.group_item_code=d.code "
+                + "where a.group_item_code = :groupCode "
+                + "and a.status='A' and c.status='A' and d.cond='ITEM' AND d.status='A' "
+                + "GROUP BY c.menu_group_code,A.group_item_code,d.description,A.ITEM_CODE,B.ITEM_DESCRIPTION,A.QTY_stock,A.QTY_stock_e,A.QTY_stock_T,A.UOM_STOCK,A.Status "
+                + "union all "
+                + "select m.menu_set_item_code, g.description, m.qty, "
+                + "0 qty_stock_e, 0 qty_stock_t, 'PCS' uom_stock, m.status "
+                + "from m_menu_set m "
+                + "join m_global g on g.code = m.menu_set_item_code "
+                + "where g.cond = 'ITEM' and menu_set_code = :groupCode "
+                //+ "ORDER BY c.menu_group_code,A.group_item_code,d.description,A.ITEM_CODE,B.ITEM_DESCRIPTION,A.QTY_stock,A.QTY_stock_e,A.QTY_stock_T,A.UOM_STOCK,A.Status";
+                + "ORDER BY 1, 2, 3, 4, 5, 6, 7";
+        Map prm = new HashMap();
+        prm.put("groupCode", ref.get("groupCode"));
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("itemCode", rs.getString("ITEM_CODE"));
+                rt.put("itemDesc", rs.getString("ITEM_DESCRIPTION"));
+                rt.put("qtyStock", rs.getString("QTY_stock"));
+                rt.put("qtyStockE", rs.getString("QTY_stock_e"));
+                rt.put("qtyStockT", rs.getString("QTY_stock_t"));
+                rt.put("uom", rs.getString("UOM_STOCK"));
+                rt.put("status", rs.getString("status"));
+                return rt;
+            }
+        });
+        return list;
+    }
+    //////////DONE
 
 }
