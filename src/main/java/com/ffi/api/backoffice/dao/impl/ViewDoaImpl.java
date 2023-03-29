@@ -608,7 +608,7 @@ public class ViewDoaImpl implements ViewDao {
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
                 rt.put("region", rs.getString("region_code"));
-                rt.put("regionname", rs.getString("description"));
+                rt.put("regionname", rs.getString("region_name"));
                 rt.put("area", rs.getString("area_code"));
                 rt.put("areaname", rs.getString("area_name")); 
                 rt.put("outlet", rs.getString("outlet_code"));
