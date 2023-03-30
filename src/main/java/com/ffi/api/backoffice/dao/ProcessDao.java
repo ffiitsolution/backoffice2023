@@ -26,20 +26,25 @@ public interface ProcessDao {
     /////////////done
     ///////////////new method from dona 06-03-2023////////////////////////////
     public void updateMpcs(Map<String, String> mapping);
+
     /////////////done
-       ///////////////new method from asep 16-mar-2023 ////////////// 
+    ///////////////new method from asep 16-mar-2023 ////////////// 
     public void insertPos(Map<String, String> mapping);
-    
+
     public void updatePos(Map<String, String> mapping);
+
     //done
-      ///////////////Updated By Pandu 14-03-2023////////////////////////////
+    ///////////////Updated By Pandu 14-03-2023////////////////////////////
     // ========================================================== MODULE MASTER STAFF (M_STAFF) =========================================================================================//
-//    public void PostTesInsert(Map<String, String> mapping);
-//    public void PostTesUpdate(Map<String, String> mapping);
-//    public void PostTesDelete(Map<String, String> mapping);
     public void insertStaff(Map<String, String> mapping);
+
     public void updateStaff(Map<String, String> mapping);
-    public void deleteStaff(Map<String, String> mapping);    
+
+    public void deleteStaff(Map<String, String> mapping);
+
     // ==================================================================================================================================================================================//
+    ///////////////Done////////////////////////////      
+    ///////////////new method from Dona 30-03-2023////////////////////////////
+    public void insertFryer(Map<String, String> mapping);
     ///////////////Done////////////////////////////      
 }

@@ -80,6 +80,7 @@ public interface ViewDao {
     List<Map<String, Object>> listRecipeDetail(Map<String, String> ref);
 
     List<Map<String, Object>> listRecipeProduct(Map<String, String> ref);
+
     ///////////////////////// done
     ///////////////Updated By Pandu 14-03-2023////////////////////////////
     // ========================================================== MODULE MASTER STAFF (M_STAFF) =========================================================================================//
@@ -117,15 +118,21 @@ public interface ViewDao {
     /////////////////////////////done
     //////////////////new method by Lani 29-03-2023////////////////////////// 
     List<Map<String, Object>> listSalesRecipe(Map<String, String> ref);
-    
+
     List<Map<String, Object>> listSalesRecipeHeader(Map<String, String> ref);
-    
+
     //////////Group Items by Kevin 29-03-2023
     List<Map<String, Object>> listMenuItem(Map<String, String> ref);
-    
+
     List<Map<String, Object>> listGroupItem(Map<String, String> ref);
+
     //////////DONE
-     // update outlet 29-03-23
+    // update outlet 29-03-23
     List<Map<String, Object>> viewArea(Map<String, String> ref);
+
     List<Map<String, Object>> viewTypeStore(Map<String, String> ref);
+    //////////DONE
+    // new method Dona outlet 30-03-23////////
+    List<Map<String, Object>> listGlobal(Map<String, String> ref);
+    //////////DONE
 }

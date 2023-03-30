@@ -29,6 +29,7 @@ public class ProcessServices {
     public void updateSupplier(Map<String, String> balance) {
         dao.updateSupplier(balance);
     }
+
     ///////////////////////done
     ///////////////new method from dona 03-03-2023////////////////////////////
     public void insertItemSupplier(Map<String, String> balance) {
@@ -51,26 +52,33 @@ public class ProcessServices {
         dao.insertPos(balance);
     }
 
-   public void updatePos(Map<String, String> balance) {
+    public void updatePos(Map<String, String> balance) {
         dao.updatePos(balance);
     }
-   ///////////////////////done
-        ///////////////Updated By Pandu 14-03-2023////////////////////////////
+    ///////////////////////done
+    ///////////////Updated By Pandu 14-03-2023////////////////////////////
 // ========================================================== MODULE MASTER STAFF (M_STAFF) =============================================================================================//    
     //PERCOBAAN INSERT DATA MASTER STAFF (M_STAFF)
+
     public void insertStaff(Map<String, String> balancetest1) {
         dao.insertStaff(balancetest1);
-    }  
-    
+    }
+
     //PERCOBAAN UPDATE DATA MASTER STAFF (M_STAFF)
     public void updateStaff(Map<String, String> balancetest) {
         dao.updateStaff(balancetest);
-    }    
-    
+    }
+
     //PERCOBAAN DELETE DATA MASTER STAFF (M_STAFF)
     public void deleteStaff(Map<String, String> balancetest) {
         dao.deleteStaff(balancetest);
-    }  
+    }
 // ======================================================================================================================================================================================//    
 ///////////////Done////////////////////////////    
+
+    ///////////////new method from Dona 30-mar-2023 //////////////  
+    public void insertFryer(Map<String, String> balance) {
+        dao.insertFryer(balance);
+    }
+    ///////////////////////done
 }

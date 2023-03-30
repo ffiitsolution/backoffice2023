@@ -103,115 +103,127 @@ public class ViewServices {
         return viewDao.listMasterItemSupplier(ref);
 
     }
+
     ///////////////done
-     ///////////////new method from asep 16-03-2023////////////////////////////
-        public List<Map<String, Object>> listOutlet(Map<String, String> ref) {
+    ///////////////new method from asep 16-03-2023////////////////////////////
+    public List<Map<String, Object>> listOutlet(Map<String, String> ref) {
         return viewDao.listOutlet(ref);
     }
+
     public List<Map<String, Object>> listPos(Map<String, String> ref) {
         return viewDao.listPos(ref);
     }
+
     public List<Map<String, Object>> listTypePos(Map<String, String> ref) {
         return viewDao.listTypePos(ref);
     }
+
     public List<Map<String, Object>> listItem(Map<String, String> ref) {
         return viewDao.listItem(ref);
     }
-     ///////////////done
-    
+    ///////////////done
+
     //////////////////new method from kevin 16-03-2023////////////////////////////
     public List<Map<String, Object>> listMenuGroups(Map<String, String> ref) {
         return viewDao.listMenuGroup(ref);
     }
+
     public List<Map<String, Object>> listItemMenus(Map<String, String> ref) {
         return viewDao.listItemMenus(ref);
     }
     ////////////////done
-    
+
     //////////////////new method from kevin 24-03-2023////////////////////////////
     public List<Map<String, Object>> listRecipeHeader(Map<String, String> ref) {
         return viewDao.listRecipeHeader(ref);
     }
-    
+
     public List<Map<String, Object>> listRecipeDetail(Map<String, String> ref) {
         return viewDao.listRecipeDetail(ref);
     }
-    
+
     public List<Map<String, Object>> listRecipeProduct(Map<String, String> ref) {
         return viewDao.listRecipeProduct(ref);
     }
+
     ////////////////done
-         ///////////////Updated By Pandu 14-03-2023////////////////////////////
+    ///////////////Updated By Pandu 14-03-2023////////////////////////////
     // ========================================================== MODULE MASTER STAFF (M_STAFF) =========================================================================================//
     //PERCOBAAN VIEW SELECT
-    public List<Map<String, Object>> listStaff(Map<String, String> ref) 
-    {
+    public List<Map<String, Object>> listStaff(Map<String, String> ref) {
         return viewDao.listStaff(ref);
     }
+
     // ========================================================== MODULE MASTER REGION (M_GLOBAL) =========================================================================================//
     //PERCOBAAN VIEW REGION
-    public List<Map<String, Object>> listRegion(Map<String, String> ref) 
-    {
+    public List<Map<String, Object>> listRegion(Map<String, String> ref) {
         return viewDao.listRegion(ref);
     }
+
     // ========================================================== MODULE MASTER OUTLET (M_GLOBAL) =========================================================================================//
     //PERCOBAAN VIEW OUTLET
-    public List<Map<String, Object>> listOutlets(Map<String, String> ref) 
-    {
+    public List<Map<String, Object>> listOutlets(Map<String, String> ref) {
         return viewDao.listOutlets(ref);
     }
+
     // ========================================================== MODULE MASTER STAFF (M_STAFF) =========================================================================================//
     //PERCOBAAN VIEW SELECT
-    public List<Map<String, Object>> listViewFormStaff(Map<String, String> ref) 
-    {
+    public List<Map<String, Object>> listViewFormStaff(Map<String, String> ref) {
         return viewDao.listViewFormStaff(ref);
-    }  
+    }
+
     // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL) =========================================================================================//
     //PERCOBAAN VIEW SELECT
-    public List<Map<String, Object>> listViewPosition(Map<String, String> ref) 
-    {
+    public List<Map<String, Object>> listViewPosition(Map<String, String> ref) {
         return viewDao.listViewPosition(ref);
-    }   
+    }
+
     // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL) =========================================================================================//
     //PERCOBAAN VIEW SELECT
-    public List<Map<String, Object>> listViewAccessLevel(Map<String, String> ref) 
-    {
+    public List<Map<String, Object>> listViewAccessLevel(Map<String, String> ref) {
         return viewDao.listViewAccessLevel(ref);
-    }   
-    
+    }
+
     // ========================================================== MODULE MASTER MENU GROUP (M_MENUGRP) =========================================================================================//
     //PERCOBAAN VIEW SELECT
-    public List<Map<String, Object>> listViewGroupUser(Map<String, String> ref) 
-    {
+    public List<Map<String, Object>> listViewGroupUser(Map<String, String> ref) {
         return viewDao.listViewGroupUser(ref);
-    }     
-    
+    }
+
     // ==================================================================================================================================================================================//
-        ///////////////done
-    
+    ///////////////done
     //////////////////new method by Lani 29-03-2023//////////////////////////
     public List<Map<String, Object>> listSalesRecipe(Map<String, String> ref) {
         return viewDao.listSalesRecipe(ref);
     }
-    
+
     public List<Map<String, Object>> listSalesRecipeHeader(Map<String, String> ref) {
         return viewDao.listSalesRecipeHeader(ref);
     }
-    
+
     //////////Group Items by Kevin 29-03-2023
     public List<Map<String, Object>> listMenuItem(Map<String, String> ref) {
         return viewDao.listMenuItem(ref);
     }
-    
+
     public List<Map<String, Object>> listGroupItem(Map<String, String> ref) {
         return viewDao.listGroupItem(ref);
     }
+
     //////////DONE
-     // update outlet 29-03-23
-     public List<Map<String, Object>> viewArea(Map<String, String> ref) {
+    // update outlet 29-03-23
+    public List<Map<String, Object>> viewArea(Map<String, String> ref) {
         return viewDao.viewArea(ref);
     }
-     public List<Map<String, Object>> viewTypeStore(Map<String, String> ref) {
+
+    public List<Map<String, Object>> viewTypeStore(Map<String, String> ref) {
         return viewDao.viewTypeStore(ref);
     }
+    ///////////////done
+    //////////////////new method by Dona 30-03-2023//////////////////////////
+
+    public List<Map<String, Object>> listGlobal(Map<String, String> ref) {
+        return viewDao.listGlobal(ref);
+    }
+    ///////////////done       
 }

@@ -1160,14 +1160,15 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
+
     //////////DONE
     //update outlet 29-03-23
     //list area    
-     @Override
+    @Override
     public List<Map<String, Object>> viewArea(Map<String, String> Logan) {
         String qry = "select distinct area_code,area_desc,region_code,regional_desc from V_STRUCTURE_STORE where region_code= :region_code";
         Map prm = new HashMap();
-         prm.put("region_code", Logan.get("region_code"));
+        prm.put("region_code", Logan.get("region_code"));
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
@@ -1180,8 +1181,9 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
-     //type store 
-  @Override
+    //type store 
+
+    @Override
     public List<Map<String, Object>> viewTypeStore(Map<String, String> Logan) {
         String qry = "select distinct type,type_store from V_STRUCTURE_STORE";
         Map prm = new HashMap();
@@ -1192,13 +1194,32 @@ public class ViewDoaImpl implements ViewDao {
                 Map<String, Object> rt = new HashMap<String, Object>();
                 rt.put("type", rs.getString("type"));
                 rt.put("type_store", rs.getString("type_store"));
-                
+
                 return rt;
             }
         });
         return list;
-    } 
-    
+    }
+///////new methode from Dona 30-03-23//////////////////
 
+    @Override
+    public List<Map<String, Object>> listGlobal(Map<String, String> balance) {
+
+        String qry = "select * from M_GLOBAL WHERE COND  LIKE :cond ";
+        Map prm = new HashMap();
+              prm.put("cond", "%" + balance.get("cond") + "%");
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("code", rs.getString("CODE"));
+                rt.put("description", rs.getString("DESCRITPION"));
+                return rt;
+            }
+        });
+        return list;
+    }
+    ///////////////////done
 
 }
