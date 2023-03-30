@@ -242,13 +242,13 @@ public class ProcessDaoImpl implements ProcessDao {
             
             String qy2 = "INSERT INTO M_POS_STAFF(REGION_CODE,OUTLET_CODE,STAFF_CODE,STAFF_POS_CODE,STAFF_NAME,PASSWORD,"
                     + "ACCESS_LEVEL,RIDER_FLAG,STATUS,USER_UPD,DATE_UPD,TIME_UPD)"
-                    + "VALUES(:regionCode,:outletCode,:staffCode,:staffCode,:staffName,:passwordCode,"
+                    + "VALUES(:regionCode,:outletCode,:staffCode,:staffPosCode,:staffName,:passwordCode,"
                     + ":accesslevelCode,:riderFlag,:statusName,:userUpd,:dateUpd,:timeUpd)"; 
             Map param2 = new HashMap();
             param2.put("regionCode", balancetest1.get("regionCode"));
             param2.put("outletCode", balancetest1.get("outletCode"));
             param2.put("staffCode", balancetest1.get("staffCode")); 
-            param2.put("staffCode", balancetest1.get("staffCode")); 
+            param2.put("staffPosCode", balancetest1.get("staffPosCode")); 
             param2.put("staffName", balancetest1.get("staffName")); 
             param2.put("passwordCode", balancetest1.get("passwordCode")); 
             param2.put("accesslevelCode", balancetest1.get("accesslevelCode"));  
@@ -306,7 +306,7 @@ public class ProcessDaoImpl implements ProcessDao {
         param2.put("regionCode", balancetest.get("regionCode"));
         param2.put("staffName", balancetest.get("staffName"));
         param2.put("staffCode", balancetest.get("staffCode"));
-        param2.put("staffCode", balancetest.get("staffCode")); 
+        param2.put("staffPosCode", balancetest.get("staffPosCode")); 
         param2.put("passwordCode", balancetest.get("passwordCode")); 
         param2.put("accesslevelCode", balancetest.get("accesslevelCode"));  
         param2.put("statusName", balancetest.get("statusName"));
