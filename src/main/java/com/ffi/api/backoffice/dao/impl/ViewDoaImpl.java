@@ -600,9 +600,9 @@ public class ViewDoaImpl implements ViewDao {
                 + "where a.type <>'HO' and a.status='A' and  a.REGION_CODE LIKE :region AND a.AREA_CODE LIKE :area AND a.TYPE LIKE :type";
         Map prm = new HashMap();
         System.err.println("q :" + qry);
-            prm.put("region", "%" + balance.get("region") + "%");
-            prm.put("area", "%" + balance.get("area") + "%");
-            prm.put("type", "%" + balance.get("type") + "%");
+        prm.put("region", "%" + balance.get("region") + "%");
+        prm.put("area", "%" + balance.get("area") + "%");
+        prm.put("type", "%" + balance.get("type") + "%");
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
@@ -610,7 +610,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("region", rs.getString("region_code"));
                 rt.put("regionname", rs.getString("region_name"));
                 rt.put("area", rs.getString("area_code"));
-                rt.put("areaname", rs.getString("area_name")); 
+                rt.put("areaname", rs.getString("area_name"));
                 rt.put("outlet", rs.getString("outlet_code"));
                 rt.put("Initial", rs.getString("initial_outlet"));
                 rt.put("Name", rs.getString("outlet_name"));
@@ -1038,11 +1038,12 @@ public class ViewDoaImpl implements ViewDao {
                 + "JOIN M_ITEM B ON a.item_code=b.item_code\n"
                 + "join m_menu_item c on a.plu_code=c.menu_Item_code\n"
                 + "join m_global d on a.plu_code=d.code\n"
-                + "WHERE c.status='A' and d.cond='ITEM' AND d.status='A' and c.outlet_code=:outletCode\n"
+                + "WHERE c.status='A' and d.cond='ITEM' AND d.status='A' and c.outlet_code=:outletCode and A.PLU_CODE = :pluCode \n"
                 + "GROUP BY c.menu_group_code,A.PLU_CODE,d.description,A.ITEM_CODE,B.ITEM_DESCRIPTION,A.QTY_EI,A.QTY_TA,A.UOM_STOCK, A.user_upd, A.date_upd, A.time_upd\n"
                 + "ORDER BY c.menu_group_code,A.PLU_CODE,d.description,A.ITEM_CODE,B.ITEM_DESCRIPTION,A.QTY_EI,A.QTY_TA,A.UOM_STOCK, A.user_upd, A.date_upd, A.time_upd ";
         Map prm = new HashMap();
         prm.put("outletCode", ref.get("outletCode"));
+        prm.put("pluCode", ref.get("pluCode"));
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
@@ -1063,7 +1064,33 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
-    
+
+    @Override
+    public List<Map<String, Object>> listSalesRecipeHeader(Map<String, String> ref) {
+        String qry = "SELECT A.PLU_CODE,d.description\n"
+                + "FROM M_SALES_RECIPE A\n"
+                + "JOIN M_ITEM B ON a.item_code=b.item_code\n"
+                + "join m_menu_item c on a.plu_code=c.menu_Item_code\n"
+                + "join m_global d on a.plu_code=d.code\n"
+                + "WHERE c.status='A' and d.cond='ITEM' AND d.status='A' and c.outlet_code= :outletCode \n"
+                + "GROUP BY c.menu_group_code,A.PLU_CODE,d.description\n"
+                + "ORDER BY c.menu_group_code,A.PLU_CODE,d.description ";
+        Map prm = new HashMap();
+        prm.put("outletCode", ref.get("outletCode"));
+        //prm.put("pluCode", ref.get("pluCode"));
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("pluCode", rs.getString("PLU_CODE"));
+                rt.put("description", rs.getString("description"));
+                return rt;
+            }
+        });
+        return list;
+    }
+
     //////////Group Items by Kevin 29-03-2023
     @Override
     public List<Map<String, Object>> listMenuItem(Map<String, String> ref) {
@@ -1072,9 +1099,9 @@ public class ViewDoaImpl implements ViewDao {
                 + "join m_global g on g.code = i.menu_item_code "
                 + "where g.cond = 'ITEM' "
                 + "and g.status = 'A' ";
-        if(ref.get("status").equalsIgnoreCase("A")){
+        if (ref.get("status").equalsIgnoreCase("A")) {
             qry = qry + "and i.status = 'A' ";
-        } else if(ref.get("status").equalsIgnoreCase("I")){
+        } else if (ref.get("status").equalsIgnoreCase("I")) {
             qry = qry + "and i.status = 'I' ";
         }
         qry = qry
@@ -1094,7 +1121,7 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
-    
+
     @Override
     public List<Map<String, Object>> listGroupItem(Map<String, String> ref) {
         String qry = "SELECT A.ITEM_CODE,B.ITEM_DESCRIPTION, "

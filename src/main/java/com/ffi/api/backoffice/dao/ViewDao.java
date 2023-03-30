@@ -118,6 +118,8 @@ public interface ViewDao {
     //////////////////new method by Lani 29-03-2023////////////////////////// 
     List<Map<String, Object>> listSalesRecipe(Map<String, String> ref);
     
+    List<Map<String, Object>> listSalesRecipeHeader(Map<String, String> ref);
+    
     //////////Group Items by Kevin 29-03-2023
     List<Map<String, Object>> listMenuItem(Map<String, String> ref);
     
