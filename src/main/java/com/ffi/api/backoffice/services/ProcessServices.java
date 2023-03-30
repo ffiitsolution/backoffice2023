@@ -74,14 +74,12 @@ public class ProcessServices {
     public void deleteStaff(Map<String, String> balancetest) {
         dao.deleteStaff(balancetest);
     }
-   
-
-// ======================================================================================================================================================================================//    
-///////////////Done////////////////////////////    
-
+    
     ///////////////new method from Dona 30-mar-2023 //////////////  
     public void insertFryer(Map<String, String> balance) {
         dao.insertFryer(balance);
     }
     ///////////////////////done
-}
+   
+}    
+
