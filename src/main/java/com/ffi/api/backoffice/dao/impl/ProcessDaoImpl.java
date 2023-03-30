@@ -204,10 +204,10 @@ public class ProcessDaoImpl implements ProcessDao {
 //                    + ":cityCode,:phoneNumber,:mobilePhoneNumber,:employDate,:resignDate,:positionName,:accesslevelCode,:riderFlag,"
 //                    + ":groupidName,:statusName)";       
             String qy = "INSERT INTO M_STAFF(REGION_CODE,OUTLET_CODE,STAFF_CODE,STAFF_NAME,PASSWORD,ID_CARD,SEX,DATE_OF_BIRTH,ADDRESS_1,CITY,"
-                    + "PHONE_NO,MOBILE_PHONE_NO,EMPLOY_DATE,POSITION,ACCESS_LEVEL,RIDER_FLAG,GROUP_ID,STATUS)"
+                    + "PHONE_NO,MOBILE_PHONE_NO,EMPLOY_DATE,POSITION,ACCESS_LEVEL,RIDER_FLAG,GROUP_ID,STATUS,USER_UPD,DATE_UPD,TIME_UPD)"
                     + "VALUES(:regionCode,:outletCode,:staffCode,:staffName,:passwordCode,:idCard,:sexType,:dateOfBirth,:address1,"
                     + ":code,:phoneNumber,:mobilePhoneNumber,:employDate,:positionName,:accesslevelCode,:riderFlag,"
-                    + ":groupidName,:statusName)";     
+                    + ":groupidName,:statusName,:userUpd,:dateUpd,:timeUpd)";     
               
             Map param = new HashMap();
             
@@ -234,13 +234,16 @@ public class ProcessDaoImpl implements ProcessDao {
 //            param.put("groupId", balancetest1.get("groupId"));  
             param.put("groupidName", balancetest1.get("groupidName"));
             param.put("statusName", balancetest1.get("statusName"));  
+            param.put("userUpd", balancetest1.get("userUpd"));
+            param.put("dateUpd", dateNow);
+            param.put("timeUpd", timeStamp);
             
             jdbcTemplate.update(qy, param);
             
             String qy2 = "INSERT INTO M_POS_STAFF(REGION_CODE,OUTLET_CODE,STAFF_CODE,STAFF_POS_CODE,STAFF_NAME,PASSWORD,"
-                    + "ACCESS_LEVEL,RIDER_FLAG,STATUS)"
+                    + "ACCESS_LEVEL,RIDER_FLAG,STATUS,USER_UPD,DATE_UPD,TIME_UPD)"
                     + "VALUES(:regionCode,:outletCode,:staffCode,:staffCode,:staffName,:passwordCode,"
-                    + ":accesslevelCode,:riderFlag,:statusName)"; 
+                    + ":accesslevelCode,:riderFlag,:statusName,:userUpd,:dateUpd,:timeUpd)"; 
             Map param2 = new HashMap();
             param2.put("regionCode", balancetest1.get("regionCode"));
             param2.put("outletCode", balancetest1.get("outletCode"));
@@ -251,7 +254,9 @@ public class ProcessDaoImpl implements ProcessDao {
             param2.put("accesslevelCode", balancetest1.get("accesslevelCode"));  
             param2.put("riderFlag", balancetest1.get("riderFlag"));  
             param2.put("statusName", balancetest1.get("statusName"));  
-            
+            param2.put("userUpd", balancetest1.get("userUpd"));  
+            param2.put("dateUpd", dateNow);
+            param2.put("timeUpd", timeStamp);           
             
             jdbcTemplate.update(qy2, param2);
             
@@ -264,8 +269,8 @@ public class ProcessDaoImpl implements ProcessDao {
             String qy = "UPDATE M_STAFF SET "
                     + "PASSWORD=:passwordCode, EMPLOY_DATE=:employDate, POSITION=:positionName, ACCESS_LEVEL=:accesslevelCode, RIDER_FLAG=:riderFlag,"
                     + "SEX=:sexType, DATE_OF_BIRTH=:dateOfBirth, ADDRESS_1=:address1, CITY=:code, PHONE_NO=:phoneNumber, "
-                    + "MOBILE_PHONE_NO=:mobilePhoneNumber, GROUP_ID=:groupidName, STATUS=:statusName, USER_UPD=:userUpd "
-                    + "WHERE STAFF_CODE=:staffCode ";    //    String qy = "UPDATE M_STAFF SET STAFF_NAME=:staffName, STAFF_FULL_NAME=:staffFullName, PASSWORD=:staffPassword, USER_UPD=:staffUserUpdate, DATE_UPD=:staffDateUpdate, TIME_UPD=:staffTimeUpdate where STAFF_CODE=:staffCode ";
+                    + "MOBILE_PHONE_NO=:mobilePhoneNumber, GROUP_ID=:groupidName, STATUS=:statusName, USER_UPD=:userUpd, DATE_UPD=:dateUpd, TIME_UPD=:timeUpd "
+                    + "WHERE STAFF_CODE=:staffCode ";    //    String qy = "UPDATE M_STAFF SET STAFF_NAME=:staffName, STAFF_FULL_NAME=:staffFullName, PASSWORD=:staffPassword, USER_UPD=:dateUpd, DATE_UPD=:timeUpd, TIME_UPD=:staffTimeUpdate where STAFF_CODE=:staffCode ";
      
         Map param = new HashMap();
             param.put("regionCode", balancetest.get("regionCode"));
@@ -292,11 +297,13 @@ public class ProcessDaoImpl implements ProcessDao {
 //            param.put("groupId", balancetest.get("groupId"));
             param.put("statusName", balancetest.get("statusName"));
             param.put("userUpd", balancetest.get("userUpd"));
+            param.put("dateUpd", dateNow);
+            param.put("timeUpd", timeStamp);
             
         jdbcTemplate.update(qy, param);
         
         // UPDATE DATA KE DALAM TABLE YG KEDUA
-        String qy2 = "UPDATE M_POS_STAFF SET PASSWORD=:passwordCode,STATUS=:statusName,ACCESS_LEVEL=:accesslevelCode WHERE STAFF_CODE=:staffCode ";
+        String qy2 = "UPDATE M_POS_STAFF SET PASSWORD=:passwordCode,STATUS=:statusName,ACCESS_LEVEL=:accesslevelCode,USER_UPD=:userUpd,DATE_UPD=:dateUpd,TIME_UPD=:timeUpd WHERE STAFF_CODE=:staffCode ";
         Map param2 = new HashMap();
         param2.put("regionCode", balancetest.get("regionCode"));
         param2.put("staffName", balancetest.get("staffName"));
@@ -305,19 +312,12 @@ public class ProcessDaoImpl implements ProcessDao {
         param2.put("passwordCode", balancetest.get("passwordCode")); 
         param2.put("accesslevelCode", balancetest.get("accesslevelCode"));  
         param2.put("statusName", balancetest.get("statusName"));
+        param2.put("dateUpd", dateNow);
+        param2.put("timeUpd", timeStamp);        
         jdbcTemplate.update(qy2, param2);
-    }
-
-    @Override
-    public void deleteStaff(Map<String, String> balancetest) 
-    {
-       // DELETE DATA KE DALAM TABLE YG PERTAMA
-        String qy = "DELETE FROM M_STAFF WHERE STAFF_CODE=:staffCode ";
-        Map param = new HashMap();
-        param.put("staffCode", balancetest.get("staffCodex"));
-        jdbcTemplate.update(qy, param);
     }
     // ==================================================================================================================================================================================//
     ///////////////Done////////////////////////////
+
 
 }

@@ -908,35 +908,6 @@ public class IndexController {
         return rm;
     }
 
- //PERCOBAAN DELETE TABLE MASTER STAFF (M_STAFF)
-    @RequestMapping(value = "/delete-staff", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Digunakan untuk Delete Data", response = Object.class)
-    @ApiResponses(value = 
-        {
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 404, message = "The resource not found")
-        }
-    )    
-    public @ResponseBody
-    ResponseMessage deleteStaff(@RequestBody String param) throws JRException, IOException, Exception 
-    {
-        Gson gsn = new Gson();
-        Map<String, String> balancetest = gsn.fromJson(param, new TypeToken<Map<String, Object>>() 
-        {}.getType());
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        ResponseMessage rm = new ResponseMessage();
-        try 
-        {
-            processServices.deleteStaff(balancetest);
-            rm.setSuccess(true);
-            rm.setMessage("Delete Success");
-        } catch (Exception e) {
-            rm.setSuccess(false);
-            rm.setMessage("Delete Failed : " + e.getMessage());
-        }
-        rm.setItem(list);
-        return rm;
-    }   
     //==================================================================================================================================================================================================//
 
   //PERCOBAAN VIEW REGION CODE, REGION NAME DI TABLE MASTER GLOBAL (M_GLOBAL)

@@ -66,11 +66,7 @@ public class ProcessServices {
     public void updateStaff(Map<String, String> balancetest) {
         dao.updateStaff(balancetest);
     }    
-    
-    //PERCOBAAN DELETE DATA MASTER STAFF (M_STAFF)
-    public void deleteStaff(Map<String, String> balancetest) {
-        dao.deleteStaff(balancetest);
-    }  
+
 // ======================================================================================================================================================================================//    
 ///////////////Done////////////////////////////    
 }
