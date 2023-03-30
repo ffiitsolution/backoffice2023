@@ -1166,4 +1166,47 @@ public class IndexController {
         return rm;
     }
     //////////DONE
+    //tambahan outlet asep 29-maret-2023
+    //View list area 29-maret 2023================================================================================================
+   @RequestMapping(value = "/list-area", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view area code", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response PostViewArea(@RequestBody String param) throws JRException, IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> logan = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+
+        Response res = new Response();
+        res.setData(viewServices.viewArea(logan));
+        return res;
+
+    }
+     //View list type 29-maret 2023================================================================================================
+   @RequestMapping(value = "/list-type-store", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view type store", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response PostViewTypeStore(@RequestBody String param) throws JRException, IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> logan = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+
+        Response res = new Response();
+        res.setData(viewServices.viewTypeStore(logan));
+        return res;
+
+    }
+    
+    
 }

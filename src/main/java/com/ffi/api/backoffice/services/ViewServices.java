@@ -207,4 +207,11 @@ public class ViewServices {
         return viewDao.listGroupItem(ref);
     }
     //////////DONE
+     // update outlet 29-03-23
+     public List<Map<String, Object>> viewArea(Map<String, String> ref) {
+        return viewDao.viewArea(ref);
+    }
+     public List<Map<String, Object>> viewTypeStore(Map<String, String> ref) {
+        return viewDao.viewTypeStore(ref);
+    }
 }
