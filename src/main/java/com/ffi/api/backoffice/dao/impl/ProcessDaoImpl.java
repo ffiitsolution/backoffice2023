@@ -258,9 +258,7 @@ public class ProcessDaoImpl implements ProcessDao {
             param2.put("dateUpd", dateNow);
             param2.put("timeUpd", timeStamp);           
             
-            jdbcTemplate.update(qy2, param2);
-            
-        
+            jdbcTemplate.update(qy2, param2);       
     }
     
     @Override
