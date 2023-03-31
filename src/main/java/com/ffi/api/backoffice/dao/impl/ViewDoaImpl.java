@@ -1205,9 +1205,10 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> listGlobal(Map<String, String> balance) {
 
-        String qry = "select * from M_GLOBAL WHERE COND  LIKE :cond ";
+        String qry = "select CODE,DESCRITPION from M_GLOBAL WHERE COND  LIKE :cond AND STATUS LIKE :status ";
         Map prm = new HashMap();
               prm.put("cond", "%" + balance.get("cond") + "%");
+              prm.put("status", "%" + balance.get("status") + "%");
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
