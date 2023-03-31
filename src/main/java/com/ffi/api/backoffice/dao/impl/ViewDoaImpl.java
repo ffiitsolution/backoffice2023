@@ -830,7 +830,7 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listStaff(Map<String, String> ref) {
-        String qry = "SELECT DISTINCT VS.REGIONAL_DESC,VS.OUTLET_NAME,VS.AREA_DESC,G.DESCRIPTION CITY_STAFF,\n"
+        String qry = "SELECT DISTINCT VS.REGIONAL_DESC,VS.OUTLET_NAME,VS.AREA_DESC,,VS.AREA_CODE,G.DESCRIPTION CITY_STAFF,\n"
                 + "G1.DESCRIPTION POSITION_NAME,G2.DESCRIPTION ACCESS_NAME,\n"
                 + "S.* FROM M_STAFF S\n"
                 + "JOIN V_STRUCTURE_STORE VS ON VS.OUTLET_CODE = S.OUTLET_CODE \n"
@@ -856,6 +856,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("regionName", rs.getString("REGIONAL_DESC"));
                 rt.put("outletName", rs.getString("OUTLET_NAME"));
                 rt.put("areaName", rs.getString("AREA_DESC"));
+                rt.put("areaCode", rs.getString("AREA_CODE"));
                 rt.put("cityStaff", rs.getString("CITY_STAFF"));
                 rt.put("positionName", rs.getString("POSITION_NAME"));
                 rt.put("accesssName", rs.getString("ACCESS_NAME"));
@@ -874,7 +875,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("mobilePhoneNumber", rs.getString("MOBILE_PHONE_NO"));
                 rt.put("employDate", rs.getString("EMPLOY_DATE"));
                 rt.put("resignDate", rs.getString("RESIGN_DATE"));
-                rt.put("positionName", rs.getString("POSITION"));
+                rt.put("positionCode", rs.getString("POSITION"));
                 rt.put("accessLevel", rs.getString("ACCESS_LEVEL"));
                 rt.put("riderFlag", rs.getString("RIDER_FLAG"));
                 rt.put("groupId", rs.getString("GROUP_ID"));
