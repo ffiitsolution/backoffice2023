@@ -1205,7 +1205,7 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> listGlobal(Map<String, String> balance) {
 
-        String qry = "select CODE,DESCRITPION from M_GLOBAL WHERE COND  LIKE :cond AND STATUS LIKE :status ";
+        String qry = "select CODE,DESCRIPTION from M_GLOBAL WHERE COND  LIKE :cond AND STATUS LIKE :status ";
         Map prm = new HashMap();
               prm.put("cond", "%" + balance.get("cond") + "%");
               prm.put("status", "%" + balance.get("status") + "%");
@@ -1215,7 +1215,7 @@ public class ViewDoaImpl implements ViewDao {
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
                 rt.put("code", rs.getString("CODE"));
-                rt.put("description", rs.getString("DESCRITPION"));
+                rt.put("description", rs.getString("DESCRIPTION"));
                 return rt;
             }
         });
