@@ -194,107 +194,95 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("posType", balance.get("posType"));
         jdbcTemplate.update(qy, param);
     }
-     ////////////done
-             ///////////////Updated By Pandu 30-03-2023////////////////////////////
+    ////////////done
+    ///////////////Updated By Pandu 30-03-2023////////////////////////////
     // MODULE MASTER STAFF (M_STAFF) Revisi by lani 31-03-23 //   
 
     @Override
-    public void insertStaff(Map<String, String> balancetest1) 
-    {    
-            String qy = "INSERT INTO M_STAFF(REGION_CODE,OUTLET_CODE,STAFF_CODE,STAFF_NAME,PASSWORD,ID_CARD,SEX,DATE_OF_BIRTH,ADDRESS_1,CITY,"
-                    + "PHONE_NO,MOBILE_PHONE_NO,EMPLOY_DATE,POSITION,ACCESS_LEVEL,RIDER_FLAG,GROUP_ID,STATUS,USER_UPD,DATE_UPD,TIME_UPD)"
-                    + "VALUES(:regionCode,:outletCode,:staffCode,:staffName,:passwordCode,:idCard,:sexType,:dateOfBirth,:address1,"
-                    + ":code,:phoneNumber,:mobilePhoneNumber,:employDate,:positionCode,:accesslevelCode,:riderFlag,"
-                    + ":groupidName,:status,:userUpd,:dateUpd,:timeUpd)";    
-            
-            String qy2 = "INSERT INTO M_POS_STAFF(REGION_CODE,OUTLET_CODE,STAFF_CODE,STAFF_POS_CODE,STAFF_NAME,PASSWORD,"
-                    + "ACCESS_LEVEL,RIDER_FLAG,STATUS,USER_UPD,DATE_UPD,TIME_UPD)"
-                    + "VALUES(:regionCode,:outletCode,:staffCode,:staffPosCode,:staffName,:passwordCode,"
-                    + ":accesslevelCode,:riderFlag,:status,:userUpd,:dateUpd,:timeUpd)";
-            
-            Map param = new HashMap();
-            param.put("regionCode", balancetest1.get("regionCode"));
-            param.put("outletCode", balancetest1.get("outletCode"));
-            param.put("staffCode", balancetest1.get("staffCode"));            
-            param.put("staffName", balancetest1.get("staffName")); 
-            param.put("staffFullName", balancetest1.get("staffFullName"));
-            param.put("passwordCode", balancetest1.get("passwordCode"));  
-            param.put("idCard", balancetest1.get("idCard"));  
-            param.put("sexType", balancetest1.get("sexType"));  
-            param.put("dateOfBirth", balancetest1.get("dateOfBirth"));  
-            param.put("address1", balancetest1.get("address1"));  
-            param.put("address2", balancetest1.get("address2")); 
-            param.put("code", balancetest1.get("cityCode"));  
-            param.put("phoneNumber", balancetest1.get("phoneNumber"));  
-            param.put("mobilePhoneNumber", balancetest1.get("mobile"));  
-            param.put("employDate", balancetest1.get("employeeDate"));   
-            param.put("positionCode", balancetest1.get("positionCode")); 
-            param.put("accesslevelCode", balancetest1.get("accessLevelCode"));  
-            param.put("riderFlag", balancetest1.get("riderFlag"));  
-            param.put("groupidName", balancetest1.get("groupCode"));
-            param.put("staffPosCode", balancetest1.get("staffPosCode"));
-            param.put("status", balancetest1.get("status"));  
-            param.put("userUpd", balancetest1.get("userUpd"));
-            param.put("dateUpd", dateNow);
-            param.put("timeUpd", timeStamp);
-            
-            jdbcTemplate.update(qy, param);
-            jdbcTemplate.update(qy2, param);       
-    }
-    
-    @Override
-    public void updateStaff(Map<String, String> balancetest) 
-    {
-            String qy = "UPDATE M_STAFF SET "
-                    + "PASSWORD=:passwordCode, EMPLOY_DATE=:employDate, POSITION=:positionName, ACCESS_LEVEL=:accesslevelCode, RIDER_FLAG=:riderFlag,"
-                    + "SEX=:sexType, DATE_OF_BIRTH=:dateOfBirth, ADDRESS_1=:address1, CITY=:code, PHONE_NO=:phoneNumber, "
-                    + "MOBILE_PHONE_NO=:mobilePhoneNumber, GROUP_ID=:groupidName, STATUS=:statusName, USER_UPD=:userUpd, DATE_UPD=:dateUpd, TIME_UPD=:timeUpd "
-                    + "WHERE STAFF_CODE=:staffCode ";    //    String qy = "UPDATE M_STAFF SET STAFF_NAME=:staffName, STAFF_FULL_NAME=:staffFullName, PASSWORD=:staffPassword, USER_UPD=:dateUpd, DATE_UPD=:timeUpd, TIME_UPD=:staffTimeUpdate where STAFF_CODE=:staffCode ";
-     
+    public void insertStaff(Map<String, String> balancetest1) {
+        String qy = "INSERT INTO M_STAFF(REGION_CODE,OUTLET_CODE,STAFF_CODE,STAFF_NAME,PASSWORD,ID_CARD,SEX,DATE_OF_BIRTH,ADDRESS_1,ADDRESS_2,CITY,"
+                + "PHONE_NO,MOBILE_PHONE_NO,EMPLOY_DATE,POSITION,ACCESS_LEVEL,RIDER_FLAG,GROUP_ID,STATUS,USER_UPD,DATE_UPD,TIME_UPD,STAFF_FULL_NAME)"
+                + "VALUES(:regionCode,:outletCode,:staffCode,:staffName,:passwordCode,:idCard,:sexType,:dateOfBirth,:address1,:address2,"
+                + ":code,:phoneNumber,:mobilePhoneNumber,:employDate,:positionCode,:accesslevelCode,:riderFlag,"
+                + ":groupidName,:status,:userUpd,:dateUpd,:timeUpd,:staffFullName)";
+
+        String qy2 = "INSERT INTO M_POS_STAFF(REGION_CODE,OUTLET_CODE,STAFF_CODE,STAFF_POS_CODE,STAFF_NAME,PASSWORD,"
+                + "ACCESS_LEVEL,RIDER_FLAG,STATUS,USER_UPD,DATE_UPD,TIME_UPD)"
+                + "VALUES(:regionCode,:outletCode,:staffCode,:staffPosCode,:staffName,:passwordCode,"
+                + ":accesslevelCode,:riderFlag,:status,:userUpd,:dateUpd,:timeUpd)";
+
         Map param = new HashMap();
-            param.put("regionCode", balancetest.get("regionCode"));
-            param.put("outletCode", balancetest.get("outletCode"));
-            param.put("staffCode", balancetest.get("staffCode"));            
-            param.put("staffName", balancetest.get("staffName"));            
-//            param.put("staffFullName", balancetest.get("staffFullName"));            
-            param.put("passwordCode", balancetest.get("passwordCode"));  
-            param.put("idCard", balancetest.get("idCard"));  
-            param.put("sexType", balancetest.get("sexType"));  
-            param.put("dateOfBirth", balancetest.get("dateOfBirth"));  
-            param.put("address1", balancetest.get("address1"));  
-//            param.put("address2", balancetest.get("address2"));  
-            param.put("code", balancetest.get("code"));  
-            param.put("phoneNumber", balancetest.get("phoneNumber"));  
-            param.put("mobilePhoneNumber", balancetest.get("mobilePhoneNumber"));  
-            param.put("employDate", balancetest.get("employDate"));  
-//            param.put("resignDate", balancetest.get("resignDate"));  
-           // param.put("staffPhoto", balancetest1.get("staffPhoto"));  
-            param.put("positionName", balancetest.get("positionName")); 
-            param.put("accesslevelCode", balancetest.get("accesslevelCode"));  
-            param.put("riderFlag", balancetest.get("riderFlag"));  
-            param.put("groupidName", balancetest.get("groupidName"));  
-//            param.put("groupId", balancetest.get("groupId"));
-            param.put("statusName", balancetest.get("statusName"));
-            param.put("userUpd", balancetest.get("userUpd"));
-            param.put("dateUpd", dateNow);
-            param.put("timeUpd", timeStamp);
-            
+        param.put("regionCode", balancetest1.get("regionCode"));
+        param.put("outletCode", balancetest1.get("outletCode"));
+        param.put("staffCode", balancetest1.get("staffCode"));
+        param.put("staffName", balancetest1.get("staffName"));
+        param.put("staffFullName", balancetest1.get("staffFullName"));
+        param.put("passwordCode", balancetest1.get("passwordCode"));
+        param.put("idCard", balancetest1.get("idCard"));
+        param.put("sexType", balancetest1.get("sexType"));
+        param.put("dateOfBirth", balancetest1.get("dateOfBirth"));
+        param.put("address1", balancetest1.get("address1"));
+        param.put("address2", balancetest1.get("address2"));
+        param.put("code", balancetest1.get("cityCode"));
+        param.put("phoneNumber", balancetest1.get("phoneNumber"));
+        param.put("mobilePhoneNumber", balancetest1.get("mobile"));
+        param.put("employDate", balancetest1.get("employeeDate"));
+        param.put("positionCode", balancetest1.get("positionCode"));
+        param.put("accesslevelCode", balancetest1.get("accessLevelCode"));
+        param.put("riderFlag", balancetest1.get("riderFlag"));
+        param.put("groupidName", balancetest1.get("groupCode"));
+        param.put("staffPosCode", balancetest1.get("staffPosCode"));
+        param.put("status", balancetest1.get("status"));
+        param.put("userUpd", balancetest1.get("userUpd"));
+        param.put("dateUpd", dateNow);
+        param.put("timeUpd", timeStamp);
+
         jdbcTemplate.update(qy, param);
-        
-        // UPDATE DATA KE DALAM TABLE YG KEDUA
-        String qy2 = "UPDATE M_POS_STAFF SET PASSWORD=:passwordCode,STATUS=:statusName,ACCESS_LEVEL=:accesslevelCode,USER_UPD=:userUpd,DATE_UPD=:dateUpd,TIME_UPD=:timeUpd WHERE STAFF_CODE=:staffCode ";
-        Map param2 = new HashMap();
-        param2.put("regionCode", balancetest.get("regionCode"));
-        param2.put("staffName", balancetest.get("staffName"));
-        param2.put("staffCode", balancetest.get("staffCode"));
-        param2.put("staffPosCode", balancetest.get("staffPosCode")); 
-        param2.put("passwordCode", balancetest.get("passwordCode")); 
-        param2.put("accesslevelCode", balancetest.get("accesslevelCode"));  
-        param2.put("statusName", balancetest.get("statusName"));
-        param2.put("dateUpd", dateNow);
-        param2.put("timeUpd", timeStamp);        
-        jdbcTemplate.update(qy2, param2);
+        jdbcTemplate.update(qy2, param);
     }
+
+    @Override
+    public void updateStaff(Map<String, String> balancetest1) {
+        String qy = "UPDATE M_STAFF SET STAFF_FULL_NAME = :staffFullName, ADDRESS_2 = :address2,"
+                + "PASSWORD=:passwordCode, EMPLOY_DATE=:employDate, POSITION=:positionCode, ACCESS_LEVEL=:accesslevelCode, RIDER_FLAG=:riderFlag,"
+                + "SEX=:sexType, DATE_OF_BIRTH=:dateOfBirth, ADDRESS_1=:address1, CITY=:code, PHONE_NO=:phoneNumber, "
+                + "MOBILE_PHONE_NO=:mobilePhoneNumber, GROUP_ID=:groupidName, STATUS=:status, USER_UPD=:userUpd, DATE_UPD=:dateUpd, TIME_UPD=:timeUpd "
+                + "WHERE STAFF_CODE=:staffCode AND OUTLET_CODE =:outletCode ";    //    String qy = "UPDATE M_STAFF SET STAFF_NAME=:staffName, STAFF_FULL_NAME=:staffFullName, PASSWORD=:staffPassword, USER_UPD=:dateUpd, DATE_UPD=:timeUpd, TIME_UPD=:staffTimeUpdate where STAFF_CODE=:staffCode ";
+
+        String qy2 = "UPDATE M_POS_STAFF SET PASSWORD=:passwordCode,STATUS=:status,"
+                + " ACCESS_LEVEL=:accesslevelCode,USER_UPD=:userUpd,DATE_UPD=:dateUpd,TIME_UPD=:timeUpd "
+                + " WHERE STAFF_CODE=:staffCode AND OUTLET_CODE = :outletCode ";
+        
+        Map param = new HashMap();
+        param.put("regionCode", balancetest1.get("regionCode"));
+        param.put("outletCode", balancetest1.get("outletCode"));
+        param.put("staffCode", balancetest1.get("staffCode"));
+        param.put("staffName", balancetest1.get("staffName"));
+        param.put("staffFullName", balancetest1.get("staffFullName"));
+        param.put("passwordCode", balancetest1.get("passwordCode"));
+        param.put("idCard", balancetest1.get("idCard"));
+        param.put("sexType", balancetest1.get("sexType"));
+        param.put("dateOfBirth", balancetest1.get("dateOfBirth"));
+        param.put("address1", balancetest1.get("address1"));
+        param.put("address2", balancetest1.get("address2"));
+        param.put("code", balancetest1.get("cityCode"));
+        param.put("phoneNumber", balancetest1.get("phoneNumber"));
+        param.put("mobilePhoneNumber", balancetest1.get("mobile"));
+        param.put("employDate", balancetest1.get("employeeDate"));
+        param.put("positionCode", balancetest1.get("positionCode"));
+        param.put("accesslevelCode", balancetest1.get("accessLevelCode"));
+        param.put("riderFlag", balancetest1.get("riderFlag"));
+        param.put("groupidName", balancetest1.get("groupCode"));
+        param.put("staffPosCode", balancetest1.get("staffPosCode"));
+        param.put("status", balancetest1.get("status"));
+        param.put("userUpd", balancetest1.get("userUpd"));
+        param.put("dateUpd", dateNow);
+        param.put("timeUpd", timeStamp);
+
+        jdbcTemplate.update(qy, param);
+        jdbcTemplate.update(qy2, param);
+    }
+
     @Override
     public void deleteStaff(Map<String, String> balancetest) {
         // DELETE DATA KE DALAM TABLE YG PERTAMA
@@ -306,8 +294,6 @@ public class ProcessDaoImpl implements ProcessDao {
 
     // ==================================================================================================================================================================================//
     ///////////////Done////////////////////////////
-
-
     ///////////////new method from dona 28-02-2023////////////////////////////
     @Override
     public void insertFryer(Map<String, String> balance) {
@@ -329,5 +315,4 @@ public class ProcessDaoImpl implements ProcessDao {
     }
 
     ///////////////Done////////////////////////////
-
 }
