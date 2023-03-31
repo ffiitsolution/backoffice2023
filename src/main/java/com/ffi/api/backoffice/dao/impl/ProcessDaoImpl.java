@@ -211,7 +211,6 @@ public class ProcessDaoImpl implements ProcessDao {
                     + "VALUES(:regionCode,:outletCode,:staffCode,:staffName,:passwordCode,:idCard,:sexType,:dateOfBirth,:address1,"
                     + ":code,:phoneNumber,:mobilePhoneNumber,:employDate,:positionName,:accesslevelCode,:riderFlag,"
                     + ":groupidName,:statusName,:userUpd,:dateUpd,:timeUpd)";     
-              
             Map param = new HashMap();
             
             param.put("regionCode", balancetest1.get("regionCode"));

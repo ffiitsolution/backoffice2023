@@ -824,17 +824,26 @@ public class ViewDoaImpl implements ViewDao {
         return list;
     }
     ///////////done
-    ///////////////Updated By Pandu 14-03-2023////////////////////////////
+    ///////////////Updated By Pandu 14-03-2023-- Update By Lani 31 March 2023
     // ========================================================== MODULE MASTER STAFF (M_STAFF) ==========================================================================================//  
     //VIEW USER STAFF DATA MASTER STAFF (M_STAFF)
 
     @Override
     public List<Map<String, Object>> listStaff(Map<String, String> ref) {
-        String qry = "SELECT DISTINCT * FROM M_STAFF WHERE OUTLET_CODE =:outletCode";
+        String qry = "SELECT DISTINCT VS.REGIONAL_DESC,VS.OUTLET_NAME,VS.AREA_DESC,G.DESCRIPTION CITY_STAFF,\n"
+                + "G1.DESCRIPTION POSITION_NAME,G2.DESCRIPTION ACCESS_NAME,\n"
+                + "S.* FROM M_STAFF S\n"
+                + "JOIN V_STRUCTURE_STORE VS ON VS.OUTLET_CODE = S.OUTLET_CODE \n"
+                + "LEFT JOIN M_GLOBAL G ON G.CODE = S.CITY AND G.COND = 'CITY'\n"
+                + "LEFT JOIN M_GLOBAL G1 ON G1.CODE = S.POSITION AND G1.COND = 'POSITION'\n"
+                + "LEFT JOIN M_GLOBAL G2 ON G2.CODE = S.ACCESS_LEVEL AND G2.COND = 'ACCESS'\n"
+                + "WHERE S.OUTLET_CODE = :outletCode AND S.STATUS LIKE :status AND S.POSITION LIKE :position";
         Map prm = new HashMap();
 
         // PARAMETER YG DIGUNAKAN SETELAH WHERE DIDALAM QUERY //
         prm.put("outletCode", ref.get("outletCode"));
+        prm.put("status", "%"+ref.get("status")+"%");
+        prm.put("position", "%"+ref.get("position")+"%");
 
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
@@ -844,6 +853,12 @@ public class ViewDoaImpl implements ViewDao {
 
                 // PARAMETER YG DIGUNAKAN UNTUK MENAMPILKAN VALUE YANG ADA DIDALAM FIELD(KOLOM) SAAT MENGGUNAKAN QUERY //
                 rt.put("regionCode", rs.getString("REGION_CODE"));
+                rt.put("regionName", rs.getString("REGIONAL_DESC"));
+                rt.put("outletName", rs.getString("OUTLET_NAME"));
+                rt.put("areaName", rs.getString("AREA_DESC"));
+                rt.put("cityStaff", rs.getString("CITY_STAFF"));
+                rt.put("positionName", rs.getString("POSITION_NAME"));
+                rt.put("accesssName", rs.getString("ACCESS_NAME"));
                 rt.put("outletCode", rs.getString("OUTLET_CODE"));
                 rt.put("staffCode", rs.getString("STAFF_CODE"));
                 rt.put("staffName", rs.getString("STAFF_NAME"));
@@ -1207,8 +1222,8 @@ public class ViewDoaImpl implements ViewDao {
 
         String qry = "select CODE,DESCRIPTION from M_GLOBAL WHERE COND  LIKE :cond AND STATUS LIKE :status ";
         Map prm = new HashMap();
-              prm.put("cond", "%" + balance.get("cond") + "%");
-              prm.put("status", "%" + balance.get("status") + "%");
+        prm.put("cond", "%" + balance.get("cond") + "%");
+        prm.put("status", "%" + balance.get("status") + "%");
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
