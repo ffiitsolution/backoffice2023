@@ -756,7 +756,7 @@ public class ViewDoaImpl implements ViewDao {
     ///////////////new method from kevin 24-mar-2023 //////////////
     @Override
     public List<Map<String, Object>> listRecipeHeader(Map<String, String> ref) {
-        String qry = "select rh.recipe_code, rh.recipe_remark, rh.mpcs_group, mh.description, rh.status "
+        String qry = "select distinct rh.recipe_code, rh.recipe_remark, rh.mpcs_group, mh.description, rh.status "
                 + "from m_recipe_header rh "
                 + "join m_mpcs_header mh on mh.mpcs_group = rh.mpcs_group "
                 + "order by rh.status, rh.recipe_code";
