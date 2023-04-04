@@ -144,16 +144,21 @@ public class ProcessDaoImpl implements ProcessDao {
 
     ///////////////new method from dona 06-03-2023////////////////////////////
     public void updateMpcs(Map<String, String> balance) {
-        //String qy = "UPDATE BUDGET_HEADER SET STATUS=:status where trans_no=:transNo ";
-        String qy = "UPDATE M_MPCS_DETAIL SET STATUS=:status,USER_UPD= :userUpd,DATE_UPD=:dateUpd,TIME_UPD=:timeUpd "
-                + "where fryer_type=:fryerType and fryer_type_seq=:fryerTypeSeq";
+        String qy = "UPDATE M_MPCS_DETAIL SET FRYER_TYPE_CNT= :fryerTypeCnt,FRYER_TYPE_RESET= :fryerTypeReset,"
+                + "STATUS= :status,USER_UPD= :userUpd,DATE_UPD= :dateUpd,TIME_UPD= :timeUpd,FRYER_TYPE_SEQ_CNT= :fryerTypeSeqCnt "
+                + "where fryer_type=:fryerType and OUTLET_CODE=:outletCode and FRYER_TYPE_SEQ=:fryerTypeSeq ";
         Map param = new HashMap();
-        param.put("status", balance.get("status"));
+        param.put("outletCode", balance.get("outletCode"));
         param.put("fryerType", balance.get("fryerType"));
         param.put("fryerTypeSeq", balance.get("fryerTypeSeq"));
+        param.put("fryerTypeCnt", balance.get("fryerTypeCnt"));
+        param.put("fryerTypeReset", balance.get("fryerTypeReset"));
+        param.put("fryerTypeSeqCnt", balance.get("fryerTypeSeqCnt"));
+        param.put("status", balance.get("status"));
         param.put("userUpd", balance.get("userUpd"));
         param.put("dateUpd", dateNow);
         param.put("timeUpd", timeStamp);
+        
         jdbcTemplate.update(qy, param);
     }
     /////////////////////////////////done
