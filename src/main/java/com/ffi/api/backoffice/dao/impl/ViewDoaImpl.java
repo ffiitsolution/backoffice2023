@@ -1220,7 +1220,6 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listGlobal(Map<String, String> balance) {
-
         String qry = "select CODE,DESCRIPTION from M_GLOBAL WHERE COND  LIKE :cond AND STATUS LIKE :status ";
         Map prm = new HashMap();
         prm.put("cond", "%" + balance.get("cond") + "%");
@@ -1238,5 +1237,42 @@ public class ViewDoaImpl implements ViewDao {
         return list;
     }
     ///////////////////done
+    ///////////////NEW METHOD LIST COND AND DATA GLOBAL BY LANI 4 APRIL 2023////
+    @Override
+    public List<Map<String, Object>> listGlobalCond(Map<String, String> balance) {
+        String qry = "select distinct cond from m_global order by cond asc ";
+        Map prm = new HashMap();
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("cond", rs.getString("cond"));
+                return rt;
+            }
+        });
+        return list;
+    }
+    
+    @Override
+    public List<Map<String, Object>> listMasterGlobal(Map<String, String> balance) {
+        String qry = "select COND,CODE,DESCRIPTION,VALUE,STATUS from m_global WHERE COND = 'OUTLET' ";
+        Map prm = new HashMap();
+        prm.put("cond", balance.get("cond"));
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("cond", rs.getString("COND"));
+                rt.put("code", rs.getString("CODE"));
+                rt.put("description", rs.getString("DESCRIPTION"));
+                rt.put("value", rs.getString("VALUE"));
+                rt.put("status", rs.getString("STATUS"));
+                return rt;
+            }
+        });
+        return list;
+    }
 
 }

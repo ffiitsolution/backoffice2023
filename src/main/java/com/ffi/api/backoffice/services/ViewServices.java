@@ -225,5 +225,12 @@ public class ViewServices {
     public List<Map<String, Object>> listGlobal(Map<String, String> ref) {
         return viewDao.listGlobal(ref);
     }
-    ///////////////done       
+    ///////////////done 
+    ///////////////NEW METHOD LIST COND AND DATA GLOBAL BY LANI 4 APRIL 2023////
+    public List<Map<String, Object>> listGlobalCond(Map<String, String> ref) {
+        return viewDao.listGlobalCond(ref);
+    }
+    public List<Map<String, Object>> listMasterGlobal(Map<String, String> ref) {
+        return viewDao.listMasterGlobal(ref);
+    }
 }
