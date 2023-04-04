@@ -1111,7 +1111,7 @@ public class ViewDoaImpl implements ViewDao {
     //////////Group Items by Kevin 29-03-2023
     @Override
     public List<Map<String, Object>> listMenuItem(Map<String, String> ref) {
-        String qry = "select DISTINCT i.menu_item_code, g.description, i.status "
+        String qry = "select distinct i.menu_item_code, g.description, i.status "
                 + "from m_menu_item i "
                 + "join m_global g on g.code = i.menu_item_code "
                 + "where g.cond = 'ITEM' "
@@ -1151,7 +1151,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "and a.status='A' and c.status='A' and d.cond='ITEM' AND d.status='A' "
                 + "GROUP BY c.menu_group_code,A.group_item_code,d.description,A.ITEM_CODE,B.ITEM_DESCRIPTION,A.QTY_stock,A.QTY_stock_e,A.QTY_stock_T,A.UOM_STOCK,A.Status "
                 + "union all "
-                + "select m.menu_set_item_code, g.description, m.qty, "
+                + "select distinct m.menu_set_item_code, g.description, m.qty, "
                 + "0 qty_stock_e, 0 qty_stock_t, 'PCS' uom_stock, m.status "
                 + "from m_menu_set m "
                 + "join m_global g on g.code = m.menu_set_item_code "
