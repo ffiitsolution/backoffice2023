@@ -80,9 +80,14 @@ public class ProcessServices {
         dao.insertFryer(balance);
     }
     ///////////////////////done
+    
+    ///////////////NEW METHOD LIST COND AND DATA GLOBAL BY LANI 4 APRIL 2023////
+    public void insertMasterGlobal(Map<String, String> balance) {
+        dao.insertMasterGlobal(balance);
+    }
+    public void updateMasterGlobal(Map<String, String> balance) {
+        dao.updateMasterGlobal(balance);
+    }
    
 }    
-
-
-// ======================================================================================================================================================================================//    
-///////////////Done////////////////////////////    
+ 

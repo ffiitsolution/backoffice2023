@@ -135,4 +135,8 @@ public interface ViewDao {
     // new method Dona outlet 30-03-23////////
     List<Map<String, Object>> listGlobal(Map<String, String> ref);
     //////////DONE
+    ///////////////NEW METHOD LIST COND AND DATA GLOBAL BY LANI 4 APRIL 2023////
+    List<Map<String, Object>> listGlobalCond(Map<String, String> ref);
+    
+    List<Map<String, Object>> listMasterGlobal(Map<String, String> ref);
 }
