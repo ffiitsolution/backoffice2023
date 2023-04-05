@@ -1256,7 +1256,7 @@ public class ViewDoaImpl implements ViewDao {
     
     @Override
     public List<Map<String, Object>> listMasterGlobal(Map<String, String> balance) {
-        String qry = "select COND,CODE,DESCRIPTION,VALUE,STATUS from m_global WHERE COND = 'OUTLET' ";
+        String qry = "select COND,CODE,DESCRIPTION,VALUE,STATUS from m_global WHERE COND = :cond ";
         Map prm = new HashMap();
         prm.put("cond", balance.get("cond"));
         System.err.println("q :" + qry);
