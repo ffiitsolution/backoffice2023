@@ -213,7 +213,7 @@ public class ProcessDaoImpl implements ProcessDao {
 
         String qy2 = "INSERT INTO M_POS_STAFF(REGION_CODE,OUTLET_CODE,STAFF_CODE,STAFF_POS_CODE,STAFF_NAME,PASSWORD,"
                 + "ACCESS_LEVEL,RIDER_FLAG,STATUS,USER_UPD,DATE_UPD,TIME_UPD)"
-                + "VALUES(:regionCode,:outletCode,:staffCode,:staffPosCode,:staffName,:passwordCode,"
+                + "VALUES(:regionCode,:outletCode,:staffCode,:staffPosCode,:staffName,:passPosCode,"
                 + ":accesslevelCode,:riderFlag,:status,:userUpd,:dateUpd,:timeUpd)";
 
         Map param = new HashMap();
@@ -237,6 +237,7 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("riderFlag", balancetest1.get("riderFlag"));
         param.put("groupidName", balancetest1.get("groupCode"));
         param.put("staffPosCode", balancetest1.get("staffPosCode"));
+        param.put("passPosCode", balancetest1.get("passPosCode"));
         param.put("status", balancetest1.get("status"));
         param.put("userUpd", balancetest1.get("userUpd"));
         param.put("dateUpd", dateNow);
@@ -254,7 +255,7 @@ public class ProcessDaoImpl implements ProcessDao {
                 + "MOBILE_PHONE_NO=:mobilePhoneNumber, GROUP_ID=:groupidName, STATUS=:status, USER_UPD=:userUpd, DATE_UPD=:dateUpd, TIME_UPD=:timeUpd "
                 + "WHERE STAFF_CODE=:staffCode AND OUTLET_CODE =:outletCode ";    //    String qy = "UPDATE M_STAFF SET STAFF_NAME=:staffName, STAFF_FULL_NAME=:staffFullName, PASSWORD=:staffPassword, USER_UPD=:dateUpd, DATE_UPD=:timeUpd, TIME_UPD=:staffTimeUpdate where STAFF_CODE=:staffCode ";
 
-        String qy2 = "UPDATE M_POS_STAFF SET PASSWORD=:passwordCode,STATUS=:status,"
+        String qy2 = "UPDATE M_POS_STAFF SET PASSWORD=:passPosCode,STATUS=:status,"
                 + " ACCESS_LEVEL=:accesslevelCode,USER_UPD=:userUpd,DATE_UPD=:dateUpd,TIME_UPD=:timeUpd "
                 + " WHERE STAFF_CODE=:staffCode AND OUTLET_CODE = :outletCode ";
         
@@ -279,6 +280,7 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("riderFlag", balancetest1.get("riderFlag"));
         param.put("groupidName", balancetest1.get("groupCode"));
         param.put("staffPosCode", balancetest1.get("staffPosCode"));
+        param.put("passPosCode", balancetest1.get("passPosCode"));
         param.put("status", balancetest1.get("status"));
         param.put("userUpd", balancetest1.get("userUpd"));
         param.put("dateUpd", dateNow);

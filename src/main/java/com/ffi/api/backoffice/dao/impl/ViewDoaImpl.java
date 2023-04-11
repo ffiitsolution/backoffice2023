@@ -833,8 +833,9 @@ public class ViewDoaImpl implements ViewDao {
     public List<Map<String, Object>> listStaff(Map<String, String> ref) {
         String qry = "SELECT DISTINCT VS.REGIONAL_DESC,VS.OUTLET_NAME,VS.AREA_DESC,VS.AREA_CODE,G.DESCRIPTION CITY_STAFF,\n"
                 + "G1.DESCRIPTION POSITION_NAME,G2.DESCRIPTION ACCESS_NAME,\n"
-                + "S.* FROM M_STAFF S\n"
+                + "S.*,PS.STAFF_POS_CODE,PS.PASSWORD AS PASS_POS_CODE,s.access_level ACCESS_LEVEL FROM M_STAFF S\n"
                 + "JOIN V_STRUCTURE_STORE VS ON VS.OUTLET_CODE = S.OUTLET_CODE \n"
+                + "LEFT JOIN M_POS_STAFF PS ON PS.STAFF_CODE = S.STAFF_CODE \n"
                 + "LEFT JOIN M_GLOBAL G ON G.CODE = S.CITY AND G.COND = 'CITY'\n"
                 + "LEFT JOIN M_GLOBAL G1 ON G1.CODE = S.POSITION AND G1.COND = 'POSITION'\n"
                 + "LEFT JOIN M_GLOBAL G2 ON G2.CODE = S.ACCESS_LEVEL AND G2.COND = 'ACCESS'\n"
@@ -881,6 +882,8 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("riderFlag", rs.getString("RIDER_FLAG"));
                 rt.put("groupId", rs.getString("GROUP_ID"));
                 rt.put("statusName", rs.getString("STATUS"));
+                rt.put("staffPosCode", rs.getString("STAFF_POS_CODE"));
+                rt.put("passPosCode", rs.getString("PASS_POS_CODE"));
 
                 //    rt.put("staffName", rs.getString("STAFF_NAME"));               
                 return rt;
