@@ -1186,9 +1186,9 @@ public class ViewDoaImpl implements ViewDao {
     //list area    
     @Override
     public List<Map<String, Object>> viewArea(Map<String, String> Logan) {
-        String qry = "select distinct area_code,area_desc,region_code,regional_desc from V_STRUCTURE_STORE where region_code= :region_code";
+        String qry = "select distinct area_code,area_desc,region_code,regional_desc from V_STRUCTURE_STORE where region_code= :region_code order by region_code,area_code asc";
         Map prm = new HashMap();
-        prm.put("region_code", Logan.get("region_code"));
+        prm.put("region_code", "%" + Logan.get("region_code") + "%");
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
