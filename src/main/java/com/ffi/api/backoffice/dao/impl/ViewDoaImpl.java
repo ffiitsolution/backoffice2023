@@ -156,7 +156,7 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> listItemSupplier(Map<String, String> balance) {
 
-        String qry = "select  a.CD_SUPPLIER,a.item_code,item_description,"
+        String qry = "select  a.CD_SUPPLIER,a.item_code,b.item_description,"
                 + "a.STATUS, a.USER_UPD, a.DATE_UPD, a.TIME_UPD from M_ITEM_SUPPLIER a left join "
                 + "m_item b "
                 + "on a.item_code=B.ITEM_CODE "
