@@ -124,6 +124,7 @@ public class ViewDoaImpl implements ViewDao {
                 Map<String, Object> rt = new HashMap<String, Object>();
                 rt.put("itemCode", rs.getString("ITEM_CODE"));
                 rt.put("cdSupplier", rs.getString("CD_SUPPLIER"));
+                rt.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
                 rt.put("status", rs.getString("STATUS"));
                 rt.put("userUpd", rs.getString("USER_UPD"));
                 rt.put("dateUpd", rs.getString("DATE_UPD"));
