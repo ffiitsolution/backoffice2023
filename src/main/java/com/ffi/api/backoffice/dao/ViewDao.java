@@ -83,38 +83,20 @@ public interface ViewDao {
 
     ///////////////////////// done
     ///////////////Updated By Pandu 14-03-2023////////////////////////////
-    // ========================================================== MODULE MASTER STAFF (M_STAFF) =========================================================================================//
-    //VIEW USER STAFF
     List<Map<String, Object>> listStaff(Map<String, String> ref);
 
-    // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL) =========================================================================================//
-    //VIEW USER REGION
     List<Map<String, Object>> listRegion(Map<String, String> ref);
 
-    // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL) =========================================================================================//
-    //VIEW USER OUTLET
     List<Map<String, Object>> listOutlets(Map<String, String> ref);
 
-    // ========================================================== MODULE MASTER STAFF (M_STAFF) =========================================================================================//
-    //VIEW USER FORM STAFF
     List<Map<String, Object>> listViewFormStaff(Map<String, String> ref);
 
-    // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL COND = 'CITY') =========================================================================================//
-    //VIEW CITY FORM STAFF
-//     List<Map<String, Object>> listViewCity(Map<String, String> ref);
-    // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL COND = 'POSITION') =========================================================================================//
-    //VIEW POSITION FORM STAFF
     List<Map<String, Object>> listViewPosition(Map<String, String> ref);
-    // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL COND = 'ACCEES') =========================================================================================//
-    //VIEW ACCESS LEVEL FORM STAFF
 
     List<Map<String, Object>> listViewAccessLevel(Map<String, String> ref);
 
-    // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL COND = 'ACCEES') =========================================================================================//
-    //VIEW ACCESS LEVEL FORM STAFF
     List<Map<String, Object>> listViewGroupUser(Map<String, String> ref);
 
-    // ==================================================================================================================================================================================// 
     /////////////////////////////done
     //////////////////new method by Lani 29-03-2023////////////////////////// 
     List<Map<String, Object>> listSalesRecipe(Map<String, String> ref);
@@ -131,12 +113,18 @@ public interface ViewDao {
     List<Map<String, Object>> viewArea(Map<String, String> ref);
 
     List<Map<String, Object>> viewTypeStore(Map<String, String> ref);
+
     //////////DONE
     // new method Dona outlet 30-03-23////////
     List<Map<String, Object>> listGlobal(Map<String, String> ref);
+
     //////////DONE
     ///////////////NEW METHOD LIST COND AND DATA GLOBAL BY LANI 4 APRIL 2023////
     List<Map<String, Object>> listGlobalCond(Map<String, String> ref);
-    
+
     List<Map<String, Object>> listMasterGlobal(Map<String, String> ref);
+
+    ///////////////NEW METHOD LIST ORDER HEADER BY DONA 14 APRIL 2023////
+    List<Map<String, Object>> listOrderHeader(Map<String, String> ref);
+    //////////DONE
 }

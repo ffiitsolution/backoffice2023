@@ -47,10 +47,14 @@ public interface ProcessDao {
     ///////////////Done////////////////////////////      
     ///////////////new method from Dona 30-03-2023////////////////////////////
     public void insertFryer(Map<String, String> mapping);
+
     ///////////////Done////////////////////////////      
     ///////////////NEW METHOD LIST COND AND DATA GLOBAL BY LANI 4 APRIL 2023////
     public void insertMasterGlobal(Map<String, String> mapping);
-    
+
     public void updateMasterGlobal(Map<String, String> mapping);
+    /////////////////////////////DONE///////////////////////////////////////////
+    ///////////////NEW METHOD INSERT ORDER HEADER BY DONA 14 APRIL 2023////
+    public void insertOrderHeader(Map<String, String> mapping);
     /////////////////////////////DONE///////////////////////////////////////////
 }

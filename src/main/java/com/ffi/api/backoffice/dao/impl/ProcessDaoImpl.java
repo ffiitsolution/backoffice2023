@@ -158,7 +158,7 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("userUpd", balance.get("userUpd"));
         param.put("dateUpd", dateNow);
         param.put("timeUpd", timeStamp);
-        
+
         jdbcTemplate.update(qy, param);
     }
     /////////////////////////////////done
@@ -258,7 +258,7 @@ public class ProcessDaoImpl implements ProcessDao {
         String qy2 = "UPDATE M_POS_STAFF SET PASSWORD=:passPosCode,STATUS=:status,STAFF_POS_CODE=:staffPosCode,"
                 + " ACCESS_LEVEL=:accesslevelCode,USER_UPD=:userUpd,DATE_UPD=:dateUpd,TIME_UPD=:timeUpd "
                 + " WHERE STAFF_CODE=:staffCode AND OUTLET_CODE = :outletCode ";
-        
+
         Map param = new HashMap();
         param.put("regionCode", balancetest1.get("regionCode"));
         param.put("outletCode", balancetest1.get("outletCode"));
@@ -339,6 +339,7 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("timeUpd", timeStamp);
         jdbcTemplate.update(qy, param);
     }
+
     @Override
     public void updateMasterGlobal(Map<String, String> balance) {
         String qy = "UPDATE M_GLOBAL SET COND = :cond,CODE = :code,DESCRIPTION =:description,"
@@ -349,6 +350,30 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("code", balance.get("code"));
         param.put("description", balance.get("description"));
         param.put("value", balance.get("value"));
+        param.put("status", balance.get("status"));
+        param.put("userUpd", balance.get("userUpd"));
+        param.put("dateUpd", dateNow);
+        param.put("timeUpd", timeStamp);
+        jdbcTemplate.update(qy, param);
+    }
+    /////////////////////////////////DONE///////////////////////////////////////
+    ///////////////NEW METHOD LIST ORDER HEADER BY DONA 14 APRIL 2023////
+        @Override
+    public void insertOrderHeader(Map<String, String> balance) {
+        String qy = "INSERT INTO T_ORDER_HEADER (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ORDER_DATE,ORDER_TO,CD_SUPPLIER,DT_DUE,DT_EXPIRED,REMARK,NO_OF_PRINT,STATUS,USER_UPD,DATE_UPD,TIME_UPD)"
+                + " VALUES(:outletCode,:orderType,:orderId,:orderNo,:orderDate,:orderTo,:cdSupplier,:dtDue,:dtExpired,:remark,:noOfPrint,:status,:userUpd,:dateUpd,:timeUpd)";
+        Map param = new HashMap();
+        param.put("outletCode", balance.get("outletCode"));
+        param.put("orderType", balance.get("orderType"));
+        param.put("orderId", balance.get("orderId"));
+        param.put("orderNo", balance.get("orderNo"));
+        param.put("orderDate", balance.get("orderDate"));
+        param.put("orderTo", balance.get("orderTo"));
+        param.put("cdSupplier", balance.get("cdSupplier"));
+        param.put("dtDue", balance.get("dtDue"));
+        param.put("dtExpired", balance.get("dtExpired"));
+        param.put("remark", balance.get("remark"));
+        param.put("noOfPrint", balance.get("noOfPrint"));
         param.put("status", balance.get("status"));
         param.put("userUpd", balance.get("userUpd"));
         param.put("dateUpd", dateNow);

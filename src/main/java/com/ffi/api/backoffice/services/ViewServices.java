@@ -233,4 +233,10 @@ public class ViewServices {
     public List<Map<String, Object>> listMasterGlobal(Map<String, String> ref) {
         return viewDao.listMasterGlobal(ref);
     }
+
+    ///////////////NEW METHOD LIST ORDER HEADER BY DONA 14 APRIL 2023////
+    public List<Map<String, Object>> listOrderHeader(Map<String, String> ref) {
+        return viewDao.listOrderHeader(ref);
+    }
+    ///////////////done 
 }

@@ -537,6 +537,7 @@ public class IndexController {
         res.setData(viewServices.listMasterItemSupplier(balance));
         return res;
     }
+
     ///////////////done
     ///////////////new method from asep 16-mar-2023 ////////////// 
     //View Outlet================================================================================================
@@ -816,6 +817,7 @@ public class IndexController {
         rm.setData(list);
         return rm;
     }
+
     /////////////////done
     ///////////////Updated By Pandu 14-03-2023////////////////////////////  
     // ========================================================== MODULE MASTER STAFF (M_STAFF) ==========================================================================================================//   
@@ -1229,6 +1231,7 @@ public class IndexController {
 
         return rm;
     }
+
     ///////////////done 
     ///////////////NEW METHOD LIST COND AND DATA GLOBAL BY LANI 4 APRIL 2023////
     @RequestMapping(value = "/list-cond-global", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -1246,7 +1249,7 @@ public class IndexController {
         res.setData(viewServices.listGlobalCond(balance));
         return res;
     }
-    
+
     @RequestMapping(value = "/list-master-global", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk list global cond", response = Object.class)
     @ApiResponses(value = {
@@ -1262,7 +1265,7 @@ public class IndexController {
         res.setData(viewServices.listMasterGlobal(balance));
         return res;
     }
-    
+
     @RequestMapping(value = "/insert-master-global", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk insert master global", response = Object.class)
     @ApiResponses(value = {
@@ -1288,6 +1291,7 @@ public class IndexController {
         rm.setItem(list);
         return rm;
     }
+
     @RequestMapping(value = "/update-master-global", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk update master global", response = Object.class)
     @ApiResponses(value = {
@@ -1309,6 +1313,50 @@ public class IndexController {
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Update Failed Successfuly: " + e.getMessage());
+        }
+        rm.setItem(list);
+        return rm;
+    }
+
+    /////////////////////////////////DONE///////////////////////////////////////
+    ///////////////NEW METHOD LIST ORDER HEADER BY DONA 17 APRIL 2023////
+    @RequestMapping(value = "/list-order-header", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk list global cond", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listOrderHeader(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        Response res = new Response();
+        res.setData(viewServices.listOrderHeader(balance));
+        return res;
+    }
+
+    @RequestMapping(value = "/insert-order-header", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk insert master global", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage inserOrderHeader(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        ResponseMessage rm = new ResponseMessage();
+        try {
+            processServices.insertOrderHeader(balance);
+            rm.setSuccess(true);
+            rm.setMessage("Insert Success Successfuly");
+
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Insert Failed Successfuly: " + e.getMessage());
         }
         rm.setItem(list);
         return rm;
