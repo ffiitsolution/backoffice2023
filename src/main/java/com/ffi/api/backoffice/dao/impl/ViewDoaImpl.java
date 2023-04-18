@@ -1312,11 +1312,11 @@ public class ViewDoaImpl implements ViewDao {
     ///////////////NEW METHOD LIST ORDER HEADER BY DONA 18 APRIL 2023////
     @Override
     public List<Map<String, Object>> listOrderHeaderAll(Map<String, String> balance) {
-        String qry = "SELECT * FROM T_ORDER_HEADER WHERE STATUS LIKE :status AND ORDER_TO LIKE:orderTo AND OUTLET_CODE =:outletCode and ORDER_DATE LIKE:orderDate";
+        String qry = "SELECT * FROM T_ORDER_HEADER WHERE STATUS LIKE :status AND ORDER_TO LIKE:orderType AND OUTLET_CODE =:outletCode and ORDER_DATE LIKE:orderDate";
         Map prm = new HashMap();
         prm.put("outletCode", balance.get("outletCode"));
         prm.put("status", "%" + balance.get("status") + "%");
-        prm.put("orderTo", "%" + balance.get("orderTo") + "%");
+        prm.put("orderType", "%" + balance.get("orderType") + "%");
         prm.put("orderDate", "%" + balance.get("orderDate") + "%");
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
