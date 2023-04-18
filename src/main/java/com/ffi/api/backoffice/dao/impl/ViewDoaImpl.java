@@ -1308,4 +1308,43 @@ public class ViewDoaImpl implements ViewDao {
     }
 
     ///////////////////done
+    
+    ///////////////NEW METHOD LIST ORDER HEADER BY DONA 18 APRIL 2023////
+    @Override
+    public List<Map<String, Object>> listOrderHeaderAll(Map<String, String> balance) {
+        String qry = "SELECT * FROM T_ORDER_HEADER WHERE STATUS= :status AND ORDER_TO= :orderTo AND OUTLET_CODE=:outletCode and ORDER_DATE =:orderDate";
+        Map prm = new HashMap();
+
+        prm.put("outletCode", balance.get("outletCode"));
+        prm.put("status", "%" + balance.get("status") + "%");
+        prm.put("orderTo", "%" + balance.get("orderTo") + "%");
+        prm.put("orderDate", "%" + balance.get("orderDate") + "%");
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("outletCode", rs.getString("OUTLET_CODE"));
+                rt.put("orderType ", rs.getString("ORDER_TYPE"));
+                rt.put("orderId ", rs.getString("ORDER_ID"));
+                rt.put("orderNo ", rs.getString("ORDER_NO"));
+                rt.put("orderDate ", rs.getString("ORDER_DATE"));
+                rt.put("orderTo ", rs.getString("ORDER_TO"));
+                rt.put("cdSupplier", rs.getString("CD_SUPPLIER"));
+                rt.put("dtDue ", rs.getString("DT_DUE"));
+                rt.put("dtExpired ", rs.getString("DT_EXPIRED"));
+                rt.put("remark ", rs.getString("REMARK"));
+                rt.put("noOfPrint", rs.getString("NO_OF_PRINT"));
+                rt.put("status ", rs.getString("STATUS"));
+                rt.put("userUpd ", rs.getString("USER_UPD"));
+                rt.put("dateUpd ", rs.getString("DATE_UPD"));
+                rt.put("timeUpd ", rs.getString("TIME_UPD"));
+
+                return rt;
+            }
+        });
+        return list;
+    }
+
+    ///////////////////done
 }

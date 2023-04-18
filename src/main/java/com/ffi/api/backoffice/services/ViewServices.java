@@ -239,4 +239,9 @@ public class ViewServices {
         return viewDao.listOrderHeader(ref);
     }
     ///////////////done 
+        ///////////////NEW METHOD LIST ORDER HEADER BY DONA 18 APRIL 2023////
+    public List<Map<String, Object>> listOrderHeaderAll(Map<String, String> ref) {
+        return viewDao.listOrderHeaderAll(ref);
+    }
+    ///////////////done 
 }

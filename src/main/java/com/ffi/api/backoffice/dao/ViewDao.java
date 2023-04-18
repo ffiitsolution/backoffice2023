@@ -127,4 +127,8 @@ public interface ViewDao {
     ///////////////NEW METHOD LIST ORDER HEADER BY DONA 14 APRIL 2023////
     List<Map<String, Object>> listOrderHeader(Map<String, String> ref);
     //////////DONE
+    
+    ///////////////NEW METHOD LIST ORDER HEADER BY DONA 18 APRIL 2023////
+    List<Map<String, Object>> listOrderHeaderAll(Map<String, String> ref);
+    //////////DONE
 }
