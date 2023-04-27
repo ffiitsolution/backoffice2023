@@ -57,4 +57,9 @@ public interface ProcessDao {
     ///////////////NEW METHOD INSERT ORDER HEADER BY DONA 14 APRIL 2023////
     public void insertOrderHeader(Map<String, String> mapping);
     /////////////////////////////DONE///////////////////////////////////////////
+        ///////////////NEW METHOD INSERT ORDER DETAIL BY DONA 27 APRIL 2023////
+    public void insertOrderDetail(Map<String, String> mapping);
+    public void updateOrderDetail(Map<String, String> mapping);
+    /////////////////////////////DONE///////////////////////////////////////////
+    
 }

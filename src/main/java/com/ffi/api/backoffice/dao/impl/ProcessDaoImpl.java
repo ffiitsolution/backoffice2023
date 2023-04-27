@@ -356,9 +356,10 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("timeUpd", timeStamp);
         jdbcTemplate.update(qy, param);
     }
+
     /////////////////////////////////DONE///////////////////////////////////////
     ///////////////NEW METHOD LIST ORDER HEADER BY DONA 14 APRIL 2023////
-        @Override
+    @Override
     public void insertOrderHeader(Map<String, String> balance) {
         String qy = "INSERT INTO T_ORDER_HEADER (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ORDER_DATE,ORDER_TO,CD_SUPPLIER,DT_DUE,DT_EXPIRED,REMARK,NO_OF_PRINT,STATUS,USER_UPD,DATE_UPD,TIME_UPD)"
                 + " VALUES(:outletCode,:orderType,:orderId,:orderNo,:orderDate,:orderTo,:cdSupplier,:dtDue,:dtExpired,:remark,:noOfPrint,:status,:userUpd,:dateUpd,:timeUpd)";
@@ -375,6 +376,53 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("remark", balance.get("remark"));
         param.put("noOfPrint", balance.get("noOfPrint"));
         param.put("status", balance.get("status"));
+        param.put("userUpd", balance.get("userUpd"));
+        param.put("dateUpd", dateNow);
+        param.put("timeUpd", timeStamp);
+        jdbcTemplate.update(qy, param);
+    }
+    /////////////////////////////////DONE///////////////////////////////////////
+
+    ///////////////NEW METHOD LIST ORDER DETAIL BY DONA 27 APRIL 2023////
+    @Override
+    public void insertOrderDetail(Map<String, String> balance) {
+        String qy = "INSERT INTO T_ORDER_DETAIL (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,TOTAL_QTY_STOCK,UNIT_PRICE,USER_UPD,DATE_UPD,TIME_UPD)"
+                + " VALUES(:outletCode,:orderType,:orderId,:orderNo,:itemCode,:qty1,:cdUom1,:qty2,:cdUom2,:totalQtyStock,:unitPrice,:userUpd,:dateUpd,:timeUpd)";
+        Map param = new HashMap();
+        param.put("outletCode", balance.get("outletCode"));
+        param.put("orderType", balance.get("orderType"));
+        param.put("orderId", balance.get("orderId"));
+        param.put("orderNo", balance.get("orderNo"));
+        param.put("itemCode", balance.get("itemCode"));
+        param.put("qty1", balance.get("qty1"));
+        param.put("cdUom1", balance.get("cdUom1"));
+        param.put("qty2", balance.get("qty2"));
+        param.put("cdUom2", balance.get("cdUom2"));
+        param.put("totalQtyStock", balance.get("totalQtyStock"));
+        param.put("unitPrice", balance.get("unitPrice"));
+        param.put("userUpd", balance.get("userUpd"));
+        param.put("dateUpd", dateNow);
+        param.put("timeUpd", timeStamp);
+        jdbcTemplate.update(qy, param);
+    }
+
+    @Override
+    public void updateOrderDetail(Map<String, String> balance) {
+        String qy ="UPDATE T_ORDER_DETAIL SET QTY_1=:qty1,"
+                + "CD_UOM_1=:cdUom1,QTY_2=:qty2,CD_UOM_2=:cdUom2,TOTAL_QTY_STOCK=:totalQtyStock,UNIT_PRICE=:unitPrice,USER_UPD=:userUpd, DATE_UPD=:dateUpd,TIME_UPD=:timeUpd"
+                + " WHERE OUTLET_CODE=:outletCode AND ORDER_TYPE=:orderType AND ORDER_ID=:orderId AND ORDER_NO=:orderNo AND ITEM_CODE=:itemCode";
+        Map param = new HashMap();
+        param.put("outletCode", balance.get("outletCode"));
+        param.put("orderType", balance.get("orderType"));
+        param.put("orderId", balance.get("orderId"));
+        param.put("orderNo", balance.get("orderNo"));
+        param.put("itemCode", balance.get("itemCode"));
+        param.put("qty1", balance.get("qty1"));
+        param.put("cdUom1", balance.get("cdUom1"));
+        param.put("qty2", balance.get("qty2"));
+        param.put("cdUom2", balance.get("cdUom2"));
+        param.put("totalQtyStock", balance.get("totalQtyStock"));
+        param.put("unitPrice", balance.get("unitPrice"));
         param.put("userUpd", balance.get("userUpd"));
         param.put("dateUpd", dateNow);
         param.put("timeUpd", timeStamp);

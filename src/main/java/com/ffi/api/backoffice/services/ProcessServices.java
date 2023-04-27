@@ -96,4 +96,12 @@ public class ProcessServices {
         dao.insertOrderHeader(balance);
     }
     ///////////////////////done
+    ///////////////NEW METHOD INSERT ORDER HEADER 14 APRIL 2023////
+    public void insertOrderDetail(Map<String, String> balance) {
+        dao.insertOrderDetail(balance);
+    }
+        public void updateOrderDetail(Map<String, String> balance) {
+        dao.updateOrderDetail(balance);
+    }
+    ///////////////////////done
 }

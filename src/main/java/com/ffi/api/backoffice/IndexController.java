@@ -1380,9 +1380,8 @@ public class IndexController {
         return res;
     }
     /////////////////////////////////DONE///////////////////////////////////////
-    
-        ///////////////NEW METHOD LIST ORDER HEADER ALL BY DONA 27 APRIL 2023////
 
+    ///////////////NEW METHOD LIST ORDER HEADER ALL BY DONA 27 APRIL 2023////
     @RequestMapping(value = "/list-order-detail", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk list order detail", response = Object.class)
     @ApiResponses(value = {
@@ -1397,6 +1396,60 @@ public class IndexController {
         Response res = new Response();
         res.setData(viewServices.listOrderDetail(balance));
         return res;
+    }
+    /////////////////////////////////DONE///////////////////////////////////////
+
+    ///////////////NEW METHOD INSERT ORDER DETAIL BY DONA 27 APRIL 2023////
+    @RequestMapping(value = "/insert-order-detail", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk insert order detail", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage inserOrderDetail(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        ResponseMessage rm = new ResponseMessage();
+        try {
+            processServices.insertOrderDetail(balance);
+            rm.setSuccess(true);
+            rm.setMessage("Insert Success Successfuly");
+
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Insert Failed Successfuly: " + e.getMessage());
+        }
+        rm.setItem(list);
+        return rm;
+    }
+    
+    @RequestMapping(value = "/update-order-detail", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk update order detail", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage updateOrderDetail(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        ResponseMessage rm = new ResponseMessage();
+        try {
+            processServices.updateOrderDetail(balance);
+            rm.setSuccess(true);
+            rm.setMessage("Update Success Successfuly");
+
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Update Failed Successfuly: " + e.getMessage());
+        }
+        rm.setItem(list);
+        return rm;
     }
     /////////////////////////////////DONE///////////////////////////////////////
 }
