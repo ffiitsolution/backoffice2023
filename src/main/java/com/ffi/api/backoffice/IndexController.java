@@ -1380,4 +1380,23 @@ public class IndexController {
         return res;
     }
     /////////////////////////////////DONE///////////////////////////////////////
+    
+        ///////////////NEW METHOD LIST ORDER HEADER ALL BY DONA 27 APRIL 2023////
+
+    @RequestMapping(value = "/list-order-detail", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk list order detail", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listOrderDetail(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        Response res = new Response();
+        res.setData(viewServices.listOrderDetail(balance));
+        return res;
+    }
+    /////////////////////////////////DONE///////////////////////////////////////
 }

@@ -1300,7 +1300,6 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("userUpd", rs.getString("USER_UPD"));
                 rt.put("dateUpd", rs.getString("DATE_UPD"));
                 rt.put("timeUpd", rs.getString("TIME_UPD"));
-
                 return rt;
             }
         });
@@ -1337,6 +1336,55 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("userUpd", rs.getString("USER_UPD"));
                 rt.put("dateUpd", rs.getString("DATE_UPD"));
                 rt.put("timeUpd", rs.getString("TIME_UPD"));
+
+                return rt;
+            }
+        });
+        return list;
+    }
+
+    ///////////////////done
+    ///////////////NEW METHOD LIST ORDER HEADER BY DONA 27 APRIL 2023////
+    @Override
+    public List<Map<String, Object>> listOrderDetail(Map<String, String> balance) {
+        String qry = "SELECT \n"
+                + "    ITEM_CODE,\n"
+                + "    ITEM_DESCRIPTION,\n"
+                + "    JUMLAH_SATUAN_BESAR,\n"
+                + "    SATUAN_BESAR,\n"
+                + "    JUMLAH_SATUAN_KECIL,\n"
+                + "    UOM_PURCHASE,\n"
+                + "    CONV_WAREHOUSE,\n"
+                + "    (JUMLAH_SATUAN_BESAR * CONV_WAREHOUSE) + JUMLAH_SATUAN_KECIL TOTAL_JUMLAH,\n"
+                + "    UOM_PURCHASE AS TOTAL\n"
+                + "FROM (\n"
+                + "SELECT \n"
+                + "    ITEM_CODE,\n"
+                + "    ITEM_DESCRIPTION,\n"
+                + "    0 AS JUMLAH_SATUAN_BESAR,\n"
+                + "    UOM_WAREHOUSE AS SATUAN_BESAR,\n"
+                + "    0 AS JUMLAH_SATUAN_KECIL,\n"
+                + "    UOM_PURCHASE,\n"
+                + "    CONV_WAREHOUSE,\n"
+                + "    0 TOTAL_JUMLAH,\n"
+                + "    UOM_PURCHASE AS TOTAL\n"
+                + "FROM M_ITEM WHERE CD_WAREHOUSE = :cdWarehouse)";
+        Map prm = new HashMap();
+        prm.put("cdWarehouse", balance.get("cdWarehouse"));
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("itemCode", rs.getString("ITEM_CODE"));
+                rt.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
+                rt.put("jumlahSatuanBesar", rs.getString("JUMLAH_SATUAN_BESAR"));
+                rt.put("satuanBesar", rs.getString("SATUAN_BESAR"));
+                rt.put("jumlahSatuanKecil", rs.getString("JUMLAH_SATUAN_KECIL"));
+                rt.put("uomPurchase", rs.getString("UOM_PURCHASE"));
+                rt.put("convWarehouse", rs.getString("CONV_WAREHOUSE"));
+                rt.put("totalJumlah", rs.getString("TOTAL_JUMLAH"));
+                rt.put("total", rs.getString("TOTAL"));
 
                 return rt;
             }
