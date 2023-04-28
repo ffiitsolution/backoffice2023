@@ -65,7 +65,6 @@ public class ProcessDaoImpl implements ProcessDao {
 
     @Override
     public void updateSupplier(Map<String, String> balance) {
-        //String qy = "UPDATE BUDGET_HEADER SET STATUS=:status where trans_no=:transNo ";
         String qy = "update m_supplier set SUPPLIER_NAME=:supplierName,\n"
                 + "ADDRESS_1=:address1,\n"
                 + "ADDRESS_2=:address2,\n"
@@ -129,7 +128,6 @@ public class ProcessDaoImpl implements ProcessDao {
 
     @Override
     public void updateItemSupplier(Map<String, String> balance) {
-        //String qy = "UPDATE BUDGET_HEADER SET STATUS=:status where trans_no=:transNo ";
         String qy = "UPDATE M_ITEM_SUPPLIER SET STATUS=:status,USER_UPD= :userUpd,DATE_UPD = :dateUpd,TIME_UPD=:timeUpd where ITEM_CODE=:itemCode and CD_SUPPLIER=:cdSupplier";
         Map param = new HashMap();
         param.put("itemCode", balance.get("itemCode"));
@@ -408,9 +406,21 @@ public class ProcessDaoImpl implements ProcessDao {
 
     @Override
     public void updateOrderDetail(Map<String, String> balance) {
-        String qy ="UPDATE T_ORDER_DETAIL SET QTY_1=:qty1,"
-                + "CD_UOM_1=:cdUom1,QTY_2=:qty2,CD_UOM_2=:cdUom2,TOTAL_QTY_STOCK=:totalQtyStock,UNIT_PRICE=:unitPrice,USER_UPD=:userUpd, DATE_UPD=:dateUpd,TIME_UPD=:timeUpd"
-                + " WHERE OUTLET_CODE=:outletCode AND ORDER_TYPE=:orderType AND ORDER_ID=:orderId AND ORDER_NO=:orderNo AND ITEM_CODE=:itemCode";
+        String qy = "update t_order_detail set "
+                + "QTY_1 =:qty1 ,"
+                + "CD_UOM_1 =:cdUom1 ,"
+                + "QTY_2 =:qty2 ,"
+                + "CD_UOM_2 =:cdUom2 ,"
+                + "TOTAL_QTY_STOCK =:totalQtyStock,"
+                + "UNIT_PRICE =:unitPrice ,"
+                + "USER_UPD =:userUpd ,"
+                + "DATE_UPD =:dateUpd ,"
+                + "TIME_UPD =:timeUpd "
+                + "WHERE OUTLET_CODE =:outletCode AND "
+                + "ORDER_TYPE =:orderType AND "
+                + "ORDER_ID =:orderId AND "
+                + "ORDER_NO =:orderNo AND "
+                + "ITEM_CODE =:itemCode";
         Map param = new HashMap();
         param.put("outletCode", balance.get("outletCode"));
         param.put("orderType", balance.get("orderType"));
