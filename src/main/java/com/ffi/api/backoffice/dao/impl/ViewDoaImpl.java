@@ -1237,7 +1237,7 @@ public class ViewDoaImpl implements ViewDao {
     ///////////////NEW METHOD LIST COND AND DATA GLOBAL BY LANI 4 APRIL 2023////
     @Override
     public List<Map<String, Object>> listGlobalCond(Map<String, String> balance) {
-        String qry = "select distinct cond from m_global order by cond asc ";
+        String qry = "select distinct cond from m_global order by cond,date_upd desc ";
         Map prm = new HashMap();
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
@@ -1310,11 +1310,19 @@ public class ViewDoaImpl implements ViewDao {
     ///////////////NEW METHOD LIST ORDER HEADER BY DONA 18 APRIL 2023////
     @Override
     public List<Map<String, Object>> listOrderHeaderAll(Map<String, String> balance) {
-        String qry = "SELECT * FROM T_ORDER_HEADER WHERE STATUS LIKE :status AND ORDER_TO LIKE:orderType AND OUTLET_CODE =:outletCode and ORDER_DATE =:orderDate";
+        String where = "";
+        String qry = "SELECT * FROM T_ORDER_HEADER "
+                + "WHERE STATUS LIKE :status "
+                + "AND ORDER_TO LIKE:orderType "
+                + "AND OUTLET_CODE =:outletCode "
+                + "AND ORDER_DATE =:orderDate";
         Map prm = new HashMap();
-        prm.put("outletCode", balance.get("outletCode"));
         prm.put("status", "%" + balance.get("status") + "%");
         prm.put("orderType", "%" + balance.get("orderType") + "%");
+        prm.put("outletCode", balance.get("outletCode"));
+        if (balance.get("orderDate").equals("")){
+            where = "AND ORDER_DATE =:orderDate";
+        }
         prm.put("orderDate", balance.get("orderDate"));
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
