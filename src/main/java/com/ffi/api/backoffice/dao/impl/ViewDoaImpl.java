@@ -1239,7 +1239,7 @@ public class ViewDoaImpl implements ViewDao {
     ///////////////NEW METHOD LIST COND AND DATA GLOBAL BY LANI 4 APRIL 2023////
     @Override
     public List<Map<String, Object>> listGlobalCond(Map<String, String> balance) {
-       String qry = "select CODE,DESCRIPTION from M_GLOBAL WHERE COND  LIKE :cond AND STATUS LIKE :status order_by cond,date_upd desc ";
+       String qry = "select CODE,DESCRIPTION from M_GLOBAL WHERE COND  LIKE :cond AND STATUS LIKE :status order by cond,date_upd desc ";
         Map prm = new HashMap();
         prm.put("cond", "%" + balance.get("cond") + "%");
         prm.put("status", "%" + balance.get("status") + "%");
