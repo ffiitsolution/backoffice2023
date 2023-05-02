@@ -249,4 +249,9 @@ public class ViewServices {
         return viewDao.listOrderDetail(ref);
     }
     ///////////////done 
+                ///////////////NEW METHOD LIST COUNTER BY DONA 2 MEI 2023////
+    public List<Map<String, Object>> listCounter(Map<String, String> ref) {
+        return viewDao.listCounter(ref);
+    }
+    ///////////////done 
 }

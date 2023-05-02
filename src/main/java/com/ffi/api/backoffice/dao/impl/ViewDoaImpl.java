@@ -1403,4 +1403,29 @@ public class ViewDoaImpl implements ViewDao {
     }
 
     ///////////////////done
+    ///////new methode from Dona 2-Mei-23//////////////////
+    @Override
+    public List<Map<String, Object>> listCounter(Map<String, String> balance) {
+        String qry = "SELECT A.OUTLET_CODE||A.MONTH||A.YEAR||A.COUNTER_NO+1 AS ORDER_ID FROM M_COUNTER A\n"
+                + "LEFT JOIN M_OUTLET B\n"
+                + "ON B.OUTLET_CODE=A.OUTLET_CODE\n"
+                + "WHERE A.YEAR=:year AND A.MONTH=:month AND A.TRANS_TYPE =:transType AND A.OUTLET_CODE= :outletCode";
+        Map prm = new HashMap();
+        prm.put("transType", balance.get("transType"));
+        prm.put("outletCode", balance.get("outletCode"));
+        prm.put("year", balance.get("year"));
+        prm.put("month", balance.get("month"));
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("orderId", rs.getString("ORDER_ID"));
+                return rt;
+            }
+        });
+        return list;
+    }
+
+    ///////////////////done
 }

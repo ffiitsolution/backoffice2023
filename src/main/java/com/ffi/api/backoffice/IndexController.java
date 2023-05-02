@@ -1452,4 +1452,21 @@ public class IndexController {
         return rm;
     }
     /////////////////////////////////DONE///////////////////////////////////////
+        ///////////////NEW METHOD LIST ORDER HEADER ALL BY DONA 2 MEI 2023////
+    @RequestMapping(value = "/list-counter", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk list order detail", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listCounter(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        Response res = new Response();
+        res.setData(viewServices.listCounter(balance));
+        return res;
+    }
+    /////////////////////////////////DONE///////////////////////////////////////
 }
