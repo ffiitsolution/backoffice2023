@@ -71,8 +71,10 @@ public class ViewDoaImpl implements ViewDao {
     public List<Map<String, Object>> listSupplier(Map<String, String> balance) {
         String qry = "SELECT  CD_SUPPLIER, SUPPLIER_NAME, CP_NAME, FLAG_CANVASING, STATUS, ADDRESS_1, "
                 + "ADDRESS_2, CITY, ZIP_CODE, PHONE, FAX, HOMEPAGE, CP_TITLE, CP_MOBILE, CP_PHONE, "
-                + "CP_PHONE_EXT, CP_EMAIL, USER_UPD, DATE_UPD, TIME_UPD FROM m_supplier WHERE STATUS LIKE :status and FLAG_CANVASING like :flagCanvasing AND CITY LIKE :city "
-                + "ORDER BY CD_SUPPLIER  ASC";
+                + "CP_PHONE_EXT, CP_EMAIL, USER_UPD, DATE_UPD, TIME_UPD FROM m_supplier where status like :status"
+                + " and city LIKE :city"
+                + " and FLAG_CANVASING Like :flagCanvasing"
+                + " order by cd_Supplier asc";
         Map prm = new HashMap();
         prm.put("status", "%" + balance.get("status") + "%");
         prm.put("city", "%" + balance.get("city") + "%");
@@ -86,7 +88,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("supplierName", rs.getString("SUPPLIER_NAME"));
                 rt.put("cpName", rs.getString("CP_NAME"));
                 rt.put("flagCanvasing", rs.getString("FLAG_CANVASING"));
-                rt.put("Status", rs.getString("STATUS"));
+                rt.put("status", rs.getString("STATUS"));
                 rt.put("address1", rs.getString("ADDRESS_1"));
                 rt.put("address2", rs.getString("ADDRESS_2"));
                 rt.put("city", rs.getString("CITY"));
@@ -1320,7 +1322,7 @@ public class ViewDoaImpl implements ViewDao {
         prm.put("status", "%" + balance.get("status") + "%");
         prm.put("orderType", "%" + balance.get("orderType") + "%");
         prm.put("outletCode", balance.get("outletCode"));
-        if (balance.get("orderDate").equals("")){
+        if (balance.get("orderDate").equals("")) {
             where = "AND ORDER_DATE =:orderDate";
         }
         prm.put("orderDate", balance.get("orderDate"));
