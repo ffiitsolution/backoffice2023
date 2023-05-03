@@ -53,13 +53,18 @@ public interface ProcessDao {
     public void insertMasterGlobal(Map<String, String> mapping);
 
     public void updateMasterGlobal(Map<String, String> mapping);
+
     /////////////////////////////DONE///////////////////////////////////////////
     ///////////////NEW METHOD INSERT ORDER HEADER BY DONA 14 APRIL 2023////
     public void insertOrderHeader(Map<String, String> mapping);
     /////////////////////////////DONE///////////////////////////////////////////
-        ///////////////NEW METHOD INSERT ORDER DETAIL BY DONA 27 APRIL 2023////
+    ///////////////NEW METHOD INSERT ORDER DETAIL BY DONA 27 APRIL 2023////
     public void insertOrderDetail(Map<String, String> mapping);
+
     public void updateOrderDetail(Map<String, String> mapping);
     /////////////////////////////DONE///////////////////////////////////////////
-    
+    ///////////////NEW METHOD UPDATE COUNTER BY DONA 3 MAY 2023////////////////////////////
+    public void updateMasterCounter(Map<String, String> mapping);
+    /////////////done
+
 }

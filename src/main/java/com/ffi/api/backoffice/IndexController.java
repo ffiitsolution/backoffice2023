@@ -1425,7 +1425,7 @@ public class IndexController {
         rm.setItem(list);
         return rm;
     }
-    
+
     @RequestMapping(value = "/update-order-detail", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk update order detail", response = Object.class)
     @ApiResponses(value = {
@@ -1452,7 +1452,7 @@ public class IndexController {
         return rm;
     }
     /////////////////////////////////DONE///////////////////////////////////////
-        ///////////////NEW METHOD LIST ORDER HEADER ALL BY DONA 2 MEI 2023////
+    ///////////////NEW METHOD LIST ORDER HEADER ALL BY DONA 2 MEI 2023////
     @RequestMapping(value = "/list-counter", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk list order detail", response = Object.class)
     @ApiResponses(value = {
@@ -1467,6 +1467,34 @@ public class IndexController {
         Response res = new Response();
         res.setData(viewServices.listCounter(balance));
         return res;
+    }
+    /////////////////////////////////DONE///////////////////////////////////////
+    ///////////////NEW METHOD UPDATE M_COUNTER BY DONA 3 MEI 2023////
+
+    @RequestMapping(value = "/update-master-counter", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk update master counter", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage updateMasterCounter(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        ResponseMessage rm = new ResponseMessage();
+        try {
+            processServices.updateMasterCounter(balance);
+            rm.setSuccess(true);
+            rm.setMessage("Update Success Successfuly");
+
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Update Failed Successfuly: " + e.getMessage());
+        }
+        rm.setItem(list);
+        return rm;
     }
     /////////////////////////////////DONE///////////////////////////////////////
 }

@@ -439,4 +439,20 @@ public class ProcessDaoImpl implements ProcessDao {
         jdbcTemplate.update(qy, param);
     }
     /////////////////////////////////DONE///////////////////////////////////////
+        ///////////////new method from dona 28-02-2023////////////////////////////
+    @Override
+    public void updateMasterCounter(Map<String, String> balance) {
+    
+        String qy = "update m_counter set ("
+                + "counter_no =:counterNo where ";
+        Map param = new HashMap();
+        param.put("itemCode", balance.get("itemCode"));
+        param.put("cdSupplier", balance.get("cdSupplier"));
+        param.put("status", balance.get("status"));
+        param.put("userUpd", balance.get("userUpd"));
+        param.put("dateUpd", dateNow);
+        param.put("timeUpd", timeStamp);
+        jdbcTemplate.update(qy, param);
+    }
+    /////////////////////////////////DONE///////////////////////////////////////
 }

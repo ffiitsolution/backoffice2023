@@ -95,13 +95,20 @@ public class ProcessServices {
     public void insertOrderHeader(Map<String, String> balance) {
         dao.insertOrderHeader(balance);
     }
+
     ///////////////////////done
     ///////////////NEW METHOD INSERT ORDER HEADER 14 APRIL 2023////
     public void insertOrderDetail(Map<String, String> balance) {
         dao.insertOrderDetail(balance);
     }
-        public void updateOrderDetail(Map<String, String> balance) {
+
+    public void updateOrderDetail(Map<String, String> balance) {
         dao.updateOrderDetail(balance);
+    }
+    ///////////////////////done
+    ///////////////NEW METHOD UPDATE COUNTER 3 MAY 2023////   
+    public void updateMasterCounter(Map<String, String> balance) {
+        dao.updateMasterCounter(balance);
     }
     ///////////////////////done
 }
