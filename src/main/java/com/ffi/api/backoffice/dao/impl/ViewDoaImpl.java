@@ -1316,19 +1316,19 @@ public class ViewDoaImpl implements ViewDao {
         String where = "";
         if (!balance.get("orderDate").equals("")) {
             where = "AND ORDER_DATE =:orderDate";
-        }else{
+        } else {
             where = "and ORDER_DATE between TO_CHAR(CURRENT_DATE-7,'dd-MON-yy') and TO_CHAR(CURRENT_DATE,'dd-MON-yy')";
         }
         String qry = "SELECT * FROM T_ORDER_HEADER "
                 + "WHERE STATUS LIKE :status "
                 + "AND ORDER_TO LIKE :orderType "
-                + "AND OUTLET_CODE =:outletCode "+where+"";
+                + "AND OUTLET_CODE =:outletCode " + where + "";
         Map prm = new HashMap();
         prm.put("status", "%" + balance.get("status") + "%");
         prm.put("orderType", "%" + balance.get("orderType") + "%");
         prm.put("outletCode", balance.get("outletCode"));
         prm.put("orderDate", balance.get("orderDate"));
-        
+
 //        prm.put("orderDate", balance.get("orderDate"));
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
@@ -1432,4 +1432,37 @@ public class ViewDoaImpl implements ViewDao {
     }
 
     ///////////////////done
+    @Override
+    public List<Map<String, Object>> ViewOrderDetail(Map<String, String> balance) {
+        String qry = "select oh.OUTLET_CODE,oh.ORDER_NO,od.ITEM_CODE,i.ITEM_DESCRIPTION,\n"
+                + "od.QTY_1 jumlah_besar,od.CD_UOM_1 satuan_besar,\n"
+                + "od.QTY_2 jumlah_kecil,od.CD_UOM_2 satuan_kecil,od.TOTAL_QTY_STOCK total_qty,\n"
+                + "(i.CONV_WAREHOUSE*i.CONV_STOCK) uom_conv\n"
+                + "from T_ORDER_HEADER oh\n"
+                + "left join T_ORDER_DETAIL od on od.ORDER_NO = oh.ORDER_NO and od.ORDER_ID = oh.ORDER_ID\n"
+                + "left join M_ITEM i on i.ITEM_CODE = od.ITEM_CODE\n"
+                + "where oh.ORDER_NO = :orderNo and oh.outlet_code = :outletCode";
+        Map prm = new HashMap();
+        prm.put("orderNo", balance.get("orderNo"));
+        prm.put("outletCode", balance.get("outletCode"));
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("outletCode", rs.getString("OUTLET_CODE"));
+                rt.put("orderNo", rs.getString("ORDER_NO"));
+                rt.put("itemCode", rs.getString("ITEM_CODE"));
+                rt.put("itemDesc", rs.getString("ITEM_DESCRIPTION"));
+                rt.put("jmlBesar", rs.getString("jumlah_besar"));
+                rt.put("satuanBesar", rs.getString("satuan_besar"));
+                rt.put("jmlKecil", rs.getString("jumlah_kecil"));
+                rt.put("satuanKecil", rs.getString("satuan_kecil"));
+                rt.put("totalQty", rs.getString("total_qty"));
+                rt.put("uomConv", rs.getString("uom_conv"));
+                return rt;
+            }
+        });
+        return list;
+    }
 }

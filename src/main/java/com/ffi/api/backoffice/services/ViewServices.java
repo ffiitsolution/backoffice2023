@@ -254,4 +254,8 @@ public class ViewServices {
         return viewDao.listCounter(ref);
     }
     ///////////////done 
+    
+    public List<Map<String, Object>> ViewOrderDetail(Map<String, String> ref) {
+        return viewDao.ViewOrderDetail(ref);
+    }
 }
