@@ -9,7 +9,9 @@ import com.ffi.api.backoffice.model.ParameterLogin;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1378,7 +1380,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "    0 AS JUMLAH_SATUAN_BESAR,\n"
                 + "    UOM_WAREHOUSE AS SATUAN_BESAR,\n"
                 + "    0 AS JUMLAH_SATUAN_KECIL,\n"
-                + "    UOM_PURCHASE,UOM_STOCK\n"
+                + "    UOM_PURCHASE,UOM_STOCK,\n"
                 + "    CONV_WAREHOUSE,CONV_STOCK,\n"
                 + "    0 TOTAL_JUMLAH,\n"
                 + "    UOM_PURCHASE AS TOTAL\n"
@@ -1410,21 +1412,33 @@ public class ViewDoaImpl implements ViewDao {
     ///////new methode from Dona 2-Mei-23//////////////////
     @Override
     public List<Map<String, Object>> listCounter(Map<String, String> balance) {
-        String qry = "SELECT A.OUTLET_CODE||A.MONTH||A.YEAR||A.COUNTER_NO+1 AS ORDER_ID FROM M_COUNTER A\n"
+
+        DateFormat df = new SimpleDateFormat("MM");
+        DateFormat dfYear = new SimpleDateFormat("yyyy");
+        Date tgl = new Date();
+        String month = df.format(tgl);
+        String year = dfYear.format(tgl);
+
+        String qry = "SELECT ORDER_ID||COUNTNO ORDER_ID FROM (\n"
+                + "SELECT A.OUTLET_CODE||:month||A.YEAR AS ORDER_ID,A.COUNTER_NO+1 COUNTNO FROM M_COUNTER A\n"
                 + "LEFT JOIN M_OUTLET B\n"
                 + "ON B.OUTLET_CODE=A.OUTLET_CODE\n"
-                + "WHERE A.YEAR=:year AND A.MONTH=:month AND A.TRANS_TYPE =:transType AND A.OUTLET_CODE= :outletCode";
+                + "WHERE A.YEAR = :year AND A.MONTH= :month AND A.TRANS_TYPE = :transType AND A.OUTLET_CODE= :outletCode)";
         Map prm = new HashMap();
         prm.put("transType", balance.get("transType"));
         prm.put("outletCode", balance.get("outletCode"));
-        prm.put("year", balance.get("year"));
-        prm.put("month", balance.get("month"));
+        prm.put("year", year);
+        prm.put("month", month);
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("orderId", rs.getString("ORDER_ID"));
+                if (balance.get("transType").equals("ID")) {
+                    rt.put("orderId", rs.getString("ORDER_ID"));
+                } else {
+                    rt.put("orderNo", balance.get("transType") + rs.getString("ORDER_ID"));
+                }
                 return rt;
             }
         });

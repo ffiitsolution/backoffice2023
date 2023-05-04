@@ -1351,6 +1351,7 @@ public class IndexController {
         ResponseMessage rm = new ResponseMessage();
         try {
             processServices.insertOrderHeader(balance);
+            processServices.updateMCounter(balance);
             rm.setSuccess(true);
             rm.setMessage("Insert Success Successfuly");
 

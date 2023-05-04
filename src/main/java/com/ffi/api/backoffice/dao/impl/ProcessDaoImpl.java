@@ -5,8 +5,10 @@
 package com.ffi.api.backoffice.dao.impl;
 
 import com.ffi.api.backoffice.dao.ProcessDao;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -359,10 +361,13 @@ public class ProcessDaoImpl implements ProcessDao {
     ///////////////NEW METHOD LIST ORDER HEADER BY DONA 14 APRIL 2023////
     @Override
     public void insertOrderHeader(Map<String, String> balance) {
-        
-        String yyyy =  balance.get("orderDate");
-        String year ="yyyy";
-        
+
+        DateFormat df = new SimpleDateFormat("MM");
+        DateFormat dfYear = new SimpleDateFormat("yyyy");
+        Date tgl = new Date();
+        String month = df.format(tgl);
+        String year = dfYear.format(tgl);
+
         String qy = "INSERT INTO T_ORDER_HEADER (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ORDER_DATE,ORDER_TO,CD_SUPPLIER,DT_DUE,DT_EXPIRED,REMARK,NO_OF_PRINT,STATUS,USER_UPD,DATE_UPD,TIME_UPD)"
                 + " VALUES(:outletCode,:orderType,:orderId,:orderNo,:orderDate,:orderTo,:cdSupplier,:dtDue,:dtExpired,:remark,:noOfPrint,:status,:userUpd,:dateUpd,:timeUpd)";
         Map param = new HashMap();
@@ -381,7 +386,58 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("userUpd", balance.get("userUpd"));
         param.put("dateUpd", dateNow);
         param.put("timeUpd", timeStamp);
+        param.put("year", year);
+        param.put("month", month);
+        param.put("transType", balance.get("transType"));
         jdbcTemplate.update(qy, param);
+    }
+    
+    @Override
+    public void updateMCounter(Map<String, String> balance) {
+
+        DateFormat df = new SimpleDateFormat("MM");
+        DateFormat dfYear = new SimpleDateFormat("yyyy");
+        Date tgl = new Date();
+        String month = df.format(tgl);
+        String year = dfYear.format(tgl);
+
+        String qy1 = "update m_counter \n"
+                + "       set COUNTER_NO = (select COUNTER_NO+1 FROM M_COUNTER \n"
+                + "                        where YEAR = :year \n"
+                + "                        AND MONTH= :month \n"
+                + "                        AND TRANS_TYPE = 'ID' \n"
+                + "                        AND OUTLET_CODE= :outletCode )\n"
+                + "where YEAR = :year AND MONTH= :month AND TRANS_TYPE = 'ID' AND OUTLET_CODE= :outletCode";
+        
+        String qy2 = "update m_counter \n"
+                + "       set COUNTER_NO = (select COUNTER_NO+1 FROM M_COUNTER \n"
+                + "                        where YEAR = :year \n"
+                + "                        AND MONTH= :month \n"
+                + "                        AND TRANS_TYPE = :transType \n"
+                + "                        AND OUTLET_CODE= :outletCode )\n"
+                + "where YEAR = :year AND MONTH= :month AND TRANS_TYPE = :transType AND OUTLET_CODE= :outletCode";
+
+        Map param = new HashMap();
+        param.put("outletCode", balance.get("outletCode"));
+        param.put("orderType", balance.get("orderType"));
+        param.put("orderId", balance.get("orderId"));
+        param.put("orderNo", balance.get("orderNo"));
+        param.put("orderDate", balance.get("orderDate"));
+        param.put("orderTo", balance.get("orderTo"));
+        param.put("cdSupplier", balance.get("cdSupplier"));
+        param.put("dtDue", balance.get("dtDue"));
+        param.put("dtExpired", balance.get("dtExpired"));
+        param.put("remark", balance.get("remark"));
+        param.put("noOfPrint", balance.get("noOfPrint"));
+        param.put("status", balance.get("status"));
+        param.put("userUpd", balance.get("userUpd"));
+        param.put("dateUpd", dateNow);
+        param.put("timeUpd", timeStamp);
+        param.put("year", year);
+        param.put("month", month);
+        param.put("transType", balance.get("transType"));
+        jdbcTemplate.update(qy1, param);
+        jdbcTemplate.update(qy2, param);
     }
     /////////////////////////////////DONE///////////////////////////////////////
 
@@ -443,10 +499,10 @@ public class ProcessDaoImpl implements ProcessDao {
         jdbcTemplate.update(qy, param);
     }
     /////////////////////////////////DONE///////////////////////////////////////
-        ///////////////new method from dona 28-02-2023////////////////////////////
+    ///////////////new method from dona 28-02-2023////////////////////////////
     @Override
     public void updateMasterCounter(Map<String, String> balance) {
-    
+
         String qy = "update m_counter set ("
                 + "counter_no =:counterNo where tr";
         Map param = new HashMap();

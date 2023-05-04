@@ -6,6 +6,7 @@ package com.ffi.api.backoffice.services;
 
 import com.ffi.api.backoffice.dao.ProcessDao;
 import java.util.Map;
+import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -92,16 +93,19 @@ public class ProcessServices {
 
     ///////////////////////done
     ///////////////NEW METHOD INSERT ORDER HEADER 14 APRIL 2023////
+    @Transactional
     public void insertOrderHeader(Map<String, String> balance) {
         dao.insertOrderHeader(balance);
     }
 
     ///////////////////////done
     ///////////////NEW METHOD INSERT ORDER HEADER 14 APRIL 2023////
+    @Transactional
     public void insertOrderDetail(Map<String, String> balance) {
         dao.insertOrderDetail(balance);
     }
-
+    
+    @Transactional
     public void updateOrderDetail(Map<String, String> balance) {
         dao.updateOrderDetail(balance);
     }
@@ -111,4 +115,8 @@ public class ProcessServices {
         dao.updateMasterCounter(balance);
     }
     ///////////////////////done
+    @Transactional
+    public void updateMCounter(Map<String, String> balance) {
+        dao.updateMCounter(balance);
+    }
 }

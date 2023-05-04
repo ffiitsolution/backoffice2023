@@ -66,5 +66,7 @@ public interface ProcessDao {
     ///////////////NEW METHOD UPDATE COUNTER BY DONA 3 MAY 2023////////////////////////////
     public void updateMasterCounter(Map<String, String> mapping);
     /////////////done
+    public void updateMCounter(Map<String, String> mapping);
+    
 
 }
