@@ -1370,7 +1370,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "    UOM_PURCHASE,\n"
                 + "    (CONV_WAREHOUSE * CONV_STOCK) CONV_WAREHOUSE,\n"
                 + "    (JUMLAH_SATUAN_BESAR * CONV_WAREHOUSE) + JUMLAH_SATUAN_KECIL TOTAL_JUMLAH,\n"
-                + "    UOM_PURCHASE AS TOTAL\n"
+                + "    UOM_STOCK AS TOTAL\n"
                 + "FROM (\n"
                 + "SELECT \n"
                 + "    ITEM_CODE,\n"
@@ -1378,7 +1378,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "    0 AS JUMLAH_SATUAN_BESAR,\n"
                 + "    UOM_WAREHOUSE AS SATUAN_BESAR,\n"
                 + "    0 AS JUMLAH_SATUAN_KECIL,\n"
-                + "    UOM_PURCHASE,\n"
+                + "    UOM_PURCHASE,UOM_STOCK\n"
                 + "    CONV_WAREHOUSE,CONV_STOCK,\n"
                 + "    0 TOTAL_JUMLAH,\n"
                 + "    UOM_PURCHASE AS TOTAL\n"
@@ -1436,7 +1436,7 @@ public class ViewDoaImpl implements ViewDao {
     public List<Map<String, Object>> ViewOrderDetail(Map<String, String> balance) {
         String qry = "select oh.OUTLET_CODE,oh.ORDER_NO,od.ITEM_CODE,i.ITEM_DESCRIPTION,\n"
                 + "od.QTY_1 jumlah_besar,od.CD_UOM_1 satuan_besar,\n"
-                + "od.QTY_2 jumlah_kecil,od.CD_UOM_2 satuan_kecil,od.TOTAL_QTY_STOCK total_qty,\n"
+                + "od.QTY_2 jumlah_kecil,od.CD_UOM_2 satuan_kecil,od.TOTAL_QTY_STOCK total_qty,i.UOM_STOCK,\n"
                 + "(i.CONV_WAREHOUSE*i.CONV_STOCK) uom_conv\n"
                 + "from T_ORDER_HEADER oh\n"
                 + "left join T_ORDER_DETAIL od on od.ORDER_NO = oh.ORDER_NO and od.ORDER_ID = oh.ORDER_ID\n"
@@ -1459,6 +1459,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("jmlKecil", rs.getString("jumlah_kecil"));
                 rt.put("satuanKecil", rs.getString("satuan_kecil"));
                 rt.put("totalQty", rs.getString("total_qty"));
+                rt.put("uomTotal", rs.getString("UOM_STOCK"));
                 rt.put("uomConv", rs.getString("uom_conv"));
                 return rt;
             }
