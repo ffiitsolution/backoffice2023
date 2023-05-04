@@ -1368,7 +1368,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "    SATUAN_BESAR,\n"
                 + "    JUMLAH_SATUAN_KECIL,\n"
                 + "    UOM_PURCHASE,\n"
-                + "    CONV_WAREHOUSE,\n"
+                + "    (CONV_WAREHOUSE * CONV_STOCK) CONV_WAREHOUSE,\n"
                 + "    (JUMLAH_SATUAN_BESAR * CONV_WAREHOUSE) + JUMLAH_SATUAN_KECIL TOTAL_JUMLAH,\n"
                 + "    UOM_PURCHASE AS TOTAL\n"
                 + "FROM (\n"
@@ -1379,7 +1379,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "    UOM_WAREHOUSE AS SATUAN_BESAR,\n"
                 + "    0 AS JUMLAH_SATUAN_KECIL,\n"
                 + "    UOM_PURCHASE,\n"
-                + "    CONV_WAREHOUSE,\n"
+                + "    CONV_WAREHOUSE,CONV_STOCK,\n"
                 + "    0 TOTAL_JUMLAH,\n"
                 + "    UOM_PURCHASE AS TOTAL\n"
                 + "FROM M_ITEM WHERE CD_WAREHOUSE = :cdWarehouse)";
