@@ -359,6 +359,10 @@ public class ProcessDaoImpl implements ProcessDao {
     ///////////////NEW METHOD LIST ORDER HEADER BY DONA 14 APRIL 2023////
     @Override
     public void insertOrderHeader(Map<String, String> balance) {
+        
+        String yyyy =  balance.get("orderDate");
+        String year ="yyyy";
+        
         String qy = "INSERT INTO T_ORDER_HEADER (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ORDER_DATE,ORDER_TO,CD_SUPPLIER,DT_DUE,DT_EXPIRED,REMARK,NO_OF_PRINT,STATUS,USER_UPD,DATE_UPD,TIME_UPD)"
                 + " VALUES(:outletCode,:orderType,:orderId,:orderNo,:orderDate,:orderTo,:cdSupplier,:dtDue,:dtExpired,:remark,:noOfPrint,:status,:userUpd,:dateUpd,:timeUpd)";
         Map param = new HashMap();
@@ -444,7 +448,7 @@ public class ProcessDaoImpl implements ProcessDao {
     public void updateMasterCounter(Map<String, String> balance) {
     
         String qy = "update m_counter set ("
-                + "counter_no =:counterNo where ";
+                + "counter_no =:counterNo where tr";
         Map param = new HashMap();
         param.put("itemCode", balance.get("itemCode"));
         param.put("cdSupplier", balance.get("cdSupplier"));

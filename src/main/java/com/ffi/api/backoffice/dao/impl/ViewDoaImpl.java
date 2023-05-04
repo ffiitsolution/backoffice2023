@@ -1314,19 +1314,22 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> listOrderHeaderAll(Map<String, String> balance) {
         String where = "";
+        if (!balance.get("orderDate").equals("")) {
+            where = "AND ORDER_DATE =:orderDate";
+        }else{
+            where = "and ORDER_DATE between TO_CHAR(CURRENT_DATE-7,'dd-MON-yy') and TO_CHAR(CURRENT_DATE,'dd-MON-yy')";
+        }
         String qry = "SELECT * FROM T_ORDER_HEADER "
                 + "WHERE STATUS LIKE :status "
-                + "AND ORDER_TO LIKE:orderType "
-                + "AND OUTLET_CODE =:outletCode "
-                + "AND ORDER_DATE =:orderDate";
+                + "AND ORDER_TO LIKE :orderType "
+                + "AND OUTLET_CODE =:outletCode "+where+"";
         Map prm = new HashMap();
         prm.put("status", "%" + balance.get("status") + "%");
         prm.put("orderType", "%" + balance.get("orderType") + "%");
         prm.put("outletCode", balance.get("outletCode"));
-        if (balance.get("orderDate").equals("")) {
-            where = "AND ORDER_DATE =:orderDate";
-        }
         prm.put("orderDate", balance.get("orderDate"));
+        
+//        prm.put("orderDate", balance.get("orderDate"));
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
