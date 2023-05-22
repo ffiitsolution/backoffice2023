@@ -473,15 +473,15 @@ public class ProcessDaoImpl implements ProcessDao {
     @Override
     public void updateOrderDetail(Map<String, String> balance) {
         String qy = "update t_order_detail set "
-                + "QTY_1 =:qty1 ,"
-                + "CD_UOM_1 =:cdUom1 ,"
-                + "QTY_2 =:qty2 ,"
-                + "CD_UOM_2 =:cdUom2 ,"
-                + "TOTAL_QTY_STOCK =:totalQtyStock,"
-                + "UNIT_PRICE =:unitPrice ,"
-                + "USER_UPD =:userUpd ,"
-                + "DATE_UPD =:dateUpd ,"
-                + "TIME_UPD =:timeUpd "
+                + "QTY_1 =:jmlBesar,"
+                + "CD_UOM_1 =:satuanBesar,"
+                + "QTY_2 =:jmlKecil,"
+                + "CD_UOM_2 =:satuanKecil,"
+                + "TOTAL_QTY_STOCK =:totalQty,"                
+                + "USER_UPD =:userUpd,"
+                + "DATE_UPD =:dateUpd,"
+                + "TIME_UPD =:timeUpd,"
+                + "UNIT_PRICE ='0' "
                 + "WHERE OUTLET_CODE =:outletCode AND "
                 + "ORDER_TYPE =:orderType AND "
                 + "ORDER_ID =:orderId AND "
@@ -493,12 +493,11 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("orderId", balance.get("orderId"));
         param.put("orderNo", balance.get("orderNo"));
         param.put("itemCode", balance.get("itemCode"));
-        param.put("qty1", balance.get("qty1"));
-        param.put("cdUom1", balance.get("cdUom1"));
-        param.put("qty2", balance.get("qty2"));
-        param.put("cdUom2", balance.get("cdUom2"));
-        param.put("totalQtyStock", balance.get("totalQtyStock"));
-        param.put("unitPrice", balance.get("unitPrice"));
+        param.put("jmlBesar", balance.get("jmlBesar"));
+        param.put("satuanBesar", balance.get("satuanBesar"));
+        param.put("jmlKecil", balance.get("jmlKecil"));
+        param.put("satuanKecil", balance.get("satuanKecil"));
+        param.put("totalQty", balance.get("totalQty"));
         param.put("userUpd", balance.get("userUpd"));
         param.put("dateUpd", dateNow);
         param.put("timeUpd", timeStamp);
