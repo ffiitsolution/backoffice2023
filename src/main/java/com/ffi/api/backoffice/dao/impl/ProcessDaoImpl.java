@@ -712,7 +712,6 @@ public class ProcessDaoImpl implements ProcessDao {
                 + "from T_OPNAME_DETAIL \n"
                 + "where OUTLET_CODE = :outletCode AND OPNAME_NO = :opnameNo)\n"
                 + "WHERE QTY > 0)\n"
-                + "ORDER BY ITEM_CODE\n"
                 + ")";
 
         Map param = new HashMap();
@@ -738,10 +737,13 @@ public class ProcessDaoImpl implements ProcessDao {
             String qry = "SELECT OUTLET_CODE,TRANS_DATE,ITEM_CODE,CD_TRANS,QUANTITY_IN,QUANTITY"
                     + " FROM T_STOCK_CARD_DETAIL WHERE OUTLET_CODE = :outletCode AND CD_TRANS = 'SOP' AND TRANS_DATE = :opnameDate";
             Map prm = new HashMap();
-            prm.put("opnameNo", balance.get("opnameNo"));
             prm.put("outletCode", balance.get("outletCode"));
+            prm.put("opnameNo", balance.get("opnameNo"));
             prm.put("opnameDate", balance.get("opnameDate"));
+            prm.put("transType", balance.get("transType"));
             prm.put("userUpd", balance.get("userUpd"));
+            prm.put("dateUpd", dateNow);
+            prm.put("timeUpd", timeStamp);
             System.err.println("q1 :" + qry);
             List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
                 @Override
@@ -758,12 +760,26 @@ public class ProcessDaoImpl implements ProcessDao {
             });
 
             for (Map<String, Object> opn : list) {
-
-                String remark = opn.get("cdTrans")+balance.get("opnameNo");
+                String itemCode = (String) opn.get("itemCode");
+                String i = (String) opn.get("qtyIn");
+                String o = (String) opn.get("qtyOut");
+                
+                double in = Double.valueOf(i);
+                double out = Double.valueOf(o);
+                
+                String qty_in = cekQtyIn(balance.get("outletCode"),balance.get("opnameDate"),itemCode);
+                String qty_out = cekQtyOut(balance.get("outletCode"),balance.get("opnameDate"),itemCode);
+                
+                double qtyIn = Double.valueOf(qty_in);
+                double qtyOut = Double.valueOf(qty_out);
+                
+                double totIn = qtyIn + in;
+                double totOut = qtyOut + out;
+                
                 String qry2 = "UPDATE T_STOCK_CARD \n"
                         + "SET QTY_IN = :qtyIn ,QTY_OUT = :qtyOut ,REMARK = :cdTrans , USER_UPD = :userUpd , \n"
                         + "DATE_UPD = :dateUpd, TIME_UPD = :timeUpd\n"
-                        + "WHERE OUTLET_CODE = :outletCode AND TRANS_DATE = :opnameDate ";
+                        + "WHERE OUTLET_CODE = :outletCode AND TRANS_DATE = :opnameDate AND ITEM_CODE = :itemCode ";
 
                 Map<String, Object> param = new HashMap<String, Object>();
                 param.put("opnameNo", balance.get("opnameNo"));
@@ -771,15 +787,46 @@ public class ProcessDaoImpl implements ProcessDao {
                 param.put("opnameDate", balance.get("opnameDate"));
                 param.put("userUpd", balance.get("userUpd"));
                 param.put("itemCode", opn.get("itemCode"));
-                param.put("cdTrans", opn.get("cdTrans"));
-                param.put("qtyIn", opn.get("qtyIn"));
-                param.put("qtyOut", opn.get("qtyOut"));
+                param.put("cdTrans", balance.get("transType")+balance.get("opnameNo"));
+                param.put("qtyIn", totIn);
+                param.put("qtyOut", totOut);
                 param.put("dateUpd", dateNow);
                 param.put("timeUpd", timeStamp);
-                jdbcTemplate.update(qry, param);
+                jdbcTemplate.update(qry2, param);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    public String cekQtyIn(String outletCode, String opnameDate, String itemCode) {
+
+        String sql = "SELECT QTY_IN FROM T_STOCK_CARD WHERE OUTLET_CODE = :outletCode AND TRANS_DATE = :opnameDate AND ITEM_CODE = :itemCode";
+        Map param = new HashMap();
+        param.put("opnameDate", opnameDate);
+        param.put("itemCode", itemCode);
+        param.put("outletCode", outletCode);
+        return jdbcTemplate.queryForObject(sql, param, new RowMapper() {
+            @Override
+            public Object mapRow(ResultSet rs, int i) throws SQLException {
+                return rs.getString(1) == null ? "0" : rs.getString(1);
+
+            }
+        }).toString();
+    }
+    public String cekQtyOut(String outletCode, String opnameDate, String itemCode) {
+
+        String sql = "SELECT QTY_OUT FROM T_STOCK_CARD WHERE OUTLET_CODE = :outletCode AND TRANS_DATE = :opnameDate AND ITEM_CODE = :itemCode";
+        Map param = new HashMap();
+        param.put("opnameDate", opnameDate);
+        param.put("itemCode", itemCode);
+        param.put("outletCode", outletCode);
+        return jdbcTemplate.queryForObject(sql, param, new RowMapper() {
+            @Override
+            public Object mapRow(ResultSet rs, int i) throws SQLException {
+                return rs.getString(1) == null ? "0" : rs.getString(1);
+
+            }
+        }).toString();
     }
 }
