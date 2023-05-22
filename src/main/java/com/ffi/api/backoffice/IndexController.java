@@ -4,6 +4,8 @@
  */
 package com.ffi.api.backoffice;
 
+import com.ffi.api.backoffice.model.DetailOpname;
+import com.ffi.api.backoffice.model.HeaderOpname;
 import com.ffi.api.backoffice.model.ParameterLogin;
 import com.ffi.api.backoffice.services.ProcessServices;
 import com.ffi.api.backoffice.services.ViewServices;
@@ -15,8 +17,11 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import static java.util.Collections.list;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -1418,7 +1423,6 @@ public class IndexController {
             processServices.insertOrderDetail(balance);
             rm.setSuccess(true);
             rm.setMessage("Insert Success Successfuly");
-
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Insert Failed Successfuly: " + e.getMessage());
@@ -1452,6 +1456,7 @@ public class IndexController {
         rm.setItem(list);
         return rm;
     }
+
     /////////////////////////////////DONE///////////////////////////////////////
     ///////////////NEW METHOD LIST ORDER HEADER ALL BY DONA 2 MEI 2023////
     @RequestMapping(value = "/list-counter", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -1498,7 +1503,7 @@ public class IndexController {
         return rm;
     }
     /////////////////////////////////DONE///////////////////////////////////////
-    
+
     @RequestMapping(value = "/view-order-detail", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view list supplier item", response = Object.class)
     @ApiResponses(value = {
@@ -1516,4 +1521,167 @@ public class IndexController {
         res.setData(viewServices.ViewOrderDetail(balance));
         return res;
     }
-}
+
+    @RequestMapping(value = "/list-item-detail-opname", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view list item detail stock opname", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listItemDetailOpname(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response res = new Response();
+        res.setData(viewServices.listItemDetailOpname(balance));
+        return res;
+    }
+
+    @RequestMapping(value = "/list-edit-item-detail-opname", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view list item detail stock opname", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listEditItemDetailOpname(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response res = new Response();
+        res.setData(viewServices.listEditItemDetailOpname(balance));
+        return res;
+    }
+
+    @RequestMapping(value = "/list-header-opname", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view list item detail stock opname", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listHeaderOpname(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response res = new Response();
+        res.setData(viewServices.listHeaderOpname(balance));
+        return res;
+    }
+
+    @RequestMapping(value = "/insert-opname-header", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk insert transaksi opname header", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage inserOpnameHeader(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        HeaderOpname balance = gsn.fromJson(param, new TypeToken<HeaderOpname>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Map<String, Object> map = new LinkedHashMap<String, Object>();
+        List<Map<String, Object>> list1 = new ArrayList<Map<String, Object>>();
+        ResponseMessage rm = new ResponseMessage();
+
+        DateFormat dateFormat = new SimpleDateFormat("MMM");
+        String sDate1 = balance.getOpnameDate();
+        Date date1 = new SimpleDateFormat("dd-MMM-yy").parse(sDate1);
+        String toMonth = dateFormat.format(date1);
+
+        String cekOpnameHdr = viewServices.cekOpname(balance.getOutletCode(), toMonth.toUpperCase());
+        try {
+            if (cekOpnameHdr.equals("0")) {
+                processServices.inserOpnameHeader(balance);
+                rm.setSuccess(true);
+                rm.setMessage("Insert Success Successfuly");
+                map.put("opnameNo", balance.getOpnameNo());
+            } else {
+                rm.setSuccess(true);
+                rm.setMessage("Stock Opname bulan ini sudah dilakukan");
+            }
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Insert Failed Successfuly: " + e.getMessage());
+        }
+        if (rm.getMessage().equals("Insert Success Successfuly")) {
+            processServices.updateMCounterSop(balance.getTransType(), balance.getOutletCode());
+        }
+        list.add(map);
+        rm.setItem(list);
+        return rm;
+    }
+
+    @RequestMapping(value = "/insert-opname-detail", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk insert transaksi opname detail", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage inserOpnameDetail(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        DetailOpname opnameDtls = gsn.fromJson(param, new TypeToken<DetailOpname>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        ResponseMessage rm = new ResponseMessage();
+
+        try {
+            processServices.inserOpnameDetail(opnameDtls);
+            rm.setSuccess(true);
+            rm.setMessage("Insert Success Successfuly");
+
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Insert Failed Successfuly: " + e.getMessage());
+        }
+        rm.setItem(list);
+        return rm;
+    }
+
+    @RequestMapping(value = "/insert-stock-card-detail", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk insert transaksi opname header", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage insertSoToScDtl(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        String status = "";
+        ResponseMessage rm = new ResponseMessage();
+
+        try {
+            processServices.insertSoToScDtl(balance);
+            status = "Sukses";
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Insert Stock Card Detail Failed: " + e.getMessage());
+        }
+        try {
+            if (status.equals("Sukses")) {
+                processServices.insertScDtlToScHdr(balance);
+                rm.setSuccess(true);
+                rm.setMessage("Insert Stock Card Header Successfuly");
+            } else {
+                rm.setSuccess(false);
+                rm.setMessage("Insert Stock Card Detail Failed: ");
+            }
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Insert Stock Card Header Failed : " + e.getMessage());
+        }
+            rm.setItem(list);
+            return rm;
+        }
+    }

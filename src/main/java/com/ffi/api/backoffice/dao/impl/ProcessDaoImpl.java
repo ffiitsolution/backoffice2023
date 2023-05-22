@@ -5,13 +5,19 @@
 package com.ffi.api.backoffice.dao.impl;
 
 import com.ffi.api.backoffice.dao.ProcessDao;
+import com.ffi.api.backoffice.model.DetailOpname;
+import com.ffi.api.backoffice.model.HeaderOpname;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -391,7 +397,7 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("transType", balance.get("transType"));
         jdbcTemplate.update(qy, param);
     }
-    
+
     @Override
     public void updateMCounter(Map<String, String> balance) {
 
@@ -408,7 +414,7 @@ public class ProcessDaoImpl implements ProcessDao {
                 + "                        AND TRANS_TYPE = 'ID' \n"
                 + "                        AND OUTLET_CODE= :outletCode )\n"
                 + "where YEAR = :year AND MONTH= :month AND TRANS_TYPE = 'ID' AND OUTLET_CODE= :outletCode";
-        
+
         String qy2 = "update m_counter \n"
                 + "       set COUNTER_NO = (select COUNTER_NO+1 FROM M_COUNTER \n"
                 + "                        where YEAR = :year \n"
@@ -498,6 +504,7 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("timeUpd", timeStamp);
         jdbcTemplate.update(qy, param);
     }
+
     /////////////////////////////////DONE///////////////////////////////////////
     ///////////////new method from dona 28-02-2023////////////////////////////
     @Override
@@ -515,4 +522,265 @@ public class ProcessDaoImpl implements ProcessDao {
         jdbcTemplate.update(qy, param);
     }
     /////////////////////////////////DONE///////////////////////////////////////
+
+    @Override
+    public void inserOpnameHeader(HeaderOpname balance) {
+
+        DateFormat df = new SimpleDateFormat("MM");
+        DateFormat dfYear = new SimpleDateFormat("yyyy");
+        Date tgl = new Date();
+        String month = df.format(tgl);
+        String year = dfYear.format(tgl);
+
+        String opNo = opnameNumber(year, month, balance.getTransType(), balance.getOutletCode());
+
+        String qy = "INSERT INTO T_OPNAME_HEADER (OUTLET_CODE,CD_TEMPLATE,OPNAME_NO,OPNAME_DATE,REMARK,STATUS,USER_UPD,DATE_UPD,TIME_UPD)\n"
+                + "values(:outletCode,:cdTemplate,:opnameNo,:opnameDate,:remark,:status,:userUpd,:dateUpd,:timeUpd)";
+
+        String qry = "INSERT INTO T_OPNAME_DETAIL (\n"
+                + "SELECT SC.OUTLET_CODE,:opnameNo,SC.ITEM_CODE,\n"
+                + "(SC.QTY_BEGINNING+SC.QTY_IN-SC.QTY_OUT) QTY_FREEZE,0 COST_FREEZE,\n"
+                + "0 QTY_PURCH,I.UOM_PURCHASE,0 QTY_STOCK,I.UOM_STOCK,0 TOTAL_QTY,\n"
+                + " :userUpd USER_UPD,:dateUpd DATE_UPD,:timeUpd TIME_UPD\n"
+                + "FROM T_STOCK_CARD SC\n"
+                + "LEFT JOIN M_ITEM I ON I.ITEM_CODE = SC.ITEM_CODE\n"
+                + "WHERE SC.OUTLET_CODE = :outletCode AND I.STATUS = 'A'\n"
+                + "AND SC.TRANS_DATE = :opnameDate \n"
+                + ")";
+
+        Map param = new HashMap();
+        param.put("outletCode", balance.getOutletCode());
+        param.put("cdTemplate", balance.getCdTemplate());
+        param.put("opnameNo", opNo);
+        param.put("opnameDate", balance.getOpnameDate());
+        param.put("remark", balance.getRemark());
+        param.put("status", balance.getStatus());
+        param.put("userUpd", balance.getUserUpd());
+        param.put("dateUpd", dateNow);
+        param.put("timeUpd", timeStamp);
+        param.put("year", year);
+        param.put("month", month);
+        param.put("transType", balance.getTransType());
+        jdbcTemplate.update(qy, param);
+        jdbcTemplate.update(qry, param);
+        balance.setOpnameNo(opNo);
+    }
+
+    public String opnameNumber(String year, String month, String transType, String outletCode) {
+
+        String sql = "SELECT :transType||ORDER_ID||COUNTNO ORDER_ID FROM (\n"
+                + "SELECT A.OUTLET_CODE||:month||A.YEAR AS ORDER_ID,A.COUNTER_NO+1 COUNTNO FROM M_COUNTER A\n"
+                + "LEFT JOIN M_OUTLET B\n"
+                + "ON B.OUTLET_CODE=A.OUTLET_CODE\n"
+                + "WHERE A.YEAR = :year AND A.MONTH= :month AND A.TRANS_TYPE = :transType AND A.OUTLET_CODE= :outletCode)";
+        Map param = new HashMap();
+        param.put("year", year);
+        param.put("month", month);
+        param.put("transType", transType);
+        param.put("outletCode", outletCode);
+        return jdbcTemplate.queryForObject(sql, param, new RowMapper() {
+            @Override
+            public Object mapRow(ResultSet rs, int i) throws SQLException {
+                return rs.getString(1) == null ? "0" : rs.getString(1);
+
+            }
+        }).toString();
+    }
+
+    @Override
+    public void updateMCounterSop(String transType, String outletCode) {
+
+        DateFormat df = new SimpleDateFormat("MM");
+        DateFormat dfYear = new SimpleDateFormat("yyyy");
+        Date tgl = new Date();
+        String month = df.format(tgl);
+        String year = dfYear.format(tgl);
+
+        String qy = "update m_counter set \n"
+                + "counter_no = (select counter_no+1 from M_COUNTER WHERE YEAR = :year AND MONTH= :month AND TRANS_TYPE = :transType AND OUTLET_CODE= :outletCode)\n"
+                + "WHERE YEAR = :year AND MONTH= :month AND TRANS_TYPE = :transType AND OUTLET_CODE= :outletCode";
+        Map param = new HashMap();
+        param.put("year", year);
+        param.put("month", month);
+        param.put("transType", transType);
+        param.put("outletCode", outletCode);
+        jdbcTemplate.update(qy, param);
+    }
+
+    @Override
+    public void inserOpnameDetail(DetailOpname opnameDtls) {
+
+        DateFormat df = new SimpleDateFormat("MM");
+        DateFormat dfYear = new SimpleDateFormat("yyyy");
+        Date tgl = new Date();
+        String month = df.format(tgl);
+        String year = dfYear.format(tgl);
+        String qy = "";
+        for (DetailOpname dtls : opnameDtls.getDetails()) {
+
+            String cekOsDetails = cekOsDetails(opnameDtls.getOutletCode(), opnameDtls.getOpnameNo(), dtls.getItemCode());
+
+            if (cekOsDetails.equals("0")) {
+                qy = "INSERT INTO T_OPNAME_DETAIL (OUTLET_CODE,OPNAME_NO,ITEM_CODE,QTY_FREEZE,COST_FREEZE,QTY_PURCH,\n"
+                        + "UOM_PURCH,QTY_STOCK,UOM_STOCK,TOTAL_QTY,USER_UPD,DATE_UPD,TIME_UPD)\n"
+                        + "values(:outletCode,:opnameNo,:itemCode,:qtyFreeze,:costFreeze,:qtyPurch,:uomPurch,:qtyStock,:uomStock,"
+                        + ":totalQty,:userUpd,:dateUpd,:timeUpd)";
+                Map param = new HashMap();
+                param.put("outletCode", opnameDtls.getOutletCode());
+                param.put("opnameNo", opnameDtls.getOpnameNo());
+                param.put("userUpd", opnameDtls.getUserUpd());
+                param.put("itemCode", dtls.getItemCode());
+                param.put("qtyFreeze", dtls.getQtyFreeze());
+                param.put("costFreeze", dtls.getCostFreeze());
+                param.put("costFreeze", dtls.getCostFreeze());
+                param.put("qtyPurch", dtls.getQtyPurch());
+                param.put("uomPurch", dtls.getUomPurch());
+                param.put("qtyStock", dtls.getQtyStock());
+                param.put("uomStock", dtls.getUomStock());
+                param.put("totalQty", dtls.getTotalQty());
+                param.put("dateUpd", dateNow);
+                param.put("timeUpd", timeStamp);
+                jdbcTemplate.update(qy, param);
+            } else {
+                qy = "UPDATE T_OPNAME_DETAIL \n"
+                        + "SET QTY_PURCH = :qtyPurch , QTY_STOCK = :qtyStock, TOTAL_QTY = :totalQty,\n"
+                        + "USER_UPD = :userUpd, DATE_UPD = :dateUpd , TIME_UPD = :timeUpd\n"
+                        + "WHERE OPNAME_NO = :opnameNo AND OUTLET_CODE = :outletCode AND ITEM_CODE = :itemCode";
+                Map param = new HashMap();
+                param.put("outletCode", opnameDtls.getOutletCode());
+                param.put("opnameNo", opnameDtls.getOpnameNo());
+                param.put("userUpd", opnameDtls.getUserUpd());
+                param.put("itemCode", dtls.getItemCode());
+                param.put("qtyFreeze", dtls.getQtyFreeze());
+                param.put("costFreeze", dtls.getCostFreeze());
+                param.put("costFreeze", dtls.getCostFreeze());
+                param.put("qtyPurch", dtls.getQtyPurch());
+                param.put("uomPurch", dtls.getUomPurch());
+                param.put("qtyStock", dtls.getQtyStock());
+                param.put("uomStock", dtls.getUomStock());
+                param.put("totalQty", dtls.getTotalQty());
+                param.put("dateUpd", dateNow);
+                param.put("timeUpd", timeStamp);
+                jdbcTemplate.update(qy, param);
+            }
+        }
+    }
+
+    public String cekOsDetails(String outletCode, String opnameNo, String itemCode) {
+
+        String sql = "select count(*) cek \n"
+                + "from T_OPNAME_DETAIL where OUTLET_CODE = :outletCode and OPNAME_NO = :opnameNo and ITEM_CODE = :itemCode";
+        Map param = new HashMap();
+        param.put("opnameNo", opnameNo);
+        param.put("itemCode", itemCode);
+        param.put("outletCode", outletCode);
+        return jdbcTemplate.queryForObject(sql, param, new RowMapper() {
+            @Override
+            public Object mapRow(ResultSet rs, int i) throws SQLException {
+                return rs.getString(1) == null ? "0" : rs.getString(1);
+
+            }
+        }).toString();
+    }
+
+    @Override
+    public void insertSoToScDtl(Map<String, String> balance) {
+
+        DateFormat df = new SimpleDateFormat("MM");
+        DateFormat dfYear = new SimpleDateFormat("yyyy");
+        Date tgl = new Date();
+        String month = df.format(tgl);
+        String year = dfYear.format(tgl);
+
+        String qry = "INSERT INTO T_STOCK_CARD_DETAIL (\n"
+                + "SELECT * FROM (\n"
+                + "SELECT OUTLET_CODE,TRANS_DATE,ITEM_CODE,TRANS_TYPE,\n"
+                + "QTY QTY_IN,0 QTY_OUT,\n"
+                + "USER_UPD, DATE_UPD, TIME_UPD\n"
+                + "FROM (\n"
+                + "select OUTLET_CODE,:opnameDate TRANS_DATE,ITEM_CODE,:transType TRANS_TYPE,\n"
+                + "TOTAL_QTY - (QTY_FREEZE) QTY,:userUpd USER_UPD,:dateUpd DATE_UPD,:timeUpd TIME_UPD\n"
+                + "from T_OPNAME_DETAIL \n"
+                + "where OUTLET_CODE = :outletCode AND OPNAME_NO = :opnameNo)\n"
+                + "WHERE QTY < = 0\n"
+                + "union all\n"
+                + "SELECT OUTLET_CODE,TRANS_DATE,ITEM_CODE,TRANS_TYPE,\n"
+                + "0 QTY_IN, QTY QTY_OUT,\n"
+                + "USER_UPD, DATE_UPD, TIME_UPD\n"
+                + "FROM (\n"
+                + "select OUTLET_CODE,:opnameDate TRANS_DATE,ITEM_CODE,:transType TRANS_TYPE,\n"
+                + "TOTAL_QTY - (QTY_FREEZE) QTY,:userUpd USER_UPD, :dateUpd DATE_UPD, :timeUpd TIME_UPD\n"
+                + "from T_OPNAME_DETAIL \n"
+                + "where OUTLET_CODE = :outletCode AND OPNAME_NO = :opnameNo)\n"
+                + "WHERE QTY > 0)\n"
+                + "ORDER BY ITEM_CODE\n"
+                + ")";
+
+        Map param = new HashMap();
+        param.put("outletCode", balance.get("outletCode"));
+        param.put("opnameNo", balance.get("opnameNo"));
+        param.put("opnameDate", balance.get("opnameDate"));
+        param.put("transType", balance.get("transType"));
+        param.put("userUpd", balance.get("userUpd"));
+        param.put("dateUpd", dateNow);
+        param.put("timeUpd", timeStamp);
+        jdbcTemplate.update(qry, param);
+    }
+
+    @Override
+    public void insertScDtlToScHdr(Map<String, String> balance) {
+
+        DateFormat df = new SimpleDateFormat("MM");
+        DateFormat dfYear = new SimpleDateFormat("yyyy");
+        Date tgl = new Date();
+        String month = df.format(tgl);
+        String year = dfYear.format(tgl);
+        try {
+            String qry = "SELECT OUTLET_CODE,TRANS_DATE,ITEM_CODE,CD_TRANS,QUANTITY_IN,QUANTITY"
+                    + " FROM T_STOCK_CARD_DETAIL WHERE OUTLET_CODE = :outletCode AND CD_TRANS = 'SOP' AND TRANS_DATE = :opnameDate";
+            Map prm = new HashMap();
+            prm.put("opnameNo", balance.get("opnameNo"));
+            prm.put("outletCode", balance.get("outletCode"));
+            prm.put("opnameDate", balance.get("opnameDate"));
+            prm.put("userUpd", balance.get("userUpd"));
+            System.err.println("q1 :" + qry);
+            List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+                @Override
+                public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                    Map<String, Object> rt = new HashMap<String, Object>();
+                    rt.put("outletCode", rs.getString("OUTLET_CODE"));
+                    rt.put("transDate", rs.getString("TRANS_DATE"));
+                    rt.put("itemCode", rs.getString("ITEM_CODE"));
+                    rt.put("cdTrans", rs.getString("CD_TRANS"));
+                    rt.put("qtyIn", rs.getString("QUANTITY_IN"));
+                    rt.put("qtyOut", rs.getString("QUANTITY"));
+                    return rt;
+                }
+            });
+
+            for (Map<String, Object> opn : list) {
+
+                String remark = opn.get("cdTrans")+balance.get("opnameNo");
+                String qry2 = "UPDATE T_STOCK_CARD \n"
+                        + "SET QTY_IN = :qtyIn ,QTY_OUT = :qtyOut ,REMARK = :cdTrans , USER_UPD = :userUpd , \n"
+                        + "DATE_UPD = :dateUpd, TIME_UPD = :timeUpd\n"
+                        + "WHERE OUTLET_CODE = :outletCode AND TRANS_DATE = :opnameDate ";
+
+                Map<String, Object> param = new HashMap<String, Object>();
+                param.put("opnameNo", balance.get("opnameNo"));
+                param.put("outletCode", balance.get("outletCode"));
+                param.put("opnameDate", balance.get("opnameDate"));
+                param.put("userUpd", balance.get("userUpd"));
+                param.put("itemCode", opn.get("itemCode"));
+                param.put("cdTrans", opn.get("cdTrans"));
+                param.put("qtyIn", opn.get("qtyIn"));
+                param.put("qtyOut", opn.get("qtyOut"));
+                param.put("dateUpd", dateNow);
+                param.put("timeUpd", timeStamp);
+                jdbcTemplate.update(qry, param);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

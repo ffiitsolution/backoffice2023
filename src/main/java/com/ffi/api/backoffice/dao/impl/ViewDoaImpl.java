@@ -1315,16 +1315,19 @@ public class ViewDoaImpl implements ViewDao {
     ///////////////NEW METHOD LIST ORDER HEADER BY DONA 18 APRIL 2023////
     @Override
     public List<Map<String, Object>> listOrderHeaderAll(Map<String, String> balance) {
+        String getCity = getCity(balance.get("outletCode"));
         String where = "";
         if (!balance.get("orderDate").equals("")) {
             where = "AND ORDER_DATE =:orderDate";
         } else {
             where = "and ORDER_DATE between TO_CHAR(CURRENT_DATE-7,'dd-MON-yy') and TO_CHAR(CURRENT_DATE,'dd-MON-yy')";
         }
-        String qry = "SELECT * FROM T_ORDER_HEADER "
-                + "WHERE STATUS LIKE :status "
-                + "AND ORDER_TO LIKE :orderType "
-                + "AND OUTLET_CODE =:outletCode " + where + "";
+        String qry = "SELECT H.*,G.DESCRIPTION NAMA_GUDANG FROM T_ORDER_HEADER H\n"
+                + "LEFT JOIN M_GLOBAL G ON G.CODE = H.CD_SUPPLIER AND G.COND = 'X_" + getCity + "'\n"
+                + "WHERE H.STATUS LIKE :status \n"
+                + "AND H.ORDER_TYPE LIKE :orderType \n"
+                + "AND H.OUTLET_CODE = :outletCode \n"
+                + "AND G.STATUS = 'A' " + where + "";
         Map prm = new HashMap();
         prm.put("status", "%" + balance.get("status") + "%");
         prm.put("orderType", "%" + balance.get("orderType") + "%");
@@ -1352,11 +1355,43 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("userUpd", rs.getString("USER_UPD"));
                 rt.put("dateUpd", rs.getString("DATE_UPD"));
                 rt.put("timeUpd", rs.getString("TIME_UPD"));
+                rt.put("gudangName", rs.getString("NAMA_GUDANG"));
 
                 return rt;
             }
         });
         return list;
+    }
+
+//    @Override
+//    public String getCity(String outletCode) {
+//        
+//        String qry = "SELECT DISTINCT CITY FROM M_OUTLET WHERE OUTLET_CODE = :outletCode and status = 'A'";
+//        Map prm = new HashMap();
+//        prm.put("outletCode", outletCode);
+//        System.err.println("q :" + qry);
+//        String list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+//            @Override
+//            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+//                Map<String, Object> rt = new HashMap<String, Object>();
+//                rt.put("city", rs.getString("CITY"));
+//                return rt;
+//            }
+//        });
+//        return list;
+//    }
+    @Override
+    public String getCity(String outletCode) {
+        String qry = "SELECT DISTINCT CITY FROM M_OUTLET WHERE OUTLET_CODE = :outletCode and status = 'A'";
+        Map prm = new HashMap();
+        prm.put("outletCode", outletCode);
+        return jdbcTemplate.queryForObject(qry, prm, new RowMapper() {
+            @Override
+            public Object mapRow(ResultSet rs, int i) throws SQLException {
+                return rs.getString(1) == null ? "0" : rs.getString(1);
+
+            }
+        }).toString();
     }
 
     ///////////////////done
@@ -1479,5 +1514,126 @@ public class ViewDoaImpl implements ViewDao {
             }
         });
         return list;
+    }
+
+    @Override
+    public List<Map<String, Object>> listItemDetailOpname(Map<String, String> balance) {
+        String qry = "select ITEM_CODE,ITEM_DESCRIPTION,QTY_WAREHOUSE,CONV_WAREHOUSE,UOM_WAREHOUSE,\n"
+                + "QTY_PURCHASE,CONV_STOCK,UOM_PURCHASE,0 TOTAL_STOCK,UOM_STOCK\n"
+                + "from (\n"
+                + "select i.ITEM_CODE,i.ITEM_DESCRIPTION, 0 QTY_WAREHOUSE, i.UOM_WAREHOUSE,\n"
+                + "0 QTY_PURCHASE,i.CONV_WAREHOUSE,i.UOM_PURCHASE,i.CONV_STOCK,i.UOM_STOCK\n"
+                + "from m_item i\n"
+                + "where i.status = 'A' AND FLAG_MATERIAL = 'Y' AND FLAG_STOCK = 'Y'\n"
+                + "order by i.ITEM_CODE asc)";
+        Map prm = new HashMap();
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("itemCode", rs.getString("ITEM_CODE"));
+                rt.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
+                rt.put("qtyWarehouse", rs.getString("QTY_WAREHOUSE"));
+                rt.put("convWarehouse", rs.getString("CONV_WAREHOUSE"));
+                rt.put("uomWareHouse", rs.getString("UOM_WAREHOUSE"));
+                rt.put("qtyPurchase", rs.getString("QTY_PURCHASE"));
+                rt.put("convStock", rs.getString("CONV_STOCK"));
+                rt.put("upmPurchase", rs.getString("UOM_PURCHASE"));
+                rt.put("totalStock", rs.getString("TOTAL_STOCK"));
+                rt.put("uomStock", rs.getString("UOM_STOCK"));
+                return rt;
+            }
+        });
+        return list;
+    }
+
+    @Override
+    public List<Map<String, Object>> listEditItemDetailOpname(Map<String, String> balance) {
+        String qry = "SELECT ITEM_CODE,ITEM_DESCRIPTION,\n"
+                + "SUM(QTY_WAREHOUSE) QTY_WAREHOUSE, MAX(UOM_WAREHOUSE) UOM_WAREHOUSE ,\n"
+                + "SUM(QTY_PURCHASE) QTY_PURCHASE, MAX(CONV_WAREHOUSE) CONV_WAREHOUSE,\n"
+                + "MAX(UOM_PURCHASE) UOM_PURCHASE, SUM(TOTAL_QTY) TOTAL_QTY,\n"
+                + "MAX(CONV_STOCK) CONV_STOCK,MAX(UOM_STOCK) UOM_STOCK\n"
+                + "FROM (\n"
+                + "select i.ITEM_CODE,i.ITEM_DESCRIPTION, 0 QTY_WAREHOUSE, i.UOM_WAREHOUSE,\n"
+                + "0 QTY_PURCHASE,i.CONV_WAREHOUSE,i.UOM_PURCHASE,0 TOTAL_QTY,i.CONV_STOCK,i.UOM_STOCK\n"
+                + "from m_item i\n"
+                + "where i.status = 'A' AND i.FLAG_MATERIAL = 'Y' AND i.FLAG_STOCK = 'Y'\n"
+                + "UNION ALL\n"
+                + "select OD.ITEM_CODE,I.ITEM_DESCRIPTION,\n"
+                + "(OD.QTY_PURCH/I.CONV_WAREHOUSE) QTY_WAREHOUSE,I.UOM_WAREHOUSE,\n"
+                + "(OD.QTY_STOCK/I.CONV_STOCK) QTY_PURCHASE,i.CONV_WAREHOUSE,I.UOM_PURCHASE,\n"
+                + "OD.TOTAL_QTY,i.CONV_STOCK,i.UOM_STOCK\n"
+                + "from T_OPNAME_DETAIL OD\n"
+                + "LEFT JOIN M_ITEM I ON I.ITEM_CODE = OD.ITEM_CODE\n"
+                + "WHERE OD.OPNAME_NO = :opnameNo AND OD.OUTLET_CODE = :outletCode)\n"
+                + "GROUP BY ITEM_CODE,ITEM_DESCRIPTION\n"
+                + "ORDER BY ITEM_CODE,ITEM_DESCRIPTION ASC";
+        Map prm = new HashMap();
+        prm.put("outletCode", balance.get("outletCode"));
+        prm.put("opnameNo", balance.get("opnameNo"));
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("itemCode", rs.getString("ITEM_CODE"));
+                rt.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
+                rt.put("qtyWarehouse", rs.getString("QTY_WAREHOUSE"));
+                rt.put("convWarehouse", rs.getString("CONV_WAREHOUSE"));
+                rt.put("uomWareHouse", rs.getString("UOM_WAREHOUSE"));
+                rt.put("qtyPurchase", rs.getString("QTY_PURCHASE"));
+                rt.put("convStock", rs.getString("CONV_STOCK"));
+                rt.put("upmPurchase", rs.getString("UOM_PURCHASE"));
+                rt.put("totalStock", rs.getString("TOTAL_QTY"));
+                rt.put("uomStock", rs.getString("UOM_STOCK"));
+                return rt;
+            }
+        });
+        return list;
+    }
+
+    @Override
+    public List<Map<String, Object>> listHeaderOpname(Map<String, String> balance) {
+        String qry = "SELECT H.OPNAME_NO,H.OPNAME_DATE,\n"
+                + "CASE WHEN H.CD_TEMPLATE = '1' THEN TH.TEMPLATE_NAME\n"
+                + "     WHEN H.CD_TEMPLATE = '0' THEN 'STOCK OPNAME BARANG '|| H.OPNAME_DATE \n"
+                + "END OPNAME_NAME,\n"
+                + "case when H.CD_TEMPLATE = '1' THEN 'TEMPLATE' \n"
+                + "     WHEN H.CD_TEMPLATE = '0' THEN 'PER BARANG' \n"
+                + "END TYPE,H.STATUS\n"
+                + "FROM T_OPNAME_HEADER H \n"
+                + "LEFT JOIN M_OPNAME_TEMPL_HEADER TH ON TH.CD_TEMPLATE = H.CD_TEMPLATE order by H.OPNAME_DATE DESC";
+        Map prm = new HashMap();
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("opnameNo", rs.getString("OPNAME_NO"));
+                rt.put("opnameDate", rs.getString("OPNAME_DATE"));
+                rt.put("opnameName", rs.getString("OPNAME_NAME"));
+                rt.put("type", rs.getString("TYPE"));
+                rt.put("status", rs.getString("STATUS"));
+                return rt;
+            }
+        });
+        return list;
+    }
+
+    @Override
+    public String cekOpname(String outletCode, String month) {
+        String qry = "SELECT COUNT(*) count FROM T_OPNAME_HEADER WHERE TO_CHAR(OPNAME_DATE,'MON') = :month AND OUTLET_CODE = :outletCode";
+        Map prm = new HashMap();
+        prm.put("outletCode", outletCode);
+        prm.put("month", month);
+        return jdbcTemplate.queryForObject(qry, prm, new RowMapper() {
+            @Override
+            public Object mapRow(ResultSet rs, int i) throws SQLException {
+                return rs.getString(1) == null ? "0" : rs.getString(1);
+
+            }
+        }).toString();
     }
 }

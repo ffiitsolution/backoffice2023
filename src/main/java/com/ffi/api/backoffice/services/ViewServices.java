@@ -125,7 +125,7 @@ public class ViewServices {
 
     //////////////////new method from kevin 16-03-2023////////////////////////////
     public List<Map<String, Object>> listMenuGroups(Map<String, String> ref) {
-        return viewDao.listMenuGroup(ref);
+        return viewDao.listMenuGroups(ref);
     }
 
     public List<Map<String, Object>> listItemMenus(Map<String, String> ref) {
@@ -257,5 +257,25 @@ public class ViewServices {
     
     public List<Map<String, Object>> ViewOrderDetail(Map<String, String> ref) {
         return viewDao.ViewOrderDetail(ref);
+    }
+    
+    public List<Map<String, Object>> listItemDetailOpname(Map<String, String> ref) {
+        return viewDao.listItemDetailOpname(ref);
+    }
+    
+    public List<Map<String, Object>> listEditItemDetailOpname(Map<String, String> ref) {
+        return viewDao.listEditItemDetailOpname(ref);
+    }
+    
+    public List<Map<String, Object>> listHeaderOpname(Map<String, String> ref) {
+        return viewDao.listHeaderOpname(ref);
+    }
+    
+    public String cekOpname(String outletCode, String month) {
+        return viewDao.cekOpname( outletCode,  month);
+    }
+    
+    public String getCity(String outletCode) {
+        return viewDao.getCity( outletCode);
     }
 }

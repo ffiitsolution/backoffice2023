@@ -139,4 +139,15 @@ public interface ViewDao {
     //////////DONE
     
     List<Map<String, Object>> ViewOrderDetail(Map<String, String> ref);
+    
+    List<Map<String, Object>> listItemDetailOpname(Map<String, String> ref);
+    
+    List<Map<String, Object>> listEditItemDetailOpname(Map<String, String> ref);
+    
+    List<Map<String, Object>> listHeaderOpname(Map<String, String> ref);
+    
+    public String cekOpname(String outletCode, String month);
+    
+    public String getCity(String outletCode);
+    
 }

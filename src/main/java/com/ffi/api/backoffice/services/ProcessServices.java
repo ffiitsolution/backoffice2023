@@ -5,6 +5,8 @@
 package com.ffi.api.backoffice.services;
 
 import com.ffi.api.backoffice.dao.ProcessDao;
+import com.ffi.api.backoffice.model.DetailOpname;
+import com.ffi.api.backoffice.model.HeaderOpname;
 import java.util.Map;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,5 +120,29 @@ public class ProcessServices {
     @Transactional
     public void updateMCounter(Map<String, String> balance) {
         dao.updateMCounter(balance);
+    }
+    
+    @Transactional
+    public void inserOpnameHeader(HeaderOpname balance) {
+        dao.inserOpnameHeader(balance);
+    }
+    
+    public void updateMCounterSop(String transType, String outletCode) {
+        dao.updateMCounterSop(transType,outletCode);
+    }
+    
+    @Transactional
+    public void inserOpnameDetail(DetailOpname opnameDtls) {
+        dao.inserOpnameDetail(opnameDtls);
+    }
+    
+    @Transactional
+    public void insertSoToScDtl(Map<String, String> balance) {
+        dao.insertSoToScDtl(balance);
+    }
+    
+    @Transactional
+    public void insertScDtlToScHdr(Map<String, String> balance) {
+        dao.insertScDtlToScHdr(balance);
     }
 }

@@ -4,6 +4,8 @@
  */
 package com.ffi.api.backoffice.dao;
 
+import com.ffi.api.backoffice.model.DetailOpname;
+import com.ffi.api.backoffice.model.HeaderOpname;
 import java.util.Map;
 
 /**
@@ -68,5 +70,14 @@ public interface ProcessDao {
     /////////////done
     public void updateMCounter(Map<String, String> mapping);
     
+    public void inserOpnameHeader(HeaderOpname mapping);
+    
+    public void updateMCounterSop(String transType, String outletCode);
+    
+    public void inserOpnameDetail(DetailOpname opnameDtls);
+    
+    public void insertSoToScDtl(Map<String, String> mapping);
+    
+    public void insertScDtlToScHdr(Map<String, String> mapping);
 
 }
