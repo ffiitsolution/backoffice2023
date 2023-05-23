@@ -9,6 +9,7 @@ import com.ffi.api.backoffice.model.HeaderOpname;
 import com.ffi.api.backoffice.model.ParameterLogin;
 import com.ffi.api.backoffice.services.ProcessServices;
 import com.ffi.api.backoffice.services.ViewServices;
+import com.ffi.api.backoffice.services.ReportServices;
 import com.ffi.paging.Response;
 import com.ffi.paging.ResponseMessage;
 import com.google.gson.Gson;
@@ -50,6 +51,8 @@ public class IndexController {
     ViewServices viewServices;
     @Autowired
     ProcessServices processServices;
+        @Autowired
+    ReportServices reportServices;
 
 //    @Autowired
 //    TransServices transServices;
@@ -1681,7 +1684,44 @@ public class IndexController {
             rm.setSuccess(false);
             rm.setMessage("Insert Stock Card Header Failed : " + e.getMessage());
         }
-            rm.setItem(list);
-            return rm;
-        }
+        rm.setItem(list);
+        return rm;
     }
+    /////////////////////////////////DONE///////////////////////////////////////
+
+    ///////////////NEW METHOD REPORT BY PASCA 23 MEI 2023////
+    @RequestMapping(value = "/report-order-entry")
+    @ApiOperation(value = "Mepampilkan report order entry", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "ok"),
+        @ApiResponse(code = 400, message = "The resource not found")
+    })
+    public @ResponseBody Response reportOrderEntry(@RequestBody String param) throws IOException {
+        Gson gson = new Gson();
+
+        Map<String, String> listParam = gson.fromJson(param, new TypeToken<Map<String, Object>>() {}.getType());
+        Response res = new Response();
+
+        res.setData(reportServices.reportOrderEntry(listParam));
+        return res;
+    }
+
+
+    @RequestMapping(value = "/report-delivery-order")
+    @ApiOperation(value = "Mepampilkan report delivery order", response = Object.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "ok"),
+            @ApiResponse(code = 400, message = "The resource not found")
+    })
+    public @ResponseBody Response reportDeliveryOrder(@RequestBody String param) {
+        Gson gson = new Gson();
+
+        Map<String, String> listParam = gson.fromJson(param, new TypeToken<Map<String, Object>>() {}.getType());
+        Response res = new Response();
+
+        res.setData(reportServices.reportDeliveryOrder(listParam));
+        return res;
+    }
+    
+    /////////////////////////////////DONE///////////////////////////////////////
+}
