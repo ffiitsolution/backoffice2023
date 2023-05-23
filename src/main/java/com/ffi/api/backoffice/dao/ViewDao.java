@@ -148,6 +148,8 @@ public interface ViewDao {
     
     public String cekOpname(String outletCode, String month);
     
+    public String cekItem();
+    
     public String getCity(String outletCode);
     
 }

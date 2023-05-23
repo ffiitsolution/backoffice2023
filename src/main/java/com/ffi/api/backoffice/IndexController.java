@@ -1660,28 +1660,49 @@ public class IndexController {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         String status = "";
         ResponseMessage rm = new ResponseMessage();
-
         try {
             processServices.insertSoToScDtl(balance);
-            status = "Sukses";
+            rm.setSuccess(true);
+            rm.setMessage("Insert Stock Card  Successfuly");
         } catch (Exception e) {
             rm.setSuccess(false);
-            rm.setMessage("Insert Stock Card Detail Failed: " + e.getMessage());
+            rm.setMessage("Insert Stock Card Failed: " + e.getMessage());
         }
+        rm.setItem(list);
+        return rm;
+    }
+
+    @RequestMapping(value = "/cek-sync-item", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk insert transaksi opname header", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage cekSyncItem(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        String status = "";
+        ResponseMessage rm = new ResponseMessage();
+        
+        String cekItem = viewServices.cekItem();
+        int b = Integer.valueOf(cekItem);
+        
         try {
-            if (status.equals("Sukses")) {
-                processServices.insertScDtlToScHdr(balance);
+            if (b == 0) {
                 rm.setSuccess(true);
-                rm.setMessage("Insert Stock Card Header Successfuly");
-            } else {
+                rm.setMessage("Template Sudah Update");
+            }else{
                 rm.setSuccess(false);
-                rm.setMessage("Insert Stock Card Detail Failed: ");
+                rm.setMessage("Template Belum Update");
             }
         } catch (Exception e) {
             rm.setSuccess(false);
-            rm.setMessage("Insert Stock Card Header Failed : " + e.getMessage());
+            rm.setMessage("Insert Stock Card Failed: " + e.getMessage());
         }
-            rm.setItem(list);
-            return rm;
-        }
+        rm.setItem(list);
+        return rm;
     }
+}

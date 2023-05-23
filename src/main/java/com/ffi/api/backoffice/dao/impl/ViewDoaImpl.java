@@ -1636,4 +1636,18 @@ public class ViewDoaImpl implements ViewDao {
             }
         }).toString();
     }
+
+    @Override
+    public String cekItem() {
+        String qry = "SELECT COUNT(*) FROM M_ITEM \n"
+                + "WHERE status = 'A' AND FLAG_MATERIAL = 'Y' AND FLAG_STOCK = 'Y'";
+        Map prm = new HashMap();
+        return jdbcTemplate.queryForObject(qry, prm, new RowMapper() {
+            @Override
+            public Object mapRow(ResultSet rs, int i) throws SQLException {
+                return rs.getString(1) == null ? "0" : rs.getString(1);
+
+            }
+        }).toString();
+    }
 }

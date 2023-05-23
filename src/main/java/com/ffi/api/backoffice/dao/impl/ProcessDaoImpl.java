@@ -477,7 +477,7 @@ public class ProcessDaoImpl implements ProcessDao {
                 + "CD_UOM_1 =:satuanBesar,"
                 + "QTY_2 =:jmlKecil,"
                 + "CD_UOM_2 =:satuanKecil,"
-                + "TOTAL_QTY_STOCK =:totalQty,"                
+                + "TOTAL_QTY_STOCK =:totalQty,"
                 + "USER_UPD =:userUpd,"
                 + "DATE_UPD =:dateUpd,"
                 + "TIME_UPD =:timeUpd,"
@@ -685,12 +685,6 @@ public class ProcessDaoImpl implements ProcessDao {
     @Override
     public void insertSoToScDtl(Map<String, String> balance) {
 
-        DateFormat df = new SimpleDateFormat("MM");
-        DateFormat dfYear = new SimpleDateFormat("yyyy");
-        Date tgl = new Date();
-        String month = df.format(tgl);
-        String year = dfYear.format(tgl);
-
         String qry = "INSERT INTO T_STOCK_CARD_DETAIL (\n"
                 + "SELECT * FROM (\n"
                 + "SELECT OUTLET_CODE,TRANS_DATE,ITEM_CODE,TRANS_TYPE,\n"
@@ -723,16 +717,76 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("dateUpd", dateNow);
         param.put("timeUpd", timeStamp);
         jdbcTemplate.update(qry, param);
+
+        try {
+            String qry1 = "SELECT OUTLET_CODE,TRANS_DATE,ITEM_CODE,CD_TRANS,QUANTITY_IN,QUANTITY"
+                    + " FROM T_STOCK_CARD_DETAIL WHERE OUTLET_CODE = :outletCode AND CD_TRANS = 'SOP' AND TRANS_DATE = :opnameDate";
+            Map prm = new HashMap();
+            prm.put("outletCode", balance.get("outletCode"));
+            prm.put("opnameNo", balance.get("opnameNo"));
+            prm.put("opnameDate", balance.get("opnameDate"));
+            prm.put("transType", balance.get("transType"));
+            prm.put("userUpd", balance.get("userUpd"));
+            prm.put("dateUpd", dateNow);
+            prm.put("timeUpd", timeStamp);
+            System.err.println("q1 :" + qry1);
+            List<Map<String, Object>> list = jdbcTemplate.query(qry1, prm, new RowMapper<Map<String, Object>>() {
+                @Override
+                public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                    Map<String, Object> rt = new HashMap<String, Object>();
+                    rt.put("outletCode", rs.getString("OUTLET_CODE"));
+                    rt.put("transDate", rs.getString("TRANS_DATE"));
+                    rt.put("itemCode", rs.getString("ITEM_CODE"));
+                    rt.put("cdTrans", rs.getString("CD_TRANS"));
+                    rt.put("qtyIn", rs.getString("QUANTITY_IN"));
+                    rt.put("qtyOut", rs.getString("QUANTITY"));
+                    return rt;
+                }
+            });
+
+            for (Map<String, Object> opn : list) {
+                String itemCode = (String) opn.get("itemCode");
+                String i = (String) opn.get("qtyIn");
+                String o = (String) opn.get("qtyOut");
+
+                double in = Double.valueOf(i);
+                double out = Double.valueOf(o);
+
+                String qty_in = cekQtyIn(balance.get("outletCode"), balance.get("opnameDate"), itemCode);
+                String qty_out = cekQtyOut(balance.get("outletCode"), balance.get("opnameDate"), itemCode);
+
+                double qtyIn = Double.valueOf(qty_in);
+                double qtyOut = Double.valueOf(qty_out);
+
+                double totIn = qtyIn + in;
+                double totOut = qtyOut + out;
+
+                String qry2 = "UPDATE T_STOCK_CARD \n"
+                        + "SET QTY_IN = :qtyIn ,QTY_OUT = :qtyOut ,REMARK = :cdTrans , USER_UPD = :userUpd , \n"
+                        + "DATE_UPD = :dateUpd, TIME_UPD = :timeUpd\n"
+                        + "WHERE OUTLET_CODE = :outletCode AND TRANS_DATE = :opnameDate AND ITEM_CODE = :itemCode ";
+
+                Map<String, Object> param1 = new HashMap<String, Object>();
+                param1.put("opnameNo", balance.get("opnameNo"));
+                param1.put("outletCode", balance.get("outletCode"));
+                param1.put("opnameDate", balance.get("opnameDate"));
+                param1.put("userUpd", balance.get("userUpd"));
+                param1.put("itemCode", opn.get("itemCode"));
+                param1.put("cdTrans", balance.get("transType") +"-"+ balance.get("opnameNo"));
+                param1.put("qtyIn", totIn);
+                param1.put("qtyOut", totOut);
+                param1.put("dateUpd", dateNow);
+                param1.put("timeUpd", timeStamp);
+                jdbcTemplate.update(qry2, param1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void insertScDtlToScHdr(Map<String, String> balance) {
 
-        DateFormat df = new SimpleDateFormat("MM");
-        DateFormat dfYear = new SimpleDateFormat("yyyy");
-        Date tgl = new Date();
-        String month = df.format(tgl);
-        String year = dfYear.format(tgl);
         try {
             String qry = "SELECT OUTLET_CODE,TRANS_DATE,ITEM_CODE,CD_TRANS,QUANTITY_IN,QUANTITY"
                     + " FROM T_STOCK_CARD_DETAIL WHERE OUTLET_CODE = :outletCode AND CD_TRANS = 'SOP' AND TRANS_DATE = :opnameDate";
@@ -763,19 +817,19 @@ public class ProcessDaoImpl implements ProcessDao {
                 String itemCode = (String) opn.get("itemCode");
                 String i = (String) opn.get("qtyIn");
                 String o = (String) opn.get("qtyOut");
-                
+
                 double in = Double.valueOf(i);
                 double out = Double.valueOf(o);
-                
-                String qty_in = cekQtyIn(balance.get("outletCode"),balance.get("opnameDate"),itemCode);
-                String qty_out = cekQtyOut(balance.get("outletCode"),balance.get("opnameDate"),itemCode);
-                
+
+                String qty_in = cekQtyIn(balance.get("outletCode"), balance.get("opnameDate"), itemCode);
+                String qty_out = cekQtyOut(balance.get("outletCode"), balance.get("opnameDate"), itemCode);
+
                 double qtyIn = Double.valueOf(qty_in);
                 double qtyOut = Double.valueOf(qty_out);
-                
+
                 double totIn = qtyIn + in;
                 double totOut = qtyOut + out;
-                
+
                 String qry2 = "UPDATE T_STOCK_CARD \n"
                         + "SET QTY_IN = :qtyIn ,QTY_OUT = :qtyOut ,REMARK = :cdTrans , USER_UPD = :userUpd , \n"
                         + "DATE_UPD = :dateUpd, TIME_UPD = :timeUpd\n"
@@ -787,7 +841,7 @@ public class ProcessDaoImpl implements ProcessDao {
                 param.put("opnameDate", balance.get("opnameDate"));
                 param.put("userUpd", balance.get("userUpd"));
                 param.put("itemCode", opn.get("itemCode"));
-                param.put("cdTrans", balance.get("transType")+balance.get("opnameNo"));
+                param.put("cdTrans", balance.get("transType") + balance.get("opnameNo"));
                 param.put("qtyIn", totIn);
                 param.put("qtyOut", totOut);
                 param.put("dateUpd", dateNow);
@@ -798,7 +852,7 @@ public class ProcessDaoImpl implements ProcessDao {
             e.printStackTrace();
         }
     }
-    
+
     public String cekQtyIn(String outletCode, String opnameDate, String itemCode) {
 
         String sql = "SELECT QTY_IN FROM T_STOCK_CARD WHERE OUTLET_CODE = :outletCode AND TRANS_DATE = :opnameDate AND ITEM_CODE = :itemCode";
@@ -814,6 +868,7 @@ public class ProcessDaoImpl implements ProcessDao {
             }
         }).toString();
     }
+
     public String cekQtyOut(String outletCode, String opnameDate, String itemCode) {
 
         String sql = "SELECT QTY_OUT FROM T_STOCK_CARD WHERE OUTLET_CODE = :outletCode AND TRANS_DATE = :opnameDate AND ITEM_CODE = :itemCode";

@@ -278,4 +278,8 @@ public class ViewServices {
     public String getCity(String outletCode) {
         return viewDao.getCity( outletCode);
     }
+    
+    public String cekItem() {
+        return viewDao.cekItem();
+    }
 }
