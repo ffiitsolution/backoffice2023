@@ -9,6 +9,7 @@ import com.ffi.api.backoffice.model.HeaderOpname;
 import com.ffi.api.backoffice.model.ParameterLogin;
 import com.ffi.api.backoffice.services.ProcessServices;
 import com.ffi.api.backoffice.services.ViewServices;
+import com.ffi.api.backoffice.services.ReportServices;
 import com.ffi.paging.Response;
 import com.ffi.paging.ResponseMessage;
 import com.google.gson.Gson;
@@ -50,6 +51,8 @@ public class IndexController {
     ViewServices viewServices;
     @Autowired
     ProcessServices processServices;
+    @Autowired
+    ReportServices reportServices;
 
 //    @Autowired
 //    TransServices transServices;
@@ -1686,15 +1689,15 @@ public class IndexController {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         String status = "";
         ResponseMessage rm = new ResponseMessage();
-        
+
         String cekItem = viewServices.cekItem();
         int b = Integer.valueOf(cekItem);
-        
+
         try {
             if (b == 0) {
                 rm.setSuccess(true);
                 rm.setMessage("Template Sudah Update");
-            }else{
+            } else {
                 rm.setSuccess(false);
                 rm.setMessage("Template Belum Update");
             }
@@ -1705,4 +1708,7 @@ public class IndexController {
         rm.setItem(list);
         return rm;
     }
+    /////////////////////////////////DONE///////////////////////////////////////
+
+    
 }
