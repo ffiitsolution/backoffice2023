@@ -27,4 +27,9 @@ public class ReportServices {
         return dao.reportDeliveryOrder(param);
     }
     ///////////////////////END//////////////////////////////
+        ///////////////NEW METHOD REPORT receive BY PASCA 24 MEI 2023////
+    public List<Map<String, Object>> reportReceiving(Map<String, String> param) {
+        return dao.reportReceiving(param);
+    }
+            ///////////////////////END//////////////////////////////
 }

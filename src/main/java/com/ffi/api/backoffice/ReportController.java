@@ -71,4 +71,21 @@ public class ReportController {
     }
 
     /////////////////////////////////DONE///////////////////////////////////////
+     ///////////////NEW METHOD REPORT recive BY PASCA 24 MEI 2023////
+    @RequestMapping(value = "/report-receiving")
+    @ApiOperation(value = "Mepampilkan report receiving", response = Object.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "ok"),
+            @ApiResponse(code = 400, message = "The resource not found")
+    })
+    public @ResponseBody Response reportReceiving(@RequestBody String param) {
+        Gson gson = new Gson();
+
+        Map<String, String> listParam = gson.fromJson(param, new TypeToken<Map<String, Object>>() {}.getType());
+        Response res = new Response();
+
+        res.setData(reportServices.reportReceiving(listParam));
+        return res;
+    }
+    /////////////////////////////////DONE///////////////////////////////////////
 }

@@ -18,6 +18,9 @@ public interface ReportDao {
     List<Map<String, Object>> reportOrderEntry(Map<String, String> param) throws IOException;
 
     List<Map<String, Object>> reportDeliveryOrder(Map<String, String> param);
-            /////////////////////////////////DONE///////////////////////////////////////
 
+    /////////////////////////////////DONE///////////////////////////////////////
+    ///////////////NEW METHOD REPORT receive BY PASCA 24 MEI 2023////
+    List<Map<String, Object>> reportReceiving(Map<String, String> param);
+    /////////////////////////////////DONE///////////////////////////////////////
 }
