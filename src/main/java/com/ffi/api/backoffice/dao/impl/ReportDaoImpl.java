@@ -60,12 +60,12 @@ public class ReportDaoImpl implements ReportDao {
                 @Override
                 public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                     Map<String, Object> rt = new HashMap<String, Object>();
-                    rt.put("noOrder", rs.getString("ORDER_NO"));
+                    rt.put("orderNo", rs.getString("ORDER_NO"));
                     rt.put("tipe", rs.getString("TIPE"));
                     rt.put("orderKe", rs.getString("ORDER_KE"));
-                    rt.put("catatan", rs.getString("REMARK"));
+                    rt.put("remark", rs.getString("REMARK"));
                     rt.put("status", rs.getString("STATUS"));
-                    rt.put("orderDete", rs.getString("ORDER_DATE"));
+                    rt.put("orderDate", rs.getString("ORDER_DATE"));
                     return rt;
                 }
             });
@@ -107,10 +107,10 @@ public class ReportDaoImpl implements ReportDao {
                 @Override
                 public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                     Map<String, Object> rt = new HashMap<String, Object>();
-                    rt.put("noOrder", rs.getString("ORDER_NO"));
+                    rt.put("orderNo", rs.getString("ORDER_NO"));
                     rt.put("tipe", rs.getString("TIPE"));
                     rt.put("orderKe", rs.getString("ORDER_KE"));
-                    rt.put("catatan", rs.getString("REMARK"));
+                    rt.put("remark", rs.getString("REMARK"));
                     rt.put("status", rs.getString("STATUS"));
                     rt.put("orderDate", rs.getString("ORDER_DATE"));
                     if (rs.getString("ITEM_CODE") != null) {
@@ -122,11 +122,11 @@ public class ReportDaoImpl implements ReportDao {
                         DecimalFormat dfUnit = new DecimalFormat("#,##0.00");
                         DecimalFormat df = new DecimalFormat("#,##0.0000");
 
-                        detail.put("kode", rs.getString("ITEM_CODE"));
-                        detail.put("namaBarang", rs.getString("ITEM_DESCRIPTION"));
-                        detail.put("qtyBesar", df.format(valueQty1) + " " + rs.getString("CD_UOM_1"));
-                        detail.put("qtyKecil", df.format(valueQty2) + " " + rs.getString("CD_UOM_2"));
-                        detail.put("totalQty", df.format(valueTotal) + " " + rs.getString("CD_UOM_2"));
+                        detail.put("itemCode", rs.getString("ITEM_CODE"));
+                        detail.put("ItemDescription", rs.getString("ITEM_DESCRIPTION"));
+                        detail.put("cdUom1", df.format(valueQty1) + " " + rs.getString("CD_UOM_1"));
+                        detail.put("cdUom2", df.format(valueQty2) + " " + rs.getString("CD_UOM_2"));
+                        detail.put("totalQtyStock", df.format(valueTotal) + " " + rs.getString("CD_UOM_2"));
                         detail.put("unitPrice", dfUnit.format(valueUnit));
                         detailData.computeIfAbsent(rs.getString("ORDER_NO"), k -> new ArrayList<>()).add(detail);
                     }
@@ -142,13 +142,13 @@ public class ReportDaoImpl implements ReportDao {
             for (JsonNode node : jsonNode) {
                 Map<String, Object> addList = new HashMap<>();
                 addList.put("orderDate", node.get("orderDate"));
-                addList.put("noOrder", node.get("noOrder"));
-                addList.put("catatan", node.get("catatan"));
+                addList.put("orderNo", node.get("orderNo"));
+                addList.put("remark", node.get("remark"));
                 addList.put("orderKe", node.get("orderKe"));
                 addList.put("tipe", node.get("tipe"));
                 addList.put("status", node.get("status"));
                 for (Map.Entry<String, List<Map<String, String>>> entry : detailData.entrySet()) {
-                    if (entry.getKey().equals(node.get("noOrder").asText())) {
+                    if (entry.getKey().equals(node.get("orderNo").asText())) {
                         addList.put("detail", entry.getValue());
                     }
                 }
@@ -165,7 +165,7 @@ public class ReportDaoImpl implements ReportDao {
 
     public List<Map<String, Object>> reportDeliveryOrder(Map<String, Object> param) {
         String query = "SELECT a.DELIVERY_NO, a.REQUEST_NO, CONCAT(b.OUTLET_NAME, \n"
-                + "CONCAT(c.SUPPLIER_NAME, d.DESCRIPTION)) AS do_ke, a.REMARK, \n"
+                + "CONCAT(c.SUPPLIER_NAME, d.DESCRIPTION)) AS delivery_order_ke, a.REMARK, \n"
                 + "CASE WHEN a.STATUS = '0' THEN 'Open' WHEN a.STATUS = '1' THEN 'Close' ELSE 'Cancel' END AS STATUS,\n"
                 + "e.ITEM_CODE, f.ITEM_DESCRIPTION, e.QTY_PURCH, e.UOM_PURCH, e.QTY_STOCK, e.UOM_STOCK, e.TOTAL_QTY, a.DELIVERY_DATE \n"
                 + "FROM T_DEV_HEADER a \n"
@@ -188,10 +188,10 @@ public class ReportDaoImpl implements ReportDao {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("noDo", rs.getString("DELIVERY_NO"));
-                rt.put("noPermintaan", rs.getString("REQUEST_NO"));
-                rt.put("doKe", rs.getString("DO_KE"));
-                rt.put("catatan", rs.getString("REMARK"));
+                rt.put("deliveryNo", rs.getString("DELIVERY_NO"));
+                rt.put("requestNo", rs.getString("REQUEST_NO"));
+                rt.put("deliveryOrderKe", rs.getString("DELIVERY_ORDER_KE"));
+                rt.put("remark", rs.getString("REMARK"));
                 rt.put("status", rs.getString("STATUS"));
                 rt.put("deliveryDate", rs.getString("DELIVERY_DATE"));
                 if (rs.getString("ITEM_CODE") != null) {
@@ -201,10 +201,10 @@ public class ReportDaoImpl implements ReportDao {
                     double valueTotal = Double.valueOf(rs.getString("TOTAL_QTY"));
                     DecimalFormat df = new DecimalFormat("#,##0.0000");
 
-                    detail.put("kode", rs.getString("ITEM_CODE"));
-                    detail.put("namaBarang", rs.getString("ITEM_DESCRIPTION"));
-                    detail.put("qtyBerat", df.format(valueQtyBesar) + " " + rs.getString("UOM_PURCH"));
-                    detail.put("qtyKecil", df.format(valueQtyKecil) + " " + rs.getString("UOM_STOCK"));
+                    detail.put("itemCode", rs.getString("ITEM_CODE"));
+                    detail.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
+                    detail.put("qtyPurch", df.format(valueQtyBesar) + " " + rs.getString("UOM_PURCH"));
+                    detail.put("qtyStock", df.format(valueQtyKecil) + " " + rs.getString("UOM_STOCK"));
                     detail.put("totalQty", df.format(valueTotal) + " " + rs.getString("UOM_STOCK"));
                     detailData.computeIfAbsent(rs.getString("DELIVERY_NO"), k -> new ArrayList<>()).add(detail);
                 }
@@ -222,14 +222,14 @@ public class ReportDaoImpl implements ReportDao {
             List<Map<String, Object>> result = new ArrayList<>();
             for (JsonNode node : jsonNode) {
                 Map<String, Object> addList = new HashMap<>();
-                addList.put("noDo", node.get("noDo"));
-                addList.put("noPermintaan", node.get("noPermintaan"));
-                addList.put("doKe", node.get("doKe"));
-                addList.put("catatan", node.get("catatan"));
+                addList.put("deliveryNo", node.get("deliveryNo"));
+                addList.put("requestNo", node.get("requestNo"));
+                addList.put("deliveryOrderKe", node.get("deliveryOrderKe"));
+                addList.put("remark", node.get("remark"));
                 addList.put("status", node.get("status"));
                 addList.put("deliveryDate", node.get("deliveryDate"));
                 for (Map.Entry<String, List<Map<String, String>>> entry : detailData.entrySet()) {
-                    if (entry.getKey().equals(node.get("noDo").asText())) {
+                    if (entry.getKey().equals(node.get("deliveryNo").asText())) {
                         addList.put("detail", entry.getValue());
                     }
                 }
@@ -274,7 +274,7 @@ public class ReportDaoImpl implements ReportDao {
                 Map<String, Object> rt = new HashMap<String, Object>();
                 rt.put("recvNo", rs.getString("RECV_NO"));
                 rt.put("orderNo", rs.getString("ORDER_NO"));
-                rt.put("catatan", rs.getString("REMARK"));
+                rt.put("remark", rs.getString("REMARK"));
                 rt.put("penerimaanDari", rs.getString("PENERIMAAN_DARI"));
                 rt.put("status", rs.getString("STATUS"));
                 rt.put("recvDate", rs.getString("RECV_DATE"));
@@ -285,10 +285,10 @@ public class ReportDaoImpl implements ReportDao {
                     double valueTotal = Double.valueOf(rs.getString("TOTAL_QTY"));
                     DecimalFormat df = new DecimalFormat("#,##0.0000");
 
-                    detail.put("kode", rs.getString("ITEM_CODE"));
-                    detail.put("namaBarang", rs.getString("ITEM_DESCRIPTION"));
-                    detail.put("qtyBesar", df.format(valueQtyBesar) + " " + rs.getString("CD_UOM_1"));
-                    detail.put("qtyKecil", df.format(valueQtyKecil) + " " + rs.getString("CD_UOM_2"));
+                    detail.put("itemCode", rs.getString("ITEM_CODE"));
+                    detail.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
+                    detail.put("qty1", df.format(valueQtyBesar) + " " + rs.getString("CD_UOM_1"));
+                    detail.put("qty2", df.format(valueQtyKecil) + " " + rs.getString("CD_UOM_2"));
                     detail.put("totalQty", df.format(valueTotal) + " " + rs.getString("CD_UOM_2"));
                     detailData.computeIfAbsent(rs.getString("RECV_NO"), k -> new ArrayList<>()).add(detail);
                 }
@@ -307,7 +307,7 @@ public class ReportDaoImpl implements ReportDao {
                 Map<String, Object> addList = new HashMap<>();
                 addList.put("recvNo", node.get("recvNo"));
                 addList.put("orderNo", node.get("orderNo"));
-                addList.put("catatan", node.get("catatan"));
+                addList.put("remark", node.get("remark"));
                 addList.put("penerimaanDari", node.get("penerimaanDari"));
                 addList.put("status", node.get("status"));
                 addList.put("recvDate", node.get("recvDate"));
