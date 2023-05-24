@@ -22,5 +22,9 @@ public interface ReportDao {
     /////////////////////////////////DONE///////////////////////////////////////
     ///////////////NEW METHOD REPORT receive BY PASCA 24 MEI 2023////
     List<Map<String, Object>> reportReceiving(Map<String, Object> param);
+
+    List<Map<String, Object>> reportReturnOrder(Map<String, Object> param);
+
+    List<Map<String, Object>> reportWastage(Map<String, Object> param);
     /////////////////////////////////DONE///////////////////////////////////////
 }

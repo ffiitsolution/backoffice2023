@@ -31,5 +31,13 @@ public class ReportServices {
     public List<Map<String, Object>> reportReceiving(Map<String, Object> param) {
         return dao.reportReceiving(param);
     }
+
+    public List<Map<String, Object>> reportReturnOrder(Map<String, Object> param) {
+        return dao.reportReturnOrder(param);
+    }
+
+    public List<Map<String, Object>> reportWastage(Map<String, Object> param) {
+        return dao.reportWastage(param);
+    }
             ///////////////////////END//////////////////////////////
 }
