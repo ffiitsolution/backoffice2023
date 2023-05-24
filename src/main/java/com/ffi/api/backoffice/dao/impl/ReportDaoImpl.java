@@ -4,7 +4,6 @@
  */
 package com.ffi.api.backoffice.dao.impl;
 
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ffi.api.backoffice.dao.ReportDao;
@@ -30,9 +29,9 @@ public class ReportDaoImpl implements ReportDao {
     }
     ///////////////NEW METHOD REPORT BY PASCA 23 MEI 2023////
 
-    public List<Map<String, Object>> reportOrderEntry(Map<String, String> param) throws IOException {
+    public List<Map<String, Object>> reportOrderEntry(Map<String, Object> param) throws IOException {
         String query = null;
-        if (param.get("detail").equals("false")) {
+        if (param.get("detail").equals(1.0)) {
             query = "SELECT  a.ORDER_NO, CASE WHEN a.ORDER_TYPE = '0' THEN 'Permintaan' ELSE 'Pembelian' END tipe, \n"
                     + "CONCAT(b.OUTLET_NAME, CONCAT(c.SUPPLIER_NAME, d.DESCRIPTION)) AS order_ke, a.REMARK, \n"
                     + "CASE WHEN a.status='0' then 'Open' \n"
@@ -44,13 +43,13 @@ public class ReportDaoImpl implements ReportDao {
                     + "a.OUTLET_CODE = :outletCode ORDER BY ORDER_DATE";
             Map prm = new HashMap();
             prm.put("city", "X_" + param.get("city"));
-            if (param.get("orderType").toUpperCase().equals("SEMUA")) {
+            if (param.get("orderType").equals(0.0)) {
                 prm.put("tipe", "1");
                 prm.put("tipe2", "0");
-            } else if (param.get("orderType").toUpperCase().equals("PERMINTAAN")) {
+            } else if (param.get("orderType").equals(1.0)) {
                 prm.put("tipe", "0");
                 prm.put("tipe2", "0");
-            } else if (param.get("orderType").toUpperCase().equals("PEMBELIAN")) {
+            } else if (param.get("orderType").equals(2.0)) {
                 prm.put("tipe", "1");
                 prm.put("tipe2", "1");
             }
@@ -71,7 +70,7 @@ public class ReportDaoImpl implements ReportDao {
                 }
             });
             return list;
-        } else if (param.get("detail").equals("true")) {
+        } else if (param.get("detail").equals(0.0)) {
             query = "SELECT  a.ORDER_NO, CASE WHEN a.ORDER_TYPE = '0' THEN 'Permintaan' ELSE 'Pembelian' END tipe, \n"
                     + "CONCAT(b.OUTLET_NAME, CONCAT(c.SUPPLIER_NAME, d.DESCRIPTION)) AS order_ke, a.REMARK, \n"
                     + "CASE WHEN a.status='0' then 'Open' \n"
@@ -88,13 +87,13 @@ public class ReportDaoImpl implements ReportDao {
 
             Map prm = new HashMap();
             prm.put("city", "X_" + param.get("city"));
-            if (param.get("orderType").toUpperCase().equals("SEMUA")) {
+            if (param.get("orderType").equals(0.0)) {
                 prm.put("tipe", "1");
                 prm.put("tipe2", "0");
-            } else if (param.get("orderType").toUpperCase().equals("PERMINTAAN")) {
+            } else if (param.get("orderType").equals(1.0)) {
                 prm.put("tipe", "0");
                 prm.put("tipe2", "0");
-            } else if (param.get("orderType").toUpperCase().equals("PEMBELIAN")) {
+            } else if (param.get("orderType").equals(2.0)) {
                 prm.put("tipe", "1");
                 prm.put("tipe2", "1");
             }
@@ -164,7 +163,7 @@ public class ReportDaoImpl implements ReportDao {
         return null;
     }
 
-    public List<Map<String, Object>> reportDeliveryOrder(Map<String, String> param) {
+    public List<Map<String, Object>> reportDeliveryOrder(Map<String, Object> param) {
         String query = "SELECT a.DELIVERY_NO, a.REQUEST_NO, CONCAT(b.OUTLET_NAME, \n"
                 + "CONCAT(c.SUPPLIER_NAME, d.DESCRIPTION)) AS do_ke, a.REMARK, \n"
                 + "CASE WHEN a.STATUS = '0' THEN 'Open' WHEN a.STATUS = '1' THEN 'Close' ELSE 'Cancel' END AS STATUS,\n"
@@ -215,9 +214,9 @@ public class ReportDaoImpl implements ReportDao {
 
         Set<Map<String, Object>> set = new HashSet<>(list.size());
         list.removeIf(p -> !set.add(p));
-        if (param.get("detail").equals("false")) {
+        if (param.get("detail").equals(1.0)) {
             return list;
-        } else if (param.get("detail").equals("true")) {
+        } else if (param.get("detail").equals(0.0)) {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.valueToTree(list);
             List<Map<String, Object>> result = new ArrayList<>();
@@ -248,7 +247,7 @@ public class ReportDaoImpl implements ReportDao {
 
     ///////////////NEW METHOD REPORT receive BY PASCA 24 MEI 2023////
     @Override
-    public List<Map<String, Object>> reportReceiving(Map<String, String> param) {
+    public List<Map<String, Object>> reportReceiving(Map<String, Object> param) {
         String query = "SELECT a.RECV_NO, a.ORDER_NO, a.REMARK, CONCAT(c.OUTLET_NAME, CONCAT(d.SUPPLIER_NAME, e.DESCRIPTION)) AS penerimaan_dari , \n"
                 + "CASE WHEN a.STATUS = '0' THEN 'Open' WHEN a.STATUS = '1' THEN 'Close' ELSE 'Cancel' END AS STATUS,\n"
                 + "f.ITEM_CODE, g.ITEM_DESCRIPTION, f.QTY_1, f.CD_UOM_1, f.QTY_2, f.CD_UOM_2, f.TOTAL_QTY, a.RECV_DATE \n"
@@ -298,9 +297,9 @@ public class ReportDaoImpl implements ReportDao {
         });
         Set<Map<String, Object>> set = new HashSet<>(list.size());
         list.removeIf(p -> !set.add(p));
-        if (param.get("detail").equals("false")) {
+        if (param.get("detail").equals(1.0)) {
             return list;
-        } else if (param.get("detail").equals("true")) {
+        } else if (param.get("detail").equals(0.0)) {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.valueToTree(list);
             List<Map<String, Object>> result = new ArrayList<>();

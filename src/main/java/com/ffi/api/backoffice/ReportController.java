@@ -45,7 +45,7 @@ public class ReportController {
     public @ResponseBody
     Response reportOrderEntry(@RequestBody String param) throws IOException {
         Gson gson = new Gson();
-        Map<String, String> listParam = gson.fromJson(param, new TypeToken<Map<String, Object>>() {
+        Map<String, Object> listParam = gson.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
         Response res = new Response();
         res.setData(reportServices.reportOrderEntry(listParam));
@@ -62,7 +62,7 @@ public class ReportController {
     Response reportDeliveryOrder(@RequestBody String param) {
         Gson gson = new Gson();
 
-        Map<String, String> listParam = gson.fromJson(param, new TypeToken<Map<String, Object>>() {
+        Map<String, Object> listParam = gson.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
         Response res = new Response();
 
@@ -81,7 +81,7 @@ public class ReportController {
     public @ResponseBody Response reportReceiving(@RequestBody String param) {
         Gson gson = new Gson();
 
-        Map<String, String> listParam = gson.fromJson(param, new TypeToken<Map<String, Object>>() {}.getType());
+        Map<String, Object> listParam = gson.fromJson(param, new TypeToken<Map<String, Object>>() {}.getType());
         Response res = new Response();
 
         res.setData(reportServices.reportReceiving(listParam));

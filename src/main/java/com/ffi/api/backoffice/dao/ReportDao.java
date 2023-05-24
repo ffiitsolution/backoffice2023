@@ -15,12 +15,12 @@ import java.util.Map;
 public interface ReportDao {
 
     ///////////////NEW METHOD REPORT BY PASCA 23 MEI 2023////
-    List<Map<String, Object>> reportOrderEntry(Map<String, String> param) throws IOException;
+    List<Map<String, Object>> reportOrderEntry(Map<String, Object> param) throws IOException;
 
-    List<Map<String, Object>> reportDeliveryOrder(Map<String, String> param);
+    List<Map<String, Object>> reportDeliveryOrder(Map<String, Object> param);
 
     /////////////////////////////////DONE///////////////////////////////////////
     ///////////////NEW METHOD REPORT receive BY PASCA 24 MEI 2023////
-    List<Map<String, Object>> reportReceiving(Map<String, String> param);
+    List<Map<String, Object>> reportReceiving(Map<String, Object> param);
     /////////////////////////////////DONE///////////////////////////////////////
 }
