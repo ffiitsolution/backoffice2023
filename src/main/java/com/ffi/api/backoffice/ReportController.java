@@ -45,7 +45,7 @@ public class ReportController {
     public @ResponseBody
     Response reportOrderEntry(@RequestBody String param) throws IOException {
         Gson gson = new Gson();
-        Map<String, String> listParam = gson.fromJson(param, new TypeToken<Map<String, Object>>() {
+        Map<String, Object> listParam = gson.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
         Response res = new Response();
         res.setData(reportServices.reportOrderEntry(listParam));
@@ -62,7 +62,7 @@ public class ReportController {
     Response reportDeliveryOrder(@RequestBody String param) {
         Gson gson = new Gson();
 
-        Map<String, String> listParam = gson.fromJson(param, new TypeToken<Map<String, Object>>() {
+        Map<String, Object> listParam = gson.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
         Response res = new Response();
 
@@ -81,10 +81,42 @@ public class ReportController {
     public @ResponseBody Response reportReceiving(@RequestBody String param) {
         Gson gson = new Gson();
 
-        Map<String, String> listParam = gson.fromJson(param, new TypeToken<Map<String, Object>>() {}.getType());
+        Map<String, Object> listParam = gson.fromJson(param, new TypeToken<Map<String, Object>>() {}.getType());
         Response res = new Response();
 
         res.setData(reportServices.reportReceiving(listParam));
+        return res;
+    }
+
+    @RequestMapping(value = "/report-return-order")
+    @ApiOperation(value = "Mepampilkan report return order", response = Object.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "ok"),
+            @ApiResponse(code = 400, message = "The resource not found")
+    })
+    public @ResponseBody Response reportReturnOrder(@RequestBody String param) {
+        Gson gson = new Gson();
+
+        Map<String, Object> listParam = gson.fromJson(param, new TypeToken<Map<String, Object>>() {}.getType());
+        Response res = new Response();
+
+        res.setData(reportServices.reportReturnOrder(listParam));
+        return res;
+    }
+
+    @RequestMapping(value = "/report-wastage")
+    @ApiOperation(value = "Mepampilkan report wastage", response = Object.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "ok"),
+            @ApiResponse(code = 400, message = "The resource not found")
+    })
+    public @ResponseBody Response reportWastage(@RequestBody String param) {
+        Gson gson = new Gson();
+
+        Map<String, Object> listParam = gson.fromJson(param, new TypeToken<Map<String, Object>>() {}.getType());
+        Response res = new Response();
+
+        res.setData(reportServices.reportWastage(listParam));
         return res;
     }
     /////////////////////////////////DONE///////////////////////////////////////

@@ -19,17 +19,25 @@ public class ReportServices {
     ReportDao dao;
     ///////////////NEW METHOD REPORT BY PASCA 23 MEI 2023////
 
-    public List<Map<String, Object>> reportOrderEntry(Map<String, String> param) throws IOException {
+    public List<Map<String, Object>> reportOrderEntry(Map<String, Object> param) throws IOException {
         return dao.reportOrderEntry(param);
     }
 
-    public List<Map<String, Object>> reportDeliveryOrder(Map<String, String> param) {
+    public List<Map<String, Object>> reportDeliveryOrder(Map<String, Object> param) {
         return dao.reportDeliveryOrder(param);
     }
     ///////////////////////END//////////////////////////////
         ///////////////NEW METHOD REPORT receive BY PASCA 24 MEI 2023////
-    public List<Map<String, Object>> reportReceiving(Map<String, String> param) {
+    public List<Map<String, Object>> reportReceiving(Map<String, Object> param) {
         return dao.reportReceiving(param);
+    }
+
+    public List<Map<String, Object>> reportReturnOrder(Map<String, Object> param) {
+        return dao.reportReturnOrder(param);
+    }
+
+    public List<Map<String, Object>> reportWastage(Map<String, Object> param) {
+        return dao.reportWastage(param);
     }
             ///////////////////////END//////////////////////////////
 }
