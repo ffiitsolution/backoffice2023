@@ -145,4 +145,9 @@ public class ProcessServices {
     public void insertScDtlToScHdr(Map<String, String> balance) {
         dao.insertScDtlToScHdr(balance);
     }
+    
+    @Transactional
+    public void sendDataToWarehouse(Map<String, String> balance) {
+        dao.sendDataToWarehouse(balance);
+    }
 }

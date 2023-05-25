@@ -1708,7 +1708,30 @@ public class IndexController {
         rm.setItem(list);
         return rm;
     }
-    /////////////////////////////////DONE///////////////////////////////////////
-
     
+    @RequestMapping(value = "/send-data-to-warehouse", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk insert transaksi opname header", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage sendDataToWarehouse(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        String status = "";
+        ResponseMessage rm = new ResponseMessage();
+        try {
+            processServices.sendDataToWarehouse(balance);
+            rm.setSuccess(true);
+            rm.setMessage("Insert Stock Card  Successfuly");
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Insert Stock Card Failed: " + e.getMessage());
+        }
+        rm.setItem(list);
+        return rm;
+    }
 }

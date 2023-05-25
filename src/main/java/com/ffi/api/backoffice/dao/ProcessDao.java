@@ -79,5 +79,7 @@ public interface ProcessDao {
     public void insertSoToScDtl(Map<String, String> mapping);
     
     public void insertScDtlToScHdr(Map<String, String> mapping);
+    
+    public void sendDataToWarehouse(Map<String, String> mapping);
 
 }

@@ -7,6 +7,10 @@ package com.ffi.api.backoffice.dao.impl;
 import com.ffi.api.backoffice.dao.ProcessDao;
 import com.ffi.api.backoffice.model.DetailOpname;
 import com.ffi.api.backoffice.model.HeaderOpname;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -16,7 +20,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -32,10 +42,16 @@ public class ProcessDaoImpl implements ProcessDao {
     String timeStamp = new SimpleDateFormat("HHmmss").format(Calendar.getInstance().getTime());
     String dateNow = new SimpleDateFormat("dd-MMM-yyyy").format(Calendar.getInstance().getTime());
 
+    DateFormat dfDate = new SimpleDateFormat("dd-MMM-yyyy");
+    DateFormat dfYear = new SimpleDateFormat("yyyy");
+
     @Autowired
     public ProcessDaoImpl(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
+
+    @Value("${endpoint.warehouse}")
+    private String urlWarehouse;
     ///////////////new method from dona 27-02-2023////////////////////////////
 
     @Override
@@ -772,7 +788,7 @@ public class ProcessDaoImpl implements ProcessDao {
                 param1.put("opnameDate", balance.get("opnameDate"));
                 param1.put("userUpd", balance.get("userUpd"));
                 param1.put("itemCode", opn.get("itemCode"));
-                param1.put("cdTrans", balance.get("transType") +"-"+ balance.get("opnameNo"));
+                param1.put("cdTrans", balance.get("transType") + "-" + balance.get("opnameNo"));
                 param1.put("qtyIn", totIn);
                 param1.put("qtyOut", totOut);
                 param1.put("dateUpd", dateNow);
@@ -883,5 +899,107 @@ public class ProcessDaoImpl implements ProcessDao {
 
             }
         }).toString();
+    }
+
+    @Override
+    public void sendDataToWarehouse(Map<String, String> balance) {
+
+        String json = "";
+        Gson gson = new Gson();
+        Map<String, Object> map1 = new HashMap<String, Object>();
+        try {
+            String qry1 = "SELECT OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,TO_CHAR(ORDER_DATE,'DD-MON-YY')ORDER_DATE,ORDER_TO,\n"
+                    + "CD_SUPPLIER,TO_CHAR(DT_DUE,'DD-MON-YY')DT_DUE,TO_CHAR(DT_EXPIRED,'DD-MON-YY')DT_EXPIRED,REMARK,NO_OF_PRINT,STATUS\n"
+                    + "FROM T_ORDER_HEADER WHERE ORDER_NO = :orderNo ";
+            Map prm = new HashMap();
+            prm.put("orderNo", balance.get("orderNo"));
+            System.err.println("q1 :" + qry1);
+            List<Map<String, Object>> list = jdbcTemplate.query(qry1, prm, new RowMapper<Map<String, Object>>() {
+                public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                    Map<String, Object> rh = new HashMap<String, Object>();
+                    String qry2 = "SELECT ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,\n"
+                            + "TOTAL_QTY_STOCK,UNIT_PRICE\n"
+                            + "FROM T_ORDER_DETAIL WHERE ORDER_NO = :orderNo ";
+                    List<Map<String, Object>> list2 = jdbcTemplate.query(qry2, prm, new RowMapper<Map<String, Object>>() {
+                        @Override
+                        public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                            Map<String, Object> rt = new HashMap<String, Object>();
+                            rt.put("itemCode", rs.getString("ITEM_CODE"));
+                            rt.put("qty1", rs.getString("QTY_1"));
+                            rt.put("cdUom1", rs.getString("CD_UOM_1"));
+                            rt.put("qty2", rs.getString("QTY_2"));
+                            rt.put("cdUom2", rs.getString("CD_UOM_2"));
+                            rt.put("totalQtyStock", rs.getString("TOTAL_QTY_STOCK"));
+                            rt.put("unitPrice", rs.getString("UNIT_PRICE"));
+                            return rt;
+                        }
+                    });
+                    rh.put("itemList", list2);
+                    rh.put("outletCode", rs.getString("OUTLET_CODE"));
+                    rh.put("orderType", rs.getString("ORDER_TYPE"));
+                    rh.put("orderId", rs.getString("ORDER_ID"));
+                    rh.put("orderNo", rs.getString("ORDER_NO"));
+                    rh.put("orderDate", rs.getString("ORDER_DATE"));
+                    rh.put("orderTo", rs.getString("ORDER_TO"));
+                    rh.put("cdSupplier", rs.getString("CD_SUPPLIER"));
+                    rh.put("dtDue", rs.getString("DT_DUE"));
+                    rh.put("dtExpired", rs.getString("DT_EXPIRED"));
+                    rh.put("remark", rs.getString("REMARK"));
+                    rh.put("noOfPrint", rs.getString("NO_OF_PRINT"));
+                    rh.put("status", rs.getString("STATUS"));
+
+                    return rh;
+                }
+            });
+
+            for (Map<String, Object> dtl : list) {
+                CloseableHttpClient client = HttpClients.createDefault();
+                String url = urlWarehouse + "/insert-order-headerdetail";
+                HttpPost post = new HttpPost(url);
+
+                post.setHeader("Accept", "*/*");
+                post.setHeader("Content-Type", "application/json");
+
+                Map<String, Object> param = new HashMap<String, Object>();
+                param.put("outletCode", dtl.get("outletCode"));
+                param.put("orderType", dtl.get("orderType"));
+                param.put("orderId", dtl.get("orderId"));
+                param.put("orderNo", dtl.get("orderNo"));
+                param.put("orderDate", dtl.get("orderDate"));
+                param.put("orderTo", dtl.get("orderTo"));
+                param.put("cdSupplier", dtl.get("cdSupplier"));
+                param.put("dtDue", dtl.get("dtDue"));
+                param.put("dtExpired", dtl.get("dtExpired"));
+                param.put("remark", dtl.get("remark"));
+                param.put("noOfPrint", dtl.get("noOfPrint"));
+                param.put("status", dtl.get("status"));
+                param.put("userUpd", balance.get("userUpd"));
+                param.put("itemList", dtl.get("itemList"));
+                param.put("dateUpd", dateNow);
+                param.put("timeUpd", timeStamp);
+
+                json = new Gson().toJson(param);
+                StringEntity entity = new StringEntity(json);
+                post.setEntity(entity);
+                CloseableHttpResponse response = client.execute(post);
+                System.out.println("json" + json);
+                BufferedReader br = new BufferedReader(
+                        new InputStreamReader(
+                                (response.getEntity().getContent())
+                        )
+                );
+                StringBuilder content = new StringBuilder();
+                String line;
+                while (null != (line = br.readLine())) {
+                    content.append(line);
+                }
+                String result = content.toString();
+                System.out.println("trans =" + result);
+                map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
+                }.getType());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
