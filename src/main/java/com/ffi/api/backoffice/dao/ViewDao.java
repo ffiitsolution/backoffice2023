@@ -158,4 +158,6 @@ public interface ViewDao {
     List<Map<String, Object>> listReceivingHeader(Map<String, String> ref);
     
     List<Map<String, Object>> listUnfinishedOrderHeader(Map<String, String> ref);
+    
+    List<Map<String, Object>> listReceivingDetail(Map<String, String> ref);
 }

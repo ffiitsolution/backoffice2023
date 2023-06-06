@@ -1802,4 +1802,37 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
+    
+    @Override
+    public List<Map<String, Object>> listReceivingDetail(Map<String, String> ref) {
+        String qry = "select rd.recv_no, rd.order_no, rd.item_code,  mi.item_description, od.qty_1 ord_qty_1, rd.qty_1 rcv_qty_1, "
+                + "rd.cd_uom_1, od.qty_2 ord_qty_2, rd.qty_2 rcv_qty_2, rd.cd_uom_2, (rd.qty_1 + rd.qty_2 + rd.qty_bonus) jml_total "
+                + "from t_recv_detail rd "
+                + "left join t_order_detail od on od.order_no = rd.order_no and od.item_code = rd.item_code "
+                + "left join m_item mi on mi.item_code = rd.item_code "
+                + "where rd.recv_no = :recv_no ";
+        Map prm = new HashMap();
+        prm.put("recv_no", ref.get("recv_no"));
+        //prm.put("dateEnd", ref.get("dateEnd"));
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("noTerima", rs.getString("recv_no"));
+                rt.put("noOrder", rs.getString("order_no"));
+                rt.put("kode", rs.getString("item_code"));
+                rt.put("namaBarang", rs.getString("item_description"));
+                rt.put("order1", rs.getString("ord_qty_1"));
+                rt.put("terima1", rs.getString("rcv_qty_1"));
+                rt.put("satuan1", rs.getString("cd_uom_1"));
+                rt.put("order2", rs.getString("ord_qty_2"));
+                rt.put("terima2", rs.getString("rcv_qty_2"));
+                rt.put("satuan2", rs.getString("cd_uom_2"));
+                rt.put("jmlTotal", rs.getString("jml_total"));
+                return rt;
+            }
+        });
+        return list;
+    }
 }
