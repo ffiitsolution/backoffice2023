@@ -40,4 +40,10 @@ public class ReportServices {
         return dao.reportWastage(param);
     }
             ///////////////////////END//////////////////////////////
+
+    ///////////////NEW METHOD REPORT receive BY PASCA 29 MEI 2023////
+    public void insertLogReport(Map<String, String> param) {
+        dao.insertLogReport(param);
+    }
+    ///////////////////////END//////////////////////////////
 }

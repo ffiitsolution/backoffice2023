@@ -16,12 +16,16 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Repository
 public class ReportDaoImpl implements ReportDao {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
+
+    String timeStamp = new SimpleDateFormat("HHmmss").format(Calendar.getInstance().getTime());
+    String dateNow = new SimpleDateFormat("dd-MMM-yyyy").format(Calendar.getInstance().getTime());
 
     @Autowired
     public ReportDaoImpl(NamedParameterJdbcTemplate jdbcTemplate) {
@@ -175,6 +179,8 @@ public class ReportDaoImpl implements ReportDao {
                 + "LEFT JOIN T_DEV_DETAIL e ON a.REQUEST_NO = e.REQUEST_NO \n"
                 + "LEFT JOIN M_ITEM f ON e.ITEM_CODE = f.ITEM_CODE \n"
                 + "WHERE a.OUTLET_CODE =:outletCode AND a.DELIVERY_DATE BETWEEN :dateFrom AND :dateTo ORDER BY a.DELIVERY_DATE ASC";
+        System.out.println(query);
+        System.exit(0);
 
         Map prm = new HashMap();
         prm.put("city", "X_" + param.get("city"));
@@ -499,6 +505,26 @@ public class ReportDaoImpl implements ReportDao {
             return result;
         }
         return null;
+    }
+    /////////////////////////////////DONE///////////////////////////////////////
+    ///////////////NEW METHOD REPORT BY PASCA 29 MEI 2023////
+    @Override
+    public void insertLogReport(Map<String, String> mapping) {
+        String query = "INSERT INTO LOG_REPORT (TYPE_REPORT, OUTLET_CODE, DATE_START, DATE_END, \"TYPE\", DETAIL_FLAG, PARAM, USER_UPD, DATE_UPD, TIME_UPD, DESCRIPTION)\n" +
+                "VALUES (:typeReport, :outletCode, :dateStart, :dateEnd, :type, :detail_flag, :param, :userUpd, :dateUpd, :timeUpd, :description)";
+        Map param = new HashMap();
+        param.put("typeReport", mapping.get("typeReport"));
+        param.put("outletCode", mapping.get("outletCode"));
+        param.put("dateStart", mapping.get("dateStart"));
+        param.put("dateEnd", mapping.get("dateEnd"));
+        param.put("type", mapping.get("type"));
+        param.put("param", mapping.get("param"));
+        param.put("detail_flag", mapping.get("detail_flag"));
+        param.put("userUpd", mapping.get("userUpd"));
+        param.put("dateUpd", dateNow);
+        param.put("timeUpd", timeStamp);
+        param.put("description", mapping.get("description"));
+        jdbcTemplate.update(query, param);
     }
     /////////////////////////////////DONE///////////////////////////////////////
 

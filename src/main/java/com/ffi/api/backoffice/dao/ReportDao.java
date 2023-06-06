@@ -27,4 +27,8 @@ public interface ReportDao {
 
     List<Map<String, Object>> reportWastage(Map<String, Object> param);
     /////////////////////////////////DONE///////////////////////////////////////
+    ///////////////NEW METHOD REPORT receive BY PASCA 29 MEI 2023////
+    public void insertLogReport(Map<String, String> mapping);
+    /////////////////////////////////DONE///////////////////////////////////////
+
 }
