@@ -154,4 +154,6 @@ public interface ViewDao {
     
     public String getCity(String outletCode);
     
+    ///////////////////////////////Add Receiving by KP (06-06-2023)///////////////////////////////
+    List<Map<String, Object>> listReceivingHeader(Map<String, String> ref);
 }

@@ -286,4 +286,9 @@ public class ViewServices {
     public String cekItemHq() {
         return viewDao.cekItemHq();
     }
+    
+    ///////////////////////////////Add Receiving by KP (06-06-2023)///////////////////////////////
+    public List<Map<String, Object>> listReceivingHeader(Map<String, String> ref) {
+        return viewDao.listReceivingHeader(ref);
+    }
 }

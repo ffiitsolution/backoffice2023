@@ -1714,4 +1714,58 @@ public class ViewDoaImpl implements ViewDao {
         }
         return total;
     }
+    
+    ///////////////////////////////Add Receiving by KP (06-06-2023)///////////////////////////////
+    @Override
+    public List<Map<String, Object>> listReceivingHeader(Map<String, String> ref) {
+        String qry = "select " +
+                    "rc.recv_no, " +
+                    "rc.recv_date, " +
+                    "rc.order_no, " +
+                    "'Pembelian ' || (" +
+                    "    case when length(ord.cd_supplier) = 4 then 'Outlet ' || mo.outlet_name" +
+                    "    when length(ord.cd_supplier) = 5 then mg.description" +
+                    "    else 'Supplier ' || sp.supplier_name end" +
+                    ") remark," +
+                    "case when hk.status_kirim = 'S' and hk.status_terima = 'R' then 'Sudah' else ' ' end as upd_online, " +
+                    "rc.no_of_print, " +
+                    "case when rc.status = '1' then 'CLOSE' when rc.status = '0' then 'OPEN' else 'UNKNOWN' end as status " +
+                    "from t_recv_header rc " +
+                    "left join t_order_header ord on ord.order_no = rc.order_no " +
+                    "left join m_supplier sp on sp.cd_supplier = ord.cd_supplier " +
+                    "left join m_global mg on mg.cond = 'X_JKT' and mg.code = ord.cd_supplier " +
+                    "left join m_outlet mo on mo.outlet_code = ord.cd_supplier " +
+                    "left join hist_kirim hk on hk.no_order = ord.order_no " +
+                    "where rc.recv_date between to_date(:dateStart, 'dd-mm-yyyy') and to_date(:dateEnd, 'dd-mm-yyyy') ";
+                    //"and length(ord.cd_supplier) = 5 " +
+                    //"order by rc.recv_date ";
+        Map prm = new HashMap();
+        prm.put("dateStart", ref.get("dateStart"));
+        prm.put("dateEnd", ref.get("dateEnd"));
+        String filter = ref.get("filter");
+        if(filter.equalsIgnoreCase("1")) { //Outlet
+            qry += "and length(ord.cd_supplier) = 4 ";
+        } else if(filter.equalsIgnoreCase("2")){ //Gudang
+            qry += "and length(ord.cd_supplier) = 5 ";
+        } else if(filter.equalsIgnoreCase("3")){ //Supplier
+            qry += "and length(ord.cd_supplier) = 10 ";
+        }
+        qry += "order by rc.recv_date ";
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("noTerima", rs.getString("recv_no"));
+                rt.put("tanggal", rs.getString("recv_date"));
+                rt.put("noOrder", rs.getString("order_no"));
+                rt.put("tipeOrder", rs.getString("remark"));
+                rt.put("updOnline", rs.getString("upd_online"));
+                rt.put("print", rs.getString("no_of_print"));
+                rt.put("status", rs.getString("status"));
+                return rt;
+            }
+        });
+        return list;
+    }
 }
