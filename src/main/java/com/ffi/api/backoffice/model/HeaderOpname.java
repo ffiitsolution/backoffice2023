@@ -12,7 +12,7 @@ public class HeaderOpname {
     String outletCode;
     String cdTemplate;
     String opnameDate;
-    String Status;
+    String status;
     String remark;
     String userUpd;
     String transType;
@@ -52,11 +52,11 @@ public class HeaderOpname {
     }
 
     public String getStatus() {
-        return Status;
+        return status;
     }
 
-    public void setStatus(String Status) {
-        this.Status = Status;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getUserUpd() {

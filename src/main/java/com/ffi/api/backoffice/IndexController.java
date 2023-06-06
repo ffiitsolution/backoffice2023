@@ -1690,6 +1690,8 @@ public class IndexController {
         String status = "";
         ResponseMessage rm = new ResponseMessage();
 
+        String totalHq = viewServices.cekItemHq();
+        
         String cekItem = viewServices.cekItem();
         int b = Integer.valueOf(cekItem);
 
@@ -1726,10 +1728,10 @@ public class IndexController {
         try {
             processServices.sendDataToWarehouse(balance);
             rm.setSuccess(true);
-            rm.setMessage("Insert Stock Card  Successfuly");
+            rm.setMessage("Insert Successfuly");
         } catch (Exception e) {
             rm.setSuccess(false);
-            rm.setMessage("Insert Stock Card Failed: " + e.getMessage());
+            rm.setMessage("Insert Failed: " + e.getMessage());
         }
         rm.setItem(list);
         return rm;

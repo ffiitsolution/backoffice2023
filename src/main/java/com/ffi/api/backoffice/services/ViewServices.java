@@ -282,4 +282,8 @@ public class ViewServices {
     public String cekItem() {
         return viewDao.cekItem();
     }
+    
+    public String cekItemHq() {
+        return viewDao.cekItemHq();
+    }
 }

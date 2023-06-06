@@ -6,6 +6,13 @@ package com.ffi.api.backoffice.dao.impl;
 
 import com.ffi.api.backoffice.dao.ViewDao;
 import com.ffi.api.backoffice.model.ParameterLogin;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -15,7 +22,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 //import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -1649,5 +1662,56 @@ public class ViewDoaImpl implements ViewDao {
 
             }
         }).toString();
+    }
+
+    @Override
+    public String cekItemHq() {
+
+        String json = "";
+        String total = "";
+        Gson gson = new Gson();
+        Map<String, Object> map1 = new HashMap<String, Object>();
+        try {
+            CloseableHttpClient client = HttpClients.createDefault();
+            String url = "http://192.168.10.28:7009/warehouse/list-count-item";
+            HttpPost post = new HttpPost(url);
+
+            post.setHeader("Accept", "*/*");
+            post.setHeader("Content-Type", "application/json");
+
+            Map<String, Object> param = new HashMap<String, Object>();
+
+            json = new Gson().toJson(param);
+            StringEntity entity = new StringEntity(json);
+            post.setEntity(entity);
+            CloseableHttpResponse response = client.execute(post);
+            System.out.println("json" + json);
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(
+                            (response.getEntity().getContent())
+                    )
+            );
+            StringBuilder content = new StringBuilder();
+            String line;
+            while (null != (line = br.readLine())) {
+                content.append(line);
+            }
+            String result = content.toString();
+            System.out.println("trans =" + result);
+            map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
+            }.getType());
+            
+            JsonObject job = gson.fromJson(result, JsonObject.class);
+            JsonElement elem = job.get("data");
+            //JsonArray  a =  new JsonArray(elem.getAsInt());
+ 
+            //JSONArray arr = (JSONArray) job.get("data");
+            total = elem.getAsJsonArray().getAsJsonObject().getAsJsonPrimitive("total").getAsString();
+            //total = elem.getAsJsonObject().getAsJsonPrimitive("total").getAsString();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return total;
     }
 }

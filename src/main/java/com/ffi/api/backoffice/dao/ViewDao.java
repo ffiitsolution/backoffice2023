@@ -150,6 +150,8 @@ public interface ViewDao {
     
     public String cekItem();
     
+    public String cekItemHq();
+    
     public String getCity(String outletCode);
     
 }
