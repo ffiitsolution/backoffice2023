@@ -1766,4 +1766,33 @@ public class IndexController {
         rm.setData(list);
         return rm;
     }
+    
+    @RequestMapping(value = "/view-ord-header", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view list header order", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response ViewOrderHeader(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response rm = new Response();
+        try {
+            list = viewServices.listUnfinishedOrderHeader(balance);
+            rm.setRecordsTotal(list.size());
+            rm.setRecordsFiltered(list.size());
+            //rm.setSuccess(true);
+            //rm.setMessage("List Menu KFC");
+        } catch (Exception e) {
+            rm.setRecordsTotal(0);
+            rm.setRecordsFiltered(0);
+            //rm.setSuccess(false);
+            //rm.setMessage("Failed to retrieve menu : " + e.getMessage());
+        }
+        rm.setData(list);
+        return rm;
+    }
 }

@@ -1768,4 +1768,38 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
+    
+    @Override
+    public List<Map<String, Object>> listUnfinishedOrderHeader(Map<String, String> ref) {
+        String qry = "SELECT ord.order_no, ord.order_date, "
+                + "(CASE WHEN ord.order_no like 'PO%' then 'Pembelian ' else 'Permintaan ' end) || "
+                + "(CASE WHEN length(ord.cd_supplier) = 4 THEN 'Outlet ' || mo.outlet_name WHEN length(ord.cd_supplier) = 5 THEN mg.description ELSE 'Supplier ' || sp.supplier_name END) remark, "
+                + "CASE WHEN ord.status = '1' THEN 'Closed' WHEN ord.status = '0' THEN 'On Order' "
+                + "WHEN ord.status = '2' THEN 'CANCEL' "
+                + "ELSE 'UNKNOWN' "
+                + "END AS status "
+                + "FROM t_order_header ord "
+                + "LEFT JOIN m_supplier       sp ON sp.cd_supplier = ord.cd_supplier "
+                + "LEFT JOIN m_global         mg ON mg.cond = 'X_JKT' AND mg.code = ord.cd_supplier "
+                + "LEFT JOIN m_outlet         mo ON mo.outlet_code = ord.cd_supplier "
+                + "LEFT JOIN hist_kirim       hk ON hk.no_order = ord.order_no "
+                + "WHERE ord.status = '0' "
+                + "ORDER BY ord.order_date, ord.order_no";
+        Map prm = new HashMap();
+        //prm.put("dateStart", ref.get("dateStart"));
+        //prm.put("dateEnd", ref.get("dateEnd"));
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("noOrder", rs.getString("order_no"));
+                rt.put("tglOrder", rs.getString("order_date"));
+                rt.put("tipeOrder", rs.getString("remark"));
+                rt.put("status", rs.getString("status"));
+                return rt;
+            }
+        });
+        return list;
+    }
 }

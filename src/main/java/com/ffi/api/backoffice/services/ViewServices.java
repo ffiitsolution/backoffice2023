@@ -291,4 +291,8 @@ public class ViewServices {
     public List<Map<String, Object>> listReceivingHeader(Map<String, String> ref) {
         return viewDao.listReceivingHeader(ref);
     }
+    
+    public List<Map<String, Object>> listUnfinishedOrderHeader(Map<String, String> ref) {
+        return viewDao.listOrderHeader(ref);
+    }
 }

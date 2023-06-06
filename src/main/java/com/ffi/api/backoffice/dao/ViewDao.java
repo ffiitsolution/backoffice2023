@@ -156,4 +156,6 @@ public interface ViewDao {
     
     ///////////////////////////////Add Receiving by KP (06-06-2023)///////////////////////////////
     List<Map<String, Object>> listReceivingHeader(Map<String, String> ref);
+    
+    List<Map<String, Object>> listUnfinishedOrderHeader(Map<String, String> ref);
 }
