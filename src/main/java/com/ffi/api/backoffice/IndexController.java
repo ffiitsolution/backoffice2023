@@ -13,6 +13,7 @@ import com.ffi.api.backoffice.services.ReportServices;
 import com.ffi.paging.Response;
 import com.ffi.paging.ResponseMessage;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -1822,6 +1823,35 @@ public class IndexController {
             //rm.setMessage("Failed to retrieve menu : " + e.getMessage());
         }
         rm.setData(list);
+        return rm;
+    }
+    
+    //Add Insert to Receiving Header & Detail by KP (07-06-2023)
+    @RequestMapping(value = "/insert-rcv-headetail", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view list header order", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage InsertRecvHeaderDetail(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, Object> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        JsonObject result = gsn.fromJson(param, JsonObject.class);
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        ResponseMessage rm = new ResponseMessage();
+        try {
+            processServices.InsertRecvHeaderDetail(result);
+            //prosesServices.updateMCounter(balance);
+            rm.setSuccess(true);
+            rm.setMessage("Insert Success Successfuly");
+
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Insert Failed Successfuly: " + e.getMessage());
+        }
+        rm.setItem(list);
         return rm;
     }
 }

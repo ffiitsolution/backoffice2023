@@ -8,6 +8,8 @@ import com.ffi.api.backoffice.dao.ProcessDao;
 import com.ffi.api.backoffice.model.DetailOpname;
 import com.ffi.api.backoffice.model.HeaderOpname;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -1001,5 +1003,73 @@ public class ProcessDaoImpl implements ProcessDao {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    //Add Insert to Receiving Header & Detail by KP (07-06-2023)
+    @Override
+    public void InsertRecvHeaderDetail(JsonObject balancing) {
+        DateFormat df = new SimpleDateFormat("MM");
+        DateFormat dfYear = new SimpleDateFormat("yyyy");
+        Date tgl = new Date();
+        String month = df.format(tgl);
+        String year = dfYear.format(tgl);
+        String opNo = opnameNumber(year, month, balancing.getAsJsonObject().getAsJsonPrimitive("transType").getAsString(), 
+                balancing.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
+        
+        //Header
+        String sql = "insert into t_recv_header(OUTLET_CODE, RECV_NO, RECV_DATE, ORDER_NO, REMARK, NO_OF_PRINT, STATUS, USER_UPD, DATE_UPD, TIME_UPD) "
+                + "select outlet_code, :recv_no, :recv_date, :ord_no, remark, 0, 1, :usr, sysdate, :time_upd from t_order_header oh "
+                + "where oh.order_no = :ord_no and oh.outlet_code = :outlet ";
+        Map param = new HashMap();
+        param.put("ord_no", balancing.getAsJsonObject().getAsJsonPrimitive("ordNo").getAsString());
+        param.put("outlet", balancing.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
+        param.put("recv_no", opNo);
+        param.put("recv_date", balancing.getAsJsonObject().getAsJsonPrimitive("recvDate").getAsString());
+        param.put("usr", balancing.getAsJsonObject().getAsJsonPrimitive("user").getAsString());
+        param.put("time_upd", balancing.getAsJsonObject().getAsJsonPrimitive("timeUpd").getAsString());
+        jdbcTemplate.update(sql, param);
+        
+        //Detail
+        JsonArray emp = balancing.getAsJsonObject().getAsJsonArray("itemList");
+        for (int i = 0; i < emp.size(); i++) {
+            Map<String, String> detailParam = new HashMap<String, String>();
+            detailParam.put("outletCode", balancing.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
+            detailParam.put("orderNo", balancing.getAsJsonObject().getAsJsonPrimitive("ordNo").getAsString());
+            detailParam.put("recvNo", opNo);
+            detailParam.put("itemCode", emp.get(i).getAsJsonObject().getAsJsonPrimitive("itemCode").getAsString());
+            detailParam.put("qty1", emp.get(i).getAsJsonObject().getAsJsonPrimitive("qty1").getAsString());
+            detailParam.put("cdUom1", emp.get(i).getAsJsonObject().getAsJsonPrimitive("cdUom1").getAsString());
+            detailParam.put("qty2", emp.get(i).getAsJsonObject().getAsJsonPrimitive("qty2").getAsString());
+            detailParam.put("cdUom2", emp.get(i).getAsJsonObject().getAsJsonPrimitive("cdUom2").getAsString());
+            detailParam.put("qtyBonus", emp.get(i).getAsJsonObject().getAsJsonPrimitive("qtyBonus").getAsString());
+            detailParam.put("cdUomBonus", emp.get(i).getAsJsonObject().getAsJsonPrimitive("cdUomBonus").getAsString());
+            detailParam.put("totalQty", emp.get(i).getAsJsonObject().getAsJsonPrimitive("totalQty").getAsString());
+            detailParam.put("totalPrice", emp.get(i).getAsJsonObject().getAsJsonPrimitive("totalPrice").getAsString());
+            detailParam.put("UserUpd", balancing.getAsJsonObject().getAsJsonPrimitive("user").getAsString());
+            InsertRecvDetail(detailParam);
+            detailParam.clear();
+        }
+    }
+    
+    public void InsertRecvDetail(Map<String, String> balance) {
+        String qy = "INSERT INTO t_recv_detail (OUTLET_CODE, ORDER_NO, RECV_NO, ITEM_CODE, QTY_1, CD_UOM_1, QTY_2, CD_UOM_2, QTY_BONUS, CD_UOM_BONUS, TOTAL_QTY, TOTAL_PRICE, USER_UPD, DATE_UPD, TIME_UPD)"
+                + " VALUES(:outletCode, :orderNo, :recvNo, :itemCode, :qty1, :cdUom1, :qty2, :cdUom2, :qtyBonus, :cdUomBonus, :totalQty, :totalPrice, :userUpd, :dateUpd, :timeUpd)";
+        Map param = new HashMap();
+        param.put("outletCode", balance.get("outletCode"));
+        param.put("orderNo", balance.get("orderNo"));
+        param.put("recvNo", balance.get("recvNo"));
+        param.put("itemCode", balance.get("itemCode"));
+        param.put("qty1", balance.get("qty1"));
+        param.put("cdUom1", balance.get("cdUom1"));
+        param.put("qty2", balance.get("qty2"));
+        param.put("cdUom2", balance.get("cdUom2"));
+        param.put("qtyBonus", balance.get("qtyBonus"));
+        param.put("cdUomBonus", balance.get("cdUomBonus"));
+        param.put("totalQty", balance.get("totalQty"));
+        param.put("totalPrice", balance.get("totalPrice"));
+        param.put("userUpd", balance.get("userUpd"));
+        param.put("dateUpd", dateNow);
+        param.put("timeUpd", timeStamp);
+        jdbcTemplate.update(qy, param);
     }
 }

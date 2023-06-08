@@ -6,6 +6,7 @@ package com.ffi.api.backoffice.dao;
 
 import com.ffi.api.backoffice.model.DetailOpname;
 import com.ffi.api.backoffice.model.HeaderOpname;
+import com.google.gson.JsonObject;
 import java.util.Map;
 
 /**
@@ -82,4 +83,6 @@ public interface ProcessDao {
     
     public void sendDataToWarehouse(Map<String, String> mapping);
 
+    //Add Insert to Receiving Header & Detail by KP (07-06-2023)
+    public void InsertRecvHeaderDetail(JsonObject mapping);
 }

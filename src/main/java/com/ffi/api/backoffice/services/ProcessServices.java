@@ -7,6 +7,7 @@ package com.ffi.api.backoffice.services;
 import com.ffi.api.backoffice.dao.ProcessDao;
 import com.ffi.api.backoffice.model.DetailOpname;
 import com.ffi.api.backoffice.model.HeaderOpname;
+import com.google.gson.JsonObject;
 import java.util.Map;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -149,5 +150,11 @@ public class ProcessServices {
     @Transactional
     public void sendDataToWarehouse(Map<String, String> balance) {
         dao.sendDataToWarehouse(balance);
+    }
+    
+    //Add Insert to Receiving Header & Detail by KP (07-06-2023)
+    @Transactional
+    public void InsertRecvHeaderDetail(JsonObject balancing) {
+        dao.InsertRecvHeaderDetail(balancing);
     }
 }
