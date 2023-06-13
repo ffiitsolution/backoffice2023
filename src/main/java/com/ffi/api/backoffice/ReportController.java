@@ -30,6 +30,7 @@ import java.util.Map;
 import net.sf.jasperreports.engine.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -183,7 +184,7 @@ public class ReportController {
             @ApiResponse(code = 404, message = "The resource not found")
     }
     )
-    public ResponseEntity<byte[]> jesperReportOrderEntry(@RequestBody String param) throws SQLException, JRException, FileNotFoundException {
+    public ResponseEntity<byte[]> jesperReportOrderEntry(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
@@ -214,8 +215,8 @@ public class ReportController {
         }
         hashMap.put("user", prm.get("user"));
 
-        File file = ResourceUtils.getFile("classpath:orderEntry.jrxml");
-        JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
+        ClassPathResource classPathResource = new ClassPathResource("report/orderEntry.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, hashMap, conn);
         byte result[] = JasperExportManager.exportReportToPdf(jasperPrint);
         HttpHeaders headers = new HttpHeaders();
@@ -224,5 +225,44 @@ public class ReportController {
         return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
     }
     /////////////////////////////////DONE///////////////////////////////////////
+
+    @RequestMapping(value = "/report-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Mepampilkan report order entry", response = Object.class)
+    @ApiResponses(value
+            = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 404, message = "The resource not found")
+    }
+    )
+    public ResponseEntity<byte[]> jesperReport(@RequestBody String param) throws SQLException, JRException, IOException {
+        Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
+        ClassPathResource classAll = new ClassPathResource("report/sub/item_all.jrxml");
+        ClassPathResource calassJenisGudang = new ClassPathResource("report/sub/item_jenis_gudang.jrxml");
+        JasperReport jasperSubAll = JasperCompileManager.compileReport(classAll.getInputStream());
+        JasperReport jasperSubGudang = JasperCompileManager.compileReport(calassJenisGudang.getInputStream());
+
+        Map<String, Object> hashMap = new HashMap<String, Object>();
+        hashMap.put("outletCode", "0401");
+        hashMap.put("user", "ZTO");
+        hashMap.put("status", "Semua");
+        hashMap.put("jenisGudang", "Dry Good");
+        hashMap.put("typeStock", "Semua");
+        hashMap.put("status1", "I");
+        hashMap.put("status2", "A");
+        hashMap.put("flagStock1", " ");
+        hashMap.put("flagStock2", "N");
+        hashMap.put("flagStock3", "Y");
+        hashMap.put("subreportJenisGudang", jasperSubGudang);
+        hashMap.put("subreportAll", jasperSubAll);
+
+        ClassPathResource classPathResource = new ClassPathResource("report/test.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, hashMap, conn);
+        byte result[] = JasperExportManager.exportReportToPdf(jasperPrint);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=Report.pdf");
+        conn.close();
+        return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+    }
 
 }

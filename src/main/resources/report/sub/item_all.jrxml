@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="item_all" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="647c594e-78c4-4937-ac29-6198a02faa45">
+    <property name="ireport.zoom" value="1.5"/>
+    <property name="ireport.x" value="0"/>
+    <property name="ireport.y" value="0"/>
+    <parameter name="status1" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="status2" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="falgStock1" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="falgStock2" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="falgStock3" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <queryString>
+        <![CDATA[SELECT a.ITEM_CODE, a.ITEM_DESCRIPTION, a.CONV_WAREHOUSE, a.UOM_PURCHASE, a.UOM_WAREHOUSE, a.CONV_STOCK, a.UOM_STOCK,
+a.STATUS, CASE WHEN a.FLAG_STOCK = 'Y' THEN 'Stock' ELSE 'Non Stock' END type_stock, b.DESCRIPTION
+FROM M_ITEM a
+LEFT JOIN M_GLOBAL b ON a.CD_WAREHOUSE = b.CODE AND b.COND ='WAREHOUSE'
+WHERE a.STATUS IN ($P{status1}, $P{status2}) AND a.FLAG_STOCK IN ($P{falgStock1}, $P{falgStock2}, $P{falgStock3})
+ORDER BY ITEM_CODE ASC]]>
+    </queryString>
+    <field name="ITEM_CODE" class="java.lang.String"/>
+    <field name="ITEM_DESCRIPTION" class="java.lang.String"/>
+    <field name="CONV_WAREHOUSE" class="java.math.BigDecimal"/>
+    <field name="UOM_PURCHASE" class="java.lang.String"/>
+    <field name="UOM_WAREHOUSE" class="java.lang.String"/>
+    <field name="CONV_STOCK" class="java.math.BigDecimal"/>
+    <field name="UOM_STOCK" class="java.lang.String"/>
+    <field name="STATUS" class="java.lang.String"/>
+    <field name="TYPE_STOCK" class="java.lang.String"/>
+    <field name="DESCRIPTION" class="java.lang.String"/>
+    <background>
+        <band splitType="Stretch"/>
+    </background>
+    <detail>
+        <band height="16" splitType="Stretch">
+            <textField>
+                <reportElement x="0" y="0" width="52" height="15" uuid="3e9da064-81d5-470b-b333-11cac98a1353"/>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{ITEM_CODE}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="51" y="0" width="200" height="15" uuid="f965e734-b8d0-4918-904a-52bd2eb5cf22"/>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="250" y="0" width="84" height="15" uuid="bd09c526-5317-4406-be63-a9798e8a0456"/>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{CONV_WAREHOUSE}) + " " + $F{UOM_PURCHASE}
++ "/" + $F{UOM_WAREHOUSE}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="333" y="0" width="84" height="15" uuid="cc2f126d-6e77-4324-a1ab-6527305e16d3"/>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{CONV_STOCK}) + " " + $F{UOM_STOCK}
++ "/" + $F{UOM_PURCHASE}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="416" y="0" width="34" height="15" uuid="8560bad5-9cad-490c-8f45-3b1d488f92fe"/>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{STATUS}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="449" y="0" width="45" height="15" uuid="995b1224-5c79-4dc0-a911-a74156cfa8e3"/>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{TYPE_STOCK}]]></textFieldExpression>
+            </textField>
+            <textField isBlankWhenNull="true">
+                <reportElement x="493" y="0" width="60" height="15" uuid="f284854c-6e5b-4fde-9aaf-181a4449032b"/>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{DESCRIPTION}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+</jasperReport>
