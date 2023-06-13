@@ -1000,6 +1000,14 @@ public class ProcessDaoImpl implements ProcessDao {
                 map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
                 }.getType());
             }
+            
+            //Add Insert to HIST_KIRIM by KP (13-06-2023)
+            Map<String, String> histKirim = new HashMap<String, String>();
+            histKirim.put("orderNo", balance.get("orderNo").toString());
+            histKirim.put("sendUser", balance.get("userUpd").toString());
+            InsertHistKirim(histKirim);
+            //End added by KP
+            
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1072,4 +1080,19 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("timeUpd", timeStamp);
         jdbcTemplate.update(qy, param);
     }
+    
+    //Add Insert to HIST_KIRIM by KP (13-06-2023)
+    public void InsertHistKirim(Map<String, String> balance) {
+        String qy = "INSERT INTO t_recv_detail (OUTLET_CODE, TUJUAN_KIRIM, NO_ORDER, STATUS_KIRIM, TGL_KIRIM, JAM_KIRIM, USER_KIRIM) " +
+                    "SELECT OUTLET_CODE, CD_SUPPLIER, ORDER_NO, 'S', :sendDate, :sendHour, :sendUser " +
+                    "FROM T_ORDER_HEADER " +
+                    "WHERE ORDER_NO = :orderNo";
+        Map param = new HashMap();
+        param.put("orderNo", balance.get("orderNo"));
+        param.put("sendDate", dateNow);
+        param.put("sendHour", timeStamp);
+        param.put("sendUser", balance.get("sendUser"));
+        jdbcTemplate.update(qy, param);
+    }
+    //End added by KP
 }
