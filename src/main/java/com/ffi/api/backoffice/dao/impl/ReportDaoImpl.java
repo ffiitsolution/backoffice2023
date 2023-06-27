@@ -7,12 +7,17 @@ package com.ffi.api.backoffice.dao.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ffi.api.backoffice.dao.ReportDao;
+import net.sf.jasperreports.engine.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
@@ -353,7 +358,7 @@ public class ReportDaoImpl implements ReportDao {
         prm.put("outletCode", param.get("outletCode"));
         prm.put("returnDateFrom", param.get("returnDateFrom"));
         prm.put("returnDateTo", param.get("returnDateTo"));
-        if (param.get("typeReturn").equals(0.0)){
+        if (param.get("typeReturn").equals(0.0)) {
             prm.put("typeReturn1", "1");
             prm.put("typeReturn2", "0");
         } else if (param.get("typeReturn").equals(1.0)) {
@@ -440,7 +445,7 @@ public class ReportDaoImpl implements ReportDao {
         prm.put("outletCode", param.get("outletCode"));
         prm.put("wastageDateFrom", param.get("wastageDateFrom"));
         prm.put("wastageDateTo", param.get("wastageDateTo"));
-        if (param.get("typeTrans").equals("All")){
+        if (param.get("typeTrans").equals("All")) {
             prm.put("typeTrans1", "W");
             prm.put("typeTrans2", "L");
         } else if (param.get("typeTrans").equals("W")) {
@@ -478,7 +483,7 @@ public class ReportDaoImpl implements ReportDao {
         Set<Map<String, Object>> set = new HashSet<>(list.size());
         list.removeIf(p -> !set.add(p));
 
-        if (param.get("detail").equals(0.0)){
+        if (param.get("detail").equals(0.0)) {
             return list;
         } else if (param.get("detail").equals(1.0)) {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -506,6 +511,7 @@ public class ReportDaoImpl implements ReportDao {
         }
         return null;
     }
+
     /////////////////////////////////DONE///////////////////////////////////////
     ///////////////NEW METHOD REPORT BY PASCA 29 MEI 2023////
     @Override
@@ -525,6 +531,49 @@ public class ReportDaoImpl implements ReportDao {
         param.put("timeUpd", timeStamp);
         param.put("description", mapping.get("description"));
         jdbcTemplate.update(query, param);
+    }
+    /////////////////////////////////DONE///////////////////////////////////////
+
+    @Override
+    public JasperPrint jesperReportOrderEntry(Map<String, Object> param, Connection connection) throws SQLException, JRException, IOException {
+        HashMap hashMap = new HashMap();
+
+        hashMap.put("city", "X_" + param.get("city"));
+        if (param.get("typeOrder").equals("Semua")) {
+            hashMap.put("orderType1", "0");
+            hashMap.put("orderType2", "1");
+            hashMap.put("typeOrder", "Semua");
+        } else if (param.get("typeOrder").equals("Permintaan")) {
+            hashMap.put("orderType1", "0");
+            hashMap.put("orderType2", "0");
+            hashMap.put("typeOrder", "Permintaan");
+        } else if (param.get("typeOrder").equals("Pembelian")) {
+            hashMap.put("orderType1", "1");
+            hashMap.put("orderType2", "1");
+            hashMap.put("typeOrder", "Pembelian");
+        }
+        hashMap.put("fromDate", param.get("fromDate"));
+        hashMap.put("toDate", param.get("toDate"));
+        hashMap.put("outletCode", param.get("outletCode"));
+        if (param.get("detail").equals(1.0)) {
+            hashMap.put("detail", 1);
+        } else {
+            hashMap.put("detail", 0);
+        }
+        hashMap.put("user", param.get("user"));
+
+        ClassPathResource classPathResource = new ClassPathResource("report/orderEntry.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
+
+    @Override
+    public JasperPrint jesperReportItem(Map<String, Object> param, Connection connection) {
+        System.out.println(param);
+        System.exit(0);
+        Map<String, Object> hashMap = new HashMap<String, Object>();
+
+        return null;
     }
     /////////////////////////////////DONE///////////////////////////////////////
 

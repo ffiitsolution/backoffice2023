@@ -5,10 +5,14 @@
 package com.ffi.api.backoffice.services;
 
 import com.ffi.api.backoffice.dao.ReportDao;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperPrint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -26,8 +30,9 @@ public class ReportServices {
     public List<Map<String, Object>> reportDeliveryOrder(Map<String, Object> param) {
         return dao.reportDeliveryOrder(param);
     }
+
     ///////////////////////END//////////////////////////////
-        ///////////////NEW METHOD REPORT receive BY PASCA 24 MEI 2023////
+    ///////////////NEW METHOD REPORT receive BY PASCA 24 MEI 2023////
     public List<Map<String, Object>> reportReceiving(Map<String, Object> param) {
         return dao.reportReceiving(param);
     }
@@ -39,11 +44,19 @@ public class ReportServices {
     public List<Map<String, Object>> reportWastage(Map<String, Object> param) {
         return dao.reportWastage(param);
     }
-            ///////////////////////END//////////////////////////////
+    ///////////////////////END//////////////////////////////
 
     ///////////////NEW METHOD REPORT receive BY PASCA 29 MEI 2023////
     public void insertLogReport(Map<String, String> param) {
         dao.insertLogReport(param);
     }
     ///////////////////////END//////////////////////////////
+
+    public JasperPrint jesperReportOrderEntry(Map<String, Object> param, Connection connection) throws JRException, SQLException, IOException {
+        return dao.jesperReportOrderEntry(param, connection);
+    }
+
+    public JasperPrint jasperReportItem(Map<String, Object> param, Connection connection) {
+        return dao.jesperReportItem(param, connection);
+    }
 }

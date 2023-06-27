@@ -4,7 +4,12 @@
  */
 package com.ffi.api.backoffice.dao;
 
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperPrint;
+
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -30,5 +35,6 @@ public interface ReportDao {
     ///////////////NEW METHOD REPORT receive BY PASCA 29 MEI 2023////
     public void insertLogReport(Map<String, String> mapping);
     /////////////////////////////////DONE///////////////////////////////////////
-
+    JasperPrint jesperReportOrderEntry (Map<String, Object> param, Connection connection) throws SQLException, JRException, IOException;
+    JasperPrint jesperReportItem (Map<String, Object> param, Connection connection);
 }
