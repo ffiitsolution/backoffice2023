@@ -35,6 +35,11 @@ public interface ReportDao {
     ///////////////NEW METHOD REPORT receive BY PASCA 29 MEI 2023////
     public void insertLogReport(Map<String, String> mapping);
     /////////////////////////////////DONE///////////////////////////////////////
+    ///////////////NEW METHOD REPORT receive BY PASCA 10 July 2023////
     JasperPrint jesperReportOrderEntry (Map<String, Object> param, Connection connection) throws SQLException, JRException, IOException;
+    JasperPrint jasperReportReceiving (Map<String, Object> param, Connection connection) throws IOException, JRException;
+    JasperPrint jasperReportReturnOrder (Map<String, Object> param, Connection connection) throws IOException, JRException;
+    JasperPrint jasperReportWastage (Map<String, Object> param, Connection connection) throws IOException, JRException;
+    JasperPrint jasperReportDeliveryOrder (Map<String, Object> param, Connection connection) throws IOException, JRException;
     JasperPrint jesperReportItem (Map<String, Object> param, Connection connection);
 }

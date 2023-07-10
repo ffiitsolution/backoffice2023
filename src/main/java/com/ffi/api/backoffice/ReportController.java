@@ -188,9 +188,81 @@ public class ReportController {
     }
 
     /////////////////////////////////DONE///////////////////////////////////////
+    ///////////////NEW METHOD REPORT recive BY PASCA 10 July 2023////
+    @CrossOrigin
+    @RequestMapping(value = "/report-receiving-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Mepampilkan report receiving", response = Object.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    public ResponseEntity<byte[]> jesperReportReceiving(@RequestBody String param) throws SQLException, JRException, IOException {
+        Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
+        Gson gsn = new Gson();
+        Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
 
-    @RequestMapping(value = "/report-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Mepampilkan report order entry", response = Object.class)
+        JasperPrint jasperPrint = reportServices.jesperReportReceiving(prm, conn);
+        conn.close();
+        byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=ReceivingReport.pdf");
+        return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/report-return-order-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Mepampilkan report return order", response = Object.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    public ResponseEntity<byte[]> jesperReportReturnOrder(@RequestBody String param) throws SQLException, JRException, IOException {
+        Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
+        Gson gsn = new Gson();
+        Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        JasperPrint jasperPrint = reportServices.jesperReportReturnOrder(prm, conn);
+        conn.close();
+        byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=ReturnOrderReport.pdf");
+        return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/report-wastage-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Mepampilkan report wastage", response = Object.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    public ResponseEntity<byte[]> jesperReportWastage(@RequestBody String param) throws SQLException, JRException, IOException {
+        Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
+        Gson gsn = new Gson();
+        Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        JasperPrint jasperPrint = reportServices.jesperReportWastage(prm, conn);
+        conn.close();
+        byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=Wastage.pdf");
+        return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/report-delivery-order-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Mepampilkan report delivery order", response = Object.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    public ResponseEntity<byte[]> jesperReportDeliveryOrder(@RequestBody String param) throws SQLException, JRException, IOException {
+        Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
+        Gson gsn = new Gson();
+        Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        JasperPrint jasperPrint = reportServices.jesperReportDeliveryOrder(prm, conn);
+        conn.close();
+        byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=DeliveryOrder.pdf");
+        return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+    }
+
+    @RequestMapping(value = "/report-item-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Mepampilkan report item", response = Object.class)
     @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReport(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
@@ -209,7 +281,7 @@ public class ReportController {
         hashMap.put("flagStock1", " ");
         hashMap.put("flagStock2", "N");
         hashMap.put("flagStock3", "Y");
-        hashMap.put("query", " AND a.FLAG_MATERIAL = 'Y' AND a.FLAG_OTHERS = 'Y' AND a.FLAG_HALF_FINISH = 'Y' AND b.DESCRIPTION = 'Dry Good'");
+        hashMap.put("query", " AND a.FLAG_MATERIAL = 'Y' AND a.FLAG_OTHERS = 'Y' AND a.FLAG_HALF_FINISH = 'Y' AND b.DESCRIPTION = '" + prm.get("jenisGudang") + "'");
 
         ClassPathResource classPathResource = new ClassPathResource("report/item.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());

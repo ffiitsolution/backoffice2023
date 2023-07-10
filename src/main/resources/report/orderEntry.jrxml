@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="orderEntry" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="0793d68f-3216-428e-b721-e2ccbd5a3839">
-    <property name="ireport.zoom" value="1.2418426461183114"/>
+    <property name="ireport.zoom" value="1.5"/>
     <property name="ireport.x" value="0"/>
     <property name="ireport.y" value="0"/>
     <style name="table">
@@ -64,7 +64,7 @@ LEFT JOIN M_ITEM f ON e.ITEM_CODE = f.ITEM_CODE
 JOIN M_OUTLET g ON a.OUTLET_CODE = g.OUTLET_CODE
 WHERE a.ORDER_TYPE IN ($P{orderType1}, $P{orderType2}) AND a.ORDER_DATE BETWEEN $P{fromDate} AND $P{toDate} AND
 a.OUTLET_CODE = $P{outletCode}
-ORDER BY a.order_no,e.item_code asc]]>
+ORDER BY a.order_no, e.item_code asc]]>
     </queryString>
     <field name="NUM" class="java.math.BigDecimal"/>
     <field name="ORDER_NO" class="java.lang.String"/>
@@ -99,50 +99,50 @@ ORDER BY a.order_no,e.item_code asc]]>
         <groupExpression><![CDATA[$F{ORDER_NO}]]></groupExpression>
         <groupHeader>
             <band height="18">
-                <textField>
+                <textField isBlankWhenNull="true">
                     <reportElement x="79" y="0" width="71" height="15" uuid="78e83d83-a172-4c2b-b637-def60bfa870c"/>
                     <textElement textAlignment="Center">
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{ORDER_NO}]]></textFieldExpression>
                 </textField>
-                <textField>
+                <textField isBlankWhenNull="true">
                     <reportElement x="30" y="0" width="50" height="15" uuid="f0a24677-3710-412b-88af-3606a27dc979"/>
                     <textElement textAlignment="Center">
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($F{ORDER_DATE})]]></textFieldExpression>
                 </textField>
-                <textField>
+                <textField isBlankWhenNull="true">
                     <reportElement x="149" y="0" width="53" height="15" uuid="e56c7cad-e8db-4d61-b1f7-da494cf14d2b"/>
                     <textElement textAlignment="Center">
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{ORDER_TYPE}]]></textFieldExpression>
                 </textField>
-                <textField>
+                <textField isBlankWhenNull="true">
                     <reportElement x="201" y="0" width="121" height="15" uuid="0f197fec-3ff1-466d-bcf6-dd4d271e21b6"/>
                     <textElement textAlignment="Center">
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{ORDER_KE}]]></textFieldExpression>
                 </textField>
-                <textField>
+                <textField isBlankWhenNull="true">
                     <reportElement x="321" y="0" width="183" height="15" uuid="95bdd124-1f07-4e6b-9edd-cdc477ae61c7"/>
                     <textElement textAlignment="Center">
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{REMARK}]]></textFieldExpression>
                 </textField>
-                <textField>
+                <textField isBlankWhenNull="true">
                     <reportElement x="504" y="0" width="50" height="15" uuid="b3d59d6b-4b86-4aef-a379-00996de0485d"/>
                     <textElement textAlignment="Center">
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{STATUS}]]></textFieldExpression>
                 </textField>
-                <textField>
-                    <reportElement x="0" y="0" width="31" height="11" uuid="b8044ed9-40e0-4ef0-9dd3-f6a48aaac18c"/>
+                <textField isBlankWhenNull="true">
+                    <reportElement x="0" y="0" width="31" height="15" uuid="b8044ed9-40e0-4ef0-9dd3-f6a48aaac18c"/>
                     <textElement textAlignment="Center">
                         <font size="8"/>
                     </textElement>
@@ -212,42 +212,42 @@ ORDER BY a.order_no,e.item_code asc]]>
         <groupHeader>
             <band height="15">
                 <printWhenExpression><![CDATA[$P{detail}.equals(1) && (!$F{ITEM_CODE}.equals( null ))]]></printWhenExpression>
-                <textField>
+                <textField isBlankWhenNull="true">
                     <reportElement x="68" y="0" width="50" height="15" uuid="2bdac15f-193d-47ff-8b1a-46bc093c7917"/>
                     <textElement textAlignment="Center">
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{ITEM_CODE}]]></textFieldExpression>
                 </textField>
-                <textField>
+                <textField isBlankWhenNull="true">
                     <reportElement x="117" y="0" width="161" height="15" uuid="a4ed89a3-7069-4619-a40c-bb3eb3cc3a70"/>
                     <textElement textAlignment="Center">
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
                 </textField>
-                <textField>
+                <textField isBlankWhenNull="true">
                     <reportElement x="277" y="0" width="70" height="15" uuid="0c6b0718-6732-45d7-b13d-f3e5f77cb513"/>
                     <textElement textAlignment="Center">
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[new DecimalFormat("#,##0.0000").format($F{QTY_1}) + " " + $F{CD_UOM_1}]]></textFieldExpression>
                 </textField>
-                <textField>
+                <textField isBlankWhenNull="true">
                     <reportElement x="346" y="0" width="70" height="15" uuid="2e99f7da-2f82-4351-8c8c-7570488abc67"/>
                     <textElement textAlignment="Center">
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[new DecimalFormat("#,##0.0000").format($F{QTY_2})+ " " + $F{CD_UOM_2}]]></textFieldExpression>
                 </textField>
-                <textField>
+                <textField isBlankWhenNull="true">
                     <reportElement x="415" y="0" width="70" height="15" uuid="9e725a5c-0cf3-4dfc-9b3f-f531d6b68bc3"/>
                     <textElement textAlignment="Center">
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[new DecimalFormat("#,##0.0000").format($F{TOTAL_QTY_STOCK}) + " " + $F{UOM_STOCK}]]></textFieldExpression>
                 </textField>
-                <textField>
+                <textField isBlankWhenNull="true">
                     <reportElement x="484" y="0" width="70" height="15" uuid="b076d308-4de8-49f1-92b2-8ebaa3383a95"/>
                     <textElement textAlignment="Center">
                         <font size="8"/>
@@ -332,7 +332,7 @@ ORDER BY a.order_no,e.item_code asc]]>
                 <text><![CDATA[Periode     : ]]></text>
             </staticText>
             <textField>
-                <reportElement x="49" y="50" width="109" height="11" uuid="5be419b4-a67d-4897-b508-fd9a8fe3ec12"/>
+                <reportElement x="49" y="50" width="388" height="11" uuid="5be419b4-a67d-4897-b508-fd9a8fe3ec12"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>

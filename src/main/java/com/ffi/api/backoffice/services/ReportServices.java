@@ -51,9 +51,26 @@ public class ReportServices {
         dao.insertLogReport(param);
     }
     ///////////////////////END//////////////////////////////
+    ///////////////NEW METHOD REPORT receive BY PASCA 10 July 2023////
 
     public JasperPrint jesperReportOrderEntry(Map<String, Object> param, Connection connection) throws JRException, SQLException, IOException {
         return dao.jesperReportOrderEntry(param, connection);
+    }
+
+    public JasperPrint jesperReportReceiving(Map<String, Object> param, Connection connection) throws JRException, SQLException, IOException {
+        return dao.jasperReportReceiving(param, connection);
+    }
+
+    public JasperPrint jesperReportReturnOrder(Map<String, Object> param, Connection connection) throws JRException, SQLException, IOException {
+        return dao.jasperReportReturnOrder(param, connection);
+    }
+
+    public JasperPrint jesperReportWastage(Map<String, Object> param, Connection connection) throws JRException, SQLException, IOException {
+        return dao.jasperReportWastage(param, connection);
+    }
+
+    public JasperPrint jesperReportDeliveryOrder(Map<String, Object> param, Connection connection) throws JRException, SQLException, IOException {
+        return dao.jasperReportDeliveryOrder(param, connection);
     }
 
     public JasperPrint jasperReportItem(Map<String, Object> param, Connection connection) {

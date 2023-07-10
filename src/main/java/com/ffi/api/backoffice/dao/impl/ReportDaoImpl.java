@@ -533,6 +533,7 @@ public class ReportDaoImpl implements ReportDao {
         jdbcTemplate.update(query, param);
     }
     /////////////////////////////////DONE///////////////////////////////////////
+    ///////////////NEW METHOD REPORT BY PASCA 10 July 2023////
 
     @Override
     public JasperPrint jesperReportOrderEntry(Map<String, Object> param, Connection connection) throws SQLException, JRException, IOException {
@@ -568,10 +569,166 @@ public class ReportDaoImpl implements ReportDao {
     }
 
     @Override
-    public JasperPrint jesperReportItem(Map<String, Object> param, Connection connection) {
-        System.out.println(param);
-        System.exit(0);
+    public JasperPrint jasperReportReceiving(Map<String, Object> param, Connection connection) throws IOException, JRException {
         Map<String, Object> hashMap = new HashMap<String, Object>();
+
+        hashMap.put("city", "X_" + param.get("city"));
+        hashMap.put("fromDate", param.get("fromDate"));
+        hashMap.put("toDate", param.get("toDate"));
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("user", param.get("user"));
+        if (param.get("detail").equals(1.0)) {
+            hashMap.put("detail", 1);
+        } else {
+            hashMap.put("detail", 0);
+        }
+
+        ClassPathResource classPathResource = new ClassPathResource("report/receiving.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
+
+    @Override
+    public JasperPrint jasperReportReturnOrder(Map<String, Object> param, Connection connection) throws IOException, JRException {
+        Map<String, Object> hashMap = new HashMap<String, Object>();
+
+        hashMap.put("city", "X_" + param.get("city"));
+        hashMap.put("fromDate", param.get("fromDate"));
+        hashMap.put("toDate", param.get("toDate"));
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("user", param.get("user"));
+        if (param.get("detail").equals(1.0)) {
+            hashMap.put("detail", 1);
+        } else {
+            hashMap.put("detail", 0);
+        }
+
+        if (param.get("typeReturn").equals("ALL")) {
+            hashMap.put("typeReturn", "ALL");
+            hashMap.put("typeReturn1", "0");
+            hashMap.put("typeReturn2", "1");
+        } else if (param.get("typeReturn").equals("Supplier")) {
+            hashMap.put("typeReturn", "Supplier");
+            hashMap.put("typeReturn1", "0");
+            hashMap.put("typeReturn2", "0");
+        } else if (param.get("typeReturn").equals("Gudang")) {
+            hashMap.put("typeReturn", "Gudang");
+            hashMap.put("typeReturn1", "1");
+            hashMap.put("typeReturn2", "1");
+        }
+
+        ClassPathResource classPathResource = new ClassPathResource("report/returnOrder.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
+
+    @Override
+    public JasperPrint jasperReportWastage(Map<String, Object> param, Connection connection) throws IOException, JRException {
+        Map<String, Object> hashMap = new HashMap<String, Object>();
+
+        hashMap.put("city", "X_" + param.get("city"));
+        hashMap.put("fromDate", param.get("fromDate"));
+        hashMap.put("toDate", param.get("toDate"));
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("user", param.get("user"));
+        if (param.get("detail").equals(1.0)) {
+            hashMap.put("detail", 1);
+        } else {
+            hashMap.put("detail", 0);
+        }
+
+        if (param.get("typeTransaksi").equals("ALL")) {
+            hashMap.put("typeTransaksi", "ALL");
+            hashMap.put("typeTrans1", "W");
+            hashMap.put("typeTrans2", "L");
+        } else if (param.get("typeTransaksi").equals("Wastage")) {
+            hashMap.put("typeTransaksi", "Wastage");
+            hashMap.put("typeTrans1", "W");
+            hashMap.put("typeTrans2", "W");
+        } else if (param.get("typeTransaksi").equals("Left Over")) {
+            hashMap.put("typeTransaksi", "Left Over");
+            hashMap.put("typeTrans1", "L");
+            hashMap.put("typeTrans2", "L");
+        }
+
+        ClassPathResource classPathResource = new ClassPathResource("report/wastage.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
+
+    @Override
+    public JasperPrint jasperReportDeliveryOrder(Map<String, Object> param, Connection connection) throws IOException, JRException {
+        Map<String, Object> hashMap = new HashMap<String, Object>();
+
+        hashMap.put("city", "X_" + param.get("city"));
+        hashMap.put("fromDate", param.get("fromDate"));
+        hashMap.put("toDate", param.get("toDate"));
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("user", param.get("user"));
+        if (param.get("detail").equals(1.0)) {
+            hashMap.put("detail", 1);
+        } else {
+            hashMap.put("detail", 0);
+        }
+
+        ClassPathResource classPathResource = new ClassPathResource("report/DeliveryOrder.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
+
+    @Override
+    public JasperPrint jesperReportItem(Map<String, Object> param, Connection connection) {
+        Map<String, Object> hashMap = new HashMap<String, Object>();
+
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("user", param.get("user"));
+        if (param.get("status").equals("Semua")) {
+            hashMap.put("status", "Semua");
+            hashMap.put("status1", "I");
+            hashMap.put("status2", "A");
+        } else if (param.get("status").equals("Active")) {
+            hashMap.put("status", "Active");
+            hashMap.put("status1", "A");
+            hashMap.put("status2", "I");
+        } else if (param.get("status").equals("Non Active")) {
+            hashMap.put("status", "Non Active");
+            hashMap.put("status1", "I");
+            hashMap.put("status2", "I");
+        }
+
+        if (param.get("jenisGudang").equals("Semua")) {
+            hashMap.put("jenisgudang", param.get("jenisgudang"));
+        } else {
+            hashMap.put("jenisGudang", param.get("jenisGudang"));
+            hashMap.put("query", " AND b.DESCRIPTION = '" + param.get("jenisGudang") + "'");
+        }
+
+        if (param.get("typeStock").equals("Semua")) {
+            hashMap.put("typeStock", "Semua");
+            hashMap.put("flagStock1", " ");
+            hashMap.put("flagStock2", "N");
+            hashMap.put("flagStock3", "Y");
+        } else if (param.get("typeStock").equals("Stock")) {
+            hashMap.put("typeStock", "Stock");
+            hashMap.put("flagStock1", "Y");
+            hashMap.put("flagStock2", "Y");
+            hashMap.put("flagStock3", "Y");
+        } else if (param.get("typeStock").equals("Non Stock")) {
+            hashMap.put("typeStock", "Non Stock");
+            hashMap.put("flagStock1", " ");
+            hashMap.put("flagStock2", "N");
+            hashMap.put("flagStock3", "N");
+        }
+
+        if (param.containsKey("bahanBaku") && param.get("jenisGudang").equals("Semua")) {
+            hashMap.put("query", " AND a.FLAG_MATERIAL = 'Y'");
+        } else if (param.containsKey("bahanBaku") && !param.get("jenisGudang").equals("Semua")) {
+            hashMap.put("query", " AND a.FLAG_MATERIAL = 'Y' AND b.DESCRIPTION = '" + param.get("jenisGudang") + "'");
+        } else if (param.containsKey("bahanBaku") && param.containsKey("itemJual") && param.get("jenisGudang").equals("Semua")) {
+            hashMap.put("query", " AND a.FLAG_MATERIAL = 'Y' AND a.FLAG_FINISHED_GOOD = 'Y'");
+        } else if (param.containsKey("bahanBaku") && param.containsKey("itemJual") && !param.get("jenisGudang").equals("Semua")) {
+            hashMap.put("query", " AND a.FLAG_MATERIAL = 'Y' AND a.FLAG_FINISHED_GOOD = 'Y' AND b.DESCRIPTION = '" + param.get("jenisGudang") + "'");
+        }
 
         return null;
     }
