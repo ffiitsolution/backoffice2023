@@ -225,11 +225,13 @@ public class ViewServices {
     public List<Map<String, Object>> listGlobal(Map<String, String> ref) {
         return viewDao.listGlobal(ref);
     }
+
     ///////////////done 
     ///////////////NEW METHOD LIST COND AND DATA GLOBAL BY LANI 4 APRIL 2023////
     public List<Map<String, Object>> listGlobalCond(Map<String, String> ref) {
         return viewDao.listGlobalCond(ref);
     }
+
     public List<Map<String, Object>> listMasterGlobal(Map<String, String> ref) {
         return viewDao.listMasterGlobal(ref);
     }
@@ -239,64 +241,70 @@ public class ViewServices {
         return viewDao.listOrderHeader(ref);
     }
     ///////////////done 
-        ///////////////NEW METHOD LIST ORDER HEADER BY DONA 18 APRIL 2023////
+    ///////////////NEW METHOD LIST ORDER HEADER BY DONA 18 APRIL 2023////
     public List<Map<String, Object>> listOrderHeaderAll(Map<String, String> ref) {
         return viewDao.listOrderHeaderAll(ref);
     }
     ///////////////done 
-            ///////////////NEW METHOD LIST ORDER HEADER BY DONA 27 APRIL 2023////
+    ///////////////NEW METHOD LIST ORDER HEADER BY DONA 27 APRIL 2023////
     public List<Map<String, Object>> listOrderDetail(Map<String, String> ref) {
         return viewDao.listOrderDetail(ref);
     }
     ///////////////done 
-                ///////////////NEW METHOD LIST COUNTER BY DONA 2 MEI 2023////
+    ///////////////NEW METHOD LIST COUNTER BY DONA 2 MEI 2023////
     public List<Map<String, Object>> listCounter(Map<String, String> ref) {
         return viewDao.listCounter(ref);
     }
     ///////////////done 
-    
+
     public List<Map<String, Object>> ViewOrderDetail(Map<String, String> ref) {
         return viewDao.ViewOrderDetail(ref);
     }
-    
+
     public List<Map<String, Object>> listItemDetailOpname(Map<String, String> ref) {
         return viewDao.listItemDetailOpname(ref);
     }
-    
+
     public List<Map<String, Object>> listEditItemDetailOpname(Map<String, String> ref) {
         return viewDao.listEditItemDetailOpname(ref);
     }
-    
+
     public List<Map<String, Object>> listHeaderOpname(Map<String, String> ref) {
         return viewDao.listHeaderOpname(ref);
     }
-    
+
     public String cekOpname(String outletCode, String month) {
-        return viewDao.cekOpname( outletCode,  month);
+        return viewDao.cekOpname(outletCode, month);
     }
-    
+
     public String getCity(String outletCode) {
-        return viewDao.getCity( outletCode);
+        return viewDao.getCity(outletCode);
     }
-    
+
     public String cekItem() {
         return viewDao.cekItem();
     }
-    
+
     public String cekItemHq() {
         return viewDao.cekItemHq();
     }
-    
+
     ///////////////////////////////Add Receiving by KP (06-06-2023)///////////////////////////////
     public List<Map<String, Object>> listReceivingHeader(Map<String, String> ref) {
         return viewDao.listReceivingHeader(ref);
     }
-    
+
     public List<Map<String, Object>> listUnfinishedOrderHeader(Map<String, String> ref) {
         return viewDao.listUnfinishedOrderHeader(ref);
     }
-    
+
     public List<Map<String, Object>> listReceivingDetail(Map<String, String> ref) {
         return viewDao.listReceivingDetail(ref);
     }
+
+    ///////////////NEW METHOD LIST ORDER HEADER BY DONA 12 jul 2023////
+    public List<Map<String, Object>> listOrderDetailOutlet(Map<String, String> ref) {
+        return viewDao.listOrderDetailOutlet(ref);
+    }
+    ///////////////done 
 }

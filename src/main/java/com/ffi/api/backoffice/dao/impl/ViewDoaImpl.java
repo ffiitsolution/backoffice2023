@@ -154,6 +154,7 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
+
     ///////////////new update sql from dona 12-07-2023////////////////////////////
     @Override
     public List<Map<String, Object>> listMasterItem(Map<String, String> balance) {
@@ -1701,11 +1702,11 @@ public class ViewDoaImpl implements ViewDao {
             System.out.println("trans =" + result);
             map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
             }.getType());
-            
+
             JsonObject job = gson.fromJson(result, JsonObject.class);
             JsonElement elem = job.get("data");
             //JsonArray  a =  new JsonArray(elem.getAsInt());
- 
+
             //JSONArray arr = (JSONArray) job.get("data");
             total = elem.getAsJsonArray().getAsJsonObject().getAsJsonPrimitive("total").getAsString();
             //total = elem.getAsJsonObject().getAsJsonPrimitive("total").getAsString();
@@ -1715,40 +1716,40 @@ public class ViewDoaImpl implements ViewDao {
         }
         return total;
     }
-    
+
     ///////////////////////////////Add Receiving by KP (06-06-2023)///////////////////////////////
     @Override
     public List<Map<String, Object>> listReceivingHeader(Map<String, String> ref) {
-        String qry = "select " +
-                    "rc.recv_no, " +
-                    "rc.recv_date, " +
-                    "rc.order_no, " +
-                    "'Pembelian ' || (" +
-                    "    case when length(ord.cd_supplier) = 4 then 'Outlet ' || mo.outlet_name" +
-                    "    when length(ord.cd_supplier) = 5 then mg.description" +
-                    "    else 'Supplier ' || sp.supplier_name end" +
-                    ") remark," +
-                    "case when hk.status_kirim = 'S' and hk.status_terima = 'R' then 'Sudah' else ' ' end as upd_online, " +
-                    "rc.no_of_print, " +
-                    "case when rc.status = '1' then 'CLOSE' when rc.status = '0' then 'OPEN' else 'UNKNOWN' end as status " +
-                    "from t_recv_header rc " +
-                    "left join t_order_header ord on ord.order_no = rc.order_no " +
-                    "left join m_supplier sp on sp.cd_supplier = ord.cd_supplier " +
-                    "left join m_global mg on mg.cond = 'X_JKT' and mg.code = ord.cd_supplier " +
-                    "left join m_outlet mo on mo.outlet_code = ord.cd_supplier " +
-                    "left join hist_kirim hk on hk.no_order = ord.order_no " +
-                    "where rc.recv_date between to_date(:dateStart, 'dd-mm-yyyy') and to_date(:dateEnd, 'dd-mm-yyyy') ";
-                    //"and length(ord.cd_supplier) = 5 " +
-                    //"order by rc.recv_date ";
+        String qry = "select "
+                + "rc.recv_no, "
+                + "rc.recv_date, "
+                + "rc.order_no, "
+                + "'Pembelian ' || ("
+                + "    case when length(ord.cd_supplier) = 4 then 'Outlet ' || mo.outlet_name"
+                + "    when length(ord.cd_supplier) = 5 then mg.description"
+                + "    else 'Supplier ' || sp.supplier_name end"
+                + ") remark,"
+                + "case when hk.status_kirim = 'S' and hk.status_terima = 'R' then 'Sudah' else ' ' end as upd_online, "
+                + "rc.no_of_print, "
+                + "case when rc.status = '1' then 'CLOSE' when rc.status = '0' then 'OPEN' else 'UNKNOWN' end as status "
+                + "from t_recv_header rc "
+                + "left join t_order_header ord on ord.order_no = rc.order_no "
+                + "left join m_supplier sp on sp.cd_supplier = ord.cd_supplier "
+                + "left join m_global mg on mg.cond = 'X_JKT' and mg.code = ord.cd_supplier "
+                + "left join m_outlet mo on mo.outlet_code = ord.cd_supplier "
+                + "left join hist_kirim hk on hk.no_order = ord.order_no "
+                + "where rc.recv_date between to_date(:dateStart, 'dd-mm-yyyy') and to_date(:dateEnd, 'dd-mm-yyyy') ";
+        //"and length(ord.cd_supplier) = 5 " +
+        //"order by rc.recv_date ";
         Map prm = new HashMap();
         prm.put("dateStart", ref.get("dateStart"));
         prm.put("dateEnd", ref.get("dateEnd"));
         String filter = ref.get("filter");
-        if(filter.equalsIgnoreCase("1")) { //Outlet
+        if (filter.equalsIgnoreCase("1")) { //Outlet
             qry += "and length(ord.cd_supplier) = 4 ";
-        } else if(filter.equalsIgnoreCase("2")){ //Gudang
+        } else if (filter.equalsIgnoreCase("2")) { //Gudang
             qry += "and length(ord.cd_supplier) = 5 ";
-        } else if(filter.equalsIgnoreCase("3")){ //Supplier
+        } else if (filter.equalsIgnoreCase("3")) { //Supplier
             qry += "and length(ord.cd_supplier) = 10 ";
         }
         qry += "order by rc.recv_date ";
@@ -1769,7 +1770,7 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
-    
+
     @Override
     public List<Map<String, Object>> listUnfinishedOrderHeader(Map<String, String> ref) {
         String qry = "SELECT ord.order_no, ord.order_date, "
@@ -1803,7 +1804,7 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
-    
+
     @Override
     public List<Map<String, Object>> listReceivingDetail(Map<String, String> ref) {
         String qry = "select rd.recv_no, rd.order_no, rd.item_code,  mi.item_description, od.qty_1 ord_qty_1, rd.qty_1 rcv_qty_1, "
@@ -1836,4 +1837,53 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
+
+    ///////////////NEW METHOD LIST ORDER HEADER BY DONA 12 JUL 2023////
+    @Override
+    public List<Map<String, Object>> listOrderDetailOutlet(Map<String, String> balance) {
+        String qry = "                SELECT ITEM_CODE,\n"
+                + "                    ITEM_DESCRIPTION,\n"
+                + "                    JUMLAH_SATUAN_BESAR,\n"
+                + "                    SATUAN_BESAR,\n"
+                + "                    JUMLAH_SATUAN_KECIL,\n"
+                + "                    UOM_PURCHASE,\n"
+                + "                    (CONV_WAREHOUSE * CONV_STOCK) CONV_WAREHOUSE,\n"
+                + "                    (JUMLAH_SATUAN_BESAR * CONV_WAREHOUSE) + JUMLAH_SATUAN_KECIL TOTAL_JUMLAH,\n"
+                + "                    UOM_STOCK AS TOTAL\n"
+                + "                FROM (\n"
+                + "                SELECT \n"
+                + "                    ITEM_CODE,\n"
+                + "                    ITEM_DESCRIPTION,\n"
+                + "                    0 AS JUMLAH_SATUAN_BESAR,\n"
+                + "                    UOM_WAREHOUSE AS SATUAN_BESAR,\n"
+                + "                    0 AS JUMLAH_SATUAN_KECIL,\n"
+                + "                    UOM_PURCHASE,UOM_STOCK,\n"
+                + "                    CONV_WAREHOUSE,CONV_STOCK,\n"
+                + "                    0 TOTAL_JUMLAH,\n"
+                + "                    UOM_PURCHASE AS TOTAL\n"
+                + "                FROM M_ITEM order by item_code asc)";
+        Map prm = new HashMap();
+        prm.put("cdWarehouse", balance.get("cdWarehouse"));
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("itemCode", rs.getString("ITEM_CODE"));
+                rt.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
+                rt.put("jumlahSatuanBesar", rs.getString("JUMLAH_SATUAN_BESAR"));
+                rt.put("satuanBesar", rs.getString("SATUAN_BESAR"));
+                rt.put("jumlahSatuanKecil", rs.getString("JUMLAH_SATUAN_KECIL"));
+                rt.put("uomPurchase", rs.getString("UOM_PURCHASE"));
+                rt.put("convWarehouse", rs.getString("CONV_WAREHOUSE"));
+                rt.put("totalJumlah", rs.getString("TOTAL_JUMLAH"));
+                rt.put("total", rs.getString("TOTAL"));
+
+                return rt;
+            }
+        });
+        return list;
+    }
+
+    ///////////////////done
 }

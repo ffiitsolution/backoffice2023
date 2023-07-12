@@ -127,37 +127,41 @@ public interface ViewDao {
     ///////////////NEW METHOD LIST ORDER HEADER BY DONA 14 APRIL 2023////
     List<Map<String, Object>> listOrderHeader(Map<String, String> ref);
     //////////DONE
-    
+
     ///////////////NEW METHOD LIST ORDER HEADER BY DONA 18 APRIL 2023////
     List<Map<String, Object>> listOrderHeaderAll(Map<String, String> ref);
     //////////DONE
-        ///////////////NEW METHOD LIST ORDER HEADER BY DONA 27 APRIL 2023////
+    ///////////////NEW METHOD LIST ORDER HEADER BY DONA 27 APRIL 2023////
     List<Map<String, Object>> listOrderDetail(Map<String, String> ref);
     //////////DONE
-            ///////////////NEW METHOD LIST ORDER HEADER BY DONA 2 MEI 2023////
+    ///////////////NEW METHOD LIST ORDER HEADER BY DONA 2 MEI 2023////
     List<Map<String, Object>> listCounter(Map<String, String> ref);
     //////////DONE
-    
+
     List<Map<String, Object>> ViewOrderDetail(Map<String, String> ref);
-    
+
     List<Map<String, Object>> listItemDetailOpname(Map<String, String> ref);
-    
+
     List<Map<String, Object>> listEditItemDetailOpname(Map<String, String> ref);
-    
+
     List<Map<String, Object>> listHeaderOpname(Map<String, String> ref);
-    
+
     public String cekOpname(String outletCode, String month);
-    
+
     public String cekItem();
-    
+
     public String cekItemHq();
-    
+
     public String getCity(String outletCode);
-    
+
     ///////////////////////////////Add Receiving by KP (06-06-2023)///////////////////////////////
     List<Map<String, Object>> listReceivingHeader(Map<String, String> ref);
-    
+
     List<Map<String, Object>> listUnfinishedOrderHeader(Map<String, String> ref);
-    
+
     List<Map<String, Object>> listReceivingDetail(Map<String, String> ref);
+
+    ///////////////NEW METHOD LIST ORDER HEADER BY DONA 12 JUL 2023////
+    List<Map<String, Object>> listOrderDetailOutlet(Map<String, String> ref);
+    //////////DONE
 }
