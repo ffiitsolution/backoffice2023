@@ -154,10 +154,10 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
-
+    ///////////////new update sql from dona 12-07-2023////////////////////////////
     @Override
     public List<Map<String, Object>> listMasterItem(Map<String, String> balance) {
-        String qry = "select ITEM_CODE||' -'||ITEM_DESCRIPTION as name,item_description, item_code from m_item where Status='A' and Flag_Finished_Good='N'";
+        String qry = "select ITEM_CODE||' -'||ITEM_DESCRIPTION as name,item_description, item_code from m_item where Status='A' and Flag_Finished_Good='N' order by item_code asc";
         Map prm = new HashMap();
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
@@ -172,6 +172,7 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
+    /////////////////done////////////////
 
     @Override
     public List<Map<String, Object>> listItemSupplier(Map<String, String> balance) {
