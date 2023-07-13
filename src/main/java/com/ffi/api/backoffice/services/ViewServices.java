@@ -307,4 +307,10 @@ public class ViewServices {
         return viewDao.listOrderDetailOutlet(ref);
     }
     ///////////////done 
+    
+        ///////////////NEW METHOD LIST ORDER HEADER SUPPLIER BY DONA 13 jul 2023////
+    public List<Map<String, Object>> listOrderDetailSupplier(Map<String, String> ref) {
+        return viewDao.listOrderDetailSupplier(ref);
+    }
+    ///////////////done 
 }

@@ -1408,8 +1408,8 @@ public class IndexController {
         return res;
     }
     /////////////////////////////////DONE///////////////////////////////////////
-    
-        ///////////////NEW METHOD LIST ORDER HEADER ALL BY DONA 12 Juli 2023////
+
+    ///////////////NEW METHOD LIST ORDER HEADER ALL BY DONA 12 Juli 2023////
     @RequestMapping(value = "/list-order-detail-outlet", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk list order detail outlet", response = Object.class)
     @ApiResponses(value = {
@@ -1710,7 +1710,7 @@ public class IndexController {
         ResponseMessage rm = new ResponseMessage();
 
         String totalHq = viewServices.cekItemHq();
-        
+
         String cekItem = viewServices.cekItem();
         int b = Integer.valueOf(cekItem);
 
@@ -1729,7 +1729,7 @@ public class IndexController {
         rm.setItem(list);
         return rm;
     }
-    
+
     @RequestMapping(value = "/send-data-to-warehouse", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk insert transaksi opname header", response = Object.class)
     @ApiResponses(value = {
@@ -1755,7 +1755,7 @@ public class IndexController {
         rm.setItem(list);
         return rm;
     }
-    
+
     ///////////////////////////////Add Receiving by KP (06-06-2023)///////////////////////////////
     @RequestMapping(value = "/view-rcv-header", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view list header receiving", response = Object.class)
@@ -1785,7 +1785,7 @@ public class IndexController {
         rm.setData(list);
         return rm;
     }
-    
+
     @RequestMapping(value = "/view-ord-header", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view list header order (ditampilkan untuk menu Receiving)", response = Object.class)
     @ApiResponses(value = {
@@ -1814,7 +1814,7 @@ public class IndexController {
         rm.setData(list);
         return rm;
     }
-    
+
     @RequestMapping(value = "/view-rcv-detail", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view list header order", response = Object.class)
     @ApiResponses(value = {
@@ -1843,7 +1843,7 @@ public class IndexController {
         rm.setData(list);
         return rm;
     }
-    
+
     //Add Insert to Receiving Header & Detail by KP (07-06-2023)
     @RequestMapping(value = "/insert-rcv-headetail", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view list header order", response = Object.class)
@@ -1872,4 +1872,22 @@ public class IndexController {
         rm.setItem(list);
         return rm;
     }
+
+    ///////////////NEW METHOD LIST ORDER DETAIL SUPPLIER BY DONA 13 JUL 2023////
+    @RequestMapping(value = "/list-order-detail", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk list order detail", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listOrderDetailSupplier(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        Response res = new Response();
+        res.setData(viewServices.listOrderDetailSupplier(balance));
+        return res;
+    }
+    /////////////////////////////////DONE///////////////////////////////////////
 }

@@ -1891,4 +1891,57 @@ public class ViewDoaImpl implements ViewDao {
     }
 
     ///////////////////done
+    ///////////////NEW METHOD LIST ORDER HEADER SUPPLIER BY DONA 13 JUL 2023////
+    @Override
+    public List<Map<String, Object>> listOrderDetailSupplier(Map<String, String> balance) {
+        String qry = "SELECT * FROM ( "
+                + "SELECT  "
+                + "           ITEM_CODE, "
+                + "           ITEM_DESCRIPTION, "
+                + "           JUMLAH_SATUAN_BESAR, "
+                + "           SATUAN_BESAR, "
+                + "           JUMLAH_SATUAN_KECIL, "
+                + "           UOM_PURCHASE, "
+                + "           (CONV_WAREHOUSE * CONV_STOCK) CONV_WAREHOUSE, "
+                + "           (JUMLAH_SATUAN_BESAR * CONV_WAREHOUSE) + JUMLAH_SATUAN_KECIL TOTAL_JUMLAH, "
+                + "           UOM_STOCK AS TOTAL "
+                + "       FROM ( "
+                + "     SELECT  "
+                + "           ITEM_CODE, "
+                + "           ITEM_DESCRIPTION, "
+                + "           0 AS JUMLAH_SATUAN_BESAR, "
+                + "           UOM_WAREHOUSE AS SATUAN_BESAR, "
+                + "           0 AS JUMLAH_SATUAN_KECIL, "
+                + "           UOM_PURCHASE,UOM_STOCK, "
+                + "           CONV_WAREHOUSE,CONV_STOCK, "
+                + "           0 TOTAL_JUMLAH, "
+                + "           UOM_PURCHASE AS TOTAL "
+                + "        FROM M_ITEM)) A "
+                + "                   LEFT JOIN M_ITEM_SUPPLIER S "
+                + "                   ON A.ITEM_CODE=S.ITEM_CODE "
+                + "                   WHERE S.CD_SUPPLIER=:cdSupplier";
+        Map prm = new HashMap();
+        prm.put("cdSupplier", balance.get("cdSupplier"));
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("itemCode", rs.getString("ITEM_CODE"));
+                rt.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
+                rt.put("jumlahSatuanBesar", rs.getString("JUMLAH_SATUAN_BESAR"));
+                rt.put("satuanBesar", rs.getString("SATUAN_BESAR"));
+                rt.put("jumlahSatuanKecil", rs.getString("JUMLAH_SATUAN_KECIL"));
+                rt.put("uomPurchase", rs.getString("UOM_PURCHASE"));
+                rt.put("convWarehouse", rs.getString("CONV_WAREHOUSE"));
+                rt.put("totalJumlah", rs.getString("TOTAL_JUMLAH"));
+                rt.put("total", rs.getString("TOTAL"));
+
+                return rt;
+            }
+        });
+        return list;
+    }
+
+    ///////////////////done
 }
