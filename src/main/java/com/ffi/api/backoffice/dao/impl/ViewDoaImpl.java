@@ -1337,12 +1337,17 @@ public class ViewDoaImpl implements ViewDao {
         } else {
             where = "and ORDER_DATE between TO_CHAR(CURRENT_DATE-7,'dd-MON-yy') and TO_CHAR(CURRENT_DATE,'dd-MON-yy')";
         }
-        String qry = "SELECT H.*,G.DESCRIPTION NAMA_GUDANG FROM T_ORDER_HEADER H\n"
-                + "LEFT JOIN M_GLOBAL G ON G.CODE = H.CD_SUPPLIER AND G.COND = 'X_" + getCity + "'\n"
+        String qry = "SELECT H.*,"
+                + "case when G.DESCRIPTION is null then m.outlet_name else\n"
+                + "g.description end as NAMA_GUDANG FROM T_ORDER_HEADER H\n"
+                + "LEFT JOIN M_GLOBAL G ON G.CODE = H.CD_SUPPLIER AND G.COND = 'X_" + getCity + "' AND G.STATUS = 'A' "
+                + "left join m_outlet M\n"
+                + "on H.cd_supplier=m.outlet_code\n"
+                + "and m.status='A'\n"
                 + "WHERE H.STATUS LIKE :status \n"
                 + "AND H.ORDER_TYPE LIKE :orderType \n"
                 + "AND H.OUTLET_CODE = :outletCode \n"
-                + "AND G.STATUS = 'A' " + where + "";
+                + "" + where + "";
         Map prm = new HashMap();
         prm.put("status", "%" + balance.get("status") + "%");
         prm.put("orderType", "%" + balance.get("orderType") + "%");
