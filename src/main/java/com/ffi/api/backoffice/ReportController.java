@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -199,12 +200,16 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        JasperPrint jasperPrint = reportServices.jesperReportReceiving(prm, conn);
-        conn.close();
-        byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=ReceivingReport.pdf");
-        return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        Integer cekDataReport = viewServices.cekDataReport(prm);
+        if (cekDataReport > 0) {
+            JasperPrint jasperPrint = reportServices.jesperReportReceiving(prm, conn);
+            conn.close();
+            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "inline; filename=ReceivingReport.pdf");
+            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        } else
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
     }
 
     @CrossOrigin
@@ -270,26 +275,11 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        Map<String, Object> hashMap = new HashMap<String, Object>();
-        hashMap.put("outletCode", "0401");
-        hashMap.put("user", "ZTO");
-        hashMap.put("status", "Aktif");
-        hashMap.put("jenisGudang", "Dry Good");
-        hashMap.put("typeStock", "Semua");
-        hashMap.put("status1", "I");
-        hashMap.put("status2", "A");
-        hashMap.put("flagStock1", " ");
-        hashMap.put("flagStock2", "N");
-        hashMap.put("flagStock3", "Y");
-        hashMap.put("query", " AND a.FLAG_MATERIAL = 'Y' AND a.FLAG_OTHERS = 'Y' AND a.FLAG_HALF_FINISH = 'Y' AND b.DESCRIPTION = '" + prm.get("jenisGudang") + "'");
-
-        ClassPathResource classPathResource = new ClassPathResource("report/item.jrxml");
-        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
-        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, hashMap, conn);
+        JasperPrint jasperPrint = reportServices.jasperReportItem(prm, conn);
+        conn.close();
         byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=Report.pdf");
-        conn.close();
+        headers.add("Content-Disposition", "inline; filename=item.pdf");
         return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
     }
 

@@ -73,7 +73,7 @@ public class ReportServices {
         return dao.jasperReportDeliveryOrder(param, connection);
     }
 
-    public JasperPrint jasperReportItem(Map<String, Object> param, Connection connection) {
+    public JasperPrint jasperReportItem(Map<String, Object> param, Connection connection) throws JRException, IOException {
         return dao.jesperReportItem(param, connection);
     }
 }

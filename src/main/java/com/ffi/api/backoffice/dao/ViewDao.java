@@ -168,4 +168,6 @@ public interface ViewDao {
         ///////////////NEW METHOD LIST ORDER HEADER BY DONA 12 JUL 2023////
     List<Map<String, Object>> listOrderDetailSupplier(Map<String, String> ref);
     //////////DONE
+    ///////////////NEW METHOD CEK DATA REPORT BY PASCA 13 JUL 2023////
+    Integer cekDataReport(Map<String, Object> param);
 }

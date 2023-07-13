@@ -671,17 +671,18 @@ public class ReportDaoImpl implements ReportDao {
             hashMap.put("detail", 0);
         }
 
-        ClassPathResource classPathResource = new ClassPathResource("report/DeliveryOrder.jrxml");
+        ClassPathResource classPathResource = new ClassPathResource("report/deliveryOrder.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }
 
     @Override
-    public JasperPrint jesperReportItem(Map<String, Object> param, Connection connection) {
+    public JasperPrint jesperReportItem(Map<String, Object> param, Connection connection) throws IOException, JRException {
         Map<String, Object> hashMap = new HashMap<String, Object>();
 
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("user", param.get("user"));
+        hashMap.put("jenisGudang", param.get("jenisgudang"));
         if (param.get("status").equals("Semua")) {
             hashMap.put("status", "Semua");
             hashMap.put("status1", "I");
@@ -689,48 +690,59 @@ public class ReportDaoImpl implements ReportDao {
         } else if (param.get("status").equals("Active")) {
             hashMap.put("status", "Active");
             hashMap.put("status1", "A");
-            hashMap.put("status2", "I");
+            hashMap.put("status2", "A");
         } else if (param.get("status").equals("Non Active")) {
             hashMap.put("status", "Non Active");
             hashMap.put("status1", "I");
             hashMap.put("status2", "I");
         }
 
-        if (param.get("jenisGudang").equals("Semua")) {
-            hashMap.put("jenisgudang", param.get("jenisgudang"));
-        } else {
-            hashMap.put("jenisGudang", param.get("jenisGudang"));
-            hashMap.put("query", " AND b.DESCRIPTION = '" + param.get("jenisGudang") + "'");
-        }
-
-        if (param.get("typeStock").equals("Semua")) {
+        if (param.get("type").equals("Semua")) {
             hashMap.put("typeStock", "Semua");
             hashMap.put("flagStock1", " ");
             hashMap.put("flagStock2", "N");
             hashMap.put("flagStock3", "Y");
-        } else if (param.get("typeStock").equals("Stock")) {
+        } else if (param.get("type").equals("Stock")) {
             hashMap.put("typeStock", "Stock");
             hashMap.put("flagStock1", "Y");
             hashMap.put("flagStock2", "Y");
             hashMap.put("flagStock3", "Y");
-        } else if (param.get("typeStock").equals("Non Stock")) {
+        } else if (param.get("type").equals("Non Stock")) {
             hashMap.put("typeStock", "Non Stock");
             hashMap.put("flagStock1", " ");
             hashMap.put("flagStock2", "N");
             hashMap.put("flagStock3", "N");
         }
 
-        if (param.containsKey("bahanBaku") && param.get("jenisGudang").equals("Semua")) {
-            hashMap.put("query", " AND a.FLAG_MATERIAL = 'Y'");
-        } else if (param.containsKey("bahanBaku") && !param.get("jenisGudang").equals("Semua")) {
-            hashMap.put("query", " AND a.FLAG_MATERIAL = 'Y' AND b.DESCRIPTION = '" + param.get("jenisGudang") + "'");
-        } else if (param.containsKey("bahanBaku") && param.containsKey("itemJual") && param.get("jenisGudang").equals("Semua")) {
-            hashMap.put("query", " AND a.FLAG_MATERIAL = 'Y' AND a.FLAG_FINISHED_GOOD = 'Y'");
-        } else if (param.containsKey("bahanBaku") && param.containsKey("itemJual") && !param.get("jenisGudang").equals("Semua")) {
-            hashMap.put("query", " AND a.FLAG_MATERIAL = 'Y' AND a.FLAG_FINISHED_GOOD = 'Y' AND b.DESCRIPTION = '" + param.get("jenisGudang") + "'");
+        StringBuilder query = new StringBuilder();
+        if (!param.get("jenisGudang").equals("Semua"))
+            query.append(" AND b.DESCRIPTION = '").append(param.get("jenisGudang")).append("'");
+        if (param.containsKey("bahanBaku"))
+            query.append(" AND a.FLAG_MATERIAL = 'Y'");
+        if (param.containsKey("itemJual"))
+            query.append(" AND a.FLAG_FINISHED_GOOD = 'Y'");
+        if (param.containsKey("pembelian"))
+            query.append(" AND a.FLAG_OTHERS = 'Y'");
+        if (param.containsKey("produksi"))
+            query.append(" AND a.FLAG_HALF_FINISH = 'Y'");
+        if (param.containsKey("openMarket"))
+            query.append(" AND a.FLAG_OPEN_MARKET = 'Y'");
+        if (param.containsKey("canvasing"))
+            query.append(" AND a.FLAG_CANVASING = 'Y'");
+        if (param.containsKey("transferDo"))
+            query.append(" AND a.FLAG_TRANSFER_LOC = 'Y'");
+        if (param.containsKey("paket"))
+            query.append(" AND a.FLAG_PAKET = 'Y'");
+
+        if (!param.get("jenisGudang").equals("Semua") || param.containsKey("bahanBaku") || param.containsKey("itemJual")
+                || param.containsKey("pembelian") || param.containsKey("produksi") || param.containsKey("openMarket") ||
+                param.containsKey("canvasing") || param.containsKey("transferDo") || param.containsKey("paket")) {
+            hashMap.put("query", query.toString());
         }
 
-        return null;
+        ClassPathResource classPathResource = new ClassPathResource("report/item.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }
     /////////////////////////////////DONE///////////////////////////////////////
 

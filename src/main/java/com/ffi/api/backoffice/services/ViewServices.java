@@ -312,5 +312,9 @@ public class ViewServices {
     public List<Map<String, Object>> listOrderDetailSupplier(Map<String, String> ref) {
         return viewDao.listOrderDetailSupplier(ref);
     }
-    ///////////////done 
+    ///////////////done
+    ///////////////NEW METHOD CEK DATA REPORT BY PASCA 13 JUL 2023////
+    public Integer cekDataReport (Map<String, Object> param){
+        return viewDao.cekDataReport(param);
+    }
 }
