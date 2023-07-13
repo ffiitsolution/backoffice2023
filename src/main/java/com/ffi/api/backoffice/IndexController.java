@@ -1874,7 +1874,7 @@ public class IndexController {
     }
 
     ///////////////NEW METHOD LIST ORDER DETAIL SUPPLIER BY DONA 13 JUL 2023////
-    @RequestMapping(value = "/list-order-detail", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/list-order-detail-supplier", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk list order detail", response = Object.class)
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
