@@ -63,7 +63,7 @@ ORDER BY ITEM_CODE ASC]]>
         <band height="104" splitType="Stretch">
             <image>
                 <reportElement x="22" y="1" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="c4587009-5c6a-46d8-83b5-b4d79a81e2ff"/>
-                <imageExpression><![CDATA["C:\\Users\\LENOVO\\Pictures\\logoKfc.png"]]></imageExpression>
+                <imageExpression><![CDATA["logo/logoKfc.png"]]></imageExpression>
             </image>
             <staticText>
                 <reportElement x="81" y="0" width="112" height="11" uuid="6df5ebd3-46a4-4d78-b267-baca3bd5fb6b"/>
