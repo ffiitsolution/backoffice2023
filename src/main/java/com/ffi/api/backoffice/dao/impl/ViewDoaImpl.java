@@ -1942,13 +1942,135 @@ public class ViewDoaImpl implements ViewDao {
     ///////////////////done
     ///////////////NEW METHOD CEK DATA REPORT BY PASCA 13 JUL 2023////
     @Override
-    public Integer cekDataReport(Map<String, Object> param) {
-        String query = "SELECT COUNT(*) FROM T_RECV_HEADER a WHERE a.OUTLET_CODE = :outletCode AND a.RECV_DATE BETWEEN :fromDate AND :toDate";
-
+    public Integer cekDataReport(Map<String, Object> param, String name) {
+        String query = null;
         Map<String, Object> prm = new HashMap<>();
-        prm.put("outletCode", param.get("outletCode"));
-        prm.put("fromDate", param.get("fromDate"));
-        prm.put("toDate", param.get("toDate"));
+        if (name.equals("receiving")) {
+            query = "SELECT COUNT(*) FROM T_RECV_HEADER a WHERE a.OUTLET_CODE = :outletCode AND a.RECV_DATE BETWEEN " +
+                    ":fromDate AND :toDate";
+
+            prm.put("outletCode", param.get("outletCode"));
+            prm.put("fromDate", param.get("fromDate"));
+            prm.put("toDate", param.get("toDate"));
+
+        } else if (name.equals("orderEntry")) {
+            query = "SELECT COUNT(*) FROM T_ORDER_HEADER a WHERE a.ORDER_TYPE IN (:orderType1, :orderType2) " +
+                    "AND a.ORDER_DATE BETWEEN :fromDate AND :toDate AND a.OUTLET_CODE = :outletCode";
+
+            if (param.get("typeOrder").equals("Semua")) {
+                prm.put("orderType1", "0");
+                prm.put("orderType2", "1");
+            } else if (param.get("typeOrder").equals("Permintaan")) {
+                param.put("orderType1", "0");
+                prm.put("orderType2", "0");
+            } else if (param.get("typeOrder").equals("Pembelian")) {
+                param.put("orderType1", "1");
+                prm.put("orderType2", "1");
+            }
+            prm.put("fromDate", param.get("fromDate"));
+            prm.put("toDate", param.get("toDate"));
+            prm.put("outletCode", param.get("outletCode"));
+
+        } else if (name.equals("returnOrder")) {
+            query = "SELECT COUNT(*) FROM T_RETURN_HEADER a WHERE a.OUTLET_CODE =:outletCode AND a.TYPE_RETURN IN " +
+                    "(:typeReturn1, :typeReturn2) AND a.RETURN_DATE BETWEEN :fromDate AND :toDate";
+
+            if (param.get("typeReturn").equals("ALL")) {
+                prm.put("typeReturn1", "0");
+                prm.put("typeReturn2", "1");
+            } else if (param.get("typeReturn").equals("Supplier")) {
+                prm.put("typeReturn1", "0");
+                prm.put("typeReturn2", "0");
+            } else if (param.get("typeReturn").equals("Gudang")) {
+                prm.put("typeReturn1", "1");
+                prm.put("typeReturn2", "1");
+            }
+            prm.put("outletCode", param.get("outletCode"));
+            prm.put("fromDate", param.get("fromDate"));
+            prm.put("toDate", param.get("toDate"));
+
+        } else if (name.equals("wastage")) {
+            query = "SELECT COUNT(*) FROM T_WASTAGE_HEADER a WHERE a.OUTLET_CODE =:outletCode AND a.TYPE_TRANS IN " +
+                    "(:typeTrans1, :typeTrans2) AND a.WASTAGE_DATE BETWEEN :fromDate AND :toDate";
+
+            if (param.get("typeTransaksi").equals("ALL")) {
+                prm.put("typeTrans1", "W");
+                prm.put("typeTrans2", "L");
+            } else if (param.get("typeTransaksi").equals("Wastage")) {
+                prm.put("typeTrans1", "W");
+                prm.put("typeTrans2", "W");
+            } else if (param.get("typeTransaksi").equals("Left Over")) {
+                prm.put("typeTrans1", "L");
+                prm.put("typeTrans2", "L");
+            }
+
+            prm.put("outletCode", param.get("outletCode"));
+            prm.put("fromDate", param.get("fromDate"));
+            prm.put("toDate", param.get("toDate"));
+
+        } else if (name.equals("deliveryOrder")) {
+            query = "SELECT COUNT(*) FROM T_DEV_HEADER a WHERE a.OUTLET_CODE =:outletCode AND a.DELIVERY_DATE BETWEEN " +
+                    ":fromDate AND :toDate";
+
+            prm.put("outletCode", param.get("outletCode"));
+            prm.put("fromDate", param.get("fromDate"));
+            prm.put("toDate", param.get("toDate"));
+
+        } else if (name.equals("item")) {
+            StringBuilder queryBuilder = new StringBuilder();
+
+            if (param.get("status").equals("Semua")) {
+                prm.put("status1", "I");
+                prm.put("status2", "A");
+            } else if (param.get("status").equals("Active")) {
+                prm.put("status1", "A");
+                prm.put("status2", "A");
+            } else if (param.get("status").equals("Non Active")) {
+                prm.put("status1", "I");
+                prm.put("status2", "I");
+            }
+
+            if (param.get("type").equals("Semua")) {
+                prm.put("flagStock1", " ");
+                prm.put("flagStock2", "N");
+                prm.put("flagStock3", "Y");
+            } else if (param.get("type").equals("Stock")) {
+                prm.put("flagStock1", "Y");
+                prm.put("flagStock2", "Y");
+                prm.put("flagStock3", "Y");
+            } else if (param.get("type").equals("Non Stock")) {
+                prm.put("flagStock1", " ");
+                prm.put("flagStock2", "N");
+                prm.put("flagStock3", "N");
+            }
+
+            queryBuilder.append("SELECT COUNT(*) FROM M_ITEM a LEFT JOIN M_GLOBAL b ON a.CD_WAREHOUSE = " +
+                    "b.CODE AND b.COND ='WAREHOUSE' JOIN M_OUTLET c ON c.OUTLET_CODE = :outletCode WHERE a.STATUS IN" +
+                    " (:status1, :status2) AND a.FLAG_STOCK IN (:flagStock1, :flagStock2, :flagStock3)");
+
+            if (!param.get("jenisGudang").equals("Semua"))
+                queryBuilder.append(" AND b.DESCRIPTION = '").append(param.get("jenisGudang")).append("'");
+            if (param.containsKey("bahanBaku"))
+                queryBuilder.append(" AND a.FLAG_MATERIAL = 'Y'");
+            if (param.containsKey("itemJual"))
+                queryBuilder.append(" AND a.FLAG_FINISHED_GOOD = 'Y'");
+            if (param.containsKey("pembelian"))
+                queryBuilder.append(" AND a.FLAG_OTHERS = 'Y'");
+            if (param.containsKey("produksi"))
+                queryBuilder.append(" AND a.FLAG_HALF_FINISH = 'Y'");
+            if (param.containsKey("openMarket"))
+                queryBuilder.append(" AND a.FLAG_OPEN_MARKET = 'Y'");
+            if (param.containsKey("canvasing"))
+                queryBuilder.append(" AND a.FLAG_CANVASING = 'Y'");
+            if (param.containsKey("transferDo"))
+                queryBuilder.append(" AND a.FLAG_TRANSFER_LOC = 'Y'");
+            if (param.containsKey("paket"))
+                queryBuilder.append(" AND a.FLAG_PAKET = 'Y'");
+
+            query = queryBuilder.toString();
+            prm.put("outletCode", param.get("outletCode"));
+        }
+        assert query != null;
         return Integer.valueOf(Objects.requireNonNull(jdbcTemplate.queryForObject(query, prm, new RowMapper<String>() {
             @Override
             public String mapRow(ResultSet rs, int rowNum) throws SQLException {

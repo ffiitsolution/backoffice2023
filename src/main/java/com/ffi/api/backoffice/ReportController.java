@@ -162,12 +162,16 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        JasperPrint jasperPrint = reportServices.jesperReportOrderEntry(prm, conn);
-        conn.close();
-        byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=OrderEntryReport.pdf");
-        return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        Integer cekDataReport = viewServices.cekDataReport(prm, "orderEntry");
+        if (cekDataReport > 0) {
+            JasperPrint jasperPrint = reportServices.jesperReportOrderEntry(prm, conn);
+            conn.close();
+            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "inline; filename=OrderEntryReport.pdf");
+            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        } else
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
     }
     @RequestMapping(value = "/report-order-entry-jesper-html", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report order entry", response = Object.class)
@@ -200,7 +204,7 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        Integer cekDataReport = viewServices.cekDataReport(prm);
+        Integer cekDataReport = viewServices.cekDataReport(prm, "receiving");
         if (cekDataReport > 0) {
             JasperPrint jasperPrint = reportServices.jesperReportReceiving(prm, conn);
             conn.close();
@@ -222,12 +226,16 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        JasperPrint jasperPrint = reportServices.jesperReportReturnOrder(prm, conn);
-        conn.close();
-        byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=ReturnOrderReport.pdf");
-        return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        Integer cekDataReport = viewServices.cekDataReport(prm, "returnOrder");
+        if (cekDataReport > 0) {
+            JasperPrint jasperPrint = reportServices.jesperReportReturnOrder(prm, conn);
+            conn.close();
+            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "inline; filename=ReturnOrderReport.pdf");
+            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        } else
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
     }
 
     @CrossOrigin
@@ -240,12 +248,16 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        JasperPrint jasperPrint = reportServices.jesperReportWastage(prm, conn);
-        conn.close();
-        byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=Wastage.pdf");
-        return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        Integer cekDataReport = viewServices.cekDataReport(prm, "wastage");
+        if (cekDataReport > 0){
+            JasperPrint jasperPrint = reportServices.jesperReportWastage(prm, conn);
+            conn.close();
+            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "inline; filename=Wastage.pdf");
+            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        } else
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
     }
 
     @CrossOrigin
@@ -258,12 +270,16 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        JasperPrint jasperPrint = reportServices.jesperReportDeliveryOrder(prm, conn);
-        conn.close();
-        byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=DeliveryOrder.pdf");
-        return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        Integer cekDataReport = viewServices.cekDataReport(prm, "deliveryOrder");
+        if (cekDataReport > 0) {
+            JasperPrint jasperPrint = reportServices.jesperReportDeliveryOrder(prm, conn);
+            conn.close();
+            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "inline; filename=DeliveryOrder.pdf");
+            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        } else
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
     }
 
     @RequestMapping(value = "/report-item-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -275,12 +291,17 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        JasperPrint jasperPrint = reportServices.jasperReportItem(prm, conn);
-        conn.close();
-        byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=item.pdf");
-        return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        Integer cekDataReport = viewServices.cekDataReport(prm, "item");
+        if (cekDataReport > 0) {
+            JasperPrint jasperPrint = reportServices.jasperReportItem(prm, conn);
+            conn.close();
+            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "inline; filename=item.pdf");
+            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        }
+        else
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
     }
 
 }

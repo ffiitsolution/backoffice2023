@@ -682,7 +682,7 @@ public class ReportDaoImpl implements ReportDao {
 
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("user", param.get("user"));
-        hashMap.put("jenisGudang", param.get("jenisgudang"));
+        hashMap.put("jenisGudang", param.get("jenisGudang"));
         if (param.get("status").equals("Semua")) {
             hashMap.put("status", "Semua");
             hashMap.put("status1", "I");
