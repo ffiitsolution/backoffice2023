@@ -251,11 +251,11 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.RECV_DATE BETWEEN $P{fromDate} AND $P{
 + " s/d " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{toDate}))]]></textFieldExpression>
             </textField>
             <staticText>
-                <reportElement x="204" y="27" width="151" height="18" uuid="d8454a1e-f231-4642-8a9f-b9a330f5a0e0"/>
+                <reportElement x="190" y="33" width="176" height="18" uuid="d8454a1e-f231-4642-8a9f-b9a330f5a0e0"/>
                 <textElement textAlignment="Center">
                     <font size="12" isBold="true"/>
                 </textElement>
-                <text><![CDATA[LAPORAN PENERIMAAN]]></text>
+                <text><![CDATA[LAPORAN RECEIVING]]></text>
             </staticText>
             <textField>
                 <reportElement x="437" y="0" width="114" height="11" uuid="dcf4b008-ae2f-41bc-b83e-469150895f06"/>
@@ -283,7 +283,7 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.RECV_DATE BETWEEN $P{fromDate} AND $P{
                 <textElement>
                     <font size="8"/>
                 </textElement>
-                <textFieldExpression><![CDATA["Jam Cetak : " + new SimpleDateFormat("hh:mm:ss a").format(new Date())]]></textFieldExpression>
+                <textFieldExpression><![CDATA["Jam Cetak : " + new SimpleDateFormat("hh:mm:ss").format(new Date())]]></textFieldExpression>
             </textField>
             <line>
                 <reportElement x="1" y="82" width="552" height="1" uuid="97df2450-a174-43dc-b982-9922694b42db"/>

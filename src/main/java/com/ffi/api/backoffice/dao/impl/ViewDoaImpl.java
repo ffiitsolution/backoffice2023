@@ -1961,10 +1961,10 @@ public class ViewDoaImpl implements ViewDao {
                 prm.put("orderType1", "0");
                 prm.put("orderType2", "1");
             } else if (param.get("typeOrder").equals("Permintaan")) {
-                param.put("orderType1", "0");
+                prm.put("orderType1", "0");
                 prm.put("orderType2", "0");
             } else if (param.get("typeOrder").equals("Pembelian")) {
-                param.put("orderType1", "1");
+                prm.put("orderType1", "1");
                 prm.put("orderType2", "1");
             }
             prm.put("fromDate", param.get("fromDate"));

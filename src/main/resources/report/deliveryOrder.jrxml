@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="deliveryOrder" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="1356944a-c454-4393-99ee-8392e8ce3866">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="deliveryOrder" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="1356944a-c454-4393-99ee-8392e8ce3866">
     <property name="ireport.zoom" value="1.5"/>
     <property name="ireport.x" value="0"/>
     <property name="ireport.y" value="0"/>
@@ -237,7 +237,7 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.DELIVERY_DATE BETWEEN $P{fromDate} AND
                 <textFieldExpression><![CDATA[$F{ADDRESS_2}]]></textFieldExpression>
             </textField>
             <staticText>
-                <reportElement x="204" y="27" width="180" height="18" uuid="ea455947-ace1-498b-b577-d4d4c599c247"/>
+                <reportElement x="172" y="37" width="221" height="18" uuid="ea455947-ace1-498b-b577-d4d4c599c247"/>
                 <textElement textAlignment="Center">
                     <font size="12" isBold="true"/>
                 </textElement>
@@ -284,7 +284,7 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.DELIVERY_DATE BETWEEN $P{fromDate} AND
                 <textElement>
                     <font size="8"/>
                 </textElement>
-                <textFieldExpression><![CDATA["Jam Cetak : " + new SimpleDateFormat("hh:mm:ss a").format(new Date())]]></textFieldExpression>
+                <textFieldExpression><![CDATA["Jam Cetak : " + new SimpleDateFormat("hh:mm:ss").format(new Date())]]></textFieldExpression>
             </textField>
             <line>
                 <reportElement x="1" y="82" width="552" height="1" uuid="acca77af-7fde-4636-a431-7c763e07e2fc"/>

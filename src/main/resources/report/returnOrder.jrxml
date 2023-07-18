@@ -245,7 +245,7 @@ ORDER BY a.RETURN_DATE, a.RETURN_NO, e.ITEM_CODE ASC]]>
                 <textFieldExpression><![CDATA[$F{ADDRESS_2}]]></textFieldExpression>
             </textField>
             <staticText>
-                <reportElement x="204" y="27" width="163" height="18" uuid="6c905cf7-5790-4bec-ad29-6639e7fe36ff"/>
+                <reportElement x="172" y="36" width="206" height="18" uuid="6c905cf7-5790-4bec-ad29-6639e7fe36ff"/>
                 <textElement textAlignment="Center">
                     <font size="12" isBold="true"/>
                 </textElement>
@@ -347,14 +347,14 @@ ORDER BY a.RETURN_DATE, a.RETURN_NO, e.ITEM_CODE ASC]]>
                 <textElement>
                     <font size="8"/>
                 </textElement>
-                <textFieldExpression><![CDATA["Jam Cetak : " + new SimpleDateFormat("hh:mm:ss a").format(new Date())]]></textFieldExpression>
+                <textFieldExpression><![CDATA["Jam Cetak : " + new SimpleDateFormat("hh:mm:ss").format(new Date())]]></textFieldExpression>
             </textField>
             <textField>
                 <reportElement x="454" y="60" width="100" height="11" uuid="9a944fca-f0aa-45eb-bb6e-7404e5c775c1"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
-                <textFieldExpression><![CDATA["Tipe Retur : " + $P{typeReturn} ]]></textFieldExpression>
+                <textFieldExpression><![CDATA["Tipe Retur : " + $P{typeReturn}]]></textFieldExpression>
             </textField>
         </band>
     </columnHeader>

@@ -64,7 +64,7 @@ LEFT JOIN M_ITEM f ON e.ITEM_CODE = f.ITEM_CODE
 JOIN M_OUTLET g ON a.OUTLET_CODE = g.OUTLET_CODE
 WHERE a.ORDER_TYPE IN ($P{orderType1}, $P{orderType2}) AND a.ORDER_DATE BETWEEN $P{fromDate} AND $P{toDate} AND
 a.OUTLET_CODE = $P{outletCode}
-ORDER BY a.order_no, e.item_code asc]]>
+ORDER BY a.ORDER_DATE, a.order_no, e.item_code asc]]>
     </queryString>
     <field name="NUM" class="java.math.BigDecimal"/>
     <field name="ORDER_NO" class="java.lang.String"/>
@@ -318,7 +318,7 @@ ORDER BY a.order_no, e.item_code asc]]>
                 <reportElement x="1" y="82" width="552" height="1" uuid="38de9756-4aae-4af3-8b19-7610f3d5de56"/>
             </line>
             <staticText>
-                <reportElement x="209" y="27" width="154" height="18" uuid="49e44850-e5a4-494f-aa01-421b3d6b76a7"/>
+                <reportElement x="191" y="27" width="187" height="18" uuid="49e44850-e5a4-494f-aa01-421b3d6b76a7"/>
                 <textElement textAlignment="Center">
                     <font size="12" isBold="true"/>
                 </textElement>
@@ -407,7 +407,7 @@ ORDER BY a.order_no, e.item_code asc]]>
                 <textElement>
                     <font size="8"/>
                 </textElement>
-                <textFieldExpression><![CDATA["Jam Cetak : " + new SimpleDateFormat("hh:mm:ss a").format(new Date())]]></textFieldExpression>
+                <textFieldExpression><![CDATA["Jam Cetak : " + new SimpleDateFormat("hh:mm:ss").format(new Date())]]></textFieldExpression>
             </textField>
             <image>
                 <reportElement x="22" y="1" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="d4ce4a5e-f47b-4c93-a57c-42fd1885283e"/>

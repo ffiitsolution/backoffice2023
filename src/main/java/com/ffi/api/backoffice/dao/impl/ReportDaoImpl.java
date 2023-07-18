@@ -626,7 +626,6 @@ public class ReportDaoImpl implements ReportDao {
     public JasperPrint jasperReportWastage(Map<String, Object> param, Connection connection) throws IOException, JRException {
         Map<String, Object> hashMap = new HashMap<String, Object>();
 
-        hashMap.put("city", "X_" + param.get("city"));
         hashMap.put("fromDate", param.get("fromDate"));
         hashMap.put("toDate", param.get("toDate"));
         hashMap.put("outletCode", param.get("outletCode"));
