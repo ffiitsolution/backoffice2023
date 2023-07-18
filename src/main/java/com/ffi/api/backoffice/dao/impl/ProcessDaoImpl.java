@@ -1026,10 +1026,11 @@ public class ProcessDaoImpl implements ProcessDao {
         
         //Header
         String sql = "insert into t_recv_header(OUTLET_CODE, RECV_NO, RECV_DATE, ORDER_NO, REMARK, NO_OF_PRINT, STATUS, USER_UPD, DATE_UPD, TIME_UPD) "
-                + "select outlet_code, :recv_no, :recv_date, :ord_no, remark, 0, 1, :usr, sysdate, :time_upd from t_order_header oh "
+                + "select outlet_code, :recv_no, :recv_date, :ord_no, :doc_no, 0, 1, :usr, sysdate, :time_upd from t_order_header oh "
                 + "where oh.order_no = :ord_no and oh.outlet_code = :outlet ";
         Map param = new HashMap();
         param.put("ord_no", balancing.getAsJsonObject().getAsJsonPrimitive("ordNo").getAsString());
+        param.put("doc_no", balancing.getAsJsonObject().getAsJsonPrimitive("documentNo").getAsString());
         param.put("outlet", balancing.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
         param.put("recv_no", opNo);
         param.put("recv_date", balancing.getAsJsonObject().getAsJsonPrimitive("recvDate").getAsString());
