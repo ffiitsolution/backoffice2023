@@ -1730,7 +1730,7 @@ public class ViewDoaImpl implements ViewDao {
 //                + "    when length(ord.cd_supplier) = 5 then mg.description"
 //                + "    else 'Supplier ' || sp.supplier_name end"
 //                + ") remark,"
-                + "remark, "
+                + "rc.remark, "
                 + "case when hk.status_kirim = 'S' and hk.status_terima = 'R' then 'Sudah' else ' ' end as upd_online, "
                 + "rc.no_of_print, "
                 + "case when rc.status = '1' then 'CLOSE' when rc.status = '0' then 'OPEN' else 'UNKNOWN' end as status "
