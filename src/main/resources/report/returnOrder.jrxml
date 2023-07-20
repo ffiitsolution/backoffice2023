@@ -79,14 +79,14 @@ ORDER BY a.RETURN_DATE, a.RETURN_NO, e.ITEM_CODE ASC]]>
                 </textField>
                 <textField isBlankWhenNull="true">
                     <reportElement x="246" y="0" width="135" height="11" uuid="296f4443-f4e6-4f4a-86cf-d13957038cb8"/>
-                    <textElement textAlignment="Center">
+                    <textElement>
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{RETURN_TO}]]></textFieldExpression>
                 </textField>
                 <textField isBlankWhenNull="true">
                     <reportElement x="380" y="0" width="138" height="11" uuid="3c094978-2f6e-468c-bcb2-82ca41d9b310"/>
-                    <textElement textAlignment="Center">
+                    <textElement>
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{REMARK}]]></textFieldExpression>
@@ -136,7 +136,7 @@ ORDER BY a.RETURN_DATE, a.RETURN_NO, e.ITEM_CODE ASC]]>
                 </staticText>
                 <staticText>
                     <reportElement x="144" y="0" width="179" height="15" uuid="828df8d3-f919-466b-91be-714f41070ee4"/>
-                    <textElement textAlignment="Center">
+                    <textElement>
                         <font size="8" isBold="true"/>
                     </textElement>
                     <text><![CDATA[Nama Barang]]></text>
@@ -178,7 +178,7 @@ ORDER BY a.RETURN_DATE, a.RETURN_NO, e.ITEM_CODE ASC]]>
                 </textField>
                 <textField isBlankWhenNull="true">
                     <reportElement x="144" y="0" width="179" height="15" uuid="005c5b3a-9d7d-4006-a12c-6aa687401b01"/>
-                    <textElement textAlignment="Center">
+                    <textElement>
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
@@ -296,14 +296,14 @@ ORDER BY a.RETURN_DATE, a.RETURN_NO, e.ITEM_CODE ASC]]>
             </staticText>
             <staticText>
                 <reportElement x="246" y="83" width="135" height="15" uuid="43ad3ec2-fb68-4af9-8227-d52211c4d85b"/>
-                <textElement textAlignment="Center">
+                <textElement>
                     <font size="8" isBold="true"/>
                 </textElement>
                 <text><![CDATA[Retur Ke]]></text>
             </staticText>
             <staticText>
                 <reportElement x="380" y="83" width="138" height="15" uuid="c529fa88-9639-4bda-aa84-09a81a364a25"/>
-                <textElement textAlignment="Center">
+                <textElement>
                     <font size="8" isBold="true"/>
                 </textElement>
                 <text><![CDATA[Catatan]]></text>
@@ -350,7 +350,7 @@ ORDER BY a.RETURN_DATE, a.RETURN_NO, e.ITEM_CODE ASC]]>
                 <textFieldExpression><![CDATA["Jam Cetak : " + new SimpleDateFormat("hh:mm:ss").format(new Date())]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="454" y="60" width="100" height="11" uuid="9a944fca-f0aa-45eb-bb6e-7404e5c775c1"/>
+                <reportElement x="438" y="60" width="114" height="11" uuid="9a944fca-f0aa-45eb-bb6e-7404e5c775c1"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>

@@ -77,14 +77,14 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.RECV_DATE BETWEEN $P{fromDate} AND $P{
                 </textField>
                 <textField>
                     <reportElement x="257" y="0" width="124" height="11" uuid="cfcbddbf-a95b-4013-98c4-ffa3e68c940c"/>
-                    <textElement textAlignment="Center">
+                    <textElement>
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{REMARK}]]></textFieldExpression>
                 </textField>
                 <textField isBlankWhenNull="true">
                     <reportElement x="380" y="0" width="137" height="11" uuid="433b57a8-edc0-4829-8037-64d1223ddad6"/>
-                    <textElement textAlignment="Center">
+                    <textElement>
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{PENERIMAAN_DARI}]]></textFieldExpression>
@@ -127,7 +127,7 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.RECV_DATE BETWEEN $P{fromDate} AND $P{
                 </staticText>
                 <staticText>
                     <reportElement x="144" y="0" width="179" height="15" uuid="235b8d14-f598-463e-9878-2f51fc5efe11"/>
-                    <textElement textAlignment="Center">
+                    <textElement>
                         <font size="8" isBold="true"/>
                     </textElement>
                     <text><![CDATA[Nama Barang]]></text>
@@ -169,7 +169,7 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.RECV_DATE BETWEEN $P{fromDate} AND $P{
                 </textField>
                 <textField>
                     <reportElement x="144" y="0" width="179" height="15" uuid="40a97c07-a08b-4c44-8cc9-39692cfba782"/>
-                    <textElement textAlignment="Center">
+                    <textElement>
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
@@ -321,14 +321,14 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.RECV_DATE BETWEEN $P{fromDate} AND $P{
             </staticText>
             <staticText>
                 <reportElement x="257" y="83" width="124" height="15" uuid="5ef8eb90-03f6-41d2-bdfc-339274197696"/>
-                <textElement textAlignment="Center">
+                <textElement>
                     <font size="8" isBold="true"/>
                 </textElement>
                 <text><![CDATA[Catatan]]></text>
             </staticText>
             <staticText>
                 <reportElement x="380" y="83" width="137" height="15" uuid="37e588b3-3231-4c8e-bfe2-5618137d7444"/>
-                <textElement textAlignment="Center">
+                <textElement>
                     <font size="8" isBold="true"/>
                 </textElement>
                 <text><![CDATA[Penerimaan Dari]]></text>

@@ -80,7 +80,7 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.TYPE_TRANS IN ($P{typeTrans1}, $P{type
                 </textField>
                 <textField isBlankWhenNull="true">
                     <reportElement x="265" y="0" width="240" height="11" uuid="9fd9b0b9-b862-4ba2-85cb-439b7d793f9e"/>
-                    <textElement textAlignment="Center">
+                    <textElement>
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{REMARK}]]></textFieldExpression>
@@ -109,7 +109,7 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.TYPE_TRANS IN ($P{typeTrans1}, $P{type
                 </staticText>
                 <staticText>
                     <reportElement x="234" y="0" width="243" height="15" uuid="723a49ab-7ac9-46fe-9c33-21d4b6973c2c"/>
-                    <textElement textAlignment="Center">
+                    <textElement>
                         <font size="8" isBold="true"/>
                     </textElement>
                     <text><![CDATA[Nama Barang]]></text>
@@ -144,7 +144,7 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.TYPE_TRANS IN ($P{typeTrans1}, $P{type
                 </textField>
                 <textField isBlankWhenNull="true">
                     <reportElement x="234" y="0" width="243" height="15" uuid="f6d40773-b85a-41d3-8615-1f36eb1af560"/>
-                    <textElement textAlignment="Center">
+                    <textElement>
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
@@ -283,7 +283,7 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.TYPE_TRANS IN ($P{typeTrans1}, $P{type
             </staticText>
             <staticText>
                 <reportElement x="265" y="83" width="240" height="15" uuid="b2535ad4-cf18-4a8b-aefd-1ae2aba06bd3"/>
-                <textElement textAlignment="Center">
+                <textElement>
                     <font size="8" isBold="true"/>
                 </textElement>
                 <text><![CDATA[Catatan]]></text>

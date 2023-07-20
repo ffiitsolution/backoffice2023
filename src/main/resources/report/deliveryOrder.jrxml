@@ -64,7 +64,7 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.DELIVERY_DATE BETWEEN $P{fromDate} AND
                 </textField>
                 <textField>
                     <reportElement x="364" y="0" width="152" height="11" uuid="17d0fa46-8e7e-4acb-af5e-5a4a8ac27f27"/>
-                    <textElement textAlignment="Center">
+                    <textElement>
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{REMARK}]]></textFieldExpression>
@@ -92,7 +92,7 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.DELIVERY_DATE BETWEEN $P{fromDate} AND
                 </textField>
                 <textField>
                     <reportElement x="249" y="0" width="116" height="11" uuid="8ef523dc-4631-4e56-ab9c-1a5774cda5be"/>
-                    <textElement textAlignment="Center">
+                    <textElement>
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{DELIVERY_ORDER_KE}]]></textFieldExpression>
@@ -127,7 +127,7 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.DELIVERY_DATE BETWEEN $P{fromDate} AND
                 </staticText>
                 <staticText>
                     <reportElement x="143" y="0" width="179" height="15" uuid="0e33d753-d608-4a29-bc60-f07dd8b06bc1"/>
-                    <textElement textAlignment="Center">
+                    <textElement>
                         <font size="8" isBold="true"/>
                     </textElement>
                     <text><![CDATA[Nama Barang]]></text>
@@ -170,7 +170,7 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.DELIVERY_DATE BETWEEN $P{fromDate} AND
                 </textField>
                 <textField>
                     <reportElement x="143" y="0" width="179" height="15" uuid="2b8e7790-8ec5-4a81-88df-cc1568cc7db5"/>
-                    <textElement textAlignment="Center">
+                    <textElement>
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
@@ -301,7 +301,7 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.DELIVERY_DATE BETWEEN $P{fromDate} AND
             </staticText>
             <staticText>
                 <reportElement mode="Transparent" x="364" y="83" width="152" height="15" uuid="e1e69c01-9f78-457c-9639-f1e5149fa8a2"/>
-                <textElement textAlignment="Center">
+                <textElement>
                     <font size="8" isBold="true"/>
                 </textElement>
                 <text><![CDATA[Catatan]]></text>
@@ -329,7 +329,7 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.DELIVERY_DATE BETWEEN $P{fromDate} AND
             </staticText>
             <staticText>
                 <reportElement mode="Transparent" x="249" y="83" width="116" height="15" uuid="154f3bf7-7886-4f78-84c9-b7162e6b5c79"/>
-                <textElement textAlignment="Center">
+                <textElement>
                     <font size="8" isBold="true"/>
                 </textElement>
                 <text><![CDATA[DO Ke]]></text>

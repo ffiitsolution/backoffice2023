@@ -115,7 +115,7 @@ ORDER BY ITEM_CODE ASC]]>
             </staticText>
             <staticText>
                 <reportElement x="51" y="88" width="200" height="15" uuid="7c046be2-d38e-4e16-8a0c-b68a8e812c53"/>
-                <textElement textAlignment="Center">
+                <textElement>
                     <font size="8" isBold="true"/>
                 </textElement>
                 <text><![CDATA[Nama Item]]></text>
@@ -160,7 +160,7 @@ ORDER BY ITEM_CODE ASC]]>
                 <textElement textAlignment="Center">
                     <font size="12" isBold="true"/>
                 </textElement>
-                <text><![CDATA[MASTER ITEM REPORT]]></text>
+                <text><![CDATA[REPORT ITEM BARANG]]></text>
             </staticText>
             <textField>
                 <reportElement x="437" y="0" width="114" height="11" isPrintWhenDetailOverflows="true" uuid="05beac39-ef24-4344-96c9-adb5cdc85309"/>
@@ -224,7 +224,7 @@ ORDER BY ITEM_CODE ASC]]>
             </textField>
             <textField>
                 <reportElement x="51" y="0" width="200" height="15" uuid="c35a6f1b-bfd9-4e16-b43f-298255e0acda"/>
-                <textElement textAlignment="Center">
+                <textElement>
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>

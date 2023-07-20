@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="orderEntry" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="0793d68f-3216-428e-b721-e2ccbd5a3839">
-    <property name="ireport.zoom" value="1.5"/>
+    <property name="ireport.zoom" value="1.8150000000000008"/>
     <property name="ireport.x" value="0"/>
     <property name="ireport.y" value="0"/>
     <style name="table">
@@ -64,7 +64,7 @@ LEFT JOIN M_ITEM f ON e.ITEM_CODE = f.ITEM_CODE
 JOIN M_OUTLET g ON a.OUTLET_CODE = g.OUTLET_CODE
 WHERE a.ORDER_TYPE IN ($P{orderType1}, $P{orderType2}) AND a.ORDER_DATE BETWEEN $P{fromDate} AND $P{toDate} AND
 a.OUTLET_CODE = $P{outletCode}
-ORDER BY a.ORDER_DATE, a.order_no, e.item_code asc]]>
+ORDER BY a.order_no, e.item_code, a.ORDER_DATE asc]]>
     </queryString>
     <field name="NUM" class="java.math.BigDecimal"/>
     <field name="ORDER_NO" class="java.lang.String"/>
@@ -121,15 +121,15 @@ ORDER BY a.ORDER_DATE, a.order_no, e.item_code asc]]>
                     <textFieldExpression><![CDATA[$F{ORDER_TYPE}]]></textFieldExpression>
                 </textField>
                 <textField isBlankWhenNull="true">
-                    <reportElement x="201" y="0" width="121" height="15" uuid="0f197fec-3ff1-466d-bcf6-dd4d271e21b6"/>
-                    <textElement textAlignment="Center">
+                    <reportElement x="201" y="0" width="147" height="15" uuid="0f197fec-3ff1-466d-bcf6-dd4d271e21b6"/>
+                    <textElement>
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{ORDER_KE}]]></textFieldExpression>
                 </textField>
                 <textField isBlankWhenNull="true">
-                    <reportElement x="321" y="0" width="183" height="15" uuid="95bdd124-1f07-4e6b-9edd-cdc477ae61c7"/>
-                    <textElement textAlignment="Center">
+                    <reportElement x="347" y="0" width="158" height="15" uuid="95bdd124-1f07-4e6b-9edd-cdc477ae61c7"/>
+                    <textElement>
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{REMARK}]]></textFieldExpression>
@@ -165,7 +165,7 @@ ORDER BY a.ORDER_DATE, a.order_no, e.item_code asc]]>
                 </staticText>
                 <staticText>
                     <reportElement x="117" y="0" width="161" height="15" uuid="deb21aab-062c-4d18-a7f7-76a61fae4cf0"/>
-                    <textElement textAlignment="Center">
+                    <textElement>
                         <font size="8" isBold="true"/>
                     </textElement>
                     <text><![CDATA[Nama Barang]]></text>
@@ -221,7 +221,7 @@ ORDER BY a.ORDER_DATE, a.order_no, e.item_code asc]]>
                 </textField>
                 <textField isBlankWhenNull="true">
                     <reportElement x="117" y="0" width="161" height="15" uuid="a4ed89a3-7069-4619-a40c-bb3eb3cc3a70"/>
-                    <textElement textAlignment="Center">
+                    <textElement>
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
@@ -291,15 +291,15 @@ ORDER BY a.ORDER_DATE, a.order_no, e.item_code asc]]>
                 <text><![CDATA[Type]]></text>
             </staticText>
             <staticText>
-                <reportElement x="201" y="83" width="121" height="15" uuid="963645e2-aacb-4c67-8edd-8240b2675d2d"/>
-                <textElement textAlignment="Center">
+                <reportElement x="201" y="83" width="147" height="15" uuid="963645e2-aacb-4c67-8edd-8240b2675d2d"/>
+                <textElement>
                     <font size="8" isBold="true"/>
                 </textElement>
                 <text><![CDATA[Order Ke]]></text>
             </staticText>
             <staticText>
-                <reportElement x="321" y="83" width="183" height="15" uuid="29ad9a07-ad89-4792-8a54-a76cfbc91c67"/>
-                <textElement textAlignment="Center">
+                <reportElement x="347" y="83" width="158" height="15" uuid="29ad9a07-ad89-4792-8a54-a76cfbc91c67"/>
+                <textElement>
                     <font size="8" isBold="true"/>
                 </textElement>
                 <text><![CDATA[Catatan]]></text>
@@ -318,8 +318,8 @@ ORDER BY a.ORDER_DATE, a.order_no, e.item_code asc]]>
                 <reportElement x="1" y="82" width="552" height="1" uuid="38de9756-4aae-4af3-8b19-7610f3d5de56"/>
             </line>
             <staticText>
-                <reportElement x="191" y="27" width="187" height="18" uuid="49e44850-e5a4-494f-aa01-421b3d6b76a7"/>
-                <textElement textAlignment="Center">
+                <reportElement x="204" y="30" width="206" height="18" uuid="49e44850-e5a4-494f-aa01-421b3d6b76a7"/>
+                <textElement>
                     <font size="12" isBold="true"/>
                 </textElement>
                 <text><![CDATA[LAPORAN ORDER ENTRY]]></text>
