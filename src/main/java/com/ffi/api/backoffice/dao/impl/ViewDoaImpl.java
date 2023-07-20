@@ -1763,6 +1763,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("noTerima", rs.getString("recv_no"));
                 rt.put("tanggal", rs.getString("recv_date"));
                 rt.put("noOrder", rs.getString("order_no"));
+                rt.put("remark", rs.getString("remark"));
                 rt.put("tipeOrder", rs.getString("remark"));
                 rt.put("updOnline", rs.getString("upd_online"));
                 rt.put("print", rs.getString("no_of_print"));
