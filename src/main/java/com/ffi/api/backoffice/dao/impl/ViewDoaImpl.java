@@ -1725,6 +1725,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "rc.recv_no, "
                 + "rc.recv_date, "
                 + "rc.order_no, "
+                + "sp.supplier_name, "
 //                + "'Pembelian ' || ("
 //                + "    case when length(ord.cd_supplier) = 4 then 'Outlet ' || mo.outlet_name"
 //                + "    when length(ord.cd_supplier) = 5 then mg.description"
@@ -1763,6 +1764,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("noTerima", rs.getString("recv_no"));
                 rt.put("tanggal", rs.getString("recv_date"));
                 rt.put("noOrder", rs.getString("order_no"));
+                rt.put("suppName", rs.getString("supplier_name"));
                 rt.put("remark", rs.getString("remark"));
                 rt.put("tipeOrder", rs.getString("remark"));
                 rt.put("updOnline", rs.getString("upd_online"));
