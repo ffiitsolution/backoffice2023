@@ -1343,13 +1343,14 @@ public class ViewDoaImpl implements ViewDao {
                 + "WHERE H.STATUS LIKE :status \n"
                 + "AND H.ORDER_TYPE LIKE :orderType \n"
                 + "AND H.OUTLET_CODE = :outletCode \n"
+                + "AND H.Order_to = :orderTo \n"
                 + "" + where + "";
         Map prm = new HashMap();
         prm.put("status", "%" + balance.get("status") + "%");
         prm.put("orderType", "%" + balance.get("orderType") + "%");
         prm.put("outletCode", balance.get("outletCode"));
         prm.put("orderDate", balance.get("orderDate"));
-
+        prm.put("orderTo", balance.get("orderTo"));
 //        prm.put("orderDate", balance.get("orderDate"));
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
@@ -1726,11 +1727,11 @@ public class ViewDoaImpl implements ViewDao {
                 + "rc.recv_date, "
                 + "rc.order_no, "
                 + "sp.supplier_name, "
-//                + "'Pembelian ' || ("
-//                + "    case when length(ord.cd_supplier) = 4 then 'Outlet ' || mo.outlet_name"
-//                + "    when length(ord.cd_supplier) = 5 then mg.description"
-//                + "    else 'Supplier ' || sp.supplier_name end"
-//                + ") remark,"
+                //                + "'Pembelian ' || ("
+                //                + "    case when length(ord.cd_supplier) = 4 then 'Outlet ' || mo.outlet_name"
+                //                + "    when length(ord.cd_supplier) = 5 then mg.description"
+                //                + "    else 'Supplier ' || sp.supplier_name end"
+                //                + ") remark,"
                 + "rc.remark, "
                 + "case when hk.status_kirim = 'S' and hk.status_terima = 'R' then 'Sudah' else ' ' end as upd_online, "
                 + "rc.no_of_print, "
@@ -1950,16 +1951,16 @@ public class ViewDoaImpl implements ViewDao {
         String query = null;
         Map<String, Object> prm = new HashMap<>();
         if (name.equals("receiving")) {
-            query = "SELECT COUNT(*) FROM T_RECV_HEADER a WHERE a.OUTLET_CODE = :outletCode AND a.RECV_DATE BETWEEN " +
-                    ":fromDate AND :toDate";
+            query = "SELECT COUNT(*) FROM T_RECV_HEADER a WHERE a.OUTLET_CODE = :outletCode AND a.RECV_DATE BETWEEN "
+                    + ":fromDate AND :toDate";
 
             prm.put("outletCode", param.get("outletCode"));
             prm.put("fromDate", param.get("fromDate"));
             prm.put("toDate", param.get("toDate"));
 
         } else if (name.equals("orderEntry")) {
-            query = "SELECT COUNT(*) FROM T_ORDER_HEADER a WHERE a.ORDER_TYPE IN (:orderType1, :orderType2) " +
-                    "AND a.ORDER_DATE BETWEEN :fromDate AND :toDate AND a.OUTLET_CODE = :outletCode";
+            query = "SELECT COUNT(*) FROM T_ORDER_HEADER a WHERE a.ORDER_TYPE IN (:orderType1, :orderType2) "
+                    + "AND a.ORDER_DATE BETWEEN :fromDate AND :toDate AND a.OUTLET_CODE = :outletCode";
 
             if (param.get("typeOrder").equals("Semua")) {
                 prm.put("orderType1", "0");
@@ -1976,8 +1977,8 @@ public class ViewDoaImpl implements ViewDao {
             prm.put("outletCode", param.get("outletCode"));
 
         } else if (name.equals("returnOrder")) {
-            query = "SELECT COUNT(*) FROM T_RETURN_HEADER a WHERE a.OUTLET_CODE =:outletCode AND a.TYPE_RETURN IN " +
-                    "(:typeReturn1, :typeReturn2) AND a.RETURN_DATE BETWEEN :fromDate AND :toDate";
+            query = "SELECT COUNT(*) FROM T_RETURN_HEADER a WHERE a.OUTLET_CODE =:outletCode AND a.TYPE_RETURN IN "
+                    + "(:typeReturn1, :typeReturn2) AND a.RETURN_DATE BETWEEN :fromDate AND :toDate";
 
             if (param.get("typeReturn").equals("ALL")) {
                 prm.put("typeReturn1", "0");
@@ -1994,8 +1995,8 @@ public class ViewDoaImpl implements ViewDao {
             prm.put("toDate", param.get("toDate"));
 
         } else if (name.equals("wastage")) {
-            query = "SELECT COUNT(*) FROM T_WASTAGE_HEADER a WHERE a.OUTLET_CODE =:outletCode AND a.TYPE_TRANS IN " +
-                    "(:typeTrans1, :typeTrans2) AND a.WASTAGE_DATE BETWEEN :fromDate AND :toDate";
+            query = "SELECT COUNT(*) FROM T_WASTAGE_HEADER a WHERE a.OUTLET_CODE =:outletCode AND a.TYPE_TRANS IN "
+                    + "(:typeTrans1, :typeTrans2) AND a.WASTAGE_DATE BETWEEN :fromDate AND :toDate";
 
             if (param.get("typeTransaksi").equals("ALL")) {
                 prm.put("typeTrans1", "W");
@@ -2013,8 +2014,8 @@ public class ViewDoaImpl implements ViewDao {
             prm.put("toDate", param.get("toDate"));
 
         } else if (name.equals("deliveryOrder")) {
-            query = "SELECT COUNT(*) FROM T_DEV_HEADER a WHERE a.OUTLET_CODE =:outletCode AND a.DELIVERY_DATE BETWEEN " +
-                    ":fromDate AND :toDate";
+            query = "SELECT COUNT(*) FROM T_DEV_HEADER a WHERE a.OUTLET_CODE =:outletCode AND a.DELIVERY_DATE BETWEEN "
+                    + ":fromDate AND :toDate";
 
             prm.put("outletCode", param.get("outletCode"));
             prm.put("fromDate", param.get("fromDate"));
@@ -2048,28 +2049,37 @@ public class ViewDoaImpl implements ViewDao {
                 prm.put("flagStock3", "N");
             }
 
-            queryBuilder.append("SELECT COUNT(*) FROM M_ITEM a LEFT JOIN M_GLOBAL b ON a.CD_WAREHOUSE = " +
-                    "b.CODE AND b.COND ='WAREHOUSE' JOIN M_OUTLET c ON c.OUTLET_CODE = :outletCode WHERE a.STATUS IN" +
-                    " (:status1, :status2) AND a.FLAG_STOCK IN (:flagStock1, :flagStock2, :flagStock3)");
+            queryBuilder.append("SELECT COUNT(*) FROM M_ITEM a LEFT JOIN M_GLOBAL b ON a.CD_WAREHOUSE = "
+                    + "b.CODE AND b.COND ='WAREHOUSE' JOIN M_OUTLET c ON c.OUTLET_CODE = :outletCode WHERE a.STATUS IN"
+                    + " (:status1, :status2) AND a.FLAG_STOCK IN (:flagStock1, :flagStock2, :flagStock3)");
 
-            if (!param.get("jenisGudang").equals("Semua"))
+            if (!param.get("jenisGudang").equals("Semua")) {
                 queryBuilder.append(" AND b.DESCRIPTION = '").append(param.get("jenisGudang")).append("'");
-            if (param.containsKey("bahanBaku"))
+            }
+            if (param.containsKey("bahanBaku")) {
                 queryBuilder.append(" AND a.FLAG_MATERIAL = 'Y'");
-            if (param.containsKey("itemJual"))
+            }
+            if (param.containsKey("itemJual")) {
                 queryBuilder.append(" AND a.FLAG_FINISHED_GOOD = 'Y'");
-            if (param.containsKey("pembelian"))
+            }
+            if (param.containsKey("pembelian")) {
                 queryBuilder.append(" AND a.FLAG_OTHERS = 'Y'");
-            if (param.containsKey("produksi"))
+            }
+            if (param.containsKey("produksi")) {
                 queryBuilder.append(" AND a.FLAG_HALF_FINISH = 'Y'");
-            if (param.containsKey("openMarket"))
+            }
+            if (param.containsKey("openMarket")) {
                 queryBuilder.append(" AND a.FLAG_OPEN_MARKET = 'Y'");
-            if (param.containsKey("canvasing"))
+            }
+            if (param.containsKey("canvasing")) {
                 queryBuilder.append(" AND a.FLAG_CANVASING = 'Y'");
-            if (param.containsKey("transferDo"))
+            }
+            if (param.containsKey("transferDo")) {
                 queryBuilder.append(" AND a.FLAG_TRANSFER_LOC = 'Y'");
-            if (param.containsKey("paket"))
+            }
+            if (param.containsKey("paket")) {
                 queryBuilder.append(" AND a.FLAG_PAKET = 'Y'");
+            }
 
             query = queryBuilder.toString();
             prm.put("outletCode", param.get("outletCode"));
