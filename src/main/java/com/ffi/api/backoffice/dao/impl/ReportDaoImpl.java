@@ -744,5 +744,39 @@ public class ReportDaoImpl implements ReportDao {
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }
     /////////////////////////////////DONE///////////////////////////////////////
+    ///////////////NEW METHOD REPORT BY PASCA 24 July 2023////
+    @Override
+    public JasperPrint jasperReportStock(Map<String, Object> param, Connection connection) throws IOException, JRException {
+        Map<String, Object> hashMap = new HashMap<String, Object>();
+
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("fromDate",param.get("fromDate"));
+        hashMap.put("toDate", param.get("toDate"));
+        hashMap. put("gudang", param.get("gudang"));
+        hashMap.put("item", param.get("item"));
+
+        StringBuilder query = new StringBuilder();
+
+        if (param.get("typePrint").equals(1.0))
+            query.append(" AND (a.QTY_IN  != 0 OR a.QTY_OUT != 0 OR a.QTY_BEGINNING != 0)");
+        if (!param.get("gudang").equals("Semua"))
+            query.append(" AND c.DESCRIPTION = $P{gudang}");
+        if (!param.get("item").equals("Semua"))
+            query.append(" AND a.ITEM_CODE = $P{item}");
+        if (param.get("stockMinus").equals(1.0)){
+            query.append(" AND SIGN(a.QTY_BEGINNING + a.QTY_IN - a.QTY_OUT) = -1");
+            hashMap.put("title", "(Minus)");
+        } else {
+            hashMap.put("title", "");
+        }
+
+        if (param.get("typePrint").equals(1.0) || param.get("stockMinus").equals(1.0) ||
+                !param.get("gudang").equals("Semua") || !param.get("item").equals("Semua")) {
+            hashMap.put("query", query.toString());
+        }
+        ClassPathResource classPathResource = new ClassPathResource("report/stock.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
 
 }

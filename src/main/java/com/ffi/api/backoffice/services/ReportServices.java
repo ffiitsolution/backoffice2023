@@ -76,4 +76,8 @@ public class ReportServices {
     public JasperPrint jasperReportItem(Map<String, Object> param, Connection connection) throws JRException, IOException {
         return dao.jesperReportItem(param, connection);
     }
+
+    public JasperPrint jasperReportStock(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        return dao.jasperReportStock(param, connection);
+    }
 }

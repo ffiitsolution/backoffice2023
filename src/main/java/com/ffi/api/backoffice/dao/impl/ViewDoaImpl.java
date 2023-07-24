@@ -2083,6 +2083,29 @@ public class ViewDoaImpl implements ViewDao {
 
             query = queryBuilder.toString();
             prm.put("outletCode", param.get("outletCode"));
+        } else if (name.equals("stock")) {
+            StringBuilder queryBuilder = new StringBuilder();
+            queryBuilder.append("SELECT COUNT(*) FROM T_STOCK_CARD a LEFT JOIN M_ITEM  b ON a.ITEM_CODE = b.ITEM_CODE " +
+                    "LEFT JOIN M_GLOBAL c ON b.CD_WAREHOUSE = c.CODE AND c.COND = 'WAREHOUSE' WHERE a.OUTLET_CODE = " +
+                    ":outletCode AND TRANS_DATE BETWEEN :fromDate AND :toDate");
+
+            prm.put("outletCode", param.get("outletCode"));
+            prm.put("fromDate", param.get("fromDate"));
+            prm.put("toDate", param.get("toDate"));
+
+            if (param.get("typePrint").equals(1.0))
+                queryBuilder.append(" AND (a.QTY_IN  != 0 OR a.QTY_OUT != 0 OR a.QTY_BEGINNING != 0)");
+            if (param.get("stockMinus").equals(1.0))
+                queryBuilder.append(" AND SIGN(a.QTY_BEGINNING + a.QTY_IN - a.QTY_OUT) = -1");
+            if (!param.get("gudang").equals("Semua")) {
+                queryBuilder.append(" AND c.DESCRIPTION = :gudang");
+                prm.put("gudang", param.get("gudang"));
+            }
+            if (!param.get("item").equals("Semua")){
+                queryBuilder.append(" AND a.ITEM_CODE = :item");
+                prm.put("item", param.get("item"));
+            }
+            query = queryBuilder.toString();
         }
         assert query != null;
         return Integer.valueOf(Objects.requireNonNull(jdbcTemplate.queryForObject(query, prm, new RowMapper<String>() {
