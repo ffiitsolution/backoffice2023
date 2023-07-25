@@ -131,7 +131,7 @@ WHERE a.OUTLET_CODE = $P{outletCode} AND a.TRANS_DATE BETWEEN $P{fromDate} AND $
             </textField>
             <image>
                 <reportElement x="22" y="1" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="20d3bcff-f0d7-478c-a02f-0749c04cea22"/>
-                <imageExpression><![CDATA["C:\\Users\\LENOVO\\Pictures\\logoKfc.png"]]></imageExpression>
+                <imageExpression><![CDATA["logo/logoKfc.png"]]></imageExpression>
             </image>
             <line>
                 <reportElement x="1" y="82" width="552" height="1" uuid="3cdebe2b-aff3-4ace-9774-cb15acb5b834"/>
