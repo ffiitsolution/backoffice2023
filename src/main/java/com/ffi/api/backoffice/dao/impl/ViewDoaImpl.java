@@ -1814,7 +1814,7 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> listReceivingDetail(Map<String, String> ref) {
         String qry = "select rd.recv_no, rd.order_no, rd.item_code,  mi.item_description, od.qty_1 ord_qty_1, rd.qty_1 rcv_qty_1, "
-                + "rd.cd_uom_1, od.qty_2 ord_qty_2, rd.qty_2 rcv_qty_2, rd.cd_uom_2, (rd.qty_1 + rd.qty_2 + rd.qty_bonus) jml_total "
+                + "rd.cd_uom_1, od.qty_2 ord_qty_2, rd.qty_2 rcv_qty_2, rd.cd_uom_2, (rd.qty_1 + rd.qty_2 + rd.qty_bonus) jml_total, total_price "
                 + "from t_recv_detail rd "
                 + "left join t_order_detail od on od.order_no = rd.order_no and od.item_code = rd.item_code "
                 + "left join m_item mi on mi.item_code = rd.item_code "
@@ -1838,6 +1838,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("terima2", rs.getString("rcv_qty_2"));
                 rt.put("satuan2", rs.getString("cd_uom_2"));
                 rt.put("jmlTotal", rs.getString("jml_total"));
+                rt.put("totalKg", rs.getString("total_price"));
                 return rt;
             }
         });
