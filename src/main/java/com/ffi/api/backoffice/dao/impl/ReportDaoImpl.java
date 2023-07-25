@@ -754,6 +754,7 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("toDate", param.get("toDate"));
         hashMap. put("gudang", param.get("gudang"));
         hashMap.put("item", param.get("item"));
+        hashMap.put("user", param.get("user"));
 
         StringBuilder query = new StringBuilder();
 

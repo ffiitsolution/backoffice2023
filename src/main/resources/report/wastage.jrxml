@@ -49,44 +49,44 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.TYPE_TRANS IN ($P{typeTrans1}, $P{type
     <group name="header">
         <groupExpression><![CDATA[$F{WASTAGE_NO}]]></groupExpression>
         <groupHeader>
-            <band height="20">
+            <band height="25">
                 <textField isBlankWhenNull="true">
-                    <reportElement x="0" y="0" width="31" height="11" uuid="f3ffaa67-fcc1-4a0e-92de-90ecd71d52f4"/>
+                    <reportElement x="0" y="5" width="31" height="15" uuid="f3ffaa67-fcc1-4a0e-92de-90ecd71d52f4"/>
                     <textElement textAlignment="Center">
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{NUM} + " ."]]></textFieldExpression>
                 </textField>
                 <textField isBlankWhenNull="true">
-                    <reportElement x="30" y="0" width="50" height="11" uuid="27f207ba-3f2d-4742-9b54-51f55850f270"/>
+                    <reportElement x="30" y="5" width="50" height="15" uuid="27f207ba-3f2d-4742-9b54-51f55850f270"/>
                     <textElement textAlignment="Center">
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($F{WASTAGE_DATE})]]></textFieldExpression>
                 </textField>
                 <textField isBlankWhenNull="true">
-                    <reportElement x="79" y="0" width="122" height="11" uuid="a8a10139-d6a6-4384-81eb-6e24f13bcee8"/>
+                    <reportElement x="79" y="5" width="122" height="15" uuid="a8a10139-d6a6-4384-81eb-6e24f13bcee8"/>
                     <textElement textAlignment="Center">
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{WASTAGE_NO}]]></textFieldExpression>
                 </textField>
                 <textField isBlankWhenNull="true">
-                    <reportElement x="200" y="0" width="66" height="11" uuid="c0cd4188-dc0e-41bd-80de-ff658894b554"/>
+                    <reportElement x="200" y="5" width="66" height="15" uuid="c0cd4188-dc0e-41bd-80de-ff658894b554"/>
                     <textElement textAlignment="Center">
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{TYPE_TRANS}]]></textFieldExpression>
                 </textField>
                 <textField isBlankWhenNull="true">
-                    <reportElement x="265" y="0" width="240" height="11" uuid="9fd9b0b9-b862-4ba2-85cb-439b7d793f9e"/>
+                    <reportElement x="265" y="5" width="240" height="15" uuid="9fd9b0b9-b862-4ba2-85cb-439b7d793f9e"/>
                     <textElement>
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{REMARK}]]></textFieldExpression>
                 </textField>
                 <textField isBlankWhenNull="true">
-                    <reportElement x="504" y="0" width="50" height="11" uuid="806664a3-1b87-4848-b2e7-182bce11e31b"/>
+                    <reportElement x="504" y="5" width="50" height="15" uuid="806664a3-1b87-4848-b2e7-182bce11e31b"/>
                     <textElement textAlignment="Center">
                         <font size="8"/>
                     </textElement>
@@ -98,34 +98,34 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.TYPE_TRANS IN ($P{typeTrans1}, $P{type
     <group name="detail" isReprintHeaderOnEachPage="true">
         <groupExpression><![CDATA[$F{WASTAGE_NO}]]></groupExpression>
         <groupHeader>
-            <band height="15">
+            <band height="18">
                 <printWhenExpression><![CDATA[$P{detail}.equals(1)]]></printWhenExpression>
                 <staticText>
-                    <reportElement x="185" y="0" width="50" height="15" uuid="63217972-c539-4d6f-9c9a-1327c4ad0b87"/>
+                    <reportElement x="185" y="2" width="50" height="15" uuid="63217972-c539-4d6f-9c9a-1327c4ad0b87"/>
                     <textElement textAlignment="Center">
                         <font size="8" isBold="true"/>
                     </textElement>
                     <text><![CDATA[Kode]]></text>
                 </staticText>
                 <staticText>
-                    <reportElement x="234" y="0" width="243" height="15" uuid="723a49ab-7ac9-46fe-9c33-21d4b6973c2c"/>
+                    <reportElement x="234" y="2" width="243" height="15" uuid="723a49ab-7ac9-46fe-9c33-21d4b6973c2c"/>
                     <textElement>
                         <font size="8" isBold="true"/>
                     </textElement>
                     <text><![CDATA[Nama Barang]]></text>
                 </staticText>
                 <staticText>
-                    <reportElement x="476" y="0" width="78" height="15" uuid="f074dc87-31b6-47f5-b7ab-84198ca6dff6"/>
+                    <reportElement x="476" y="2" width="78" height="15" uuid="f074dc87-31b6-47f5-b7ab-84198ca6dff6"/>
                     <textElement textAlignment="Center">
                         <font size="8" isBold="true"/>
                     </textElement>
                     <text><![CDATA[Qty Waste]]></text>
                 </staticText>
                 <line>
-                    <reportElement x="185" y="0" width="368" height="1" uuid="ebc5c3e8-e10f-4fba-879d-6601abc303c7"/>
+                    <reportElement x="185" y="2" width="368" height="1" uuid="ebc5c3e8-e10f-4fba-879d-6601abc303c7"/>
                 </line>
                 <line>
-                    <reportElement x="185" y="13" width="368" height="1" uuid="a1703896-a088-4c67-afac-662667d45b2b"/>
+                    <reportElement x="185" y="15" width="368" height="1" uuid="a1703896-a088-4c67-afac-662667d45b2b"/>
                 </line>
             </band>
         </groupHeader>
@@ -168,13 +168,6 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.TYPE_TRANS IN ($P{typeTrans1}, $P{type
                 <reportElement x="22" y="1" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="20f8ae54-9f4a-4865-a5dc-cf7563261944"/>
                 <imageExpression><![CDATA["logo/logoKfc.png"]]></imageExpression>
             </image>
-            <staticText>
-                <reportElement x="91" y="-73" width="112" height="11" uuid="6c0c5430-71ea-47d7-b94f-827a070a2f5e"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
-            </staticText>
             <staticText>
                 <reportElement x="81" y="0" width="112" height="11" uuid="6003c823-bbc9-4786-aaf1-a67f95c9d73d"/>
                 <textElement>

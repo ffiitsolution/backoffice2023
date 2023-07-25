@@ -62,51 +62,51 @@ ORDER BY a.RETURN_DATE, a.RETURN_NO, e.ITEM_CODE ASC]]>
     <group name="header">
         <groupExpression><![CDATA[$F{RETURN_NO}]]></groupExpression>
         <groupHeader>
-            <band height="20">
+            <band height="25">
                 <textField isBlankWhenNull="true">
-                    <reportElement x="30" y="0" width="50" height="11" uuid="e15f013c-8c19-480e-a124-a1533ecbe301"/>
+                    <reportElement x="30" y="5" width="50" height="15" uuid="e15f013c-8c19-480e-a124-a1533ecbe301"/>
                     <textElement textAlignment="Center">
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($F{RETURN_DATE})]]></textFieldExpression>
                 </textField>
                 <textField isBlankWhenNull="true">
-                    <reportElement x="79" y="0" width="103" height="11" uuid="8e614df9-9262-4d3e-9182-dd2a93f65954"/>
+                    <reportElement x="79" y="5" width="103" height="15" uuid="8e614df9-9262-4d3e-9182-dd2a93f65954"/>
                     <textElement textAlignment="Center">
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{RETURN_NO}]]></textFieldExpression>
                 </textField>
                 <textField isBlankWhenNull="true">
-                    <reportElement x="246" y="0" width="135" height="11" uuid="296f4443-f4e6-4f4a-86cf-d13957038cb8"/>
+                    <reportElement x="246" y="5" width="135" height="15" uuid="296f4443-f4e6-4f4a-86cf-d13957038cb8"/>
                     <textElement>
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{RETURN_TO}]]></textFieldExpression>
                 </textField>
                 <textField isBlankWhenNull="true">
-                    <reportElement x="380" y="0" width="138" height="11" uuid="3c094978-2f6e-468c-bcb2-82ca41d9b310"/>
+                    <reportElement x="380" y="5" width="138" height="15" uuid="3c094978-2f6e-468c-bcb2-82ca41d9b310"/>
                     <textElement>
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{REMARK}]]></textFieldExpression>
                 </textField>
                 <textField isBlankWhenNull="true">
-                    <reportElement x="517" y="0" width="38" height="11" uuid="ccd0836c-8503-4f65-85f0-8b53e66bea2b"/>
+                    <reportElement x="517" y="5" width="38" height="15" uuid="ccd0836c-8503-4f65-85f0-8b53e66bea2b"/>
                     <textElement textAlignment="Center">
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{STATUS}]]></textFieldExpression>
                 </textField>
                 <textField isBlankWhenNull="true">
-                    <reportElement x="181" y="0" width="66" height="11" uuid="da8475d7-fc2f-410e-8d6f-9bc58255eec1"/>
+                    <reportElement x="181" y="5" width="66" height="15" uuid="da8475d7-fc2f-410e-8d6f-9bc58255eec1"/>
                     <textElement textAlignment="Center">
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{TYPE_RETURN}]]></textFieldExpression>
                 </textField>
                 <textField isBlankWhenNull="true">
-                    <reportElement x="0" y="0" width="31" height="11" uuid="85cae509-012d-499e-ad40-fbdda0fcea75"/>
+                    <reportElement x="0" y="5" width="31" height="15" uuid="85cae509-012d-499e-ad40-fbdda0fcea75"/>
                     <textElement textAlignment="Center">
                         <font size="8"/>
                     </textElement>
@@ -118,48 +118,48 @@ ORDER BY a.RETURN_DATE, a.RETURN_NO, e.ITEM_CODE ASC]]>
     <group name="detail" isReprintHeaderOnEachPage="true">
         <groupExpression><![CDATA[$F{RETURN_NO}]]></groupExpression>
         <groupHeader>
-            <band height="15">
+            <band height="18">
                 <printWhenExpression><![CDATA[$P{detail}.equals(1)]]></printWhenExpression>
                 <staticText>
-                    <reportElement x="95" y="0" width="50" height="15" uuid="847f3e62-0166-418e-80f6-36da0a5516ec"/>
+                    <reportElement x="95" y="2" width="50" height="15" uuid="847f3e62-0166-418e-80f6-36da0a5516ec"/>
                     <textElement textAlignment="Center">
                         <font size="8" isBold="true"/>
                     </textElement>
                     <text><![CDATA[Kode]]></text>
                 </staticText>
                 <staticText>
-                    <reportElement x="476" y="0" width="78" height="15" uuid="a2a4fff8-f42d-47bd-95b1-97832de06591"/>
+                    <reportElement x="476" y="2" width="78" height="15" uuid="a2a4fff8-f42d-47bd-95b1-97832de06591"/>
                     <textElement textAlignment="Center">
                         <font size="8" isBold="true"/>
                     </textElement>
                     <text><![CDATA[Total Qty]]></text>
                 </staticText>
                 <staticText>
-                    <reportElement x="144" y="0" width="179" height="15" uuid="828df8d3-f919-466b-91be-714f41070ee4"/>
+                    <reportElement x="144" y="2" width="179" height="15" uuid="828df8d3-f919-466b-91be-714f41070ee4"/>
                     <textElement>
                         <font size="8" isBold="true"/>
                     </textElement>
                     <text><![CDATA[Nama Barang]]></text>
                 </staticText>
                 <staticText>
-                    <reportElement x="399" y="0" width="78" height="15" uuid="b44a5138-d0da-4dd3-a64e-21cc443b880b"/>
+                    <reportElement x="399" y="2" width="78" height="15" uuid="b44a5138-d0da-4dd3-a64e-21cc443b880b"/>
                     <textElement textAlignment="Center">
                         <font size="8" isBold="true"/>
                     </textElement>
                     <text><![CDATA[Qty Kecil]]></text>
                 </staticText>
                 <staticText>
-                    <reportElement x="322" y="0" width="78" height="15" uuid="193da7c6-9f81-442e-ada7-e3de33a3a169"/>
+                    <reportElement x="322" y="2" width="78" height="15" uuid="193da7c6-9f81-442e-ada7-e3de33a3a169"/>
                     <textElement textAlignment="Center">
                         <font size="8" isBold="true"/>
                     </textElement>
                     <text><![CDATA[Qty Besar]]></text>
                 </staticText>
                 <line>
-                    <reportElement x="94" y="0" width="460" height="1" uuid="0d5767ef-22e4-48a4-9ed9-5190f11e23c9"/>
+                    <reportElement x="94" y="2" width="460" height="1" uuid="0d5767ef-22e4-48a4-9ed9-5190f11e23c9"/>
                 </line>
                 <line>
-                    <reportElement x="94" y="13" width="460" height="1" uuid="6f368df4-e749-41f2-b3b8-1aa36e064ed7"/>
+                    <reportElement x="94" y="15" width="460" height="1" uuid="6f368df4-e749-41f2-b3b8-1aa36e064ed7"/>
                 </line>
             </band>
         </groupHeader>
