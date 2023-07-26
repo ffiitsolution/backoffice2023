@@ -644,8 +644,8 @@ public class ReportDaoImpl implements ReportDao {
             hashMap.put("typeTransaksi", "Wastage");
             hashMap.put("typeTrans1", "W");
             hashMap.put("typeTrans2", "W");
-        } else if (param.get("typeTransaksi").equals("Left Over")) {
-            hashMap.put("typeTransaksi", "Left Over");
+        } else if (param.get("typeTransaksi").equals("Left Offer")) {
+            hashMap.put("typeTransaksi", "Left Offer");
             hashMap.put("typeTrans1", "L");
             hashMap.put("typeTrans2", "L");
         }
@@ -778,6 +778,11 @@ public class ReportDaoImpl implements ReportDao {
         ClassPathResource classPathResource = new ClassPathResource("report/stock.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
+
+    @Override
+    public JasperPrint jasperReportRecipe(Map<String, Object> param) {
+        return null;
     }
 
 }

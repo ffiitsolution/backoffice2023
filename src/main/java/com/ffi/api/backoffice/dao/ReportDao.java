@@ -43,4 +43,7 @@ public interface ReportDao {
     JasperPrint jasperReportDeliveryOrder (Map<String, Object> param, Connection connection) throws IOException, JRException;
     JasperPrint jesperReportItem (Map<String, Object> param, Connection connection) throws IOException, JRException;
     JasperPrint jasperReportStock (Map<String, Object> param, Connection connection) throws IOException, JRException;
+    /////////////////////////////////DONE///////////////////////////////////////
+    ///////////////NEW METHOD REPORT receive BY PASCA 10 July 2023////
+    JasperPrint jasperReportRecipe (Map<String, Object> param);
 }
