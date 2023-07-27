@@ -45,5 +45,5 @@ public interface ReportDao {
     JasperPrint jasperReportStock (Map<String, Object> param, Connection connection) throws IOException, JRException;
     /////////////////////////////////DONE///////////////////////////////////////
     ///////////////NEW METHOD REPORT receive BY PASCA 10 July 2023////
-    JasperPrint jasperReportRecipe (Map<String, Object> param);
+    JasperPrint jasperReportRecipe (Map<String, Object> param, Connection connection) throws IOException, JRException;
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="recipe" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="819b0d3b-1f68-4cd2-bdcb-872b4047ba83">
-    <property name="ireport.zoom" value="1.4641000000000028"/>
+    <property name="ireport.zoom" value="1.3310000000000028"/>
     <property name="ireport.x" value="0"/>
     <property name="ireport.y" value="0"/>
     <parameter name="outletCode" class="java.lang.String">
@@ -11,6 +11,15 @@
     </parameter>
     <parameter name="user" class="java.lang.String"/>
     <parameter name="labelStatus" class="java.lang.String"/>
+    <queryString>
+        <![CDATA[SELECT a.RECIPE_CODE, a.RECIPE_REMARK, b.ITEM_CODE, d.ITEM_DESCRIPTION, b.QTY_STOCK, b.UOM_STOCK, c.PRODUCT_CODE,
+c.PRODUCT_REMARK, c.QTY_STOCK AS qyt_product, c.UOM_STOCK AS uom_product, e.OUTLET_NAME, e."TYPE", e.ADDRESS_1, e.ADDRESS_2 FROM M_RECIPE_HEADER a
+LEFT JOIN M_RECIPE_DETAIL b ON a.RECIPE_CODE = b.RECIPE_CODE
+LEFT JOIN M_RECIPE_PRODUCT c ON a.RECIPE_CODE = c.RECIPE_CODE
+LEFT JOIN  M_ITEM d ON b.ITEM_CODE = d.ITEM_CODE
+JOIN M_OUTLET e ON e.OUTLET_CODE = $P{outletCode}
+WHERE a.STATUS = $P{status} ORDER BY a.RECIPE_CODE, c.PRODUCT_CODE, b.ITEM_CODE ASC]]>
+    </queryString>
     <field name="RECIPE_CODE" class="java.lang.String"/>
     <field name="RECIPE_REMARK" class="java.lang.String"/>
     <field name="ITEM_CODE" class="java.lang.String"/>
@@ -26,6 +35,7 @@
     <field name="ADDRESS_1" class="java.lang.String"/>
     <field name="ADDRESS_2" class="java.lang.String"/>
     <group name="header">
+        <groupExpression><![CDATA[$F{RECIPE_CODE}]]></groupExpression>
         <groupHeader>
             <band height="18">
                 <textField isBlankWhenNull="true">
@@ -45,60 +55,62 @@
             </band>
         </groupHeader>
     </group>
-    <group name="recipe">
-        <groupHeader>
-            <band height="18">
-                <textField isBlankWhenNull="true">
-                    <reportElement x="76" y="0" width="77" height="15" uuid="09582712-b4ea-490c-b1cc-7ba656729047"/>
-                    <textElement textAlignment="Center">
-                        <font size="8"/>
-                    </textElement>
-                    <textFieldExpression><![CDATA[$F{ITEM_CODE}]]></textFieldExpression>
-                </textField>
-                <textField isBlankWhenNull="true">
-                    <reportElement x="152" y="0" width="219" height="15" uuid="b1140e14-33d1-418c-9a3c-c2f145857981"/>
-                    <textElement>
-                        <font size="8"/>
-                    </textElement>
-                    <textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
-                </textField>
-                <textField isBlankWhenNull="true">
-                    <reportElement x="406" y="0" width="74" height="15" uuid="88c85f51-53d1-4310-b2f5-e9a008361c08">
-                        <printWhenExpression><![CDATA[(!$F{QTY_STOCK}.equals( null ))]]></printWhenExpression>
-                    </reportElement>
-                    <textElement textAlignment="Center">
-                        <font size="8"/>
-                    </textElement>
-                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.0000").format($F{QTY_STOCK}) + " " + $F{UOM_STOCK}]]></textFieldExpression>
-                </textField>
-            </band>
-        </groupHeader>
-    </group>
     <group name="product">
-        <groupHeader>
+        <groupExpression><![CDATA[$F{PRODUCT_CODE}]]></groupExpression>
+        <groupFooter>
             <band height="18">
                 <textField>
-                    <reportElement x="165" y="0" width="84" height="15" uuid="c32d8b1d-3cd4-44c0-97f4-916679bead67"/>
+                    <reportElement isPrintRepeatedValues="false" x="165" y="0" width="84" height="15" uuid="6902e52d-ac0c-416d-b6c5-4a696aa8840c"/>
                     <textElement textAlignment="Right">
                         <font size="8"/>
                     </textElement>
-                    <textFieldExpression><![CDATA["+  " + $F{PRODUCT_CODE} + "  "]]></textFieldExpression>
+                    <textFieldExpression><![CDATA["+  " + $F{PRODUCT_CODE} + "    "]]></textFieldExpression>
                 </textField>
                 <textField>
-                    <reportElement x="248" y="0" width="100" height="15" uuid="1765083e-c412-446a-a2f0-bd0bf4123a48"/>
+                    <reportElement isPrintRepeatedValues="false" x="248" y="0" width="231" height="15" uuid="ba3f0796-073d-4d64-a863-a8b0c8787bca"/>
                     <textElement>
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{PRODUCT_REMARK}]]></textFieldExpression>
                 </textField>
                 <textField>
-                    <reportElement x="479" y="0" width="74" height="15" uuid="a29f8003-03ad-4ac5-9957-2f5264a55f36">
+                    <reportElement isPrintRepeatedValues="false" x="479" y="0" width="74" height="15" uuid="46b84a1e-579a-4c83-a640-7db4921cfbe2">
                         <printWhenExpression><![CDATA[(!$F{QYT_PRODUCT}.equals(null))]]></printWhenExpression>
                     </reportElement>
                     <textElement textAlignment="Center">
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[new DecimalFormat("#,##0.0000").format($F{QYT_PRODUCT}) + " " + $F{UOM_PRODUCT}]]></textFieldExpression>
+                </textField>
+            </band>
+        </groupFooter>
+    </group>
+    <group name="recipe">
+        <groupExpression><![CDATA[$F{ITEM_CODE}]]></groupExpression>
+        <groupHeader>
+            <band height="18">
+                <textField isBlankWhenNull="true">
+                    <reportElement isPrintRepeatedValues="false" x="76" y="0" width="77" height="15" uuid="09582712-b4ea-490c-b1cc-7ba656729047"/>
+                    <textElement textAlignment="Center">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[$F{ITEM_CODE}]]></textFieldExpression>
+                </textField>
+                <textField isBlankWhenNull="true">
+                    <reportElement isPrintRepeatedValues="false" x="152" y="0" width="219" height="15" uuid="b1140e14-33d1-418c-9a3c-c2f145857981"/>
+                    <textElement>
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
+                </textField>
+                <textField isBlankWhenNull="true">
+                    <reportElement isPrintRepeatedValues="false" x="406" y="0" width="74" height="15" uuid="88c85f51-53d1-4310-b2f5-e9a008361c08">
+                        <printWhenExpression><![CDATA[(!$F{QTY_STOCK}.equals( null ))]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Center">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.0000").format($F{QTY_STOCK}) + " " + $F{UOM_STOCK}]]></textFieldExpression>
                 </textField>
             </band>
         </groupHeader>
@@ -145,7 +157,7 @@
             </textField>
             <image>
                 <reportElement x="10" y="1" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="b4b752b4-a368-425d-908b-6cb1ee097235"/>
-                <imageExpression><![CDATA["C:\\Users\\LENOVO\\Pictures\\logoKfc.png"]]></imageExpression>
+                <imageExpression><![CDATA["logo/logoKfc.png"]]></imageExpression>
             </image>
             <textField>
                 <reportElement x="69" y="10" width="122" height="11" uuid="b923d394-a5bf-475d-b796-295a5adb2bc7"/>
@@ -159,7 +171,7 @@
                 <textElement>
                     <font size="8"/>
                 </textElement>
-                <textFieldExpression><![CDATA["Jam Cetak : " + new SimpleDateFormat("hh:mm:ss a").format(new Date())]]></textFieldExpression>
+                <textFieldExpression><![CDATA["Jam Cetak : " + new SimpleDateFormat("hh:mm:ss").format(new Date())]]></textFieldExpression>
             </textField>
             <textField>
                 <reportElement x="69" y="30" width="122" height="11" isPrintWhenDetailOverflows="true" uuid="1e61694c-77f1-4299-a6a8-34ac3890def7"/>

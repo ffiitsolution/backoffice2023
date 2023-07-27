@@ -334,14 +334,21 @@ public class ReportController {
     @ApiOperation(value = "Mepampilkan report recipe", response = Object.class)
     @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportRecipe(@RequestBody String param) throws SQLException, JRException, IOException {
+        Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        JasperPrint jasperPrint = reportServices.jasperReportRecipe(prm);
-        byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=recipe.pdf");
-        return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        Integer cekDataReport = viewServices.cekDataReport(prm, "recipe");
+        if (cekDataReport > 0) {
+            JasperPrint jasperPrint = reportServices.jasperReportRecipe(prm, conn);
+            conn.close();
+            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "inline; filename=recipe.pdf");
+            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        }
+        else
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
     }
 }

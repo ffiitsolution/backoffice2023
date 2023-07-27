@@ -781,8 +781,23 @@ public class ReportDaoImpl implements ReportDao {
     }
 
     @Override
-    public JasperPrint jasperReportRecipe(Map<String, Object> param) {
-        return null;
+    public JasperPrint jasperReportRecipe(Map<String, Object> param, Connection connection) throws IOException, JRException {
+        Map<String, Object> hashMap = new HashMap<>();
+
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("user", param.get("user"));
+
+        if (param.get("status").equals("Active")) {
+            hashMap.put("status", "A");
+            hashMap.put("labelStatus", param.get("status").toString().toUpperCase());
+        } else {
+            hashMap.put("status", "I");
+            hashMap.put("labelStatus", param.get("status").toString().toUpperCase());
+        }
+
+        ClassPathResource classPathResource = new ClassPathResource("report/recipe.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }
 
 }

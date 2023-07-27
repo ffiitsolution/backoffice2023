@@ -82,7 +82,7 @@ public class ReportServices {
     }
     ///////////////////////END//////////////////////////////
     ///////////////NEW METHOD REPORT BY PASCA 26 July 2023////
-    public JasperPrint jasperReportRecipe(Map<String, Object> param) {
-       return dao.jasperReportRecipe(param);
+    public JasperPrint jasperReportRecipe(Map<String, Object> param, Connection connection) throws JRException, IOException {
+       return dao.jasperReportRecipe(param, connection);
     }
 }

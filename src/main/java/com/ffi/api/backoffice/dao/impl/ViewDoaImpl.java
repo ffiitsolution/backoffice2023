@@ -2111,6 +2111,13 @@ public class ViewDoaImpl implements ViewDao {
                 prm.put("item", param.get("item"));
             }
             query = queryBuilder.toString();
+        } else if (name.equals("recipe")) {
+            query = "SELECT COUNT(*) FROM M_RECIPE_HEADER a WHERE a.STATUS = :status";
+            if (param.get("status").equals("Active")) {
+                prm.put("status", "A");
+            } else {
+                prm.put("status", "I");
+            }
         }
         assert query != null;
         return Integer.valueOf(Objects.requireNonNull(jdbcTemplate.queryForObject(query, prm, new RowMapper<String>() {
