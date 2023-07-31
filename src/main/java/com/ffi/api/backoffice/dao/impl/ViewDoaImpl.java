@@ -2128,4 +2128,62 @@ public class ViewDoaImpl implements ViewDao {
         })));
     }
 
+    ///////////////////////////////Add Wastage by KP (31-07-2023)///////////////////////////////
+    
+    @Override
+    public List<Map<String, Object>> listWastageHeader(Map<String, String> ref) {
+        String qry = "select wastage_no, wastage_date, type_trans, "
+                        + "case when type_trans = 'L' then 'Left Over' else 'Wastage' end as type_proses, remark, "
+                        + "wastage_id, case when status = '1' then 'CLOSED' else 'OPEN' end as final_status "
+                        + "from t_wastage_header "
+                        + "where wastage_date between TO_DATE(:startDate, 'dd-mm-yyyy') and TO_DATE(:endDate, 'dd-mm-yyyy') "
+                        + "order by wastage_date, wastage_no ";
+        Map prm = new HashMap();
+        prm.put("startDate", ref.get("startDate"));
+        prm.put("endDate", ref.get("endDate"));
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("wastageNo", rs.getString("wastage_no"));
+                rt.put("wastageDate", rs.getString("wastage_date"));
+                rt.put("transType", rs.getString("type_trans"));
+                rt.put("prosesType", rs.getString("type_proses"));
+                rt.put("remark", rs.getString("remark"));
+                rt.put("wastageID", rs.getString("wastage_id"));
+                rt.put("status", rs.getString("final_status"));
+                return rt;
+            }
+        });
+        return list;
+    }
+    
+    @Override
+    public List<Map<String, Object>> listWastageDetail(Map<String, String> ref) {
+        String qry = "select w.wastage_no, w.item_code, w.quantity, i.item_description, i.uom_stock, w.item_to, i2.item_description item_description_to, i2.uom_stock uom_stock_to " +
+                    "from t_wastage_detail w " +
+                    "left join m_item i on i.item_code = w.item_code " +
+                    "left join m_item i2 on i2.item_code = w.item_to " +
+                    "where w.wastage_no = :wastageNo ";
+        Map prm = new HashMap();
+        prm.put("wastageNo", ref.get("wastageNo"));
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("wastageNo", rs.getString("wastage_no"));
+                rt.put("itemCode", rs.getString("item_code"));
+                rt.put("quantity", rs.getString("quantity"));
+                rt.put("itemDesc", rs.getString("item_description"));
+                rt.put("uomStock", rs.getString("uom_stock"));
+                rt.put("itemTo", rs.getString("item_to"));
+                rt.put("itemDescTo", rs.getString("item_description_to"));
+                rt.put("uomStockTo", rs.getString("uom_stock_to"));
+                return rt;
+            }
+        });
+        return list;
+    }
 }

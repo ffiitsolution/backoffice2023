@@ -1890,4 +1890,57 @@ public class IndexController {
         return res;
     }
     /////////////////////////////////DONE///////////////////////////////////////
+    
+    ///////////////////////////////Add Wastage by KP (31-07-2023)///////////////////////////////
+    //Ambil Wastage Header
+    @RequestMapping(value = "/wastage-header", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk melihat data wastage (header)", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK")
+        ,
+        @ApiResponse(code = 404, message = "The resource not found")
+    }
+    )
+    public @ResponseBody
+    Response viewWastageHeader(@RequestBody String param) throws JRException, IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response rm = new Response();
+        try {
+            list = viewServices.listWastageHeader(balance);
+            rm.setData(list);
+            rm.setRecordsTotal(list.size());
+        } catch (Exception e) {
+            rm.setRecordsTotal(0);
+        }
+        return rm;
+    }
+    
+    //Ambil Wastage Detail
+    @RequestMapping(value = "/wastage-detail", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk melihat data wastage (detail)", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK")
+        ,
+        @ApiResponse(code = 404, message = "The resource not found")
+    }
+    )
+    public @ResponseBody
+    Response viewWastageDetail(@RequestBody String param) throws JRException, IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response rm = new Response();
+        try {
+            list = viewServices.listWastageDetail(balance);
+            rm.setData(list);
+            rm.setRecordsTotal(list.size());
+        } catch (Exception e) {
+            rm.setRecordsTotal(0);
+        }
+        return rm;
+    }
 }

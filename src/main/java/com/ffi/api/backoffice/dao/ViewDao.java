@@ -170,4 +170,9 @@ public interface ViewDao {
     //////////DONE
     ///////////////NEW METHOD CEK DATA REPORT BY PASCA 13 JUL 2023////
     Integer cekDataReport(Map<String, Object> param, String name);
+    
+    ///////////////////////////////Add Wastage by KP (31-07-2023)///////////////////////////////
+    List<Map<String, Object>> listWastageHeader(Map<String, String> ref);
+    
+    List<Map<String, Object>> listWastageDetail(Map<String, String> ref);
 }

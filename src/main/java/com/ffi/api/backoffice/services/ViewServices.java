@@ -317,4 +317,13 @@ public class ViewServices {
     public Integer cekDataReport (Map<String, Object> param, String name){
         return viewDao.cekDataReport(param, name);
     }
+    
+    ///////////////////////////////Add Wastage by KP (31-07-2023)///////////////////////////////
+    public List<Map<String, Object>> listWastageHeader(Map<String, String> ref) {
+        return viewDao.listWastageHeader(ref);
+    }
+    
+    public List<Map<String, Object>> listWastageDetail(Map<String, String> ref) {
+        return viewDao.listWastageDetail(ref);
+    }
 }
