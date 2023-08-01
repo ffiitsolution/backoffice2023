@@ -2118,6 +2118,20 @@ public class ViewDoaImpl implements ViewDao {
             } else {
                 prm.put("status", "I");
             }
+        } else if (name.equals("freeMeal")) {
+            StringBuilder queryBuilder = new StringBuilder();
+            queryBuilder.append("SELECT COUNT(*) FROM T_DEV_HEADER a WHERE a.REMARK LIKE '%FREEMEAL%' AND a.OUTLET_CODE" +
+                    " = :outletCode AND a.DELIVERY_DATE BETWEEN :fromDate AND :toDate");
+
+            prm.put("outletCode", param.get("outletCode"));
+            prm.put("fromDate", param.get("fromDate"));
+            prm.put("toDate", param.get("toDate"));
+
+            if (!param.get("department").equals("ALL")) {
+                queryBuilder.append(" AND a.OUTLET_TO = :outletTo");
+                prm.put("outletTo", param.get("department"));
+            }
+            query = queryBuilder.toString();
         }
         assert query != null;
         return Integer.valueOf(Objects.requireNonNull(jdbcTemplate.queryForObject(query, prm, new RowMapper<String>() {

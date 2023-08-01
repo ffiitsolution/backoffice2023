@@ -800,4 +800,34 @@ public class ReportDaoImpl implements ReportDao {
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }
 
+    @Override
+    public JasperPrint jasperReportFreeMeal(Map<String, Object> param, Connection connection) throws IOException, JRException {
+        Map<String, Object> hashMap = new HashMap<>();
+
+        hashMap.put("user", param.get("user"));
+        hashMap.put("fromDate", param.get("fromDate"));
+        hashMap.put("toDate", param.get("toDate"));
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("department", param.get("department"));
+
+        if (param.get("typeReport").equals("Rekap")) {
+            hashMap.put("title", "Rekap");
+            hashMap.put("detail", 0);
+        } else {
+            hashMap.put("title", "Detail");
+            hashMap.put("detail", 1);
+        }
+
+        StringBuilder query = new StringBuilder();
+
+        if (!param.get("department").equals("ALL")) {
+            query.append(" AND a.OUTLET_TO = '").append(param.get("department")).append("'");
+            hashMap.put("query", query.toString());
+        }
+
+        ClassPathResource classPathResource = new ClassPathResource("report/freeMeal.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
+
 }
