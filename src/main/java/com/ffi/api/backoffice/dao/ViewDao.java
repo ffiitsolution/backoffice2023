@@ -175,4 +175,6 @@ public interface ViewDao {
     List<Map<String, Object>> listWastageHeader(Map<String, String> ref);
     
     List<Map<String, Object>> listWastageDetail(Map<String, String> ref);
+
+    List<Map<String, Object>> listOutletReport();
 }

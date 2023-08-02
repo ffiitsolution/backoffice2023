@@ -1943,4 +1943,21 @@ public class IndexController {
         }
         return rm;
     }
+
+    //list data M_OUTLET yang tipenya HO
+    @RequestMapping(value = "/list-outlet-report")
+    @ApiOperation(value = "Mepampilkan list outlet untuk report", response = Object.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "ok"), @ApiResponse(code = 400, message = "The resource not found")})
+    public @ResponseBody Response reportOrderEntry() throws IOException {
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response rm = new Response();
+        try {
+            list = viewServices.listOutletReport();
+            rm.setData(list);
+            rm.setRecordsTotal(list.size());
+        } catch (Exception e) {
+            rm.setRecordsTotal(0);
+        }
+        return rm;
+    }
 }

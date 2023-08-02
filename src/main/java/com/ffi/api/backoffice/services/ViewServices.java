@@ -326,4 +326,8 @@ public class ViewServices {
     public List<Map<String, Object>> listWastageDetail(Map<String, String> ref) {
         return viewDao.listWastageDetail(ref);
     }
+
+    public List<Map<String, Object>> listOutletReport() {
+        return viewDao.listOutletReport();
+    }
 }

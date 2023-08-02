@@ -2200,4 +2200,20 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
+
+    @Override
+    public List<Map<String, Object>> listOutletReport() {
+        String query = "SELECT a.OUTLET_CODE, a.OUTLET_NAME FROM M_OUTLET a WHERE \"TYPE\" = 'HO' ORDER BY OUTLET_CODE ASC";
+
+        List<Map<String, Object>> list = jdbcTemplate.query(query, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("outletCode", rs.getString("OUTLET_CODE"));
+                rt.put("outletName", rs.getString("OUTLET_NAME"));
+                return rt;
+            }
+        });
+        return list;
+    }
 }
