@@ -1096,4 +1096,139 @@ public class ProcessDaoImpl implements ProcessDao {
         jdbcTemplate.update(qy, param);
     }
     //End added by KP
+    
+    //Add Insert to Wastage Header & Detail by KP (03-08-2023)
+    public String wastageCounter(String year, String month, String transType, String outletCode) {
+        if(transType.equalsIgnoreCase("ID")){
+            String dateMonth = month.concat("-").concat(year);
+            String sqlId = "select to_char(nvl(max(substr(wastage_id, -3)) + 1, 1), 'fm000') as no_urut " +
+                            "from t_wastage_header " +
+                            "where wastage_id like '" + outletCode.concat("0").concat(month) + "%' " +
+                            "and to_char(wastage_date,'mm-yyyy') = :dateMonth";
+            System.err.println("Query for Id :" + sqlId);
+            Map paramId = new HashMap();
+            paramId.put("dateMonth", dateMonth);
+            return jdbcTemplate.queryForObject(sqlId, paramId, new RowMapper() {
+                @Override
+                public Object mapRow(ResultSet rs, int i) throws SQLException {
+                    return rs.getString("no_urut") == null ? outletCode.concat("0").concat(month).concat("0001") : outletCode.concat("0").concat(month).concat(rs.getString("no_urut"));
+                }
+            }).toString();
+        }
+        String sql = "select to_char(counter, 'fm0000') as no_urut from ( " +
+                    "select max(counter_no) + 1 as counter from m_counter " +
+                    "where outlet_code = :outletCode and trans_type = :transType and year = :year and month = :month " +
+                    ") tbl";
+        System.err.println("Query for No Urut :" + sql);
+        Map param = new HashMap();
+        param.put("year", year);
+        param.put("month", month);
+        param.put("transType", transType);
+        param.put("outletCode", outletCode);
+        String noUrut = jdbcTemplate.queryForObject(sql, param, new RowMapper() {
+            @Override
+            public Object mapRow(ResultSet rs, int i) throws SQLException {
+                return rs.getString("no_urut") == null ? "0" : rs.getString("no_urut");
+
+            }
+        }).toString();
+        if(noUrut.equalsIgnoreCase("0")){
+            sql = "insert into m_counter(outlet_code, trans_type, year, month, counter_no) "
+                    + "values (:outletCode, :transType, :year, :month, 1)";
+            System.err.println("Query for NEW No Urut :" + sql);
+            Map paramIns = new HashMap();
+            paramIns.put("year", year);
+            paramIns.put("month", month);
+            paramIns.put("transType", transType);
+            paramIns.put("outletCode", outletCode);
+            jdbcTemplate.update(sql, paramIns);
+            noUrut = transType.concat(outletCode).concat(year.substring(2)).concat(month).concat("0001");
+        } else {
+            sql = "update m_counter set counter_no = counter_no + 1 "
+                    + "where outlet_code = :outletCode and trans_type = :transType and year = :year and month = :month";
+            System.err.println("Query for Update Counter :" + sql);
+            Map paramIns = new HashMap();
+            paramIns.put("year", year);
+            paramIns.put("month", month);
+            paramIns.put("transType", transType);
+            paramIns.put("outletCode", outletCode);
+            jdbcTemplate.update(sql, paramIns);
+            noUrut = transType.concat(outletCode).concat(year.substring(2)).concat(month).concat(noUrut);
+        }
+        System.err.println("No Urut :" + noUrut);
+        return noUrut;
+    }
+    
+    public void InsertWastageDetail(Map<String, String> balance) {
+        String qy = "INSERT INTO t_wastage_detail (OUTLET_CODE, WASTAGE_ID, WASTAGE_NO, ITEM_CODE, QUANTITY, UOM_STOCK, ITEM_TO, USER_UPD, DATE_UPD, TIME_UPD)"
+                + " VALUES(:outletCode, :wastageId, :wastageNo, :itemCode, :qty, :uom, :itemTo, :userUpd, :dateUpd, :timeUpd)";
+        System.err.println("q detail:" + qy);
+        Map param = new HashMap();
+        param.put("outletCode", balance.get("outletCode"));
+        param.put("wastageId", balance.get("wastageId"));
+        param.put("wastageNo", balance.get("wastageNo"));
+        param.put("itemCode", balance.get("itemCode"));
+        param.put("qty", balance.get("qty"));
+        param.put("uom", balance.get("uom"));
+        param.put("itemTo", balance.get("itemTo"));
+        param.put("userUpd", balance.get("userUpd"));
+        param.put("dateUpd", dateNow);
+        param.put("timeUpd", timeStamp);
+        jdbcTemplate.update(qy, param);
+    }
+    
+    @Override
+    public void InsertWastageHeaderDetail(JsonObject balancing) {
+        DateFormat df = new SimpleDateFormat("MM");
+        DateFormat dfYear = new SimpleDateFormat("yyyy");
+        Date tgl = new Date();
+        String month = df.format(tgl);
+        String year = dfYear.format(tgl);
+        
+        //Getting last number for Wastage/Leftover
+        String transType = balancing.getAsJsonObject().getAsJsonPrimitive("transType").getAsString();
+        if (transType.contains("W")){
+            transType = "WST";
+        } else {
+            transType = "LOV";
+        }
+        String opNo = wastageCounter(year, month, transType, 
+                balancing.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
+        String opId = wastageCounter(year, month, "ID", 
+                balancing.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
+        
+        //Header
+        String sql = "insert into t_wastage_header(OUTLET_CODE, TYPE_TRANS, WASTAGE_ID, WASTAGE_NO, WASTAGE_DATE, REMARK, STATUS, USER_UPD, DATE_UPD, TIME_UPD) "
+                + "values (:outletCode, :transType, :wastageId, :wastageNo, :wastageDate, :remark, :status, :userUpd, :dateUpd, :timeUpd)";
+        System.err.println("q header :" + sql);
+        Map param = new HashMap();
+        param.put("outletCode", balancing.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
+        param.put("transType", balancing.getAsJsonObject().getAsJsonPrimitive("transType").getAsString());
+        param.put("wastageId", opId);
+        param.put("wastageNo", opNo);
+        param.put("wastageDate", balancing.getAsJsonObject().getAsJsonPrimitive("wastageDate").getAsString());
+        param.put("remark", balancing.getAsJsonObject().getAsJsonPrimitive("remark").getAsString());
+        param.put("status", balancing.getAsJsonObject().getAsJsonPrimitive("status").getAsString());
+        param.put("userUpd", balancing.getAsJsonObject().getAsJsonPrimitive("userUpd").getAsString());
+        param.put("dateUpd", dateNow);
+        param.put("timeUpd", timeStamp);
+        jdbcTemplate.update(sql, param);
+                
+        //Detail
+        JsonArray emp = balancing.getAsJsonObject().getAsJsonArray("itemList");
+        for (int i = 0; i < emp.size(); i++) {
+            Map<String, String> detailParam = new HashMap<String, String>();
+            detailParam.put("outletCode", balancing.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
+            detailParam.put("wastageId", opId);
+            detailParam.put("wastageNo", opNo);
+            detailParam.put("itemCode", emp.get(i).getAsJsonObject().getAsJsonPrimitive("itemCode").getAsString());
+            detailParam.put("qty", emp.get(i).getAsJsonObject().getAsJsonPrimitive("qty").getAsString());
+            detailParam.put("uom", emp.get(i).getAsJsonObject().getAsJsonPrimitive("uom").getAsString());
+            detailParam.put("itemTo", emp.get(i).getAsJsonObject().getAsJsonPrimitive("itemTo").getAsString());
+            detailParam.put("userUpd", balancing.getAsJsonObject().getAsJsonPrimitive("userUpd").getAsString());
+            InsertWastageDetail(detailParam);
+            detailParam.clear();
+        }
+    }
+    //End added by KP
 }

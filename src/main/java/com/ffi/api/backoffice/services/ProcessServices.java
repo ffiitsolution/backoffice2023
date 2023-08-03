@@ -157,4 +157,10 @@ public class ProcessServices {
     public void InsertRecvHeaderDetail(JsonObject balancing) {
         dao.InsertRecvHeaderDetail(balancing);
     }
+    
+    //Add Insert to Wastage Header & Detail by KP (07-06-2023)
+    @Transactional
+    public void InsertWastageHeaderDetail(JsonObject balancing) {
+        dao.InsertWastageHeaderDetail(balancing);
+    }
 }

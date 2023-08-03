@@ -1960,4 +1960,33 @@ public class IndexController {
         }
         return rm;
     }
+    
+    //Add Insert to Receiving Header & Detail by KP (07-06-2023)
+    @RequestMapping(value = "/insert-wastage-headetail", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk insert header dan detail Wastage", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage InsertWastageHeaderDetail(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, Object> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        JsonObject result = gsn.fromJson(param, JsonObject.class);
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        ResponseMessage rm = new ResponseMessage();
+        try {
+            processServices.InsertWastageHeaderDetail(result);
+            //prosesServices.updateMCounter(balance);
+            rm.setSuccess(true);
+            rm.setMessage("Insert Wastage Successfuly");
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Insert Wastage Failed: " + e.getMessage());
+            System.err.println(e);
+        }
+        rm.setItem(list);
+        return rm;
+    }
 }

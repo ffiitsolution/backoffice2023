@@ -2189,11 +2189,13 @@ public class ViewDoaImpl implements ViewDao {
                 Map<String, Object> rt = new HashMap<String, Object>();
                 rt.put("wastageNo", rs.getString("wastage_no"));
                 rt.put("itemCode", rs.getString("item_code"));
-                rt.put("quantity", rs.getString("quantity"));
+                Double qty = rs.getDouble("quantity");
+                rt.put("quantity", String.format("%.4f", qty));
                 rt.put("itemDesc", rs.getString("item_description"));
                 rt.put("uomStock", rs.getString("uom_stock"));
                 rt.put("itemTo", rs.getString("item_to"));
                 rt.put("itemDescTo", rs.getString("item_description_to"));
+                rt.put("quantityTo", String.format("%.2f", qty));
                 rt.put("uomStockTo", rs.getString("uom_stock_to"));
                 return rt;
             }

@@ -85,4 +85,7 @@ public interface ProcessDao {
 
     //Add Insert to Receiving Header & Detail by KP (07-06-2023)
     public void InsertRecvHeaderDetail(JsonObject mapping);
+    
+    //Add Insert to Wastage Header & Detail by KP (03-08-2023)
+    public void InsertWastageHeaderDetail(JsonObject mapping);
 }
