@@ -685,6 +685,10 @@ public class ViewDoaImpl implements ViewDao {
         if (Logan.get("paket").equalsIgnoreCase("A")) {
             qry = "SELECT * FROM M_ITEM WHERE FLAG_STOCK = 'Y' ORDER BY ITEM_CODE ASC";
         }
+        //W for Wastage
+        if (Logan.get("paket").equalsIgnoreCase("W")) {
+            qry = "SELECT * FROM M_ITEM WHERE FLAG_STOCK = 'Y' AND FLAG_MATERIAL = 'Y' ORDER BY ITEM_CODE ASC";
+        }
         Map prm = new HashMap();
         prm.put("FlagPaket", Logan.get("paket"));
         System.err.println("q :" + qry);
