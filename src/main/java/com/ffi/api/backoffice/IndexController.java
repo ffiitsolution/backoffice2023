@@ -1989,4 +1989,22 @@ public class IndexController {
         rm.setItem(list);
         return rm;
     }
+    
+        ///////////////NEW METHOD INSERT ORDER DETAIL BY DONA 7 AUG 2023////
+    @RequestMapping(value = "/list-stock-opname", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk list stock opname", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listStockOpname(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        Response res = new Response();
+        res.setData(viewServices.listStockOpname(balance));
+        return res;
+    }
+
 }

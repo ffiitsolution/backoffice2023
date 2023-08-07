@@ -240,16 +240,19 @@ public class ViewServices {
     public List<Map<String, Object>> listOrderHeader(Map<String, String> ref) {
         return viewDao.listOrderHeader(ref);
     }
+
     ///////////////done 
     ///////////////NEW METHOD LIST ORDER HEADER BY DONA 18 APRIL 2023////
     public List<Map<String, Object>> listOrderHeaderAll(Map<String, String> ref) {
         return viewDao.listOrderHeaderAll(ref);
     }
+
     ///////////////done 
     ///////////////NEW METHOD LIST ORDER HEADER BY DONA 27 APRIL 2023////
     public List<Map<String, Object>> listOrderDetail(Map<String, String> ref) {
         return viewDao.listOrderDetail(ref);
     }
+
     ///////////////done 
     ///////////////NEW METHOD LIST COUNTER BY DONA 2 MEI 2023////
     public List<Map<String, Object>> listCounter(Map<String, String> ref) {
@@ -307,22 +310,23 @@ public class ViewServices {
         return viewDao.listOrderDetailOutlet(ref);
     }
     ///////////////done 
-    
-        ///////////////NEW METHOD LIST ORDER HEADER SUPPLIER BY DONA 13 jul 2023////
+
+    ///////////////NEW METHOD LIST ORDER HEADER SUPPLIER BY DONA 13 jul 2023////
     public List<Map<String, Object>> listOrderDetailSupplier(Map<String, String> ref) {
         return viewDao.listOrderDetailSupplier(ref);
     }
+
     ///////////////done
     ///////////////NEW METHOD CEK DATA REPORT BY PASCA 13 JUL 2023////
-    public Integer cekDataReport (Map<String, Object> param, String name){
+    public Integer cekDataReport(Map<String, Object> param, String name) {
         return viewDao.cekDataReport(param, name);
     }
-    
+
     ///////////////////////////////Add Wastage by KP (31-07-2023)///////////////////////////////
     public List<Map<String, Object>> listWastageHeader(Map<String, String> ref) {
         return viewDao.listWastageHeader(ref);
     }
-    
+
     public List<Map<String, Object>> listWastageDetail(Map<String, String> ref) {
         return viewDao.listWastageDetail(ref);
     }
@@ -330,4 +334,11 @@ public class ViewServices {
     public List<Map<String, Object>> listOutletReport() {
         return viewDao.listOutletReport();
     }
+    ///////////////////////////////List Stock Opname 7 AUG 2023///////////////////////////////
+
+    public List<Map<String, Object>> listStockOpname(Map<String, String> ref) {
+        return viewDao.listStockOpname(ref);
+
+    }
+    /////////////////////Done
 }

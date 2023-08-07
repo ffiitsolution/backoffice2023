@@ -79,7 +79,7 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listSupplier(Map<String, String> balance) {
-        String qry = "SELECT  CD_SUPPLIER, SUPPLIER_NAME, CP_NAME, FLAG_CANVASING, STATUS, ADDRESS_1, "
+        String qry = "SELECT  CD_TEMPLATE, TEMPLATE_NAME, CP_NAME, FLAG_CANVASING, STATUS, ADDRESS_1, "
                 + "ADDRESS_2, CITY, ZIP_CODE, PHONE, FAX, HOMEPAGE, CP_TITLE, CP_MOBILE, CP_PHONE, "
                 + "CP_PHONE_EXT, CP_EMAIL, USER_UPD, DATE_UPD, TIME_UPD FROM m_supplier"
                 + " where status like :status"
@@ -95,8 +95,8 @@ public class ViewDoaImpl implements ViewDao {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap< String, Object>();
-                rt.put("cdSupplier", rs.getString("CD_SUPPLIER"));
-                rt.put("supplierName", rs.getString("SUPPLIER_NAME"));
+                rt.put("cdTemplate", rs.getString("CD_TEMPLATE"));
+                rt.put("supplierName", rs.getString("TEMPLATE_NAME"));
                 rt.put("cpName", rs.getString("CP_NAME"));
                 rt.put("flagCanvasing", rs.getString("FLAG_CANVASING"));
                 rt.put("status", rs.getString("STATUS"));
@@ -126,18 +126,18 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listDataItemSupplier(Map<String, String> balance) {
-        String qry = "SELECT  a.CD_SUPPLIER, a.ITEM_CODE,b.item_description,a.STATUS, a.USER_UPD, a.DATE_UPD,a.TIME_UPD FROM M_ITEM_SUPPLIER A \n"
+        String qry = "SELECT  a.CD_TEMPLATE, a.ITEM_CODE,b.item_description,a.STATUS, a.USER_UPD, a.DATE_UPD,a.TIME_UPD FROM M_ITEM_TEMPLATE A \n"
                 + "left join m_item B \n"
-                + "on a.item_code=b.item_code WHERE CD_SUPPLIER=:cdSupplier";
+                + "on a.item_code=b.item_code WHERE CD_TEMPLATE=:cdTemplate";
         Map prm = new HashMap();
-        prm.put("cdSupplier", balance.get("cdSupplier"));
+        prm.put("cdTemplate", balance.get("cdTemplate"));
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
                 rt.put("itemCode", rs.getString("ITEM_CODE"));
-                rt.put("cdSupplier", rs.getString("CD_SUPPLIER"));
+                rt.put("cdTemplate", rs.getString("CD_TEMPLATE"));
                 rt.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
                 rt.put("status", rs.getString("STATUS"));
                 rt.put("userUpd", rs.getString("USER_UPD"));
@@ -173,19 +173,19 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> listItemSupplier(Map<String, String> balance) {
 
-        String qry = "select  a.CD_SUPPLIER,a.item_code,b.item_description,"
-                + "a.STATUS, a.USER_UPD, a.DATE_UPD, a.TIME_UPD from M_ITEM_SUPPLIER a left join "
+        String qry = "select  a.CD_TEMPLATE,a.item_code,b.item_description,"
+                + "a.STATUS, a.USER_UPD, a.DATE_UPD, a.TIME_UPD from M_ITEM_TEMPLATE a left join "
                 + "m_item b "
                 + "on a.item_code=B.ITEM_CODE "
-                + "WHERE a.CD_SUPPLIER=:cdSupplier ";
+                + "WHERE a.CD_TEMPLATE=:cdTemplate ";
         Map prm = new HashMap();
-        prm.put("cdSupplier", balance.get("cdSupplier"));
+        prm.put("cdTemplate", balance.get("cdTemplate"));
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("cdSupplier", rs.getString("CD_SUPPLIER"));
+                rt.put("cdTemplate", rs.getString("CD_TEMPLATE"));
                 rt.put("itemCode", rs.getString("ITEM_CODE"));
                 rt.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
                 rt.put("status", rs.getString("STATUS"));
@@ -1314,7 +1314,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("orderNo", rs.getString("ORDER_NO"));
                 rt.put("orderDate", rs.getString("ORDER_DATE"));
                 rt.put("orderTo", rs.getString("ORDER_TO"));
-                rt.put("cdSupplier", rs.getString("CD_SUPPLIER"));
+                rt.put("cdTemplate", rs.getString("CD_TEMPLATE"));
                 rt.put("dtDue", rs.getString("DT_DUE"));
                 rt.put("dtExpired", rs.getString("DT_EXPIRED"));
                 rt.put("remark", rs.getString("REMARK"));
@@ -1343,7 +1343,7 @@ public class ViewDoaImpl implements ViewDao {
         String qry = "SELECT H.*,case when G.DESCRIPTION is null and  m.outlet_name is null then s.supplier_name \n"
                 + "                when G.DESCRIPTION is null and s.supplier_name  is null then m.outlet_name else\n"
                 + "               g.description end as NAMA_GUDANG FROM T_ORDER_HEADER H "
-                + " LEFT JOIN M_GLOBAL G ON G.CODE = H.CD_SUPPLIER AND G.COND = 'X_" + getCity + "' AND G.STATUS = 'A' "
+                + " LEFT JOIN M_GLOBAL G ON G.CODE = H.CD_TEMPLATE AND G.COND = 'X_" + getCity + "' AND G.STATUS = 'A' "
                 + " left join m_outlet M\n"
                 + "               on H.cd_supplier=m.outlet_code\n"
                 + "               left join m_supplier S\n"
@@ -1371,7 +1371,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("orderNo", rs.getString("ORDER_NO"));
                 rt.put("orderDate", rs.getString("ORDER_DATE"));
                 rt.put("orderTo", rs.getString("ORDER_TO"));
-                rt.put("cdSupplier", rs.getString("CD_SUPPLIER"));
+                rt.put("cdTemplate", rs.getString("CD_TEMPLATE"));
                 rt.put("dtDue", rs.getString("DT_DUE"));
                 rt.put("dtExpired", rs.getString("DT_EXPIRED"));
                 rt.put("remark", rs.getString("REMARK"));
@@ -1901,7 +1901,7 @@ public class ViewDoaImpl implements ViewDao {
     }
 
     ///////////////////done
-    ///////////////NEW METHOD LIST ORDER HEADER SUPPLIER BY DONA 13 JUL 2023////
+    ///////////////NEW METHOD LIST ORDER HEADER TEMPLATE BY DONA 13 JUL 2023////
     @Override
     public List<Map<String, Object>> listOrderDetailSupplier(Map<String, String> balance) {
         String qry = "SELECT * FROM ( "
@@ -1927,11 +1927,11 @@ public class ViewDoaImpl implements ViewDao {
                 + "           0 TOTAL_JUMLAH, "
                 + "           UOM_PURCHASE AS TOTAL "
                 + "        FROM M_ITEM)) A "
-                + "                   LEFT JOIN M_ITEM_SUPPLIER S "
+                + "                   LEFT JOIN M_ITEM_TEMPLATE S "
                 + "                   ON A.ITEM_CODE=S.ITEM_CODE "
-                + "                   WHERE S.CD_SUPPLIER=:cdSupplier";
+                + "                   WHERE S.CD_TEMPLATE=:cdTemplate";
         Map prm = new HashMap();
-        prm.put("cdSupplier", balance.get("cdSupplier"));
+        prm.put("cdTemplate", balance.get("cdTemplate"));
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
@@ -2094,23 +2094,25 @@ public class ViewDoaImpl implements ViewDao {
             prm.put("outletCode", param.get("outletCode"));
         } else if (name.equals("stock")) {
             StringBuilder queryBuilder = new StringBuilder();
-            queryBuilder.append("SELECT COUNT(*) FROM T_STOCK_CARD a LEFT JOIN M_ITEM  b ON a.ITEM_CODE = b.ITEM_CODE " +
-                    "LEFT JOIN M_GLOBAL c ON b.CD_WAREHOUSE = c.CODE AND c.COND = 'WAREHOUSE' WHERE a.OUTLET_CODE = " +
-                    ":outletCode AND TRANS_DATE BETWEEN :fromDate AND :toDate");
+            queryBuilder.append("SELECT COUNT(*) FROM T_STOCK_CARD a LEFT JOIN M_ITEM  b ON a.ITEM_CODE = b.ITEM_CODE "
+                    + "LEFT JOIN M_GLOBAL c ON b.CD_WAREHOUSE = c.CODE AND c.COND = 'WAREHOUSE' WHERE a.OUTLET_CODE = "
+                    + ":outletCode AND TRANS_DATE BETWEEN :fromDate AND :toDate");
 
             prm.put("outletCode", param.get("outletCode"));
             prm.put("fromDate", param.get("fromDate"));
             prm.put("toDate", param.get("toDate"));
 
-            if (param.get("typePrint").equals(1.0))
+            if (param.get("typePrint").equals(1.0)) {
                 queryBuilder.append(" AND (a.QTY_IN  != 0 OR a.QTY_OUT != 0 OR a.QTY_BEGINNING != 0)");
-            if (param.get("stockMinus").equals(1.0))
+            }
+            if (param.get("stockMinus").equals(1.0)) {
                 queryBuilder.append(" AND SIGN(a.QTY_BEGINNING + a.QTY_IN - a.QTY_OUT) = -1");
+            }
             if (!param.get("gudang").equals("Semua")) {
                 queryBuilder.append(" AND c.DESCRIPTION = :gudang");
                 prm.put("gudang", param.get("gudang"));
             }
-            if (!param.get("item").equals("Semua")){
+            if (!param.get("item").equals("Semua")) {
                 queryBuilder.append(" AND a.ITEM_CODE = :item");
                 prm.put("item", param.get("item"));
             }
@@ -2124,8 +2126,8 @@ public class ViewDoaImpl implements ViewDao {
             }
         } else if (name.equals("freeMeal")) {
             StringBuilder queryBuilder = new StringBuilder();
-            queryBuilder.append("SELECT COUNT(*) FROM T_DEV_HEADER a WHERE a.REMARK LIKE '%FREEMEAL%' AND a.OUTLET_CODE" +
-                    " = :outletCode AND a.DELIVERY_DATE BETWEEN :fromDate AND :toDate");
+            queryBuilder.append("SELECT COUNT(*) FROM T_DEV_HEADER a WHERE a.REMARK LIKE '%FREEMEAL%' AND a.OUTLET_CODE"
+                    + " = :outletCode AND a.DELIVERY_DATE BETWEEN :fromDate AND :toDate");
 
             prm.put("outletCode", param.get("outletCode"));
             prm.put("fromDate", param.get("fromDate"));
@@ -2147,15 +2149,14 @@ public class ViewDoaImpl implements ViewDao {
     }
 
     ///////////////////////////////Add Wastage by KP (31-07-2023)///////////////////////////////
-    
     @Override
     public List<Map<String, Object>> listWastageHeader(Map<String, String> ref) {
         String qry = "select wastage_no, wastage_date, type_trans, "
-                        + "case when type_trans = 'L' then 'Left Over' else 'Wastage' end as type_proses, remark, "
-                        + "wastage_id, case when status = '1' then 'CLOSED' else 'OPEN' end as final_status "
-                        + "from t_wastage_header "
-                        + "where wastage_date between TO_DATE(:startDate, 'dd-mm-yyyy') and TO_DATE(:endDate, 'dd-mm-yyyy') "
-                        + "order by wastage_date, wastage_no ";
+                + "case when type_trans = 'L' then 'Left Over' else 'Wastage' end as type_proses, remark, "
+                + "wastage_id, case when status = '1' then 'CLOSED' else 'OPEN' end as final_status "
+                + "from t_wastage_header "
+                + "where wastage_date between TO_DATE(:startDate, 'dd-mm-yyyy') and TO_DATE(:endDate, 'dd-mm-yyyy') "
+                + "order by wastage_date, wastage_no ";
         Map prm = new HashMap();
         prm.put("startDate", ref.get("startDate"));
         prm.put("endDate", ref.get("endDate"));
@@ -2176,14 +2177,14 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
-    
+
     @Override
     public List<Map<String, Object>> listWastageDetail(Map<String, String> ref) {
-        String qry = "select w.wastage_no, w.item_code, w.quantity, i.item_description, i.uom_stock, w.item_to, i2.item_description item_description_to, i2.uom_stock uom_stock_to " +
-                    "from t_wastage_detail w " +
-                    "left join m_item i on i.item_code = w.item_code " +
-                    "left join m_item i2 on i2.item_code = w.item_to " +
-                    "where w.wastage_no = :wastageNo ";
+        String qry = "select w.wastage_no, w.item_code, w.quantity, i.item_description, i.uom_stock, w.item_to, i2.item_description item_description_to, i2.uom_stock uom_stock_to "
+                + "from t_wastage_detail w "
+                + "left join m_item i on i.item_code = w.item_code "
+                + "left join m_item i2 on i2.item_code = w.item_to "
+                + "where w.wastage_no = :wastageNo ";
         Map prm = new HashMap();
         prm.put("wastageNo", ref.get("wastageNo"));
         System.err.println("q :" + qry);
@@ -2222,4 +2223,81 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
+
+/////////////////////////////List Stock Opname 7 AUG 2023///////////////////////////////////////////
+    @Override
+    public List<Map<String, Object>> listStockOpname(Map<String, String> balance) {
+        String where = "";
+        if (!balance.get("opnameDate").equals("")) {
+            where = "AND OPNAME_DATE =:opnanameDate";
+        } else {
+            where = "and OPNAME_DATE between to_date(:dateStart, 'dd-mm-yyyy') and to_date(:dateEnd, 'dd-mm-yyyy')";
+        }
+        String qry = "select * from T_OPNAME_HEADER "
+                + " WHERE status=:status and CD_TEMPLATE=:cdTemplate "
+                + "" + where + "";
+        Map prm = new HashMap();
+        prm.put("status", balance.get("status"));
+        prm.put("cdTemplate", balance.get("cdTemplate"));
+        prm.put("dateStart", balance.get("dateStart"));
+        prm.put("dateEnd", balance.get("dateEnd"));
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("outletCode", rs.getString("OUTLET_CODE"));
+                rt.put("cdTemplate", rs.getString("CD_TEMPLATE"));
+                rt.put("opnanameNo", rs.getString("OPNAME_NO"));
+                rt.put("opnameDate", rs.getString("OPNAME_DATE"));
+                rt.put("remark", rs.getString("remark"));
+                rt.put("status", rs.getString("STATUS"));
+                rt.put("userUpd", rs.getString("USER_UPD"));
+                rt.put("dateUpd", rs.getString("DATE_UPD"));
+                rt.put("timeUpd", rs.getString("TIME_UPD"));
+
+                return rt;
+            }
+        });
+        return list;
+    }
+//    
+//    @Override
+//    public List<Map<String, Object>> listStockOpname(Map<String, String> balance) {
+////        String where = "";
+////        if (!balance.get("opnameDate").equals("")) {
+////            where = "AND OPNAME_DATE =:opnanameDate";
+////        } else {
+////            where = "OPNAME_DATE between to_date(:dateStart, 'dd-mm-yyyy') and to_date(:dateEnd, 'dd-mm-yyyy')";
+////        }
+//        String qry = "select * from T_OPNAME_HEADER "
+//                + " WHERE status=:status and CD_TEMPLATE=:cdTemplate ";
+//////                + "" + where + "";
+//        Map prm = new HashMap();
+//        prm.put("status", "%" + balance.get("status") + "%");
+//        prm.put("cdTemplate", "%" + balance.get("cdTemplate") + "%");
+////        prm.put("dateStart", balance.get("dateStart"));
+////        prm.put("dateEnd", balance.get("dateEnd"));
+//        System.err.println("q :" + qry);
+//        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+//            @Override
+//            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+//                Map<String, Object> rt = new HashMap<String, Object>();
+//                rt.put("outletCode", rs.getString("OUTLET_CODE"));
+//                rt.put("cdTemplate", rs.getString("CD_TEMPLATE"));
+//                rt.put("opnanameNo", rs.getString("OPNAME_NO"));
+//                rt.put("opnanameDate", rs.getString("OPNAME_DATE"));
+//                rt.put("remark", rs.getString("remark"));
+//                rt.put("status", rs.getString("STATUS"));
+//                rt.put("userUpd", rs.getString("USER_UPD"));
+//                rt.put("dateUpd", rs.getString("DATE_UPD"));
+//                rt.put("timeUpd", rs.getString("TIME_UPD"));
+//                return rt;
+//            }
+//        });
+//        return list;
+//
+//    }
+/////////////////////////Done////////////////////////////////////////////////////
+
 }
