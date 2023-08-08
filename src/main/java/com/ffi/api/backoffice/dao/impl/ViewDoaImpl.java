@@ -689,6 +689,9 @@ public class ViewDoaImpl implements ViewDao {
         if (Logan.get("paket").equalsIgnoreCase("W")) {
             qry = "SELECT * FROM M_ITEM WHERE FLAG_STOCK = 'Y' AND FLAG_MATERIAL = 'Y' ORDER BY ITEM_CODE ASC";
         }
+        if (Logan.get("paket").equalsIgnoreCase("L")) {
+            qry = "select * from m_item where trim(cd_item_leftover) in ('A2-0001', 'A2-0002') order by item_code asc";
+        }
         Map prm = new HashMap();
         prm.put("FlagPaket", Logan.get("paket"));
         System.err.println("q :" + qry);
@@ -701,7 +704,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("besar", rs.getString("uom_warehouse"));
                 rt.put("kecil", rs.getString("uom_stock"));
                 rt.put("status", rs.getString("status"));
-
+                rt.put("leftover", rs.getString("cd_item_leftover"));
                 return rt;
             }
         });
