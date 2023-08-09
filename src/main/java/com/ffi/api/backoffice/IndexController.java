@@ -2035,4 +2035,29 @@ public class IndexController {
         rm.setItem(list);
         return rm;
     }
+    
+    @RequestMapping(value = "/view-mpcs-temp", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view MPCS Template", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response ViewMpcsTemplate(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response rm = new Response();
+        try {
+            list = viewServices.listTemplateMpcs(balance);
+            rm.setRecordsTotal(list.size());
+            rm.setRecordsFiltered(list.size());
+        } catch (Exception e) {
+            rm.setRecordsTotal(0);
+            rm.setRecordsFiltered(0);
+        }
+        rm.setData(list);
+        return rm;
+    }
 }

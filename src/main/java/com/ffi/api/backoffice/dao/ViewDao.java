@@ -179,4 +179,7 @@ public interface ViewDao {
     List<Map<String, Object>> listOutletReport();
         //////////////////////////////List Stock Opname 8 AGUSTUS 2023///////////////////////////////
     List<Map<String, Object>> listStockOpname(Map<String, String> ref);
+    
+    ///////////////////////////////Add MPCS by KP (09-08-2023)///////////////////////////////
+    List<Map<String, Object>> listTemplateMpcs(Map<String, String> ref);
 }

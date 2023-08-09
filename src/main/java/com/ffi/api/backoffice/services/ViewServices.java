@@ -341,4 +341,9 @@ public class ViewServices {
 
     }
     /////////////////////Done
+    
+    ///////////////////////////////Add MPCS by KP (09-08-2023)///////////////////////////////
+    public List<Map<String, Object>> listTemplateMpcs(Map<String, String> ref) {
+        return viewDao.listTemplateMpcs(ref);
+    }
 }

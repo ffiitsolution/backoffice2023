@@ -2302,5 +2302,32 @@ public class ViewDoaImpl implements ViewDao {
 //
 //    }
 /////////////////////////Done////////////////////////////////////////////////////
-
+    
+    //Added View MPCS by KP (09-08-2023)
+    @Override
+    public List<Map<String, Object>> listTemplateMpcs(Map<String, String> ref) {
+        String qry = "select outlet_code, seq_mpcs, time_mpcs, date_upd, time_upd " +
+                    "from template_mpcs " +
+                    "where date_upd = TO_DATE(:dateUpd, 'DD/MM/YYYY') " +
+                    "and outlet_code = :outlet " +
+                    "order by seq_mpcs asc ";
+        Map prm = new HashMap();
+        prm.put("outlet", ref.get("outlet"));
+        prm.put("dateUpd", ref.get("dateUpd"));
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("outletCode", rs.getString("outlet_code"));
+                rt.put("seqMpcs", rs.getString("seq_mpcs"));
+                rt.put("timeMpcs", rs.getString("time_mpcs"));
+                rt.put("dateUpd", rs.getString("date_upd"));
+                rt.put("timeUpd", rs.getString("time_upd"));
+                return rt;
+            }
+        });
+        return list;
+    }
+    //End of MPCS
 }
