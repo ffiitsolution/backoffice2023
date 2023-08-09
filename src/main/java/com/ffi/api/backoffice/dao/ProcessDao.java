@@ -88,4 +88,7 @@ public interface ProcessDao {
     
     //Add Insert to Wastage Header & Detail by KP (03-08-2023)
     public void InsertWastageHeaderDetail(JsonObject mapping);
+    
+    //Insert MPCS by Kevin (08-08-2023)
+    public void InsertMPCSTemplate(JsonObject mapping);
 }

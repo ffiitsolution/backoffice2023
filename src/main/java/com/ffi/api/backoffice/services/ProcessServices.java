@@ -163,4 +163,9 @@ public class ProcessServices {
     public void InsertWastageHeaderDetail(JsonObject balancing) {
         dao.InsertWastageHeaderDetail(balancing);
     }
+    
+    //Insert MPCS by Kevin (08-08-2023)
+    public void InsertMPCSTemplate(JsonObject balancing){
+        dao.InsertMPCSTemplate(balancing);
+    }
 }

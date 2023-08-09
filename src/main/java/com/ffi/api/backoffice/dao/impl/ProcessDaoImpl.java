@@ -1231,4 +1231,44 @@ public class ProcessDaoImpl implements ProcessDao {
         }
     }
     //End added by KP
+    
+    //Insert MPCS by Kevin (08-08-2023)
+    @Override
+    public void InsertMPCSTemplate(JsonObject balancing) {
+        DateFormat df = new SimpleDateFormat("HH:mm");
+        DateFormat df2 = new SimpleDateFormat("HHmmss");
+        int interval = balancing.getAsJsonObject().getAsJsonPrimitive("interval").getAsInt();
+        String startTime = balancing.getAsJsonObject().getAsJsonPrimitive("startTime").getAsString();
+        String endTime = balancing.getAsJsonObject().getAsJsonPrimitive("endTime").getAsString();
+        String sql = "insert into template_mpcs(outlet_code, seq_mpcs, time_mpcs, user_upd, date_upd, time_upd) " +
+                    "values(:outletCode, :seq, :timeMpcs, :userUpd, :dateUpd, :timeUpd) ";
+        System.err.println("MPCS query :" + sql);
+        Map param = new HashMap();
+        try {
+            Date strTime = df.parse(startTime);
+            Date enTime = df.parse(endTime);
+            Date countTime = df.parse(startTime);
+            long differ = (enTime.getTime() - strTime.getTime()) / 1000;
+            int loop = (int) differ / 3600;
+            //System.err.println("How many hours: " + loop);
+            loop = (loop % 3600) * (60 / interval);
+            //System.err.println("How many 30 minutes: " + loop);
+            for(int i = 0; i <= loop; i++){
+                //System.err.println("Iteration: " + i + ", the time is: " + df.format(countTime));
+                param.put("outletCode", balancing.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
+                param.put("seq", (i + 1));
+                param.put("timeMpcs", df2.format(countTime));
+                param.put("userUpd", balancing.getAsJsonObject().getAsJsonPrimitive("userUpd").getAsString());
+                param.put("dateUpd", dateNow);
+                param.put("timeUpd", timeStamp);
+                jdbcTemplate.update(sql, param);
+                //System.err.println(param);
+                param.clear();
+                countTime = new Date(countTime.getTime() + (interval * 60 * 1000));
+            }
+        } catch (Exception ex){
+            System.err.println("Error DateTime: " + ex);
+        }
+    }
+    //End of MPCS
 }

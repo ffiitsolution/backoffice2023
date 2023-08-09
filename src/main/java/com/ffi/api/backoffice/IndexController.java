@@ -2007,4 +2007,32 @@ public class IndexController {
         return res;
     }
 
+    //Add Insert to MPCS Template by KP (07-06-2023)
+    @RequestMapping(value = "/mpcs-template", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk insert MPCS Template awal", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage InsertMPCSTemplate(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, Object> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        JsonObject result = gsn.fromJson(param, JsonObject.class);
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        ResponseMessage rm = new ResponseMessage();
+        try {
+            processServices.InsertMPCSTemplate(result);
+            //prosesServices.updateMCounter(balance);
+            rm.setSuccess(true);
+            rm.setMessage("Insert MPCS Template Successfuly");
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Insert MPCS Template Failed: " + e.getMessage());
+            System.err.println(e);
+        }
+        rm.setItem(list);
+        return rm;
+    }
 }
