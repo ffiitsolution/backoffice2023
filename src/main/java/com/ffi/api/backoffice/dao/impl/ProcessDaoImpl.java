@@ -1240,6 +1240,13 @@ public class ProcessDaoImpl implements ProcessDao {
         int interval = balancing.getAsJsonObject().getAsJsonPrimitive("interval").getAsInt();
         String startTime = balancing.getAsJsonObject().getAsJsonPrimitive("startTime").getAsString();
         String endTime = balancing.getAsJsonObject().getAsJsonPrimitive("endTime").getAsString();
+        
+        //Delete existing
+        String sqlDel = "delete from template_mpcs where outlet_code = :outletCode ";
+        Map paramDel = new HashMap();
+        paramDel.put("outletCode", balancing.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
+        jdbcTemplate.update(sqlDel, paramDel);
+        
         String sql = "insert into template_mpcs(outlet_code, seq_mpcs, time_mpcs, user_upd, date_upd, time_upd) " +
                     "values(:outletCode, :seq, :timeMpcs, :userUpd, :dateUpd, :timeUpd) ";
         System.err.println("MPCS query :" + sql);
