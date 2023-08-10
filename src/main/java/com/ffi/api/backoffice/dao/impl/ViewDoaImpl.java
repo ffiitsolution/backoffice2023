@@ -45,10 +45,10 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> loginJson(ParameterLogin ref) {
-        String qry = "select S.REGION_CODE,G.DESCRIPTION REG_NAME,S.OUTLET_CODE,O.OUTLET_NAME,S.STAFF_CODE,S.STAFF_NAME,S.STAFF_FULL_NAME,S.ID_CARD,S.POSITION,S.GROUP_ID,O.CITY \n"
-                + "from M_STAFF S\n"
-                + "JOIN M_OUTLET O ON O.OUTLET_CODE = S.OUTLET_CODE\n"
-                + "JOIN M_GLOBAL G ON G.CODE = S.REGION_CODE AND G.COND = 'REG_OUTLET' \n"
+        String qry = "select S.REGION_CODE,G.DESCRIPTION REG_NAME,S.OUTLET_CODE,O.OUTLET_NAME,S.STAFF_CODE,S.STAFF_NAME,S.STAFF_FULL_NAME,S.ID_CARD,S.POSITION,S.GROUP_ID,O.CITY  "
+                + "from M_STAFF S "
+                + "JOIN M_OUTLET O ON O.OUTLET_CODE = S.OUTLET_CODE "
+                + "JOIN M_GLOBAL G ON G.CODE = S.REGION_CODE AND G.COND = 'REG_OUTLET'  "
                 + "where S.STAFF_CODE = :staffCode and S.PASSWORD = :pass and S.OUTLET_CODE = :outletCode and S.STATUS = 'A'";
         Map prm = new HashMap();
         prm.put("staffCode", ref.getUserName());
@@ -126,8 +126,8 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listDataItemSupplier(Map<String, String> balance) {
-        String qry = "SELECT  a.CD_TEMPLATE, a.ITEM_CODE,b.item_description,a.STATUS, a.USER_UPD, a.DATE_UPD,a.TIME_UPD FROM M_ITEM_TEMPLATE A \n"
-                + "left join m_item B \n"
+        String qry = "SELECT  a.CD_TEMPLATE, a.ITEM_CODE,b.item_description,a.STATUS, a.USER_UPD, a.DATE_UPD,a.TIME_UPD FROM M_ITEM_TEMPLATE A  "
+                + "left join m_item B  "
                 + "on a.item_code=b.item_code WHERE CD_TEMPLATE=:cdTemplate";
         Map prm = new HashMap();
         prm.put("cdTemplate", balance.get("cdTemplate"));
@@ -202,10 +202,10 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listMpcs(Map<String, String> balance) {
-        String qry = "SELECT  A.OUTLET_CODE,B.OUTLET_NAME, A.FRYER_TYPE, A.FRYER_TYPE_SEQ, A.STATUS, A.FRYER_TYPE_RESET,\n"
-                + "A.FRYER_TYPE_SEQ_CNT, A.FRYER_TYPE_CNT, A.USER_UPD, A.DATE_UPD, A.TIME_UPD  FROM\n"
-                + "M_MPCS_DETAIL A LEFT JOIN M_OUTLET B\n"
-                + "ON A.OUTLET_CODE=B.OUTLET_CODE WHERE A.OUTLET_CODE =:outletCode  AND A.FRYER_TYPE = :fryerType ORDER BY\n"
+        String qry = "SELECT  A.OUTLET_CODE,B.OUTLET_NAME, A.FRYER_TYPE, A.FRYER_TYPE_SEQ, A.STATUS, A.FRYER_TYPE_RESET, "
+                + "A.FRYER_TYPE_SEQ_CNT, A.FRYER_TYPE_CNT, A.USER_UPD, A.DATE_UPD, A.TIME_UPD  FROM "
+                + "M_MPCS_DETAIL A LEFT JOIN M_OUTLET B "
+                + "ON A.OUTLET_CODE=B.OUTLET_CODE WHERE A.OUTLET_CODE =:outletCode  AND A.FRYER_TYPE = :fryerType ORDER BY "
                 + "A.OUTLET_CODE  ASC, A.FRYER_TYPE  ASC,A. FRYER_TYPE_SEQ  ASC ";
         Map prm = new HashMap();
         prm.put("outletCode", balance.get("outletCode"));
@@ -273,13 +273,13 @@ public class ViewDoaImpl implements ViewDao {
     ///////////////new method from budi 14-03-2023////////////////////////////
     @Override
     public List<Map<String, Object>> listMenuGroup(Map<String, String> ref) {
-        String qry = "SELECT  \n"
-                + "    M.MENU_GROUP_CODE,\n"
-                + "    G.DESCRIPTION AS MENU_GROUP\n"
-                + "FROM M_MENU_GROUP M \n"
-                + "JOIN M_GLOBAL G \n"
-                + "ON M.MENU_GROUP_CODE = G.CODE \n"
-                + "WHERE G.COND = 'GROUP' AND M.OUTLET_CODE LIKE :outlet_code \n"
+        String qry = "SELECT   "
+                + "    M.MENU_GROUP_CODE, "
+                + "    G.DESCRIPTION AS MENU_GROUP "
+                + "FROM M_MENU_GROUP M  "
+                + "JOIN M_GLOBAL G  "
+                + "ON M.MENU_GROUP_CODE = G.CODE  "
+                + "WHERE G.COND = 'GROUP' AND M.OUTLET_CODE LIKE :outlet_code  "
                 + "ORDER BY MENU_GROUP_CODE";
         Map prm = new HashMap();
         prm.put("outlet_code", "%" + ref.get("outlet_code") + "%");
@@ -299,20 +299,20 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listPrice(Map<String, String> ref) {
-        String qry = "SELECT \n"
-                + "    G1.CODE AS ITEM_CODE,\n"
-                + "    G1.DESCRIPTION AS ITEM_NAME,\n"
-                + "    MP.PRICE AS PRICE,\n"
-                + "    MP.PRICE_TYPE_CODE AS PRICE_TYPE_CODE,\n"
-                + "    G2.DESCRIPTION AS ORDER_DESCRIPTION\n"
-                + "FROM M_GLOBAL G1\n"
-                + "LEFT JOIN M_PRICE MP\n"
-                + "ON G1.CODE = MP.MENU_ITEM_CODE\n"
-                + "LEFT JOIN M_OUTLET_PRICE OP\n"
-                + "ON OP.PRICE_TYPE_CODE = MP.PRICE_TYPE_CODE AND OP.OUTLET_CODE LIKE '%%'\n"
-                + "LEFT JOIN M_GLOBAL G2\n"
-                + "ON OP.ORDER_TYPE = G2.CODE AND G2.COND = 'ORDER_TYPE'\n"
-                + "WHERE G1.COND = 'ITEM' AND G1.STATUS = 'A' AND MP.PRICE_TYPE_CODE IN (SELECT PRICE_TYPE_CODE FROM M_OUTLET_PRICE)\n"
+        String qry = "SELECT  "
+                + "    G1.CODE AS ITEM_CODE, "
+                + "    G1.DESCRIPTION AS ITEM_NAME, "
+                + "    MP.PRICE AS PRICE, "
+                + "    MP.PRICE_TYPE_CODE AS PRICE_TYPE_CODE, "
+                + "    G2.DESCRIPTION AS ORDER_DESCRIPTION "
+                + "FROM M_GLOBAL G1 "
+                + "LEFT JOIN M_PRICE MP "
+                + "ON G1.CODE = MP.MENU_ITEM_CODE "
+                + "LEFT JOIN M_OUTLET_PRICE OP "
+                + "ON OP.PRICE_TYPE_CODE = MP.PRICE_TYPE_CODE AND OP.OUTLET_CODE LIKE '%%' "
+                + "LEFT JOIN M_GLOBAL G2 "
+                + "ON OP.ORDER_TYPE = G2.CODE AND G2.COND = 'ORDER_TYPE' "
+                + "WHERE G1.COND = 'ITEM' AND G1.STATUS = 'A' AND MP.PRICE_TYPE_CODE IN (SELECT PRICE_TYPE_CODE FROM M_OUTLET_PRICE) "
                 + "ORDER BY G1.CODE";
         Map prm = new HashMap();
         prm.put("item_code", ref.get("item_code"));
@@ -336,31 +336,31 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listItemPrice(Map<String, String> ref) {
-        String qry = "SELECT\n"
-                + "    MMI.MENU_ITEM_CODE,\n"
-                + "    MI.ITEM_DESCRIPTION,\n"
-                + "    -- MMI.MENU_GROUP_CODE,\n"
-                + "    MG.DESCRIPTION AS MENU_GROUP_NAME,\n"
-                + "    MP.PRICE,\n"
-                + "    MP.PRICE_TYPE_CODE AS PRICE_TYPE_CODE,\n"
-                + "    MMI.TAXABLE\n"
-                + "    -- MG.DESCRIPTION AS ORDER_DESCRIPTION\n"
-                + "FROM M_MENU_ITEM MMI\n"
-                + "LEFT JOIN M_ITEM MI\n"
-                + "ON MMI.MENU_ITEM_CODE = MI.ITEM_CODE \n"
-                + "LEFT JOIN M_PRICE MP\n"
-                + "ON MMI.MENU_ITEM_CODE = MP.MENU_ITEM_CODE\n"
-                + "LEFT JOIN M_OUTLET_PRICE MOP\n"
-                + "ON MOP.PRICE_TYPE_CODE = MP.PRICE_TYPE_CODE \n"
-                + "LEFT JOIN M_GLOBAL MG\n"
-                + "ON MMI.MENU_GROUP_CODE = MG.CODE AND MG.COND = 'GROUP'\n"
-                + "WHERE MMI.MENU_GROUP_CODE LIKE :Menu_Group_Code \n"
-                + "AND MMI.MENU_ITEM_CODE LIKE '%%'\n"
-                + "AND MMI.STATUS = 'A' \n"
-                + "AND MI.STATUS = 'A' \n"
-                + "AND MMI.OUTLET_CODE LIKE :Outlet_Code \n"
-                + "AND MOP.OUTLET_CODE LIKE :Outlet_Code \n"
-                + "AND MOP.ORDER_TYPE = 'ETA'\n"
+        String qry = "SELECT "
+                + "    MMI.MENU_ITEM_CODE, "
+                + "    MI.ITEM_DESCRIPTION, "
+                + "    -- MMI.MENU_GROUP_CODE, "
+                + "    MG.DESCRIPTION AS MENU_GROUP_NAME, "
+                + "    MP.PRICE, "
+                + "    MP.PRICE_TYPE_CODE AS PRICE_TYPE_CODE, "
+                + "    MMI.TAXABLE "
+                + "    -- MG.DESCRIPTION AS ORDER_DESCRIPTION "
+                + "FROM M_MENU_ITEM MMI "
+                + "LEFT JOIN M_ITEM MI "
+                + "ON MMI.MENU_ITEM_CODE = MI.ITEM_CODE  "
+                + "LEFT JOIN M_PRICE MP "
+                + "ON MMI.MENU_ITEM_CODE = MP.MENU_ITEM_CODE "
+                + "LEFT JOIN M_OUTLET_PRICE MOP "
+                + "ON MOP.PRICE_TYPE_CODE = MP.PRICE_TYPE_CODE  "
+                + "LEFT JOIN M_GLOBAL MG "
+                + "ON MMI.MENU_GROUP_CODE = MG.CODE AND MG.COND = 'GROUP' "
+                + "WHERE MMI.MENU_GROUP_CODE LIKE :Menu_Group_Code  "
+                + "AND MMI.MENU_ITEM_CODE LIKE '%%' "
+                + "AND MMI.STATUS = 'A'  "
+                + "AND MI.STATUS = 'A'  "
+                + "AND MMI.OUTLET_CODE LIKE :Outlet_Code  "
+                + "AND MOP.OUTLET_CODE LIKE :Outlet_Code  "
+                + "AND MOP.ORDER_TYPE = 'ETA' "
                 + "ORDER BY MMI.MENU_ITEM_CODE";
         Map prm = new HashMap();
         prm.put("Outlet_Code", "%" + ref.get("outlet_code") + "%");
@@ -385,35 +385,35 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listItemDetail(Map<String, String> ref) {
-        String qry = "SELECT \n"
-                + "    MMI.MENU_ITEM_CODE, \n"
-                + "    MI.ITEM_DESCRIPTION, \n"
-                + "    -- MMI.MENU_GROUP_CODE, \n"
-                + "    MG2.DESCRIPTION AS MENU_GROUP_NAME, \n"
-                + "    MP.PRICE, \n"
-                + "    MP.PRICE_TYPE_CODE AS PRICE_TYPE_CODE, \n"
-                + "    MG.DESCRIPTION AS ORDER_DESCRIPTION, \n"
-                + "    CASE WHEN MENU_SET = 'N' AND MODIFIER_GROUP1_CODE = ' ' AND MODIFIER_GROUP2_CODE = ' ' AND MODIFIER_GROUP3_CODE = ' ' AND MODIFIER_GROUP4_CODE = ' ' THEN 'N' \n"
-                + "     WHEN MENU_SET = 'Y' AND MODIFIER_GROUP1_CODE = ' ' AND MODIFIER_GROUP2_CODE = ' ' AND MODIFIER_GROUP3_CODE = ' ' AND MODIFIER_GROUP4_CODE = ' '  THEN 'N' \n"
-                + "     ELSE 'Y' \n"
-                + "    END AS MODIFIER_STATUS \n"
-                + "FROM M_MENU_ITEM MMI \n"
-                + "LEFT JOIN M_ITEM MI \n"
-                + "ON MMI.MENU_ITEM_CODE = MI.ITEM_CODE \n"
-                + "LEFT JOIN M_PRICE MP \n"
-                + "ON MMI.MENU_ITEM_CODE = MP.MENU_ITEM_CODE \n"
-                + "LEFT JOIN M_OUTLET_PRICE MOP \n"
-                + "ON MOP.PRICE_TYPE_CODE = MP.PRICE_TYPE_CODE \n"
-                + "LEFT JOIN M_GLOBAL MG \n"
-                + "ON MOP.ORDER_TYPE = MG.CODE AND MG.COND = 'ORDER_TYPE' \n"
-                + "LEFT JOIN M_GLOBAL MG2 \n"
-                + "ON MMI.MENU_GROUP_CODE = MG2.CODE AND MG2.COND = 'GROUP' \n"
-                + "WHERE MMI.MENU_GROUP_CODE LIKE :Menu_Group_Code \n"
-                + "AND MMI.MENU_ITEM_CODE = :Menu_Item_Code \n"
-                + "AND MMI.STATUS = 'A' \n"
-                + "AND MI.STATUS = 'A' \n"
-                + "AND MMI.OUTLET_CODE LIKE :Outlet_Code \n"
-                + "AND MOP.OUTLET_CODE LIKE :Outlet_Code \n"
+        String qry = "SELECT  "
+                + "    MMI.MENU_ITEM_CODE,  "
+                + "    MI.ITEM_DESCRIPTION,  "
+                + "    -- MMI.MENU_GROUP_CODE,  "
+                + "    MG2.DESCRIPTION AS MENU_GROUP_NAME,  "
+                + "    MP.PRICE,  "
+                + "    MP.PRICE_TYPE_CODE AS PRICE_TYPE_CODE,  "
+                + "    MG.DESCRIPTION AS ORDER_DESCRIPTION,  "
+                + "    CASE WHEN MENU_SET = 'N' AND MODIFIER_GROUP1_CODE = ' ' AND MODIFIER_GROUP2_CODE = ' ' AND MODIFIER_GROUP3_CODE = ' ' AND MODIFIER_GROUP4_CODE = ' ' THEN 'N'  "
+                + "     WHEN MENU_SET = 'Y' AND MODIFIER_GROUP1_CODE = ' ' AND MODIFIER_GROUP2_CODE = ' ' AND MODIFIER_GROUP3_CODE = ' ' AND MODIFIER_GROUP4_CODE = ' '  THEN 'N'  "
+                + "     ELSE 'Y'  "
+                + "    END AS MODIFIER_STATUS  "
+                + "FROM M_MENU_ITEM MMI  "
+                + "LEFT JOIN M_ITEM MI  "
+                + "ON MMI.MENU_ITEM_CODE = MI.ITEM_CODE  "
+                + "LEFT JOIN M_PRICE MP  "
+                + "ON MMI.MENU_ITEM_CODE = MP.MENU_ITEM_CODE  "
+                + "LEFT JOIN M_OUTLET_PRICE MOP  "
+                + "ON MOP.PRICE_TYPE_CODE = MP.PRICE_TYPE_CODE  "
+                + "LEFT JOIN M_GLOBAL MG  "
+                + "ON MOP.ORDER_TYPE = MG.CODE AND MG.COND = 'ORDER_TYPE'  "
+                + "LEFT JOIN M_GLOBAL MG2  "
+                + "ON MMI.MENU_GROUP_CODE = MG2.CODE AND MG2.COND = 'GROUP'  "
+                + "WHERE MMI.MENU_GROUP_CODE LIKE :Menu_Group_Code  "
+                + "AND MMI.MENU_ITEM_CODE = :Menu_Item_Code  "
+                + "AND MMI.STATUS = 'A'  "
+                + "AND MI.STATUS = 'A'  "
+                + "AND MMI.OUTLET_CODE LIKE :Outlet_Code  "
+                + "AND MOP.OUTLET_CODE LIKE :Outlet_Code  "
                 + "ORDER BY MMI.MENU_ITEM_CODE";
         Map prm = new HashMap();
         prm.put("Outlet_Code", "%" + ref.get("outlet_code") + "%");
@@ -441,25 +441,25 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listModifier(Map<String, String> ref) {
-        String qry = "SELECT \n"
-                + "    MMI.MENU_ITEM_CODE, \n"
-                + "    MI.ITEM_DESCRIPTION, \n"
-                + "    --- MMI.MENU_GROUP_CODE, \n"
-                + "    --- MMI.MODIFIER_GROUP1_CODE AS MODIFIER_GROUP_CODE, \n"
-                + "    MOD.MODIFIER_ITEM_CODE, \n"
-                + "    MI2.ITEM_DESCRIPTION AS MODIFIER_ITEM_NAME \n"
-                + "FROM M_MENU_ITEM MMI \n"
-                + "LEFT JOIN M_ITEM MI \n"
-                + "ON MMI.MENU_ITEM_CODE = MI.ITEM_CODE \n"
-                + "LEFT JOIN M_MODIFIER_ITEM MOD \n"
-                + "ON MMI.MODIFIER_GROUP1_CODE = MOD.MODIFIER_GROUP_CODE \n"
-                + "LEFT JOIN M_ITEM MI2 \n"
-                + "ON MOD.MODIFIER_ITEM_CODE = MI2.ITEM_CODE \n"
-                + "WHERE MMI.MENU_GROUP_CODE LIKE :Menu_Group_Code \n"
-                + "AND MMI.MENU_ITEM_CODE = :Menu_Item_Code \n"
-                + "AND MMI.STATUS = 'A' \n"
-                + "AND MI.STATUS = 'A' \n"
-                + "AND MMI.OUTLET_CODE LIKE :Outlet_Code \n"
+        String qry = "SELECT  "
+                + "    MMI.MENU_ITEM_CODE,  "
+                + "    MI.ITEM_DESCRIPTION,  "
+                + "    --- MMI.MENU_GROUP_CODE,  "
+                + "    --- MMI.MODIFIER_GROUP1_CODE AS MODIFIER_GROUP_CODE,  "
+                + "    MOD.MODIFIER_ITEM_CODE,  "
+                + "    MI2.ITEM_DESCRIPTION AS MODIFIER_ITEM_NAME  "
+                + "FROM M_MENU_ITEM MMI  "
+                + "LEFT JOIN M_ITEM MI  "
+                + "ON MMI.MENU_ITEM_CODE = MI.ITEM_CODE  "
+                + "LEFT JOIN M_MODIFIER_ITEM MOD  "
+                + "ON MMI.MODIFIER_GROUP1_CODE = MOD.MODIFIER_GROUP_CODE  "
+                + "LEFT JOIN M_ITEM MI2  "
+                + "ON MOD.MODIFIER_ITEM_CODE = MI2.ITEM_CODE  "
+                + "WHERE MMI.MENU_GROUP_CODE LIKE :Menu_Group_Code  "
+                + "AND MMI.MENU_ITEM_CODE = :Menu_Item_Code  "
+                + "AND MMI.STATUS = 'A'  "
+                + "AND MI.STATUS = 'A'  "
+                + "AND MMI.OUTLET_CODE LIKE :Outlet_Code  "
                 + "ORDER BY MMI.MENU_ITEM_CODE";
         Map prm = new HashMap();
         prm.put("Outlet_Code", "%" + ref.get("outlet_code") + "%");
@@ -484,19 +484,19 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listSpecialPrice(Map<String, String> ref) {
-        String qry = "SELECT  \n"
-                + "    MSP.MENU_ITEM_CODE, \n"
-                + "    MG.DESCRIPTION, \n"
-                + "    MSP.DATE_START, \n"
-                + "    MSP.DATE_END, \n"
-                + "    MSP.TIME_START, \n"
-                + "    MSP.TIME_END, \n"
-                + "    MSP.OUTLET_CODE \n"
-                + "FROM M_OUTLET_SPECIAL_PRICE MSP \n"
-                + "JOIN M_GLOBAL MG \n"
-                + "ON MSP.MENU_ITEM_CODE = MG.CODE AND MG.COND = 'ITEM' \n"
-                + "WHERE DATE_START BETWEEN TRUNC(SYSDATE, 'MM') AND LAST_DAY(SYSDATE) \n"
-                + "AND DATE_END BETWEEN TRUNC(SYSDATE, 'MM') AND LAST_DAY(SYSDATE) \n"
+        String qry = "SELECT   "
+                + "    MSP.MENU_ITEM_CODE,  "
+                + "    MG.DESCRIPTION,  "
+                + "    MSP.DATE_START,  "
+                + "    MSP.DATE_END,  "
+                + "    MSP.TIME_START,  "
+                + "    MSP.TIME_END,  "
+                + "    MSP.OUTLET_CODE  "
+                + "FROM M_OUTLET_SPECIAL_PRICE MSP  "
+                + "JOIN M_GLOBAL MG  "
+                + "ON MSP.MENU_ITEM_CODE = MG.CODE AND MG.COND = 'ITEM'  "
+                + "WHERE DATE_START BETWEEN TRUNC(SYSDATE, 'MM') AND LAST_DAY(SYSDATE)  "
+                + "AND DATE_END BETWEEN TRUNC(SYSDATE, 'MM') AND LAST_DAY(SYSDATE)  "
                 + "AND MSP.OUTLET_CODE IN (SELECT OUTLET_CODE FROM M_OUTLET_PROFILE WHERE DEFAULT_SITE = 'YES')";
         Map prm = new HashMap();
         System.err.println("q :" + qry);
@@ -848,14 +848,14 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listStaff(Map<String, String> ref) {
-        String qry = "SELECT DISTINCT VS.REGIONAL_DESC,VS.OUTLET_NAME,VS.AREA_DESC,VS.AREA_CODE,G.DESCRIPTION CITY_STAFF,\n"
-                + "G1.DESCRIPTION POSITION_NAME,G2.DESCRIPTION ACCESS_NAME,\n"
-                + "S.*,PS.STAFF_POS_CODE,PS.PASSWORD AS PASS_POS_CODE,s.access_level ACCESS_LEVEL FROM M_STAFF S\n"
-                + "JOIN V_STRUCTURE_STORE VS ON VS.OUTLET_CODE = S.OUTLET_CODE \n"
-                + "LEFT JOIN M_POS_STAFF PS ON PS.STAFF_CODE = S.STAFF_CODE \n"
-                + "LEFT JOIN M_GLOBAL G ON G.CODE = S.CITY AND G.COND = 'CITY'\n"
-                + "LEFT JOIN M_GLOBAL G1 ON G1.CODE = S.POSITION AND G1.COND = 'POSITION'\n"
-                + "LEFT JOIN M_GLOBAL G2 ON G2.CODE = S.ACCESS_LEVEL AND G2.COND = 'ACCESS'\n"
+        String qry = "SELECT DISTINCT VS.REGIONAL_DESC,VS.OUTLET_NAME,VS.AREA_DESC,VS.AREA_CODE,G.DESCRIPTION CITY_STAFF, "
+                + "G1.DESCRIPTION POSITION_NAME,G2.DESCRIPTION ACCESS_NAME, "
+                + "S.*,PS.STAFF_POS_CODE,PS.PASSWORD AS PASS_POS_CODE,s.access_level ACCESS_LEVEL FROM M_STAFF S "
+                + "JOIN V_STRUCTURE_STORE VS ON VS.OUTLET_CODE = S.OUTLET_CODE  "
+                + "LEFT JOIN M_POS_STAFF PS ON PS.STAFF_CODE = S.STAFF_CODE  "
+                + "LEFT JOIN M_GLOBAL G ON G.CODE = S.CITY AND G.COND = 'CITY' "
+                + "LEFT JOIN M_GLOBAL G1 ON G1.CODE = S.POSITION AND G1.COND = 'POSITION' "
+                + "LEFT JOIN M_GLOBAL G2 ON G2.CODE = S.ACCESS_LEVEL AND G2.COND = 'ACCESS' "
                 + "WHERE S.OUTLET_CODE = :outletCode AND S.STATUS LIKE :status AND S.POSITION LIKE :position";
         Map prm = new HashMap();
 
@@ -1070,13 +1070,13 @@ public class ViewDoaImpl implements ViewDao {
     //////////////////new method by Lani 29-03-2023//////////////////////////
     @Override
     public List<Map<String, Object>> listSalesRecipe(Map<String, String> ref) {
-        String qry = "SELECT A.PLU_CODE,d.description,A.ITEM_CODE,B.ITEM_DESCRIPTION,A.QTY_EI,A.QTY_TA,A.UOM_STOCK, A.user_upd, A.date_upd, A.time_upd \n"
-                + "FROM M_SALES_RECIPE A\n"
-                + "JOIN M_ITEM B ON a.item_code=b.item_code\n"
-                + "join m_menu_item c on a.plu_code=c.menu_Item_code\n"
-                + "join m_global d on a.plu_code=d.code\n"
-                + "WHERE c.status='A' and d.cond='ITEM' AND d.status='A' and c.outlet_code=:outletCode and A.PLU_CODE = :pluCode \n"
-                + "GROUP BY c.menu_group_code,A.PLU_CODE,d.description,A.ITEM_CODE,B.ITEM_DESCRIPTION,A.QTY_EI,A.QTY_TA,A.UOM_STOCK, A.user_upd, A.date_upd, A.time_upd\n"
+        String qry = "SELECT A.PLU_CODE,d.description,A.ITEM_CODE,B.ITEM_DESCRIPTION,A.QTY_EI,A.QTY_TA,A.UOM_STOCK, A.user_upd, A.date_upd, A.time_upd  "
+                + "FROM M_SALES_RECIPE A "
+                + "JOIN M_ITEM B ON a.item_code=b.item_code "
+                + "join m_menu_item c on a.plu_code=c.menu_Item_code "
+                + "join m_global d on a.plu_code=d.code "
+                + "WHERE c.status='A' and d.cond='ITEM' AND d.status='A' and c.outlet_code=:outletCode and A.PLU_CODE = :pluCode  "
+                + "GROUP BY c.menu_group_code,A.PLU_CODE,d.description,A.ITEM_CODE,B.ITEM_DESCRIPTION,A.QTY_EI,A.QTY_TA,A.UOM_STOCK, A.user_upd, A.date_upd, A.time_upd "
                 + "ORDER BY c.menu_group_code,A.PLU_CODE,d.description,A.ITEM_CODE,B.ITEM_DESCRIPTION,A.QTY_EI,A.QTY_TA,A.UOM_STOCK, A.user_upd, A.date_upd, A.time_upd ";
         Map prm = new HashMap();
         prm.put("outletCode", ref.get("outletCode"));
@@ -1104,13 +1104,13 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listSalesRecipeHeader(Map<String, String> ref) {
-        String qry = "SELECT A.PLU_CODE,d.description\n"
-                + "FROM M_SALES_RECIPE A\n"
-                + "JOIN M_ITEM B ON a.item_code=b.item_code\n"
-                + "join m_menu_item c on a.plu_code=c.menu_Item_code\n"
-                + "join m_global d on a.plu_code=d.code\n"
-                + "WHERE c.status='A' and d.cond='ITEM' AND d.status='A' and c.outlet_code= :outletCode \n"
-                + "GROUP BY c.menu_group_code,A.PLU_CODE,d.description\n"
+        String qry = "SELECT A.PLU_CODE,d.description "
+                + "FROM M_SALES_RECIPE A "
+                + "JOIN M_ITEM B ON a.item_code=b.item_code "
+                + "join m_menu_item c on a.plu_code=c.menu_Item_code "
+                + "join m_global d on a.plu_code=d.code "
+                + "WHERE c.status='A' and d.cond='ITEM' AND d.status='A' and c.outlet_code= :outletCode  "
+                + "GROUP BY c.menu_group_code,A.PLU_CODE,d.description "
                 + "ORDER BY c.menu_group_code,A.PLU_CODE,d.description ";
         Map prm = new HashMap();
         prm.put("outletCode", ref.get("outletCode"));
@@ -1343,18 +1343,18 @@ public class ViewDoaImpl implements ViewDao {
         } else {
             where = "and ORDER_DATE between TO_CHAR(CURRENT_DATE-7,'dd-MON-yy') and TO_CHAR(CURRENT_DATE,'dd-MON-yy')";
         }
-        String qry = "SELECT H.*,case when G.DESCRIPTION is null and  m.outlet_name is null then s.supplier_name \n"
-                + "                when G.DESCRIPTION is null and s.supplier_name  is null then m.outlet_name else\n"
+        String qry = "SELECT H.*,case when G.DESCRIPTION is null and  m.outlet_name is null then s.supplier_name  "
+                + "                when G.DESCRIPTION is null and s.supplier_name  is null then m.outlet_name else "
                 + "               g.description end as NAMA_GUDANG FROM T_ORDER_HEADER H "
                 + " LEFT JOIN M_GLOBAL G ON G.CODE = H.CD_TEMPLATE AND G.COND = 'X_" + getCity + "' AND G.STATUS = 'A' "
-                + " left join m_outlet M\n"
-                + "               on H.cd_supplier=m.outlet_code\n"
-                + "               left join m_supplier S\n"
+                + " left join m_outlet M "
+                + "               on H.cd_supplier=m.outlet_code "
+                + "               left join m_supplier S "
                 + "               on h.cd_supplier=s.cd_supplier "
-                + "WHERE H.STATUS LIKE :status \n"
-                + "AND H.ORDER_TYPE LIKE :orderType \n"
-                + "AND H.OUTLET_CODE = :outletCode \n"
-                + "AND H.Order_to LIKE :orderTo \n"
+                + "WHERE H.STATUS LIKE :status  "
+                + "AND H.ORDER_TYPE LIKE :orderType  "
+                + "AND H.OUTLET_CODE = :outletCode  "
+                + "AND H.Order_to LIKE :orderTo  "
                 + "" + where + "";
         Map prm = new HashMap();
         prm.put("status", "%" + balance.get("status") + "%");
@@ -1426,27 +1426,27 @@ public class ViewDoaImpl implements ViewDao {
     ///////////////NEW METHOD LIST ORDER HEADER BY DONA 27 APRIL 2023////
     @Override
     public List<Map<String, Object>> listOrderDetail(Map<String, String> balance) {
-        String qry = "SELECT \n"
-                + "    ITEM_CODE,\n"
-                + "    ITEM_DESCRIPTION,\n"
-                + "    JUMLAH_SATUAN_BESAR,\n"
-                + "    SATUAN_BESAR,\n"
-                + "    JUMLAH_SATUAN_KECIL,\n"
-                + "    UOM_PURCHASE,\n"
-                + "    (CONV_WAREHOUSE * CONV_STOCK) CONV_WAREHOUSE,\n"
-                + "    (JUMLAH_SATUAN_BESAR * CONV_WAREHOUSE) + JUMLAH_SATUAN_KECIL TOTAL_JUMLAH,\n"
-                + "    UOM_STOCK AS TOTAL\n"
-                + "FROM (\n"
-                + "SELECT \n"
-                + "    ITEM_CODE,\n"
-                + "    ITEM_DESCRIPTION,\n"
-                + "    0 AS JUMLAH_SATUAN_BESAR,\n"
-                + "    UOM_WAREHOUSE AS SATUAN_BESAR,\n"
-                + "    0 AS JUMLAH_SATUAN_KECIL,\n"
-                + "    UOM_PURCHASE,UOM_STOCK,\n"
-                + "    CONV_WAREHOUSE,CONV_STOCK,\n"
-                + "    0 TOTAL_JUMLAH,\n"
-                + "    UOM_PURCHASE AS TOTAL\n"
+        String qry = "SELECT  "
+                + "    ITEM_CODE, "
+                + "    ITEM_DESCRIPTION, "
+                + "    JUMLAH_SATUAN_BESAR, "
+                + "    SATUAN_BESAR, "
+                + "    JUMLAH_SATUAN_KECIL, "
+                + "    UOM_PURCHASE, "
+                + "    (CONV_WAREHOUSE * CONV_STOCK) CONV_WAREHOUSE, "
+                + "    (JUMLAH_SATUAN_BESAR * CONV_WAREHOUSE) + JUMLAH_SATUAN_KECIL TOTAL_JUMLAH, "
+                + "    UOM_STOCK AS TOTAL "
+                + "FROM ( "
+                + "SELECT  "
+                + "    ITEM_CODE, "
+                + "    ITEM_DESCRIPTION, "
+                + "    0 AS JUMLAH_SATUAN_BESAR, "
+                + "    UOM_WAREHOUSE AS SATUAN_BESAR, "
+                + "    0 AS JUMLAH_SATUAN_KECIL, "
+                + "    UOM_PURCHASE,UOM_STOCK, "
+                + "    CONV_WAREHOUSE,CONV_STOCK, "
+                + "    0 TOTAL_JUMLAH, "
+                + "    UOM_PURCHASE AS TOTAL "
                 + "FROM M_ITEM WHERE CD_WAREHOUSE = :cdWarehouse)";
         Map prm = new HashMap();
         prm.put("cdWarehouse", balance.get("cdWarehouse"));
@@ -1482,10 +1482,10 @@ public class ViewDoaImpl implements ViewDao {
         String month = df.format(tgl);
         String year = dfYear.format(tgl);
 
-        String qry = "SELECT ORDER_ID||COUNTNO ORDER_ID FROM (\n"
-                + "SELECT A.OUTLET_CODE||:month||A.YEAR AS ORDER_ID,A.COUNTER_NO+1 COUNTNO FROM M_COUNTER A\n"
-                + "LEFT JOIN M_OUTLET B\n"
-                + "ON B.OUTLET_CODE=A.OUTLET_CODE\n"
+        String qry = "SELECT ORDER_ID||COUNTNO ORDER_ID FROM ( "
+                + "SELECT A.OUTLET_CODE||:month||A.YEAR AS ORDER_ID,A.COUNTER_NO+1 COUNTNO FROM M_COUNTER A "
+                + "LEFT JOIN M_OUTLET B "
+                + "ON B.OUTLET_CODE=A.OUTLET_CODE "
                 + "WHERE A.YEAR = :year AND A.MONTH= :month AND A.TRANS_TYPE = :transType AND A.OUTLET_CODE= :outletCode)";
         Map prm = new HashMap();
         prm.put("transType", balance.get("transType"));
@@ -1511,13 +1511,13 @@ public class ViewDoaImpl implements ViewDao {
     ///////////////////done
     @Override
     public List<Map<String, Object>> ViewOrderDetail(Map<String, String> balance) {
-        String qry = "select oh.OUTLET_CODE,oh.ORDER_NO,od.ITEM_CODE,i.ITEM_DESCRIPTION,\n"
-                + "od.QTY_1 jumlah_besar,od.CD_UOM_1 satuan_besar,\n"
-                + "od.QTY_2 jumlah_kecil,od.CD_UOM_2 satuan_kecil,od.TOTAL_QTY_STOCK total_qty,i.UOM_STOCK,\n"
-                + "(i.CONV_WAREHOUSE*i.CONV_STOCK) uom_conv\n"
-                + "from T_ORDER_HEADER oh\n"
-                + "left join T_ORDER_DETAIL od on od.ORDER_NO = oh.ORDER_NO and od.ORDER_ID = oh.ORDER_ID\n"
-                + "left join M_ITEM i on i.ITEM_CODE = od.ITEM_CODE\n"
+        String qry = "select oh.OUTLET_CODE,oh.ORDER_NO,od.ITEM_CODE,i.ITEM_DESCRIPTION, "
+                + "od.QTY_1 jumlah_besar,od.CD_UOM_1 satuan_besar, "
+                + "od.QTY_2 jumlah_kecil,od.CD_UOM_2 satuan_kecil,od.TOTAL_QTY_STOCK total_qty,i.UOM_STOCK, "
+                + "(i.CONV_WAREHOUSE*i.CONV_STOCK) uom_conv "
+                + "from T_ORDER_HEADER oh "
+                + "left join T_ORDER_DETAIL od on od.ORDER_NO = oh.ORDER_NO and od.ORDER_ID = oh.ORDER_ID "
+                + "left join M_ITEM i on i.ITEM_CODE = od.ITEM_CODE "
                 + "where oh.ORDER_NO = :orderNo and oh.outlet_code = :outletCode";
         Map prm = new HashMap();
         prm.put("orderNo", balance.get("orderNo"));
@@ -1546,13 +1546,13 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listItemDetailOpname(Map<String, String> balance) {
-        String qry = "select ITEM_CODE,ITEM_DESCRIPTION,QTY_WAREHOUSE,CONV_WAREHOUSE,UOM_WAREHOUSE,\n"
-                + "QTY_PURCHASE,CONV_STOCK,UOM_PURCHASE,0 TOTAL_STOCK,UOM_STOCK\n"
-                + "from (\n"
-                + "select i.ITEM_CODE,i.ITEM_DESCRIPTION, 0 QTY_WAREHOUSE, i.UOM_WAREHOUSE,\n"
-                + "0 QTY_PURCHASE,i.CONV_WAREHOUSE,i.UOM_PURCHASE,i.CONV_STOCK,i.UOM_STOCK\n"
-                + "from m_item i\n"
-                + "where i.status = 'A' AND FLAG_MATERIAL = 'Y' AND FLAG_STOCK = 'Y'\n"
+        String qry = "select ITEM_CODE,ITEM_DESCRIPTION,QTY_WAREHOUSE,CONV_WAREHOUSE,UOM_WAREHOUSE, "
+                + "QTY_PURCHASE,CONV_STOCK,UOM_PURCHASE,0 TOTAL_STOCK,UOM_STOCK "
+                + "from ( "
+                + "select i.ITEM_CODE,i.ITEM_DESCRIPTION, 0 QTY_WAREHOUSE, i.UOM_WAREHOUSE, "
+                + "0 QTY_PURCHASE,i.CONV_WAREHOUSE,i.UOM_PURCHASE,i.CONV_STOCK,i.UOM_STOCK "
+                + "from m_item i "
+                + "where i.status = 'A' AND FLAG_MATERIAL = 'Y' AND FLAG_STOCK = 'Y' "
                 + "order by i.ITEM_CODE asc)";
         Map prm = new HashMap();
         System.err.println("q :" + qry);
@@ -1578,25 +1578,25 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listEditItemDetailOpname(Map<String, String> balance) {
-        String qry = "SELECT ITEM_CODE,ITEM_DESCRIPTION,\n"
-                + "SUM(QTY_WAREHOUSE) QTY_WAREHOUSE, MAX(UOM_WAREHOUSE) UOM_WAREHOUSE ,\n"
-                + "SUM(QTY_PURCHASE) QTY_PURCHASE, MAX(CONV_WAREHOUSE) CONV_WAREHOUSE,\n"
-                + "MAX(UOM_PURCHASE) UOM_PURCHASE, SUM(TOTAL_QTY) TOTAL_QTY,\n"
-                + "MAX(CONV_STOCK) CONV_STOCK,MAX(UOM_STOCK) UOM_STOCK\n"
-                + "FROM (\n"
-                + "select i.ITEM_CODE,i.ITEM_DESCRIPTION, 0 QTY_WAREHOUSE, i.UOM_WAREHOUSE,\n"
-                + "0 QTY_PURCHASE,i.CONV_WAREHOUSE,i.UOM_PURCHASE,0 TOTAL_QTY,i.CONV_STOCK,i.UOM_STOCK\n"
-                + "from m_item i\n"
-                + "where i.status = 'A' AND i.FLAG_MATERIAL = 'Y' AND i.FLAG_STOCK = 'Y'\n"
-                + "UNION ALL\n"
-                + "select OD.ITEM_CODE,I.ITEM_DESCRIPTION,\n"
-                + "(OD.QTY_PURCH/I.CONV_WAREHOUSE) QTY_WAREHOUSE,I.UOM_WAREHOUSE,\n"
-                + "(OD.QTY_STOCK/I.CONV_STOCK) QTY_PURCHASE,i.CONV_WAREHOUSE,I.UOM_PURCHASE,\n"
-                + "OD.TOTAL_QTY,i.CONV_STOCK,i.UOM_STOCK\n"
-                + "from T_OPNAME_DETAIL OD\n"
-                + "LEFT JOIN M_ITEM I ON I.ITEM_CODE = OD.ITEM_CODE\n"
-                + "WHERE OD.OPNAME_NO = :opnameNo AND OD.OUTLET_CODE = :outletCode)\n"
-                + "GROUP BY ITEM_CODE,ITEM_DESCRIPTION\n"
+        String qry = "SELECT ITEM_CODE,ITEM_DESCRIPTION, "
+                + "SUM(QTY_WAREHOUSE) QTY_WAREHOUSE, MAX(UOM_WAREHOUSE) UOM_WAREHOUSE , "
+                + "SUM(QTY_PURCHASE) QTY_PURCHASE, MAX(CONV_WAREHOUSE) CONV_WAREHOUSE, "
+                + "MAX(UOM_PURCHASE) UOM_PURCHASE, SUM(TOTAL_QTY) TOTAL_QTY, "
+                + "MAX(CONV_STOCK) CONV_STOCK,MAX(UOM_STOCK) UOM_STOCK "
+                + "FROM ( "
+                + "select i.ITEM_CODE,i.ITEM_DESCRIPTION, 0 QTY_WAREHOUSE, i.UOM_WAREHOUSE, "
+                + "0 QTY_PURCHASE,i.CONV_WAREHOUSE,i.UOM_PURCHASE,0 TOTAL_QTY,i.CONV_STOCK,i.UOM_STOCK "
+                + "from m_item i "
+                + "where i.status = 'A' AND i.FLAG_MATERIAL = 'Y' AND i.FLAG_STOCK = 'Y' "
+                + "UNION ALL "
+                + "select OD.ITEM_CODE,I.ITEM_DESCRIPTION, "
+                + "(OD.QTY_PURCH/I.CONV_WAREHOUSE) QTY_WAREHOUSE,I.UOM_WAREHOUSE, "
+                + "(OD.QTY_STOCK/I.CONV_STOCK) QTY_PURCHASE,i.CONV_WAREHOUSE,I.UOM_PURCHASE, "
+                + "OD.TOTAL_QTY,i.CONV_STOCK,i.UOM_STOCK "
+                + "from T_OPNAME_DETAIL OD "
+                + "LEFT JOIN M_ITEM I ON I.ITEM_CODE = OD.ITEM_CODE "
+                + "WHERE OD.OPNAME_NO = :opnameNo AND OD.OUTLET_CODE = :outletCode) "
+                + "GROUP BY ITEM_CODE,ITEM_DESCRIPTION "
                 + "ORDER BY ITEM_CODE,ITEM_DESCRIPTION ASC";
         Map prm = new HashMap();
         prm.put("outletCode", balance.get("outletCode"));
@@ -1624,14 +1624,14 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listHeaderOpname(Map<String, String> balance) {
-        String qry = "SELECT H.OPNAME_NO,H.OPNAME_DATE,\n"
-                + "CASE WHEN H.CD_TEMPLATE = '1' THEN TH.TEMPLATE_NAME\n"
-                + "     WHEN H.CD_TEMPLATE = '0' THEN 'STOCK OPNAME BARANG '|| H.OPNAME_DATE \n"
-                + "END OPNAME_NAME,\n"
-                + "case when H.CD_TEMPLATE = '1' THEN 'TEMPLATE' \n"
-                + "     WHEN H.CD_TEMPLATE = '0' THEN 'PER BARANG' \n"
-                + "END TYPE,H.STATUS\n"
-                + "FROM T_OPNAME_HEADER H \n"
+        String qry = "SELECT H.OPNAME_NO,H.OPNAME_DATE, "
+                + "CASE WHEN H.CD_TEMPLATE = '1' THEN TH.TEMPLATE_NAME "
+                + "     WHEN H.CD_TEMPLATE = '0' THEN 'STOCK OPNAME BARANG '|| H.OPNAME_DATE  "
+                + "END OPNAME_NAME, "
+                + "case when H.CD_TEMPLATE = '1' THEN 'TEMPLATE'  "
+                + "     WHEN H.CD_TEMPLATE = '0' THEN 'PER BARANG'  "
+                + "END TYPE,H.STATUS "
+                + "FROM T_OPNAME_HEADER H  "
                 + "LEFT JOIN M_OPNAME_TEMPL_HEADER TH ON TH.CD_TEMPLATE = H.CD_TEMPLATE order by H.OPNAME_DATE DESC";
         Map prm = new HashMap();
         System.err.println("q :" + qry);
@@ -1667,7 +1667,7 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public String cekItem() {
-        String qry = "SELECT COUNT(*) FROM M_ITEM \n"
+        String qry = "SELECT COUNT(*) FROM M_ITEM  "
                 + "WHERE status = 'A' AND FLAG_MATERIAL = 'Y' AND FLAG_STOCK = 'Y'";
         Map prm = new HashMap();
         return jdbcTemplate.queryForObject(qry, prm, new RowMapper() {
@@ -1859,26 +1859,26 @@ public class ViewDoaImpl implements ViewDao {
     ///////////////NEW METHOD LIST ORDER HEADER BY DONA 12 JUL 2023////
     @Override
     public List<Map<String, Object>> listOrderDetailOutlet(Map<String, String> balance) {
-        String qry = "                SELECT ITEM_CODE,\n"
-                + "                    ITEM_DESCRIPTION,\n"
-                + "                    JUMLAH_SATUAN_BESAR,\n"
-                + "                    SATUAN_BESAR,\n"
-                + "                    JUMLAH_SATUAN_KECIL,\n"
-                + "                    UOM_PURCHASE,\n"
-                + "                    (CONV_WAREHOUSE * CONV_STOCK) CONV_WAREHOUSE,\n"
-                + "                    (JUMLAH_SATUAN_BESAR * CONV_WAREHOUSE) + JUMLAH_SATUAN_KECIL TOTAL_JUMLAH,\n"
-                + "                    UOM_STOCK AS TOTAL\n"
-                + "                FROM (\n"
-                + "                SELECT \n"
-                + "                    ITEM_CODE,\n"
-                + "                    ITEM_DESCRIPTION,\n"
-                + "                    0 AS JUMLAH_SATUAN_BESAR,\n"
-                + "                    UOM_WAREHOUSE AS SATUAN_BESAR,\n"
-                + "                    0 AS JUMLAH_SATUAN_KECIL,\n"
-                + "                    UOM_PURCHASE,UOM_STOCK,\n"
-                + "                    CONV_WAREHOUSE,CONV_STOCK,\n"
-                + "                    0 TOTAL_JUMLAH,\n"
-                + "                    UOM_PURCHASE AS TOTAL\n"
+        String qry = "                SELECT ITEM_CODE, "
+                + "                    ITEM_DESCRIPTION, "
+                + "                    JUMLAH_SATUAN_BESAR, "
+                + "                    SATUAN_BESAR, "
+                + "                    JUMLAH_SATUAN_KECIL, "
+                + "                    UOM_PURCHASE, "
+                + "                    (CONV_WAREHOUSE * CONV_STOCK) CONV_WAREHOUSE, "
+                + "                    (JUMLAH_SATUAN_BESAR * CONV_WAREHOUSE) + JUMLAH_SATUAN_KECIL TOTAL_JUMLAH, "
+                + "                    UOM_STOCK AS TOTAL "
+                + "                FROM ( "
+                + "                SELECT  "
+                + "                    ITEM_CODE, "
+                + "                    ITEM_DESCRIPTION, "
+                + "                    0 AS JUMLAH_SATUAN_BESAR, "
+                + "                    UOM_WAREHOUSE AS SATUAN_BESAR, "
+                + "                    0 AS JUMLAH_SATUAN_KECIL, "
+                + "                    UOM_PURCHASE,UOM_STOCK, "
+                + "                    CONV_WAREHOUSE,CONV_STOCK, "
+                + "                    0 TOTAL_JUMLAH, "
+                + "                    UOM_PURCHASE AS TOTAL "
                 + "                FROM M_ITEM order by item_code asc)";
         Map prm = new HashMap();
         prm.put("cdWarehouse", balance.get("cdWarehouse"));
@@ -2236,7 +2236,9 @@ public class ViewDoaImpl implements ViewDao {
         } else {
             where = "and OPNAME_DATE between to_date(:dateStart, 'dd-mm-yyyy') and to_date(:dateEnd, 'dd-mm-yyyy')";
         }
-        String qry = "select * from T_OPNAME_HEADER "
+        String qry = "select a.*,b.template_name from t_opname_header a "
+                + "left join m_opname_templ_header b "
+                + "on a.cd_template=b.cd_template "
                 + " WHERE status=:status and CD_TEMPLATE=:cdTemplate "
                 + "" + where + "";
         Map prm = new HashMap();
@@ -2258,7 +2260,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("userUpd", rs.getString("USER_UPD"));
                 rt.put("dateUpd", rs.getString("DATE_UPD"));
                 rt.put("timeUpd", rs.getString("TIME_UPD"));
-
+                rt.put("templateName", rs.getString("TEMPLATE_NAME"));
                 return rt;
             }
         });
@@ -2302,15 +2304,15 @@ public class ViewDoaImpl implements ViewDao {
 //
 //    }
 /////////////////////////Done////////////////////////////////////////////////////
-    
+
     //Added View MPCS by KP (09-08-2023)
     @Override
     public List<Map<String, Object>> listTemplateMpcs(Map<String, String> ref) {
-        String qry = "select outlet_code, seq_mpcs, time_mpcs, date_upd, time_upd " +
-                    "from template_mpcs " +
-                    "where date_upd = TO_DATE(:dateUpd, 'DD/MM/YYYY') " +
-                    "and outlet_code = :outlet " +
-                    "order by seq_mpcs asc ";
+        String qry = "select outlet_code, seq_mpcs, time_mpcs, date_upd, time_upd "
+                + "from template_mpcs "
+                + "where date_upd = TO_DATE(:dateUpd, 'DD/MM/YYYY') "
+                + "and outlet_code = :outlet "
+                + "order by seq_mpcs asc ";
         Map prm = new HashMap();
         prm.put("outlet", ref.get("outlet"));
         prm.put("dateUpd", ref.get("dateUpd"));
