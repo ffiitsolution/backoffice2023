@@ -2236,7 +2236,7 @@ public class ViewDoaImpl implements ViewDao {
         } else {
             where = "and a.OPNAME_DATE between to_date(:dateStart, 'dd-mm-yyyy') and to_date(:dateEnd, 'dd-mm-yyyy')";
         }
-        String qry = "select a.*,b.template_name from t_opname_header a "
+        String qry = "select a.*,b.template_name,case when A.cd_template='1' then 'TEMPLATE' ELSE 'PER BARANG' END AS type from t_opname_header a "
                 + "left join m_opname_templ_header b "
                 + "on a.cd_template=b.cd_template "
                 + " WHERE a.status=:status and a.CD_TEMPLATE=:cdTemplate "
@@ -2266,44 +2266,7 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
-//    
-//    @Override
-//    public List<Map<String, Object>> listStockOpname(Map<String, String> balance) {
-////        String where = "";
-////        if (!balance.get("opnameDate").equals("")) {
-////            where = "AND OPNAME_DATE =:opnanameDate";
-////        } else {
-////            where = "OPNAME_DATE between to_date(:dateStart, 'dd-mm-yyyy') and to_date(:dateEnd, 'dd-mm-yyyy')";
-////        }
-//        String qry = "select * from T_OPNAME_HEADER "
-//                + " WHERE status=:status and CD_TEMPLATE=:cdTemplate ";
-//////                + "" + where + "";
-//        Map prm = new HashMap();
-//        prm.put("status", "%" + balance.get("status") + "%");
-//        prm.put("cdTemplate", "%" + balance.get("cdTemplate") + "%");
-////        prm.put("dateStart", balance.get("dateStart"));
-////        prm.put("dateEnd", balance.get("dateEnd"));
-//        System.err.println("q :" + qry);
-//        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
-//            @Override
-//            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
-//                Map<String, Object> rt = new HashMap<String, Object>();
-//                rt.put("outletCode", rs.getString("OUTLET_CODE"));
-//                rt.put("cdTemplate", rs.getString("CD_TEMPLATE"));
-//                rt.put("opnanameNo", rs.getString("OPNAME_NO"));
-//                rt.put("opnanameDate", rs.getString("OPNAME_DATE"));
-//                rt.put("remark", rs.getString("remark"));
-//                rt.put("status", rs.getString("STATUS"));
-//                rt.put("userUpd", rs.getString("USER_UPD"));
-//                rt.put("dateUpd", rs.getString("DATE_UPD"));
-//                rt.put("timeUpd", rs.getString("TIME_UPD"));
-//                return rt;
-//            }
-//        });
-//        return list;
-//
-//    }
-/////////////////////////Done////////////////////////////////////////////////////
+
 
     //Added View MPCS by KP (09-08-2023)
     @Override
