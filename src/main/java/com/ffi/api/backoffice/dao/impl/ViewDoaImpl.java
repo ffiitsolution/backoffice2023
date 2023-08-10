@@ -2256,6 +2256,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("opnanameNo", rs.getString("OPNAME_NO"));
                 rt.put("opnameDate", rs.getString("OPNAME_DATE"));
                 rt.put("remark", rs.getString("remark"));
+                rt.put("type", rs.getString("TYPE"));
                 rt.put("status", rs.getString("STATUS"));
                 rt.put("userUpd", rs.getString("USER_UPD"));
                 rt.put("dateUpd", rs.getString("DATE_UPD"));
