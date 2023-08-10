@@ -2332,4 +2332,59 @@ public class ViewDoaImpl implements ViewDao {
         return list;
     }
     //End of MPCS
+    @Override
+    public List<Map<String, Object>> listReturnOrderHeader(Map<String, String> param) {
+        String query = "SELECT a.RETURN_NO, a.RETURN_DATE, CASE WHEN a.TYPE_RETURN = '0' THEN 'Supplier' ELSE 'Gudang' " +
+                "END AS TYPE_RETURN, CONCAT(b.DESCRIPTION, CONCAT(c.OUTLET_NAME, d.SUPPLIER_NAME)) AS return_to," +
+                " a.STATUS FROM T_RETURN_HEADER a LEFT JOIN M_GLOBAL b ON a.RETURN_TO = b.CODE AND b.COND = :city" +
+                " LEFT JOIN M_OUTLET c ON a.RETURN_TO  = c.OUTLET_CODE LEFT JOIN M_SUPPLIER d ON a.RETURN_TO = " +
+                "d.CD_SUPPLIER WHERE a.RETURN_DATE BETWEEN TO_DATE(:startDate, 'dd-mm-yyyy') AND TO_DATE(:endDate, 'dd-mm-yyyy')";
+
+        Map<String, Object> sqlParam = new HashMap<>();
+        sqlParam.put("startDate", param.get("startDate"));
+        sqlParam.put("endDate", param.get("endDate"));
+        sqlParam.put("city", "X_" + param.get("city"));
+        System.err.println("q :" + query);
+
+        List<Map<String, Object>> list = jdbcTemplate.query(query,sqlParam, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("returnNo", rs.getString("RETURN_NO"));
+                rt.put("returnDate", rs.getString("RETURN_DATE"));
+                rt.put("typeReturn", rs.getString("TYPE_RETURN"));
+                rt.put("returnTo", rs.getString("return_to"));
+                rt.put("status", rs.getString("STATUS"));
+                return rt;
+            }
+        });
+        return list;
+    }
+
+    @Override
+    public List<Map<String, Object>> listReturnOrderDetail(Map<String, String> param) {
+        String query = "SELECT a.ITEM_CODE, b.ITEM_DESCRIPTION, a.QTY_WAREHOUSE, a.UOM_WAREHOUSE, a.QTY_PURCHASE, " +
+                "a.UOM_PURCHASE, a.TOTAL_QTY, b.UOM_STOCK FROM T_RETURN_DETAIL a LEFT JOIN M_ITEM b ON a.ITEM_CODE = " +
+                "b.ITEM_CODE WHERE RETURN_NO = :returnNo";
+
+        Map<String, Object> sqlParam = new HashMap<>();
+        sqlParam.put("returnNo", param.get("returnNo"));
+
+        List<Map<String, Object>> list = jdbcTemplate.query(query,sqlParam, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("itemCode", rs.getString("ITEM_CODE"));
+                rt.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
+                rt.put("qtyWarehouse", rs.getString("QTY_WAREHOUSE"));
+                rt.put("uomWarehouse", rs.getString("UOM_WAREHOUSE"));
+                rt.put("qtyPurchase", rs.getString("QTY_PURCHASE"));
+                rt.put("uomPurchase", rs.getString("UOM_PURCHASE"));
+                rt.put("totalQty", rs.getString("TOTAL_QTY"));
+                rt.put("totalUom", rs.getString("UOM_STOCK"));
+                return rt;
+            }
+        });
+        return list;
+    }
 }
