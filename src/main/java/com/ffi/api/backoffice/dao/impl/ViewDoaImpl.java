@@ -2232,14 +2232,14 @@ public class ViewDoaImpl implements ViewDao {
     public List<Map<String, Object>> listStockOpname(Map<String, String> balance) {
         String where = "";
         if (!balance.get("opnameDate").equals("")) {
-            where = "AND OPNAME_DATE =:opnanameDate";
+            where = "AND a.OPNAME_DATE =:opnanameDate";
         } else {
-            where = "and OPNAME_DATE between to_date(:dateStart, 'dd-mm-yyyy') and to_date(:dateEnd, 'dd-mm-yyyy')";
+            where = "and a.OPNAME_DATE between to_date(:dateStart, 'dd-mm-yyyy') and to_date(:dateEnd, 'dd-mm-yyyy')";
         }
         String qry = "select a.*,b.template_name from t_opname_header a "
                 + "left join m_opname_templ_header b "
                 + "on a.cd_template=b.cd_template "
-                + " WHERE status=:status and CD_TEMPLATE=:cdTemplate "
+                + " WHERE a.status=:status and a.CD_TEMPLATE=:cdTemplate "
                 + "" + where + "";
         Map prm = new HashMap();
         prm.put("status", balance.get("status"));
