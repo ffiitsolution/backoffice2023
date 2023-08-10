@@ -182,4 +182,9 @@ public interface ViewDao {
     
     ///////////////////////////////Add MPCS by KP (09-08-2023)///////////////////////////////
     List<Map<String, Object>> listTemplateMpcs(Map<String, String> ref);
+
+    ///////////////////////////////Add Return Order by Pasca (10-08-2023)///////////////////////////////
+    List<Map<String, Object>> listReturnOrderHeader(Map<String, String> param);
+
+    List<Map<String, Object>> listReturnOrderDetail(Map<String, String> param);
 }

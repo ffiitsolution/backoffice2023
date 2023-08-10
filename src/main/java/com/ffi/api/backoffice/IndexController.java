@@ -2060,4 +2060,55 @@ public class IndexController {
         rm.setData(list);
         return rm;
     }
+    ///////////////////////////////Add Return Order by Pasca (10-08-2023)///////////////////////////////
+    //Ambil Return Order Header
+    @RequestMapping(value = "/return-order-header", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk melihat data return order (header)", response = Object.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK")
+            ,
+            @ApiResponse(code = 404, message = "The resource not found")
+    }
+    )
+    public @ResponseBody
+    Response viewReturnOrderHeader(@RequestBody String param) throws JRException, IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response rm = new Response();
+        try {
+            list = viewServices.listReturnOrderHeader(balance);
+            rm.setData(list);
+            rm.setRecordsTotal(list.size());
+        } catch (Exception e) {
+            rm.setRecordsTotal(0);
+        }
+        return rm;
+    }
+    //Ambil Return Order Detail
+    @RequestMapping(value = "/return-order-detail", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk melihat data return order (detail)", response = Object.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK")
+            ,
+            @ApiResponse(code = 404, message = "The resource not found")
+    }
+    )
+    public @ResponseBody
+    Response viewReturnOrderDetail(@RequestBody String param) throws JRException, IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response rm = new Response();
+        try {
+            list = viewServices.listReturnOrderDetail(balance);
+            rm.setData(list);
+            rm.setRecordsTotal(list.size());
+        } catch (Exception e) {
+            rm.setRecordsTotal(0);
+        }
+        return rm;
+    }
 }

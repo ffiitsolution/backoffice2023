@@ -184,8 +184,6 @@ public class ReportDaoImpl implements ReportDao {
                 + "LEFT JOIN T_DEV_DETAIL e ON a.REQUEST_NO = e.REQUEST_NO \n"
                 + "LEFT JOIN M_ITEM f ON e.ITEM_CODE = f.ITEM_CODE \n"
                 + "WHERE a.OUTLET_CODE =:outletCode AND a.DELIVERY_DATE BETWEEN :dateFrom AND :dateTo ORDER BY a.DELIVERY_DATE ASC";
-        System.out.println(query);
-        System.exit(0);
 
         Map prm = new HashMap();
         prm.put("city", "X_" + param.get("city"));
