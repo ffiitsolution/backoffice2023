@@ -2298,7 +2298,7 @@ public class ViewDoaImpl implements ViewDao {
     //End of MPCS
     @Override
     public List<Map<String, Object>> listReturnOrderHeader(Map<String, String> param) {
-        String query = "SELECT a.RETURN_NO, a.RETURN_DATE, CASE WHEN a.TYPE_RETURN = '0' THEN 'Supplier' ELSE 'Gudang' " +
+        String query = "SELECT a.RETURN_NO, a.RETURN_DATE, a.REMARK, CASE WHEN a.TYPE_RETURN = '0' THEN 'Supplier' ELSE 'Gudang' " +
                 "END AS TYPE_RETURN, CONCAT(b.DESCRIPTION, CONCAT(c.OUTLET_NAME, d.SUPPLIER_NAME)) AS return_to," +
                 " a.STATUS FROM T_RETURN_HEADER a LEFT JOIN M_GLOBAL b ON a.RETURN_TO = b.CODE AND b.COND = :city" +
                 " LEFT JOIN M_OUTLET c ON a.RETURN_TO  = c.OUTLET_CODE LEFT JOIN M_SUPPLIER d ON a.RETURN_TO = " +
