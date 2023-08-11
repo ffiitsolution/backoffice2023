@@ -2319,6 +2319,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("typeReturn", rs.getString("TYPE_RETURN"));
                 rt.put("returnTo", rs.getString("return_to"));
                 rt.put("status", rs.getString("STATUS"));
+                rt.put("remark", rs.getString("REMARK"));
                 return rt;
             }
         });
