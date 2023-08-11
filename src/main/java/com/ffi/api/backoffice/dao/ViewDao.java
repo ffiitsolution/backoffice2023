@@ -187,4 +187,8 @@ public interface ViewDao {
     List<Map<String, Object>> listReturnOrderHeader(Map<String, String> param);
 
     List<Map<String, Object>> listReturnOrderDetail(Map<String, String> param);
+
+    List<Map<String, Object>> listSupplierGudangReturnOrder(Map<String, String> param);
+
+    List<Map<String, Object>> listItemSupplierGudangReturnOrder(Map<String, Object> param);
 }

@@ -355,4 +355,12 @@ public class ViewServices {
     public List<Map<String, Object>> listReturnOrderDetail(Map<String, String> param) {
         return viewDao.listReturnOrderDetail(param);
     }
+
+    public List<Map<String, Object>> listSupplierGudangReturnOrder(Map<String, String> param) {
+        return viewDao.listSupplierGudangReturnOrder(param);
+    }
+
+    public List<Map<String, Object>> listItemSupplierGudangReturnOrder(Map<String, Object> param) {
+        return viewDao.listItemSupplierGudangReturnOrder(param);
+    }
 }

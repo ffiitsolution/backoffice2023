@@ -2352,4 +2352,54 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
+
+    @Override
+    public List<Map<String, Object>> listSupplierGudangReturnOrder(Map<String, String> param) {
+        String query = null;
+        if (param.get("typeReturn").equals("Gudang"))
+            query = "SELECT * FROM M_GLOBAL WHERE COND ='WAREHOUSE' AND STATUS = 'A'";
+        if (param.get("typeReturn").equals("Supplier"))
+            query = "SELECT * FROM M_SUPPLIER ORDER BY SUPPLIER_NAME ASC";
+
+        List<Map<String, Object>> list = jdbcTemplate.query(query, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                if (param.get("typeReturn").equals("Gudang")) {
+                    rt.put("code", rs.getString("CODE"));
+                    rt.put("description", rs.getString("DESCRIPTION"));
+                } else {
+                    rt.put("cdSupplier", rs.getString("CD_SUPPLIER"));
+                    rt.put("supplierName", rs.getString("SUPPLIER_NAME"));
+                }
+                return rt;
+            }
+        });
+        return list;
+    }
+
+    @Override
+    public List<Map<String, Object>> listItemSupplierGudangReturnOrder(Map<String, Object> param) {
+        String query = null;
+        Map<String, Object> sqlParam = new HashMap<>();
+        if (param.containsKey("cdSupplier")) {
+            query = "SELECT b.ITEM_DESCRIPTION, b.STATUS FROM M_ITEM_SUPPLIER a LEFT JOIN M_ITEM b ON a.ITEM_CODE = " +
+                    "b.ITEM_CODE WHERE CD_SUPPLIER =:cdSupplier";
+            sqlParam.put("cdSupplier", param.get("cdSupplier"));
+        }
+        if (param.containsKey("cdWarehouse")) {
+            query = "SELECT ITEM_DESCRIPTION, STATUS FROM M_ITEM WHERE CD_WAREHOUSE =:cdWarehouse ORDER BY ITEM_CODE ASC";
+            sqlParam.put("cdWarehouse", param.get("cdWarehouse"));
+        }
+        List<Map<String, Object>> list = jdbcTemplate.query(query, sqlParam, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
+                rt.put("status", rs.getString("STATUS"));
+                return rt;
+            }
+        });
+        return list;
+    }
 }
