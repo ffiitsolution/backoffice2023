@@ -2060,6 +2060,31 @@ public class IndexController {
         rm.setData(list);
         return rm;
     }
+    
+    @RequestMapping(value = "/view-mpcs-plan", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view MPCS Plan / Projection", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response ViewMpcsProject(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response rm = new Response();
+        try {
+            list = viewServices.listProjectMpcs(balance);
+            rm.setRecordsTotal(list.size());
+            rm.setRecordsFiltered(list.size());
+        } catch (Exception e) {
+            rm.setRecordsTotal(0);
+            rm.setRecordsFiltered(0);
+        }
+        rm.setData(list);
+        return rm;
+    }
     ///////////////////////////////Add Return Order by Pasca (10-08-2023)///////////////////////////////
     //Ambil Return Order Header
     @RequestMapping(value = "/return-order-header", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -2295,7 +2295,40 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
+    
+    @Override
+    public List<Map<String, Object>> listProjectMpcs(Map<String, String> ref) {
+        String qry = "select seq_mpcs, time_mpcs, 0 as qty_proj from template_mpcs " +
+                "where outlet_code = :outletCode " +
+                "and time_mpcs not in " +
+                "(select time_mpcs from t_summ_mpcs " +
+                "where outlet_code = :outletCode " +
+                "and mpcs_group = :mpcsGrp " +
+                "and date_mpcs = :dateMpcs) " +
+                "union all " +
+                "select seq_mpcs, time_mpcs, qty_proj from t_summ_mpcs " +
+                "where outlet_code = :outletCode " +
+                "and mpcs_group = :mpcsGrp " +
+                "and date_mpcs = :dateMpcs ";
+        Map prm = new HashMap();
+        prm.put("outletCode", ref.get("outlet"));
+        prm.put("mpcsGrp", ref.get("mpcsGroup"));
+        prm.put("dateMpcs", ref.get("dateMpcs"));
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("seqMpcs", rs.getString("seq_mpcs"));
+                rt.put("timeMpcs", rs.getString("time_mpcs"));
+                rt.put("qtyProj", rs.getString("qty_proj"));
+                return rt;
+            }
+        });
+        return list;
+    }
     //End of MPCS
+    
     @Override
     public List<Map<String, Object>> listReturnOrderHeader(Map<String, String> param) {
         String query = "SELECT a.RETURN_NO, a.RETURN_DATE, a.REMARK, CASE WHEN a.TYPE_RETURN = '0' THEN 'Supplier' ELSE 'Gudang' " +

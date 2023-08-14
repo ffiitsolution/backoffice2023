@@ -346,6 +346,10 @@ public class ViewServices {
     public List<Map<String, Object>> listTemplateMpcs(Map<String, String> ref) {
         return viewDao.listTemplateMpcs(ref);
     }
+    
+    public List<Map<String, Object>> listProjectMpcs(Map<String, String> ref) {
+        return viewDao.listProjectMpcs(ref);
+    }
     ///////////////done
     ///////////////////////////////Add Return Order by Pasca (10-08-2023)///////////////////////////////
     public List<Map<String, Object>> listReturnOrderHeader(Map<String, String> param) {
