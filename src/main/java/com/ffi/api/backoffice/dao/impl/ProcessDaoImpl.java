@@ -1277,5 +1277,68 @@ public class ProcessDaoImpl implements ProcessDao {
             System.err.println("Error DateTime: " + ex);
         }
     }
+    
+    public String mpcsExist(Map<String, String> ref) {
+        String qry = "select count(1) as existRow from t_summ_mpcs " +
+                    "where outlet_code = :outletCode " +
+                    "and mpcs_group = :mpcsGrp " +
+                    "and date_mpcs = :dateMpcs " +
+                    "and time_mpcs = :timeMpcs ";
+        Map prm = new HashMap();
+        prm.put("outletCode", ref.get("outlet"));
+        prm.put("mpcsGrp", ref.get("mpcsGrp"));
+        prm.put("dateMpcs", ref.get("dateMpcs"));
+        prm.put("timeMpcs", ref.get("timeMpcs"));
+        System.err.println("q :" + qry);
+        return  jdbcTemplate.queryForObject(qry, prm, new RowMapper() {
+            @Override
+            public String mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                return rs.getString("existRow");
+            }
+        }).toString();
+    }
+    
+    @Override
+    public void InsertUpdateMPCSProject(JsonObject balancing) {
+        String sql = "";
+        Map param = new HashMap();
+        param.put("outlet", balancing.getAsJsonObject().getAsJsonPrimitive("outlet").getAsString());
+        param.put("mpcsGrp", balancing.getAsJsonObject().getAsJsonPrimitive("mpcsGrp").getAsString());
+        param.put("dateMpcs", balancing.getAsJsonObject().getAsJsonPrimitive("dateMpcs").getAsString());
+        param.put("timeMpcs", balancing.getAsJsonObject().getAsJsonPrimitive("timeMpcs").getAsString());
+        String isMpcsExist = mpcsExist(param);
+        param.clear();
+        if(isMpcsExist.equalsIgnoreCase("0")){
+            sql = "insert into t_summ_detail(outlet_code, mpcs_group, date_mpcs, seq_mpcs, " +
+                    "time_mpcs, qty_proj_conv,  qty_proj, user_upd, date_upd, time_upd) " +
+                    "values (:outletCode, :mpcsGrp, :dateMpcs, :seqMpcs, :timeMpcs, :qtyPr, :qtyPr, :userUpd, :dateUpd, :timeUpd) ";
+            System.err.println("q :" + sql);
+            param.put("outletCode", balancing.getAsJsonObject().getAsJsonPrimitive("outlet").getAsString());
+            param.put("mpcsGrp", balancing.getAsJsonObject().getAsJsonPrimitive("mpcsGrp").getAsString());
+            param.put("dateMpcs", balancing.getAsJsonObject().getAsJsonPrimitive("dateMpcs").getAsString());
+            param.put("seqMpcs", balancing.getAsJsonObject().getAsJsonPrimitive("seqMpcs").getAsString());
+            param.put("timeMpcs", balancing.getAsJsonObject().getAsJsonPrimitive("timeMpcs").getAsString());
+            param.put("qtyPr", balancing.getAsJsonObject().getAsJsonPrimitive("qtyPr").getAsString());
+            param.put("userUpd", balancing.getAsJsonObject().getAsJsonPrimitive("userUpd").getAsString());
+            param.put("dateUpd", dateNow);
+            param.put("timeUpd", timeStamp);
+            jdbcTemplate.update(sql, param);
+        } else {
+            sql = "update t_summ_mpcs " +
+                "set qty_proj_conv = :qtyPr, qty_proj = :qtyPr " +
+                "where outlet_code = :outletCode " +
+                "and mpcs_group = :mpcsGrp " +
+                "and date_mpcs = :dateMpcs " +
+                "and time_mpcs = :timeMpcs ";
+            System.err.println("q :" + sql);
+            param.put("outletCode", balancing.getAsJsonObject().getAsJsonPrimitive("outlet").getAsString());
+            param.put("mpcsGrp", balancing.getAsJsonObject().getAsJsonPrimitive("mpcsGrp").getAsString());
+            param.put("dateMpcs", balancing.getAsJsonObject().getAsJsonPrimitive("dateMpcs").getAsString());
+            param.put("timeMpcs", balancing.getAsJsonObject().getAsJsonPrimitive("timeMpcs").getAsString());
+            param.put("qtyPr", balancing.getAsJsonObject().getAsJsonPrimitive("qtyPr").getAsString());
+            jdbcTemplate.update(sql, param);
+        }
+    }
     //End of MPCS
 }

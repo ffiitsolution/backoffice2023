@@ -2085,6 +2085,34 @@ public class IndexController {
         rm.setData(list);
         return rm;
     }
+    
+    @RequestMapping(value = "/mpcs-project", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk insert MPCS Plan / Project", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage InsertUpdateMPCSProject(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, Object> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        JsonObject result = gsn.fromJson(param, JsonObject.class);
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        ResponseMessage rm = new ResponseMessage();
+        try {
+            processServices.InsertUpdateMPCSProject(result);
+            //prosesServices.updateMCounter(balance);
+            rm.setSuccess(true);
+            rm.setMessage("Insert MPCS Project Successfuly");
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Insert MPCS Project Failed: " + e.getMessage());
+            System.err.println(e);
+        }
+        rm.setItem(list);
+        return rm;
+    }
     ///////////////////////////////Add Return Order by Pasca (10-08-2023)///////////////////////////////
     //Ambil Return Order Header
     @RequestMapping(value = "/return-order-header", produces = MediaType.APPLICATION_JSON_VALUE)

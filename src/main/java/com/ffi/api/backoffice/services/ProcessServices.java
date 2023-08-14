@@ -168,4 +168,8 @@ public class ProcessServices {
     public void InsertMPCSTemplate(JsonObject balancing){
         dao.InsertMPCSTemplate(balancing);
     }
+    
+    public void InsertUpdateMPCSProject(JsonObject balancing){
+        dao.InsertUpdateMPCSProject(balancing);
+    }
 }

@@ -2310,6 +2310,7 @@ public class ViewDoaImpl implements ViewDao {
                 "where outlet_code = :outletCode " +
                 "and mpcs_group = :mpcsGrp " +
                 "and date_mpcs = :dateMpcs ";
+        System.err.println("q :" + qry);
         Map prm = new HashMap();
         prm.put("outletCode", ref.get("outlet"));
         prm.put("mpcsGrp", ref.get("mpcsGroup"));

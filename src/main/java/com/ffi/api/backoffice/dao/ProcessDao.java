@@ -91,4 +91,5 @@ public interface ProcessDao {
     
     //Insert MPCS by Kevin (08-08-2023)
     public void InsertMPCSTemplate(JsonObject mapping);
+    public void InsertUpdateMPCSProject(JsonObject mapping);
 }
