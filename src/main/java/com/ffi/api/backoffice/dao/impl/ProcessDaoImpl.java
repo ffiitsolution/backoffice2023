@@ -1310,7 +1310,7 @@ public class ProcessDaoImpl implements ProcessDao {
         String isMpcsExist = mpcsExist(param);
         param.clear();
         if(isMpcsExist.equalsIgnoreCase("0")){
-            sql = "insert into t_summ_detail(outlet_code, mpcs_group, date_mpcs, seq_mpcs, " +
+            sql = "insert into t_summ_mpcs(outlet_code, mpcs_group, date_mpcs, seq_mpcs, " +
                     "time_mpcs, qty_proj_conv,  qty_proj, user_upd, date_upd, time_upd) " +
                     "values (:outletCode, :mpcsGrp, :dateMpcs, :seqMpcs, :timeMpcs, :qtyPr, :qtyPr, :userUpd, :dateUpd, :timeUpd) ";
             System.err.println("q :" + sql);

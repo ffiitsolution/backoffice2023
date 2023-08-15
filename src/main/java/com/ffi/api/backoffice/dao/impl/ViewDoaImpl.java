@@ -2310,7 +2310,8 @@ public class ViewDoaImpl implements ViewDao {
                 "select seq_mpcs, time_mpcs, qty_proj from t_summ_mpcs " +
                 "where outlet_code = :outletCode " +
                 "and mpcs_group = :mpcsGrp " +
-                "and date_mpcs = :dateMpcs ";
+                "and date_mpcs = :dateMpcs " +
+                "order by seq_mpcs, time_mpcs ";
         System.err.println("q :" + qry);
         Map prm = new HashMap();
         prm.put("outletCode", ref.get("outlet"));
