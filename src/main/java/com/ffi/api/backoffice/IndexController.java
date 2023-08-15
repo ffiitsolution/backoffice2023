@@ -2232,10 +2232,10 @@ public class IndexController {
         try {
             processServices.insertReturnOrderHeaderDetail(balance);
             rm.setSuccess(true);
-            rm.setMessage("Insert Wastage Successfuly");
+            rm.setMessage("Insert Return Order Successfuly");
         } catch (Exception e) {
             rm.setSuccess(false);
-            rm.setMessage("Insert Wastage Failed: " + e.getMessage());
+            rm.setMessage("Insert Return Order Failed: " + e.getMessage());
             System.err.println(e);
         }
         rm.setItem(list);
