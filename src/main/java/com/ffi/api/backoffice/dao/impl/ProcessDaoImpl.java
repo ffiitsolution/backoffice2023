@@ -4,6 +4,8 @@
  */
 package com.ffi.api.backoffice.dao.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ffi.api.backoffice.dao.ProcessDao;
 import com.ffi.api.backoffice.model.DetailOpname;
 import com.ffi.api.backoffice.model.HeaderOpname;
@@ -1341,4 +1343,126 @@ public class ProcessDaoImpl implements ProcessDao {
         }
     }
     //End of MPCS
+
+    @Override
+    public void insertReturnOrderHeaderDetail(Map<String, Object> param) {
+        DateFormat df = new SimpleDateFormat("MM");
+        DateFormat dfYear = new SimpleDateFormat("yyyy");
+        Date tgl = new Date();
+        String month = df.format(tgl);
+        String year = dfYear.format(tgl);
+
+        //Getting last number for Return Order
+        String noID = returnOrderCounter(year, month, "ID", param.get("outletCode").toString());
+        String noReturn = returnOrderCounter(year, month, "RTR", param.get("outletCode").toString());
+
+        //Insert Header
+        String queryHeader = "INSERT INTO T_RETURN_HEADER (OUTLET_CODE, TYPE_RETURN, RETURN_ID, RETURN_NO, RETURN_DATE," +
+                " RETURN_TO, REMARK, STATUS, USER_UPD, DATE_UPD, TIME_UPD) VALUES (:outletCode, :typeReturn, :returnId," +
+                " :returnNo, :returnDate, :returnTo, :remark, :status, :userUpd, :dateUpd, :timeUpd)";
+
+        Map<String, Object> prm = new HashMap<>();
+        prm.put("outletCode", param.get("outletCode"));
+        prm.put("typeReturn", param.get("typeRetur"));
+        prm.put("returnId", noID);
+        prm.put("returnNo", noReturn);
+        prm.put("returnDate", param.get("returnDate"));
+        prm.put("returnTo", param.get("returnTo"));
+        prm.put("remark", param.get("remark"));
+        prm.put("status", param.get("status"));
+        prm.put("userUpd", param.get("userUpd"));
+        prm.put("dateUpd", dateNow);
+        prm.put("timeUpd", timeStamp);
+        jdbcTemplate.update(queryHeader, prm);
+
+        //Insert Detail
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.valueToTree(param.get("itemList"));
+        StringBuilder query = new StringBuilder();
+        query.append("INSERT ALL");
+        for (JsonNode node : jsonNode) {
+            query.append(" INTO T_RETURN_DETAIL (OUTLET_CODE, RETURN_ID, RETURN_NO, ITEM_CODE, QTY_WAREHOUSE, " +
+                    "UOM_WAREHOUSE, QTY_PURCHASE, UOM_PURCHASE, TOTAL_QTY, USER_UPD, DATE_UPD, TIME_UPD) VALUES ('")
+                    .append(param.get("outletCode")).append("', '").append(noID).append("', '").append(noReturn)
+                    .append("', '").append(node.get("itemCode").toString().replace("\"", ""))
+                    .append("', '").append(node.get("qtyWarehouse").toString().replace("\"", ""))
+                    .append("', '").append(node.get("uomWarehouse").toString().replace("\"", ""))
+                    .append("', '").append(node.get("qtyPurchase").toString().replace("\"", ""))
+                    .append("', '").append(node.get("uomPurchase").toString().replace("\"", ""))
+                    .append("', '").append(node.get("totalQty").toString().replace("\"", ""))
+                    .append("', '").append(param.get("userUpd")).append("', '").append(dateNow).append("', '")
+                    .append(timeStamp).append("')");
+        }
+        query.append(" SELECT * FROM dual");
+        String queryDetail = query.toString();
+        jdbcTemplate.update(queryDetail, new HashMap<>());
+
+    }
+
+    public String returnOrderCounter(String year, String month, String transType, String outletCode) {
+        if(transType.equalsIgnoreCase("ID")){
+            String dateMonth = month.concat("-").concat(year);
+            String outletCodeQuery = outletCode;
+            if (outletCodeQuery.charAt(0) == '0') {
+                outletCodeQuery = outletCodeQuery.substring(1);
+            }
+            String sqlId = "select to_char(nvl(max(substr(RETURN_ID, -3)) + 1, 1), 'fm000') as no_urut " +
+                    "from T_RETURN_HEADER " +
+                    "where RETURN_ID like '" + outletCodeQuery.concat("0").concat(month) + "%' " +
+                    "and to_char(RETURN_DATE,'mm-yyyy') = :dateMonth";
+            System.err.println("Query for Id :" + sqlId);
+            Map paramId = new HashMap();
+            paramId.put("dateMonth", dateMonth);
+            return jdbcTemplate.queryForObject(sqlId, paramId, new RowMapper() {
+                @Override
+                public Object mapRow(ResultSet rs, int i) throws SQLException {
+                    return rs.getString("no_urut") == null ? outletCode.concat("0").concat(month).concat("0001") : outletCode.concat("0").concat(month).concat(rs.getString("no_urut"));
+                }
+            }).toString();
+
+        }
+        String sql = "select to_char(counter, 'fm0000') as no_urut from ( " +
+                "select max(counter_no) + 1 as counter from m_counter " +
+                "where outlet_code = :outletCode and trans_type = :transType and year = :year and month = :month " +
+                ") tbl";
+        System.err.println("Query for No Urut :" + sql);
+        Map param = new HashMap();
+        param.put("year", year);
+        param.put("month", month);
+        param.put("transType", transType);
+        param.put("outletCode", outletCode);
+        String noUrut = jdbcTemplate.queryForObject(sql, param, new RowMapper() {
+            @Override
+            public Object mapRow(ResultSet rs, int i) throws SQLException {
+                return rs.getString("no_urut") == null ? "0" : rs.getString("no_urut");
+
+            }
+        }).toString();
+        if(noUrut.equalsIgnoreCase("0")){
+            sql = "insert into m_counter(outlet_code, trans_type, year, month, counter_no) "
+                    + "values (:outletCode, :transType, :year, :month, 1)";
+            System.err.println("Query for NEW No Urut :" + sql);
+            Map paramIns = new HashMap();
+            paramIns.put("year", year);
+            paramIns.put("month", month);
+            paramIns.put("transType", transType);
+            paramIns.put("outletCode", outletCode);
+            jdbcTemplate.update(sql, paramIns);
+            noUrut = transType.concat(outletCode).concat(year.substring(2)).concat(month).concat("0001");
+        } else {
+            sql = "update m_counter set counter_no = counter_no + 1 "
+                    + "where outlet_code = :outletCode and trans_type = :transType and year = :year and month = :month";
+            System.err.println("Query for Update Counter :" + sql);
+            Map paramIns = new HashMap();
+            paramIns.put("year", year);
+            paramIns.put("month", month);
+            paramIns.put("transType", transType);
+            paramIns.put("outletCode", outletCode);
+            jdbcTemplate.update(sql, paramIns);
+            noUrut = transType.concat(outletCode).concat(year.substring(2)).concat(month).concat(noUrut);
+        }
+        System.err.println("No Urut :" + noUrut);
+        return noUrut;
+    }
+
 }

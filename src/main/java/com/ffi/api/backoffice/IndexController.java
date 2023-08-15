@@ -2213,4 +2213,31 @@ public class IndexController {
         }
         return rm;
     }
+
+    //Add Insert to Return Order Header & Detail by Pasca (15-08-2023)
+    @RequestMapping(value = "/insert-return-order-headetail", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk insert header dan detail Return Order", response = Object.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage InsertReturnOrderHeaderDetail(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, Object> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        ResponseMessage rm = new ResponseMessage();
+        try {
+            processServices.insertReturnOrderHeaderDetail(balance);
+            rm.setSuccess(true);
+            rm.setMessage("Insert Wastage Successfuly");
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Insert Wastage Failed: " + e.getMessage());
+            System.err.println(e);
+        }
+        rm.setItem(list);
+        return rm;
+    }
 }
