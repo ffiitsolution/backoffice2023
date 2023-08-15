@@ -2274,12 +2274,13 @@ public class ViewDoaImpl implements ViewDao {
     public List<Map<String, Object>> listTemplateMpcs(Map<String, String> ref) {
         String qry = "select outlet_code, seq_mpcs, time_mpcs, date_upd, time_upd "
                 + "from template_mpcs "
-                + "where date_upd = TO_DATE(:dateUpd, 'DD/MM/YYYY') "
-                + "and outlet_code = :outlet "
+                //+ "where date_upd = TO_DATE(:dateUpd, 'DD/MM/YYYY') "
+                //+ "and outlet_code = :outlet "
+                + "where outlet_code = :outlet "
                 + "order by seq_mpcs asc ";
         Map prm = new HashMap();
         prm.put("outlet", ref.get("outlet"));
-        prm.put("dateUpd", ref.get("dateUpd"));
+        //prm.put("dateUpd", ref.get("dateUpd"));
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
