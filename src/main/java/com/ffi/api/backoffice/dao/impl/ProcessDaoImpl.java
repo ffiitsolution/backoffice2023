@@ -1464,5 +1464,61 @@ public class ProcessDaoImpl implements ProcessDao {
         System.err.println("No Urut :" + noUrut);
         return noUrut;
     }
+///////////////NEW METHOD LIST ORDER HEADER BY DONA 14 APRIL 2023////
+    @Override
+    public void updateTemplateStockOpnameHeader(Map<String, String> balance) {
 
+        DateFormat df = new SimpleDateFormat("MM");
+        DateFormat dfYear = new SimpleDateFormat("yyyy");
+        Date tgl = new Date();
+        String month = df.format(tgl);
+        String year = dfYear.format(tgl);
+
+        String qy = "INSERT INTO M_OPNAME_TEMPl_DETAIL (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ORDER_DATE,ORDER_TO,CD_SUPPLIER,DT_DUE,DT_EXPIRED,REMARK,NO_OF_PRINT,STATUS,USER_UPD,DATE_UPD,TIME_UPD)"
+                + " VALUES(:outletCode,:orderType,:orderId,:orderNo,:orderDate,:orderTo,:cdSupplier,:dtDue,:dtExpired,:remark,:noOfPrint,:status,:userUpd,:dateUpd,:timeUpd)";
+        Map param = new HashMap();
+        param.put("outletCode", balance.get("outletCode"));
+        param.put("orderType", balance.get("orderType"));
+        param.put("orderId", balance.get("orderId"));
+        param.put("orderNo", balance.get("orderNo"));
+        param.put("orderDate", balance.get("orderDate"));
+        param.put("orderTo", balance.get("orderTo"));
+        param.put("cdSupplier", balance.get("cdSupplier"));
+        param.put("dtDue", balance.get("dtDue"));
+        param.put("dtExpired", balance.get("dtExpired"));
+        param.put("remark", balance.get("remark"));
+        param.put("noOfPrint", balance.get("noOfPrint"));
+        param.put("status", balance.get("status"));
+        param.put("userUpd", balance.get("userUpd"));
+        param.put("dateUpd", dateNow);
+        param.put("timeUpd", timeStamp);
+        param.put("year", year);
+        param.put("month", month);
+        param.put("transType", balance.get("transType"));
+        jdbcTemplate.update(qy, param);
+        System.out.println("query insert header: " + qy);
+    }
+
+    @Override
+    public void updateTemplateStockOpnameDetail(Map<String, String> balance) {
+
+        String qy = "INSERT INTO T_ORDER_DETAIL1 (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,TOTAL_QTY_STOCK,UNIT_PRICE,USER_UPD,DATE_UPD,TIME_UPD)"
+                + " VALUES(:outletCode,:orderType,:orderId,:orderNo,:itemCode,:qty1,:cdUom1,:qty2,:cdUom2,:totalQtyStock,:unitPrice,:userUpd,:dateUpd,:timeUpd)";
+        Map param = new HashMap();
+        param.put("outletCode", balance.get("outletCode"));
+        param.put("orderType", balance.get("orderType"));
+        param.put("orderId", balance.get("orderId"));
+        param.put("orderNo", balance.get("orderNo"));
+        param.put("itemCode", balance.get("itemCode"));
+        param.put("qty1", balance.get("qty1"));
+        param.put("cdUom1", balance.get("cdUom1"));
+        param.put("qty2", balance.get("qty2"));
+        param.put("cdUom2", balance.get("cdUom2"));
+        param.put("totalQtyStock", balance.get("totalQtyStock"));
+        param.put("unitPrice", balance.get("unitPrice"));
+        param.put("userUpd", balance.get("userUpd"));
+        param.put("dateUpd", dateNow);
+        param.put("timeUpd", timeStamp);
+        jdbcTemplate.update(qy, param);
+    }
 }

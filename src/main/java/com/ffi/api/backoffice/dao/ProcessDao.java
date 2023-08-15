@@ -60,38 +60,50 @@ public interface ProcessDao {
     /////////////////////////////DONE///////////////////////////////////////////
     ///////////////NEW METHOD INSERT ORDER HEADER BY DONA 14 APRIL 2023////
     public void insertOrderHeader(Map<String, String> mapping);
+
     /////////////////////////////DONE///////////////////////////////////////////
     ///////////////NEW METHOD INSERT ORDER DETAIL BY DONA 27 APRIL 2023////
     public void insertOrderDetail(Map<String, String> mapping);
 
     public void updateOrderDetail(Map<String, String> mapping);
+
     /////////////////////////////DONE///////////////////////////////////////////
     ///////////////NEW METHOD UPDATE COUNTER BY DONA 3 MAY 2023////////////////////////////
     public void updateMasterCounter(Map<String, String> mapping);
+
     /////////////done
     public void updateMCounter(Map<String, String> mapping);
-    
+
     public void inserOpnameHeader(HeaderOpname mapping);
-    
+
     public void updateMCounterSop(String transType, String outletCode);
-    
+
     public void inserOpnameDetail(DetailOpname opnameDtls);
-    
+
     public void insertSoToScDtl(Map<String, String> mapping);
-    
+
     public void insertScDtlToScHdr(Map<String, String> mapping);
-    
+
     public void sendDataToWarehouse(Map<String, String> mapping);
 
     //Add Insert to Receiving Header & Detail by KP (07-06-2023)
     public void InsertRecvHeaderDetail(JsonObject mapping);
-    
+
     //Add Insert to Wastage Header & Detail by KP (03-08-2023)
     public void InsertWastageHeaderDetail(JsonObject mapping);
-    
+
     //Insert MPCS by Kevin (08-08-2023)
     public void InsertMPCSTemplate(JsonObject mapping);
+
     public void InsertUpdateMPCSProject(JsonObject mapping);
+
     //Insert Return Order by Pasca (15-08-2023)
-    void insertReturnOrderHeaderDetail(Map<String,Object> param);
+    void insertReturnOrderHeaderDetail(Map<String, Object> param);
+
+    ///////////////NEW METHOD UPDATE TEMPLATE STOCK OPNAME BY DONA 15 AUG 2023////////////////////////////
+
+    public void updateTemplateStockOpnameHeader(Map<String, String> mapping);
+
+    public void updateTemplateStockOpnameDetail(Map<String, String> mapping);
+    /////////////done
 }

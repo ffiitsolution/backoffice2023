@@ -107,51 +107,53 @@ public class ProcessServices {
     public void insertOrderDetail(Map<String, String> balance) {
         dao.insertOrderDetail(balance);
     }
-    
+
     @Transactional
     public void updateOrderDetail(Map<String, String> balance) {
         dao.updateOrderDetail(balance);
     }
+
     ///////////////////////done
     ///////////////NEW METHOD UPDATE COUNTER 3 MAY 2023////   
     public void updateMasterCounter(Map<String, String> balance) {
         dao.updateMasterCounter(balance);
     }
+
     ///////////////////////done
     @Transactional
     public void updateMCounter(Map<String, String> balance) {
         dao.updateMCounter(balance);
     }
-    
+
     @Transactional
     public void inserOpnameHeader(HeaderOpname balance) {
         dao.inserOpnameHeader(balance);
     }
-    
+
     public void updateMCounterSop(String transType, String outletCode) {
-        dao.updateMCounterSop(transType,outletCode);
+        dao.updateMCounterSop(transType, outletCode);
     }
-    
+
     @Transactional
     public void inserOpnameDetail(DetailOpname opnameDtls) {
         dao.inserOpnameDetail(opnameDtls);
     }
-    
+
     @Transactional
     public void insertSoToScDtl(Map<String, String> balance) {
         dao.insertSoToScDtl(balance);
     }
-    
+
     @Transactional
     public void insertScDtlToScHdr(Map<String, String> balance) {
         dao.insertScDtlToScHdr(balance);
     }
-    
+
     @Transactional
     public void sendDataToWarehouse(Map<String, String> balance) {
         dao.sendDataToWarehouse(balance);
     }
-    
+
     //Add Insert to Receiving Header & Detail by KP (07-06-2023)
     @Transactional
     public void InsertRecvHeaderDetail(JsonObject balancing) {
@@ -163,18 +165,28 @@ public class ProcessServices {
     public void InsertWastageHeaderDetail(JsonObject balancing) {
         dao.InsertWastageHeaderDetail(balancing);
     }
-    
+
     //Insert MPCS by Kevin (08-08-2023)
-    public void InsertMPCSTemplate(JsonObject balancing){
+    public void InsertMPCSTemplate(JsonObject balancing) {
         dao.InsertMPCSTemplate(balancing);
     }
-    
-    public void InsertUpdateMPCSProject(JsonObject balancing){
+
+    public void InsertUpdateMPCSProject(JsonObject balancing) {
         dao.InsertUpdateMPCSProject(balancing);
     }
 
     //Add Insert to returnOrder Header & Detail by Pasca (15-08-2023)
-    public void insertReturnOrderHeaderDetail(Map<String, Object> param){
+    public void insertReturnOrderHeaderDetail(Map<String, Object> param) {
         dao.insertReturnOrderHeaderDetail(param);
     }
+
+    ///////////////NEW METHOD UPDATE TEMPLATE STOCK OPNAME 15 AUGG 2023////   
+     public void updateTemplateStockOpnameHeader(Map<String, String> balance) {
+        dao.updateTemplateStockOpnameHeader(balance);
+    }
+        public void updateTemplateStockOpnameDetail(Map<String, String> balance) {
+        dao.updateTemplateStockOpnameDetail(balance);
+    }
+
+    ///////////////////////done
 }

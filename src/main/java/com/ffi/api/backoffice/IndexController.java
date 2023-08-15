@@ -13,6 +13,7 @@ import com.ffi.api.backoffice.services.ReportServices;
 import com.ffi.paging.Response;
 import com.ffi.paging.ResponseMessage;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import io.swagger.annotations.ApiOperation;
@@ -2240,4 +2241,68 @@ public class IndexController {
         rm.setItem(list);
         return rm;
     }
+    
+    //////////////////////New Method Generate Template Stock Opname 15 AUG 2023 ////////////////////////
+    @RequestMapping(value = "/update-template-stock-opname", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk insert template stock opname header dan detail", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage updateTemplateStockOpname(@RequestBody String param) throws IOException, Exception {
+        ResponseMessage rm = new ResponseMessage();
+        boolean hdr = false;
+        boolean dtl = false;
+        Gson gsn = new Gson();
+        Map<String, Object> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        JsonObject result = gsn.fromJson(param, JsonObject.class);
+
+        //Header
+        Map<String, String> headerParam = new HashMap<String, String>();
+        String cdTemplate = result.getAsJsonObject().getAsJsonPrimitive("cdTemplate").getAsString();
+        String UserUpd = result.getAsJsonObject().getAsJsonPrimitive("userUpd").getAsString();
+        headerParam.put("cdTemplate", cdTemplate);
+        headerParam.put("templateName", result.getAsJsonObject().getAsJsonPrimitive("templateName").getAsString());
+        headerParam.put("status", result.getAsJsonObject().getAsJsonPrimitive("status").getAsString());
+        headerParam.put("userUpd", UserUpd);
+        try {
+            processServices.updateTemplateStockOpnameHeader(headerParam);
+            hdr = true;
+            System.out.println("Success Insert Header!");
+        } catch (Exception e) {
+            hdr = false;
+            System.out.println("Exception: " + e);
+        }
+        
+        //Details
+        JsonArray emp = result.getAsJsonObject().getAsJsonArray("itemList");
+        for (int i = 0; i < emp.size(); i++) {
+            Map<String, String> detailParam = new HashMap<String, String>();
+            detailParam.put("cdTemplate", cdTemplate);
+            detailParam.put("itemCode", emp.get(i).getAsJsonObject().getAsJsonPrimitive("itemCode").getAsString());
+            detailParam.put("status", emp.get(i).getAsJsonObject().getAsJsonPrimitive("status").getAsString());
+            detailParam.put("UserUpd", UserUpd);
+            try {
+                processServices.updateTemplateStockOpnameDetail(detailParam);
+                dtl = true;
+                System.out.println("Success Insert Detail ke-" + i);
+            } catch (Exception e) {
+                dtl = false;
+                System.out.println("Exception: " + e);
+            }
+            detailParam.clear();
+        }
+
+        if (hdr && dtl) {
+            rm.setSuccess(true);
+            rm.setMessage("Insert Done Successfuly");
+        } else {
+            rm.setSuccess(false);
+            rm.setMessage("Failed to Insert");
+        }
+
+        return rm;
+}
 }
