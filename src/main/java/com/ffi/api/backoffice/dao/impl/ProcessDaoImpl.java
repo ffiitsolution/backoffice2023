@@ -1002,19 +1002,19 @@ public class ProcessDaoImpl implements ProcessDao {
                 map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
                 }.getType());
             }
-            
+
             //Add Insert to HIST_KIRIM by KP (13-06-2023)
             Map<String, String> histKirim = new HashMap<String, String>();
             histKirim.put("orderNo", balance.get("orderNo").toString());
             histKirim.put("sendUser", balance.get("userUpd").toString());
             InsertHistKirim(histKirim);
             //End added by KP
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
+
     //Add Insert to Receiving Header & Detail by KP (07-06-2023)
     @Override
     public void InsertRecvHeaderDetail(JsonObject balancing) {
@@ -1023,9 +1023,9 @@ public class ProcessDaoImpl implements ProcessDao {
         Date tgl = new Date();
         String month = df.format(tgl);
         String year = dfYear.format(tgl);
-        String opNo = opnameNumber(year, month, balancing.getAsJsonObject().getAsJsonPrimitive("transType").getAsString(), 
+        String opNo = opnameNumber(year, month, balancing.getAsJsonObject().getAsJsonPrimitive("transType").getAsString(),
                 balancing.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
-        
+
         //Header
         String sql = "insert into t_recv_header(OUTLET_CODE, RECV_NO, RECV_DATE, ORDER_NO, REMARK, NO_OF_PRINT, STATUS, USER_UPD, DATE_UPD, TIME_UPD) "
                 + "select outlet_code, :recv_no, :recv_date, :ord_no, :doc_no, 0, 1, :usr, sysdate, :time_upd from t_order_header oh "
@@ -1039,7 +1039,7 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("usr", balancing.getAsJsonObject().getAsJsonPrimitive("user").getAsString());
         param.put("time_upd", balancing.getAsJsonObject().getAsJsonPrimitive("timeUpd").getAsString());
         jdbcTemplate.update(sql, param);
-        
+
         //Detail
         JsonArray emp = balancing.getAsJsonObject().getAsJsonArray("itemList");
         for (int i = 0; i < emp.size(); i++) {
@@ -1061,7 +1061,7 @@ public class ProcessDaoImpl implements ProcessDao {
             detailParam.clear();
         }
     }
-    
+
     public void InsertRecvDetail(Map<String, String> balance) {
         String qy = "INSERT INTO t_recv_detail (OUTLET_CODE, ORDER_NO, RECV_NO, ITEM_CODE, QTY_1, CD_UOM_1, QTY_2, CD_UOM_2, QTY_BONUS, CD_UOM_BONUS, TOTAL_QTY, TOTAL_PRICE, USER_UPD, DATE_UPD, TIME_UPD)"
                 + " VALUES(:outletCode, :orderNo, :recvNo, :itemCode, :qty1, :cdUom1, :qty2, :cdUom2, :qtyBonus, :cdUomBonus, :totalQty, :totalPrice, :userUpd, :dateUpd, :timeUpd)";
@@ -1083,13 +1083,13 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("timeUpd", timeStamp);
         jdbcTemplate.update(qy, param);
     }
-    
+
     //Add Insert to HIST_KIRIM by KP (13-06-2023)
     public void InsertHistKirim(Map<String, String> balance) {
-        String qy = "INSERT INTO t_recv_detail (OUTLET_CODE, TUJUAN_KIRIM, NO_ORDER, STATUS_KIRIM, TGL_KIRIM, JAM_KIRIM, USER_KIRIM) " +
-                    "SELECT OUTLET_CODE, CD_SUPPLIER, ORDER_NO, 'S', :sendDate, :sendHour, :sendUser " +
-                    "FROM T_ORDER_HEADER " +
-                    "WHERE ORDER_NO = :orderNo";
+        String qy = "INSERT INTO t_recv_detail (OUTLET_CODE, TUJUAN_KIRIM, NO_ORDER, STATUS_KIRIM, TGL_KIRIM, JAM_KIRIM, USER_KIRIM) "
+                + "SELECT OUTLET_CODE, CD_SUPPLIER, ORDER_NO, 'S', :sendDate, :sendHour, :sendUser "
+                + "FROM T_ORDER_HEADER "
+                + "WHERE ORDER_NO = :orderNo";
         Map param = new HashMap();
         param.put("orderNo", balance.get("orderNo"));
         param.put("sendDate", dateNow);
@@ -1098,15 +1098,15 @@ public class ProcessDaoImpl implements ProcessDao {
         jdbcTemplate.update(qy, param);
     }
     //End added by KP
-    
+
     //Add Insert to Wastage Header & Detail by KP (03-08-2023)
     public String wastageCounter(String year, String month, String transType, String outletCode) {
-        if(transType.equalsIgnoreCase("ID")){
+        if (transType.equalsIgnoreCase("ID")) {
             String dateMonth = month.concat("-").concat(year);
-            String sqlId = "select to_char(nvl(max(substr(wastage_id, -3)) + 1, 1), 'fm000') as no_urut " +
-                            "from t_wastage_header " +
-                            "where wastage_id like '" + outletCode.concat("0").concat(month) + "%' " +
-                            "and to_char(wastage_date,'mm-yyyy') = :dateMonth";
+            String sqlId = "select to_char(nvl(max(substr(wastage_id, -3)) + 1, 1), 'fm000') as no_urut "
+                    + "from t_wastage_header "
+                    + "where wastage_id like '" + outletCode.concat("0").concat(month) + "%' "
+                    + "and to_char(wastage_date,'mm-yyyy') = :dateMonth";
             System.err.println("Query for Id :" + sqlId);
             Map paramId = new HashMap();
             paramId.put("dateMonth", dateMonth);
@@ -1117,10 +1117,10 @@ public class ProcessDaoImpl implements ProcessDao {
                 }
             }).toString();
         }
-        String sql = "select to_char(counter, 'fm0000') as no_urut from ( " +
-                    "select max(counter_no) + 1 as counter from m_counter " +
-                    "where outlet_code = :outletCode and trans_type = :transType and year = :year and month = :month " +
-                    ") tbl";
+        String sql = "select to_char(counter, 'fm0000') as no_urut from ( "
+                + "select max(counter_no) + 1 as counter from m_counter "
+                + "where outlet_code = :outletCode and trans_type = :transType and year = :year and month = :month "
+                + ") tbl";
         System.err.println("Query for No Urut :" + sql);
         Map param = new HashMap();
         param.put("year", year);
@@ -1134,7 +1134,7 @@ public class ProcessDaoImpl implements ProcessDao {
 
             }
         }).toString();
-        if(noUrut.equalsIgnoreCase("0")){
+        if (noUrut.equalsIgnoreCase("0")) {
             sql = "insert into m_counter(outlet_code, trans_type, year, month, counter_no) "
                     + "values (:outletCode, :transType, :year, :month, 1)";
             System.err.println("Query for NEW No Urut :" + sql);
@@ -1160,7 +1160,7 @@ public class ProcessDaoImpl implements ProcessDao {
         System.err.println("No Urut :" + noUrut);
         return noUrut;
     }
-    
+
     public void InsertWastageDetail(Map<String, String> balance) {
         String qy = "INSERT INTO t_wastage_detail (OUTLET_CODE, WASTAGE_ID, WASTAGE_NO, ITEM_CODE, QUANTITY, UOM_STOCK, ITEM_TO, USER_UPD, DATE_UPD, TIME_UPD)"
                 + " VALUES(:outletCode, :wastageId, :wastageNo, :itemCode, :qty, :uom, :itemTo, :userUpd, :dateUpd, :timeUpd)";
@@ -1178,7 +1178,7 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("timeUpd", timeStamp);
         jdbcTemplate.update(qy, param);
     }
-    
+
     @Override
     public void InsertWastageHeaderDetail(JsonObject balancing) {
         DateFormat df = new SimpleDateFormat("MM");
@@ -1186,19 +1186,19 @@ public class ProcessDaoImpl implements ProcessDao {
         Date tgl = new Date();
         String month = df.format(tgl);
         String year = dfYear.format(tgl);
-        
+
         //Getting last number for Wastage/Leftover
         String transType = balancing.getAsJsonObject().getAsJsonPrimitive("transType").getAsString();
-        if (transType.contains("W")){
+        if (transType.contains("W")) {
             transType = "WST";
         } else {
             transType = "LOV";
         }
-        String opNo = wastageCounter(year, month, transType, 
+        String opNo = wastageCounter(year, month, transType,
                 balancing.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
-        String opId = wastageCounter(year, month, "ID", 
+        String opId = wastageCounter(year, month, "ID",
                 balancing.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
-        
+
         //Header
         String sql = "insert into t_wastage_header(OUTLET_CODE, TYPE_TRANS, WASTAGE_ID, WASTAGE_NO, WASTAGE_DATE, REMARK, STATUS, USER_UPD, DATE_UPD, TIME_UPD) "
                 + "values (:outletCode, :transType, :wastageId, :wastageNo, :wastageDate, :remark, :status, :userUpd, :dateUpd, :timeUpd)";
@@ -1215,7 +1215,7 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("dateUpd", dateNow);
         param.put("timeUpd", timeStamp);
         jdbcTemplate.update(sql, param);
-                
+
         //Detail
         JsonArray emp = balancing.getAsJsonObject().getAsJsonArray("itemList");
         for (int i = 0; i < emp.size(); i++) {
@@ -1233,7 +1233,7 @@ public class ProcessDaoImpl implements ProcessDao {
         }
     }
     //End added by KP
-    
+
     //Insert MPCS by Kevin (08-08-2023)
     @Override
     public void InsertMPCSTemplate(JsonObject balancing) {
@@ -1242,15 +1242,15 @@ public class ProcessDaoImpl implements ProcessDao {
         int interval = balancing.getAsJsonObject().getAsJsonPrimitive("interval").getAsInt();
         String startTime = balancing.getAsJsonObject().getAsJsonPrimitive("startTime").getAsString();
         String endTime = balancing.getAsJsonObject().getAsJsonPrimitive("endTime").getAsString();
-        
+
         //Delete existing
         String sqlDel = "delete from template_mpcs where outlet_code = :outletCode ";
         Map paramDel = new HashMap();
         paramDel.put("outletCode", balancing.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
         jdbcTemplate.update(sqlDel, paramDel);
-        
-        String sql = "insert into template_mpcs(outlet_code, seq_mpcs, time_mpcs, user_upd, date_upd, time_upd) " +
-                    "values(:outletCode, :seq, :timeMpcs, :userUpd, :dateUpd, :timeUpd) ";
+
+        String sql = "insert into template_mpcs(outlet_code, seq_mpcs, time_mpcs, user_upd, date_upd, time_upd) "
+                + "values(:outletCode, :seq, :timeMpcs, :userUpd, :dateUpd, :timeUpd) ";
         System.err.println("MPCS query :" + sql);
         Map param = new HashMap();
         try {
@@ -1262,7 +1262,7 @@ public class ProcessDaoImpl implements ProcessDao {
             //System.err.println("How many hours: " + loop);
             loop = (loop % 3600) * (60 / interval);
             //System.err.println("How many 30 minutes: " + loop);
-            for(int i = 0; i <= loop; i++){
+            for (int i = 0; i <= loop; i++) {
                 //System.err.println("Iteration: " + i + ", the time is: " + df.format(countTime));
                 param.put("outletCode", balancing.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
                 param.put("seq", (i + 1));
@@ -1275,24 +1275,24 @@ public class ProcessDaoImpl implements ProcessDao {
                 param.clear();
                 countTime = new Date(countTime.getTime() + (interval * 60 * 1000));
             }
-        } catch (Exception ex){
+        } catch (Exception ex) {
             System.err.println("Error DateTime: " + ex);
         }
     }
-    
+
     public String mpcsExist(Map<String, String> ref) {
-        String qry = "select count(1) as existRow from t_summ_mpcs " +
-                    "where outlet_code = :outletCode " +
-                    "and mpcs_group = :mpcsGrp " +
-                    "and date_mpcs = :dateMpcs " +
-                    "and time_mpcs = :timeMpcs ";
+        String qry = "select count(1) as existRow from t_summ_mpcs "
+                + "where outlet_code = :outletCode "
+                + "and mpcs_group = :mpcsGrp "
+                + "and date_mpcs = :dateMpcs "
+                + "and time_mpcs = :timeMpcs ";
         Map prm = new HashMap();
         prm.put("outletCode", ref.get("outlet"));
         prm.put("mpcsGrp", ref.get("mpcsGrp"));
         prm.put("dateMpcs", ref.get("dateMpcs"));
         prm.put("timeMpcs", ref.get("timeMpcs"));
         System.err.println("q :" + qry);
-        return  jdbcTemplate.queryForObject(qry, prm, new RowMapper() {
+        return jdbcTemplate.queryForObject(qry, prm, new RowMapper() {
             @Override
             public String mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
@@ -1300,7 +1300,7 @@ public class ProcessDaoImpl implements ProcessDao {
             }
         }).toString();
     }
-    
+
     @Override
     public void InsertUpdateMPCSProject(JsonObject balancing) {
         String sql = "";
@@ -1311,10 +1311,10 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("timeMpcs", balancing.getAsJsonObject().getAsJsonPrimitive("timeMpcs").getAsString());
         String isMpcsExist = mpcsExist(param);
         param.clear();
-        if(isMpcsExist.equalsIgnoreCase("0")){
-            sql = "insert into t_summ_mpcs(outlet_code, mpcs_group, date_mpcs, seq_mpcs, " +
-                    "time_mpcs, qty_proj_conv,  qty_proj, user_upd, date_upd, time_upd) " +
-                    "values (:outletCode, :mpcsGrp, :dateMpcs, :seqMpcs, :timeMpcs, :qtyPr, :qtyPr, :userUpd, :dateUpd, :timeUpd) ";
+        if (isMpcsExist.equalsIgnoreCase("0")) {
+            sql = "insert into t_summ_mpcs(outlet_code, mpcs_group, date_mpcs, seq_mpcs, "
+                    + "time_mpcs, qty_proj_conv,  qty_proj, user_upd, date_upd, time_upd) "
+                    + "values (:outletCode, :mpcsGrp, :dateMpcs, :seqMpcs, :timeMpcs, :qtyPr, :qtyPr, :userUpd, :dateUpd, :timeUpd) ";
             System.err.println("q :" + sql);
             param.put("outletCode", balancing.getAsJsonObject().getAsJsonPrimitive("outlet").getAsString());
             param.put("mpcsGrp", balancing.getAsJsonObject().getAsJsonPrimitive("mpcsGrp").getAsString());
@@ -1327,12 +1327,12 @@ public class ProcessDaoImpl implements ProcessDao {
             param.put("timeUpd", timeStamp);
             jdbcTemplate.update(sql, param);
         } else {
-            sql = "update t_summ_mpcs " +
-                "set qty_proj_conv = :qtyPr, qty_proj = :qtyPr " +
-                "where outlet_code = :outletCode " +
-                "and mpcs_group = :mpcsGrp " +
-                "and date_mpcs = :dateMpcs " +
-                "and time_mpcs = :timeMpcs ";
+            sql = "update t_summ_mpcs "
+                    + "set qty_proj_conv = :qtyPr, qty_proj = :qtyPr "
+                    + "where outlet_code = :outletCode "
+                    + "and mpcs_group = :mpcsGrp "
+                    + "and date_mpcs = :dateMpcs "
+                    + "and time_mpcs = :timeMpcs ";
             System.err.println("q :" + sql);
             param.put("outletCode", balancing.getAsJsonObject().getAsJsonPrimitive("outlet").getAsString());
             param.put("mpcsGrp", balancing.getAsJsonObject().getAsJsonPrimitive("mpcsGrp").getAsString());
@@ -1357,9 +1357,9 @@ public class ProcessDaoImpl implements ProcessDao {
         String noReturn = returnOrderCounter(year, month, "RTR", param.get("outletCode").toString());
 
         //Insert Header
-        String queryHeader = "INSERT INTO T_RETURN_HEADER (OUTLET_CODE, TYPE_RETURN, RETURN_ID, RETURN_NO, RETURN_DATE," +
-                " RETURN_TO, REMARK, STATUS, USER_UPD, DATE_UPD, TIME_UPD) VALUES (:outletCode, :typeReturn, :returnId," +
-                " :returnNo, :returnDate, :returnTo, :remark, :status, :userUpd, :dateUpd, :timeUpd)";
+        String queryHeader = "INSERT INTO T_RETURN_HEADER (OUTLET_CODE, TYPE_RETURN, RETURN_ID, RETURN_NO, RETURN_DATE,"
+                + " RETURN_TO, REMARK, STATUS, USER_UPD, DATE_UPD, TIME_UPD) VALUES (:outletCode, :typeReturn, :returnId,"
+                + " :returnNo, :returnDate, :returnTo, :remark, :status, :userUpd, :dateUpd, :timeUpd)";
 
         Map<String, Object> prm = new HashMap<>();
         prm.put("outletCode", param.get("outletCode"));
@@ -1381,8 +1381,8 @@ public class ProcessDaoImpl implements ProcessDao {
         StringBuilder query = new StringBuilder();
         query.append("INSERT ALL");
         for (JsonNode node : jsonNode) {
-            query.append(" INTO T_RETURN_DETAIL (OUTLET_CODE, RETURN_ID, RETURN_NO, ITEM_CODE, QTY_WAREHOUSE, " +
-                    "UOM_WAREHOUSE, QTY_PURCHASE, UOM_PURCHASE, TOTAL_QTY, USER_UPD, DATE_UPD, TIME_UPD) VALUES ('")
+            query.append(" INTO T_RETURN_DETAIL (OUTLET_CODE, RETURN_ID, RETURN_NO, ITEM_CODE, QTY_WAREHOUSE, "
+                    + "UOM_WAREHOUSE, QTY_PURCHASE, UOM_PURCHASE, TOTAL_QTY, USER_UPD, DATE_UPD, TIME_UPD) VALUES ('")
                     .append(param.get("outletCode")).append("', '").append(noID).append("', '").append(noReturn)
                     .append("', '").append(node.get("itemCode").toString().replace("\"", ""))
                     .append("', '").append(node.get("qtyWarehouse").toString().replace("\"", ""))
@@ -1400,16 +1400,16 @@ public class ProcessDaoImpl implements ProcessDao {
     }
 
     public String returnOrderCounter(String year, String month, String transType, String outletCode) {
-        if(transType.equalsIgnoreCase("ID")){
+        if (transType.equalsIgnoreCase("ID")) {
             String dateMonth = month.concat("-").concat(year);
             String outletCodeQuery = outletCode;
             if (outletCodeQuery.charAt(0) == '0') {
                 outletCodeQuery = outletCodeQuery.substring(1);
             }
-            String sqlId = "select to_char(nvl(max(substr(RETURN_ID, -3)) + 1, 1), 'fm000') as no_urut " +
-                    "from T_RETURN_HEADER " +
-                    "where RETURN_ID like '" + outletCodeQuery.concat("0").concat(month) + "%' " +
-                    "and to_char(RETURN_DATE,'mm-yyyy') = :dateMonth";
+            String sqlId = "select to_char(nvl(max(substr(RETURN_ID, -3)) + 1, 1), 'fm000') as no_urut "
+                    + "from T_RETURN_HEADER "
+                    + "where RETURN_ID like '" + outletCodeQuery.concat("0").concat(month) + "%' "
+                    + "and to_char(RETURN_DATE,'mm-yyyy') = :dateMonth";
             System.err.println("Query for Id :" + sqlId);
             Map paramId = new HashMap();
             paramId.put("dateMonth", dateMonth);
@@ -1421,10 +1421,10 @@ public class ProcessDaoImpl implements ProcessDao {
             }).toString();
 
         }
-        String sql = "select to_char(counter, 'fm0000') as no_urut from ( " +
-                "select max(counter_no) + 1 as counter from m_counter " +
-                "where outlet_code = :outletCode and trans_type = :transType and year = :year and month = :month " +
-                ") tbl";
+        String sql = "select to_char(counter, 'fm0000') as no_urut from ( "
+                + "select max(counter_no) + 1 as counter from m_counter "
+                + "where outlet_code = :outletCode and trans_type = :transType and year = :year and month = :month "
+                + ") tbl";
         System.err.println("Query for No Urut :" + sql);
         Map param = new HashMap();
         param.put("year", year);
@@ -1438,7 +1438,7 @@ public class ProcessDaoImpl implements ProcessDao {
 
             }
         }).toString();
-        if(noUrut.equalsIgnoreCase("0")){
+        if (noUrut.equalsIgnoreCase("0")) {
             sql = "insert into m_counter(outlet_code, trans_type, year, month, counter_no) "
                     + "values (:outletCode, :transType, :year, :month, 1)";
             System.err.println("Query for NEW No Urut :" + sql);
@@ -1465,6 +1465,7 @@ public class ProcessDaoImpl implements ProcessDao {
         return noUrut;
     }
 ///////////////NEW METHOD LIST ORDER HEADER BY DONA 14 APRIL 2023////
+
     @Override
     public void updateTemplateStockOpnameHeader(Map<String, String> balance) {
 
@@ -1473,49 +1474,37 @@ public class ProcessDaoImpl implements ProcessDao {
         Date tgl = new Date();
         String month = df.format(tgl);
         String year = dfYear.format(tgl);
+        //Del local HEADER
+        String sqlDel = "delete from M_OPNAME_TEMPL_HEADER where CD_TEMPLATE = :cdTemplate ";
+        Map paramDel = new HashMap();
+        paramDel.put("cdTemplate", balance.get("cdTemplate"));
+        jdbcTemplate.update(sqlDel, paramDel);
 
-        String qy = "INSERT INTO M_OPNAME_TEMPl_DETAIL (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ORDER_DATE,ORDER_TO,CD_SUPPLIER,DT_DUE,DT_EXPIRED,REMARK,NO_OF_PRINT,STATUS,USER_UPD,DATE_UPD,TIME_UPD)"
-                + " VALUES(:outletCode,:orderType,:orderId,:orderNo,:orderDate,:orderTo,:cdSupplier,:dtDue,:dtExpired,:remark,:noOfPrint,:status,:userUpd,:dateUpd,:timeUpd)";
+        String qy = "INSERT INTO M_OPNAME_TEMPL_HEADER (CD_TEMPLATE,TEMPLATE_NAME,STATUS,USER_UPD,DATE_UPD,TIME_UPD)"
+                + " VALUES(:cdTemplate,:templateName,:status,:userUpd,:dateUpd,:timeUpd)";
         Map param = new HashMap();
-        param.put("outletCode", balance.get("outletCode"));
-        param.put("orderType", balance.get("orderType"));
-        param.put("orderId", balance.get("orderId"));
-        param.put("orderNo", balance.get("orderNo"));
-        param.put("orderDate", balance.get("orderDate"));
-        param.put("orderTo", balance.get("orderTo"));
-        param.put("cdSupplier", balance.get("cdSupplier"));
-        param.put("dtDue", balance.get("dtDue"));
-        param.put("dtExpired", balance.get("dtExpired"));
-        param.put("remark", balance.get("remark"));
-        param.put("noOfPrint", balance.get("noOfPrint"));
+        param.put("cdTemplate", balance.get("cdTemplate"));
+        param.put("templateName", balance.get("templateName"));
         param.put("status", balance.get("status"));
         param.put("userUpd", balance.get("userUpd"));
         param.put("dateUpd", dateNow);
         param.put("timeUpd", timeStamp);
-        param.put("year", year);
-        param.put("month", month);
-        param.put("transType", balance.get("transType"));
         jdbcTemplate.update(qy, param);
         System.out.println("query insert header: " + qy);
     }
 
     @Override
     public void updateTemplateStockOpnameDetail(Map<String, String> balance) {
-
-        String qy = "INSERT INTO T_ORDER_DETAIL1 (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,TOTAL_QTY_STOCK,UNIT_PRICE,USER_UPD,DATE_UPD,TIME_UPD)"
-                + " VALUES(:outletCode,:orderType,:orderId,:orderNo,:itemCode,:qty1,:cdUom1,:qty2,:cdUom2,:totalQtyStock,:unitPrice,:userUpd,:dateUpd,:timeUpd)";
+        //Del local DETAIL
+        String sqlDel = "delete from M_OPNAME_TEMPL_DETAIL where CD_TEMPLATE = :cdTemplate ";
+        Map paramDel = new HashMap();
+        paramDel.put("cdTemplate", balance.get("cdTemplate"));
+        jdbcTemplate.update(sqlDel, paramDel);
+        String qy = "INSERT INTO M_OPNAME_TEMPL_DETAIL (CD_TEMPLATE,ITEM_CODE,STATUS,USER_UPD,DATE_UPD,TIME_UPD)"
+                + " VALUES(:cdTemplate,:itemCode,:status,:userUpd,:dateUpd,:timeUpd)";
         Map param = new HashMap();
-        param.put("outletCode", balance.get("outletCode"));
-        param.put("orderType", balance.get("orderType"));
-        param.put("orderId", balance.get("orderId"));
-        param.put("orderNo", balance.get("orderNo"));
+        param.put("cdTemplate", balance.get("cdTemplate"));
         param.put("itemCode", balance.get("itemCode"));
-        param.put("qty1", balance.get("qty1"));
-        param.put("cdUom1", balance.get("cdUom1"));
-        param.put("qty2", balance.get("qty2"));
-        param.put("cdUom2", balance.get("cdUom2"));
-        param.put("totalQtyStock", balance.get("totalQtyStock"));
-        param.put("unitPrice", balance.get("unitPrice"));
         param.put("userUpd", balance.get("userUpd"));
         param.put("dateUpd", dateNow);
         param.put("timeUpd", timeStamp);
