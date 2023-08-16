@@ -1345,7 +1345,7 @@ public class ProcessDaoImpl implements ProcessDao {
     //End of MPCS
 
     @Override
-    public void insertReturnOrderHeaderDetail(Map<String, Object> param) {
+    public void insertReturnOrderHeaderDetail(JsonObject param) {
         DateFormat df = new SimpleDateFormat("MM");
         DateFormat dfYear = new SimpleDateFormat("yyyy");
         Date tgl = new Date();
@@ -1353,8 +1353,8 @@ public class ProcessDaoImpl implements ProcessDao {
         String year = dfYear.format(tgl);
 
         //Getting last number for Return Order
-        String noID = returnOrderCounter(year, month, "ID", param.get("outletCode").toString());
-        String noReturn = returnOrderCounter(year, month, "RTR", param.get("outletCode").toString());
+        String noID = returnOrderCounter(year, month, "ID", param.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
+        String noReturn = returnOrderCounter(year, month, "RTR", param.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
 
         //Insert Header
         String queryHeader = "INSERT INTO T_RETURN_HEADER (OUTLET_CODE, TYPE_RETURN, RETURN_ID, RETURN_NO, RETURN_DATE,"
@@ -1362,35 +1362,38 @@ public class ProcessDaoImpl implements ProcessDao {
                 + " :returnNo, :returnDate, :returnTo, :remark, :status, :userUpd, :dateUpd, :timeUpd)";
 
         Map<String, Object> prm = new HashMap<>();
-        prm.put("outletCode", param.get("outletCode"));
-        prm.put("typeReturn", param.get("typeRetur"));
+        prm.put("outletCode", param.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
+        prm.put("typeReturn", param.getAsJsonObject().getAsJsonPrimitive("typeRetur").getAsString());
         prm.put("returnId", noID);
         prm.put("returnNo", noReturn);
-        prm.put("returnDate", param.get("returnDate"));
-        prm.put("returnTo", param.get("returnTo"));
-        prm.put("remark", param.get("remark"));
-        prm.put("status", param.get("status"));
-        prm.put("userUpd", param.get("userUpd"));
+        prm.put("returnDate", param.getAsJsonObject().getAsJsonPrimitive("returnDate").getAsString());
+        prm.put("returnTo", param.getAsJsonObject().getAsJsonPrimitive("returnTo").getAsString());
+        prm.put("remark", param.getAsJsonObject().getAsJsonPrimitive("remark").getAsString());
+        prm.put("status", param.getAsJsonObject().getAsJsonPrimitive("status").getAsString());
+        prm.put("userUpd", param.getAsJsonObject().getAsJsonPrimitive("userUpd").getAsString());
         prm.put("dateUpd", dateNow);
         prm.put("timeUpd", timeStamp);
         jdbcTemplate.update(queryHeader, prm);
 
         //Insert Detail
         ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonNode = objectMapper.valueToTree(param.get("itemList"));
+        JsonArray emp = param.getAsJsonObject().getAsJsonArray("itemList");
         StringBuilder query = new StringBuilder();
+        String outletCode = param.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString();
+        String userUpd = param.getAsJsonObject().getAsJsonPrimitive("userUpd").getAsString();
         query.append("INSERT ALL");
-        for (JsonNode node : jsonNode) {
+
+        for (int i = 0; i < emp.size(); i++) {
             query.append(" INTO T_RETURN_DETAIL (OUTLET_CODE, RETURN_ID, RETURN_NO, ITEM_CODE, QTY_WAREHOUSE, "
-                    + "UOM_WAREHOUSE, QTY_PURCHASE, UOM_PURCHASE, TOTAL_QTY, USER_UPD, DATE_UPD, TIME_UPD) VALUES ('")
-                    .append(param.get("outletCode")).append("', '").append(noID).append("', '").append(noReturn)
-                    .append("', '").append(node.get("itemCode").toString().replace("\"", ""))
-                    .append("', '").append(node.get("qtyWarehouse").toString().replace("\"", ""))
-                    .append("', '").append(node.get("uomWarehouse").toString().replace("\"", ""))
-                    .append("', '").append(node.get("qtyPurchase").toString().replace("\"", ""))
-                    .append("', '").append(node.get("uomPurchase").toString().replace("\"", ""))
-                    .append("', '").append(node.get("totalQty").toString().replace("\"", ""))
-                    .append("', '").append(param.get("userUpd")).append("', '").append(dateNow).append("', '")
+                            + "UOM_WAREHOUSE, QTY_PURCHASE, UOM_PURCHASE, TOTAL_QTY, USER_UPD, DATE_UPD, TIME_UPD) VALUES ('")
+                    .append(outletCode).append("', '").append(noID).append("', '").append(noReturn)
+                    .append("', '").append(emp.get(i).getAsJsonObject().getAsJsonPrimitive("itemCode").getAsString())
+                    .append("', '").append(emp.get(i).getAsJsonObject().getAsJsonPrimitive("qtyWarehouse").getAsString())
+                    .append("', '").append(emp.get(i).getAsJsonObject().getAsJsonPrimitive("uomWarehouse").getAsString())
+                    .append("', '").append(emp.get(i).getAsJsonObject().getAsJsonPrimitive("qtyPurchase").getAsString())
+                    .append("', '").append(emp.get(i).getAsJsonObject().getAsJsonPrimitive("uomPurchase").getAsString())
+                    .append("', '").append(emp.get(i).getAsJsonObject().getAsJsonPrimitive("totalQty").getAsString())
+                    .append("', '").append(userUpd).append("', '").append(dateNow).append("', '")
                     .append(timeStamp).append("')");
         }
         query.append(" SELECT * FROM dual");

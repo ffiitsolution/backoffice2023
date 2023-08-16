@@ -2225,12 +2225,11 @@ public class IndexController {
     public @ResponseBody
     ResponseMessage InsertReturnOrderHeaderDetail(@RequestBody String param) throws IOException, Exception {
         Gson gsn = new Gson();
-        Map<String, Object> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
-        }.getType());
+        JsonObject result = gsn.fromJson(param, JsonObject.class);
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         ResponseMessage rm = new ResponseMessage();
         try {
-            processServices.insertReturnOrderHeaderDetail(balance);
+            processServices.insertReturnOrderHeaderDetail(result);
             rm.setSuccess(true);
             rm.setMessage("Insert Return Order Successfuly");
         } catch (Exception e) {

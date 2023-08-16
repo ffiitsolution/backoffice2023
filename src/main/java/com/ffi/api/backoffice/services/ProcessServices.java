@@ -176,7 +176,7 @@ public class ProcessServices {
     }
 
     //Add Insert to returnOrder Header & Detail by Pasca (15-08-2023)
-    public void insertReturnOrderHeaderDetail(Map<String, Object> param) {
+    public void insertReturnOrderHeaderDetail(JsonObject param) {
         dao.insertReturnOrderHeaderDetail(param);
     }
 

@@ -98,7 +98,7 @@ public interface ProcessDao {
     public void InsertUpdateMPCSProject(JsonObject mapping);
 
     //Insert Return Order by Pasca (15-08-2023)
-    void insertReturnOrderHeaderDetail(Map<String, Object> param);
+    void insertReturnOrderHeaderDetail(JsonObject param);
 
     ///////////////NEW METHOD UPDATE TEMPLATE STOCK OPNAME BY DONA 15 AUG 2023////////////////////////////
 
