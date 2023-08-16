@@ -2422,12 +2422,12 @@ public class ViewDoaImpl implements ViewDao {
         String query = null;
         Map<String, Object> sqlParam = new HashMap<>();
         if (param.containsKey("cdSupplier")) {
-            query = "SELECT b.ITEM_DESCRIPTION, b.STATUS, b.UOM_WAREHOUSE, b.UOM_PURCHASE, b.UOM_STOCK " +
+            query = "SELECT b.ITEM_DESCRIPTION, b.STATUS, b.UOM_WAREHOUSE, b.UOM_PURCHASE, b.UOM_STOCK, b.ITEM_CODE " +
                     "FROM M_ITEM_SUPPLIER a LEFT JOIN M_ITEM b ON a.ITEM_CODE = b.ITEM_CODE WHERE CD_SUPPLIER =:cdSupplier";
             sqlParam.put("cdSupplier", param.get("cdSupplier"));
         }
         if (param.containsKey("cdWarehouse")) {
-            query = "SELECT ITEM_DESCRIPTION, STATUS, UOM_WAREHOUSE, UOM_PURCHASE, UOM_STOCK FROM M_ITEM WHERE " +
+            query = "SELECT ITEM_DESCRIPTION, STATUS, UOM_WAREHOUSE, UOM_PURCHASE, UOM_STOCK, ITEM_CODE FROM M_ITEM WHERE " +
                     "CD_WAREHOUSE =:cdWarehouse ORDER BY ITEM_CODE ASC";
             sqlParam.put("cdWarehouse", param.get("cdWarehouse"));
         }
@@ -2440,6 +2440,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("uomWarehouse", rs.getString("UOM_WAREHOUSE"));
                 rt.put("uomPurchase", rs.getString("UOM_PURCHASE"));
                 rt.put("uomStock", rs.getString("UOM_STOCK"));
+                rt.put("itemCode", rs.getString("ITEM_CODE"));
                 return rt;
             }
         });
