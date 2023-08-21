@@ -1385,7 +1385,7 @@ public class ProcessDaoImpl implements ProcessDao {
 
         for (int i = 0; i < emp.size(); i++) {
             query.append(" INTO T_RETURN_DETAIL (OUTLET_CODE, RETURN_ID, RETURN_NO, ITEM_CODE, QTY_WAREHOUSE, "
-                            + "UOM_WAREHOUSE, QTY_PURCHASE, UOM_PURCHASE, TOTAL_QTY, USER_UPD, DATE_UPD, TIME_UPD) VALUES ('")
+                    + "UOM_WAREHOUSE, QTY_PURCHASE, UOM_PURCHASE, TOTAL_QTY, USER_UPD, DATE_UPD, TIME_UPD) VALUES ('")
                     .append(outletCode).append("', '").append(noID).append("', '").append(noReturn)
                     .append("', '").append(emp.get(i).getAsJsonObject().getAsJsonPrimitive("itemCode").getAsString())
                     .append("', '").append(emp.get(i).getAsJsonObject().getAsJsonPrimitive("qtyWarehouse").getAsString())
@@ -1469,48 +1469,61 @@ public class ProcessDaoImpl implements ProcessDao {
     }
 ///////////////NEW METHOD LIST ORDER HEADER BY DONA 14 APRIL 2023////
 
-    @Override
-    public void updateTemplateStockOpnameHeader(Map<String, String> balance) {
-
-        DateFormat df = new SimpleDateFormat("MM");
-        DateFormat dfYear = new SimpleDateFormat("yyyy");
-        Date tgl = new Date();
-        String month = df.format(tgl);
-        String year = dfYear.format(tgl);
-        //Del local HEADER
-        String sqlDel = "delete from M_OPNAME_TEMPL_HEADER where CD_TEMPLATE = :cdTemplate ";
-        Map paramDel = new HashMap();
-        paramDel.put("cdTemplate", balance.get("cdTemplate"));
-        jdbcTemplate.update(sqlDel, paramDel);
-
-        String qy = "INSERT INTO M_OPNAME_TEMPL_HEADER (CD_TEMPLATE,TEMPLATE_NAME,STATUS,USER_UPD,DATE_UPD,TIME_UPD)"
-                + " VALUES(:cdTemplate,:templateName,:status,:userUpd,:dateUpd,:timeUpd)";
-        Map param = new HashMap();
-        param.put("cdTemplate", balance.get("cdTemplate"));
-        param.put("templateName", balance.get("templateName"));
-        param.put("status", balance.get("status"));
-        param.put("userUpd", balance.get("userUpd"));
-        param.put("dateUpd", dateNow);
-        param.put("timeUpd", timeStamp);
-        jdbcTemplate.update(qy, param);
-        System.out.println("query insert header: " + qy);
-    }
-
-    @Override
     public void updateTemplateStockOpnameDetail(Map<String, String> balance) {
-        //Del local DETAIL
         String sqlDel = "delete from M_OPNAME_TEMPL_DETAIL where CD_TEMPLATE = :cdTemplate ";
         Map paramDel = new HashMap();
         paramDel.put("cdTemplate", balance.get("cdTemplate"));
         jdbcTemplate.update(sqlDel, paramDel);
-        String qy = "INSERT INTO M_OPNAME_TEMPL_DETAIL (CD_TEMPLATE,ITEM_CODE,STATUS,USER_UPD,DATE_UPD,TIME_UPD)"
+
+        String sql = "INSERT INTO M_OPNAME_TEMPL_DETAIL (CD_TEMPLATE,ITEM_CODE,STATUS,USER_UPD,DATE_UPD,TIME_UPD)"
                 + " VALUES(:cdTemplate,:itemCode,:status,:userUpd,:dateUpd,:timeUpd)";
+        System.err.println("q detail:" + sql);
         Map param = new HashMap();
         param.put("cdTemplate", balance.get("cdTemplate"));
         param.put("itemCode", balance.get("itemCode"));
+        param.put("status", balance.get("status"));
         param.put("userUpd", balance.get("userUpd"));
         param.put("dateUpd", dateNow);
         param.put("timeUpd", timeStamp);
-        jdbcTemplate.update(qy, param);
+        jdbcTemplate.update(sql, param);
     }
+
+    @Override
+    public void updateTemplateStockOpnameHeader(JsonObject balancing) {
+   try {
+        String sqlDel = "delete from M_OPNAME_TEMPL_HEADER where CD_TEMPLATE =:cdTemplate";
+        Map paramDel = new HashMap();
+        paramDel.put("cdTemplate", balancing.get("cdTemplate"));
+        jdbcTemplate.update(sqlDel, paramDel);
+        System.out.println(sqlDel);
+        //Header
+     
+            String sql = "INSERT INTO M_OPNAME_TEMPL_HEADER (CD_TEMPLATE,TEMPLATE_NAME,STATUS,USER_UPD,DATE_UPD,TIME_UPD)"
+                    + " VALUES(:cdTemplate,:templateName,:status,:userUpd,:dateUpd,:timeUpd)";
+            Map param = new HashMap();
+            System.out.println(param);
+            param.put("cdTemplate", balancing.getAsJsonObject().getAsJsonPrimitive("cdTemplate").getAsString());
+            param.put("templateName", balancing.getAsJsonObject().getAsJsonPrimitive("templateName").getAsString());
+            param.put("status", balancing.getAsJsonObject().getAsJsonPrimitive("status").getAsString());
+            param.put("userUpd", balancing.getAsJsonObject().getAsJsonPrimitive("userUpd").getAsString());
+            param.put("dateUpd", dateNow);
+            param.put("timeUpd", timeStamp);
+            jdbcTemplate.update(sql, param);
+
+            //Detail
+            JsonArray emp = balancing.getAsJsonObject().getAsJsonArray("itemList");
+            for (int i = 0; i < emp.size(); i++) {
+                Map<String, String> detailParam = new HashMap<String, String>();
+                detailParam.put("cdTemplate", balancing.getAsJsonObject().getAsJsonPrimitive("cdTemplate").getAsString());
+                detailParam.put("itemCode", emp.get(i).getAsJsonObject().getAsJsonPrimitive("itemCode").getAsString());
+                detailParam.put("status", emp.get(i).getAsJsonObject().getAsJsonPrimitive("status").getAsString());
+                updateTemplateStockOpnameDetail(detailParam);
+                detailParam.clear();
+            }
+        } catch (Exception ex) {
+            System.err.println("Error DateTime: " + ex);
+        }
+    }
+
+////////////////////////DONE
 }

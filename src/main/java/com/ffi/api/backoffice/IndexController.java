@@ -2243,65 +2243,31 @@ public class IndexController {
     
     //////////////////////New Method Generate Template Stock Opname 15 AUG 2023 ////////////////////////
     @RequestMapping(value = "/update-template-stock-opname", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Digunakan untuk insert template stock opname header dan detail", response = Object.class)
+   // @RequestMapping(value = "/insert-wastage-headetail", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk insert header dan detail Wastage", response = Object.class)
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 404, message = "The resource not found"),}
     )
     public @ResponseBody
-    ResponseMessage updateTemplateStockOpname(@RequestBody String param) throws IOException, Exception {
-        ResponseMessage rm = new ResponseMessage();
-        boolean hdr = false;
-        boolean dtl = false;
+    ResponseMessage updateTemplateStockOpnameHeader(@RequestBody String param) throws IOException, Exception {
         Gson gsn = new Gson();
         Map<String, Object> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
         JsonObject result = gsn.fromJson(param, JsonObject.class);
-
-        //Header
-        Map<String, String> headerParam = new HashMap<String, String>();
-        String cdTemplate = result.getAsJsonObject().getAsJsonPrimitive("cdTemplate").getAsString();
-        String UserUpd = result.getAsJsonObject().getAsJsonPrimitive("userUpd").getAsString();
-        headerParam.put("cdTemplate", cdTemplate);
-        headerParam.put("templateName", result.getAsJsonObject().getAsJsonPrimitive("templateName").getAsString());
-        headerParam.put("status", result.getAsJsonObject().getAsJsonPrimitive("status").getAsString());
-        headerParam.put("userUpd", UserUpd);
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        ResponseMessage rm = new ResponseMessage();
         try {
-            processServices.updateTemplateStockOpnameHeader(headerParam);
-            hdr = true;
-            System.out.println("Success Insert Header!");
-        } catch (Exception e) {
-            hdr = false;
-            System.out.println("Exception: " + e);
-        }
-        
-        //Details
-        JsonArray emp = result.getAsJsonObject().getAsJsonArray("itemList");
-        for (int i = 0; i < emp.size(); i++) {
-            Map<String, String> detailParam = new HashMap<String, String>();
-            detailParam.put("cdTemplate", cdTemplate);
-            detailParam.put("itemCode", emp.get(i).getAsJsonObject().getAsJsonPrimitive("itemCode").getAsString());
-            detailParam.put("status", emp.get(i).getAsJsonObject().getAsJsonPrimitive("status").getAsString());
-            detailParam.put("UserUpd", UserUpd);
-            try {
-                processServices.updateTemplateStockOpnameDetail(detailParam);
-                dtl = true;
-                System.out.println("Success Insert Detail ke-" + i);
-            } catch (Exception e) {
-                dtl = false;
-                System.out.println("Exception: " + e);
-            }
-            detailParam.clear();
-        }
-
-        if (hdr && dtl) {
+            processServices.updateTemplateStockOpnameHeader(result);
             rm.setSuccess(true);
-            rm.setMessage("Insert Done Successfuly");
-        } else {
+            rm.setMessage("Insert Template Stock Opname Successfuly");
+        } catch (Exception e) {
             rm.setSuccess(false);
-            rm.setMessage("Failed to Insert");
+            rm.setMessage("Insert Template Stock Opname Failed: " + e.getMessage());
+            System.err.println(e);
         }
-
+        rm.setItem(list);
         return rm;
 }
+    
 }

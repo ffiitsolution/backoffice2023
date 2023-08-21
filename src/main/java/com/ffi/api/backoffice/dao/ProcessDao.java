@@ -102,7 +102,7 @@ public interface ProcessDao {
 
     ///////////////NEW METHOD UPDATE TEMPLATE STOCK OPNAME BY DONA 15 AUG 2023////////////////////////////
 
-    public void updateTemplateStockOpnameHeader(Map<String, String> mapping);
+    public void updateTemplateStockOpnameHeader(JsonObject mapping);
 
     public void updateTemplateStockOpnameDetail(Map<String, String> mapping);
     /////////////done
