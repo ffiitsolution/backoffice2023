@@ -1363,7 +1363,7 @@ public class ProcessDaoImpl implements ProcessDao {
 
         Map<String, Object> prm = new HashMap<>();
         prm.put("outletCode", param.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
-        prm.put("typeReturn", param.getAsJsonObject().getAsJsonPrimitive("typeRetur").getAsString());
+        prm.put("typeReturn", param.getAsJsonObject().getAsJsonPrimitive("typeReturn").getAsString());
         prm.put("returnId", noID);
         prm.put("returnNo", noReturn);
         prm.put("returnDate", param.getAsJsonObject().getAsJsonPrimitive("returnDate").getAsString());
