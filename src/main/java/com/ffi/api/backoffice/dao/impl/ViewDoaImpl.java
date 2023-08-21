@@ -2341,7 +2341,8 @@ public class ViewDoaImpl implements ViewDao {
                 "END AS TYPE_RETURN, CONCAT(b.DESCRIPTION, CONCAT(c.OUTLET_NAME, d.SUPPLIER_NAME)) AS return_to," +
                 " a.STATUS FROM T_RETURN_HEADER a LEFT JOIN M_GLOBAL b ON a.RETURN_TO = b.CODE AND b.COND = :city" +
                 " LEFT JOIN M_OUTLET c ON a.RETURN_TO  = c.OUTLET_CODE LEFT JOIN M_SUPPLIER d ON a.RETURN_TO = " +
-                "d.CD_SUPPLIER WHERE a.RETURN_DATE BETWEEN TO_DATE(:startDate, 'dd-mm-yyyy') AND TO_DATE(:endDate, 'dd-mm-yyyy')";
+                "d.CD_SUPPLIER WHERE a.RETURN_DATE BETWEEN TO_DATE(:startDate, 'dd-mm-yyyy') AND TO_DATE(:endDate, 'dd-mm-yyyy') " +
+                "ORDER BY RETURN_DATE ASC";
 
         Map<String, Object> sqlParam = new HashMap<>();
         sqlParam.put("startDate", param.get("startDate"));
