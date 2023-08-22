@@ -2242,6 +2242,7 @@ public class IndexController {
     }
 
     //////////////////////New Method Generate Template Stock Opname 15 AUG 2023 ////////////////////////
+    
     @RequestMapping(value = "/update-template-stock-opname", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk insert order header dan detail", response = Object.class)
     @ApiResponses(value = {
