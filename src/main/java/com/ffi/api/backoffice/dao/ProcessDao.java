@@ -104,6 +104,8 @@ public interface ProcessDao {
     public void updateTemplateStockOpnameHeader(Map<String, String> mapping);
 
     public void updateTemplateStockOpnameDetail(Map<String, String> mapping);
+    
+    public void deleteTempLateDetail(Map<String, String> mapping);
 
     /////////////done
 }

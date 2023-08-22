@@ -184,8 +184,13 @@ public class ProcessServices {
     public void updateTemplateStockOpnameHeader(Map<String, String> balance) {
         dao.updateTemplateStockOpnameHeader(balance);
     }
-        public void updateTemplateStockOpnameDetail(Map<String, String> balance) {
+
+    public void updateTemplateStockOpnameDetail(Map<String, String> balance) {
         dao.updateTemplateStockOpnameDetail(balance);
+    }
+
+    public void deleteTempLateDetail(Map<String, String> balance) {
+        dao.deleteTempLateDetail(balance);
     }
     ///////////////////////done
 }

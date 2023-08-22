@@ -1472,7 +1472,13 @@ public class ProcessDaoImpl implements ProcessDao {
     @Override
     public void updateTemplateStockOpnameHeader(Map<String, String> balance) {
         //DELETE existing Header
+        String sqlDel = "delete from M_OPNAME_TEMPL_HEADER where CD_TEMPLATE = :cdTemplate ";
+        Map paramDel = new HashMap();
+        paramDel.put("cdTemplate", balance.get("cdTemplate"));
+        jdbcTemplate.update(sqlDel, paramDel);
+        System.out.println("query del header : " + sqlDel);
 
+        //insert head
         String qy = "INSERT INTO M_OPNAME_TEMPL_HEADER (CD_TEMPLATE,TEMPLATE_NAME,STATUS,USER_UPD,DATE_UPD,TIME_UPD)"
                 + " VALUES(:cdTemplate,:templateName,:status,:userUpd,:dateUpd,:timeUpd)";
         Map param = new HashMap();
@@ -1483,7 +1489,19 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("dateUpd", dateNow);
         param.put("timeUpd", timeStamp);
         jdbcTemplate.update(qy, param);
+        deleteTempLateDetail(param);
         System.out.println("query insert header: " + qy);
+
+    }
+
+    @Override
+    public void deleteTempLateDetail(Map<String, String> balance) {
+        //DELETE existing Detail
+        String sqlDel = "delete from M_OPNAME_TEMPL_DETAIL where CD_TEMPLATE = :cdTemplate ";
+        Map paramDel = new HashMap();
+        paramDel.put("cdTemplate", balance.get("cdTemplate"));
+        jdbcTemplate.update(sqlDel, paramDel);
+        System.out.println("query del detail : " + sqlDel);
     }
 
     @Override
