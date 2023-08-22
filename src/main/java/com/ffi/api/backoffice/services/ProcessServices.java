@@ -181,13 +181,11 @@ public class ProcessServices {
     }
 
     ///////////////NEW METHOD UPDATE TEMPLATE STOCK OPNAME 15 AUGG 2023////   
-    @Transactional
-    public void updateTemplateStockOpnameHeader(JsonObject balancing) {
-        dao.updateTemplateStockOpnameHeader(balancing);
+    public void updateTemplateStockOpnameHeader(Map<String, String> balance) {
+        dao.updateTemplateStockOpnameHeader(balance);
     }
-    @Transactional
-    public void updateTemplateStockOpnameDetail(Map<String, String> mapping) {
-        dao.updateTemplateStockOpnameDetail(mapping);
+        public void updateTemplateStockOpnameDetail(Map<String, String> balance) {
+        dao.updateTemplateStockOpnameDetail(balance);
     }
     ///////////////////////done
 }

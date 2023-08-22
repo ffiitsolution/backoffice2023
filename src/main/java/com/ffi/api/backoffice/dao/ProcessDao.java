@@ -101,9 +101,9 @@ public interface ProcessDao {
     void insertReturnOrderHeaderDetail(JsonObject param);
 
     ///////////////NEW METHOD UPDATE TEMPLATE STOCK OPNAME BY DONA 15 AUG 2023////////////////////////////
-
-    public void updateTemplateStockOpnameHeader(JsonObject mapping);
+    public void updateTemplateStockOpnameHeader(Map<String, String> mapping);
 
     public void updateTemplateStockOpnameDetail(Map<String, String> mapping);
+
     /////////////done
 }

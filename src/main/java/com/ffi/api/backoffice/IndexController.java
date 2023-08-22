@@ -1891,14 +1891,13 @@ public class IndexController {
         return res;
     }
     /////////////////////////////////DONE///////////////////////////////////////
-    
+
     ///////////////////////////////Add Wastage by KP (31-07-2023)///////////////////////////////
     //Ambil Wastage Header
     @RequestMapping(value = "/wastage-header", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk melihat data wastage (header)", response = Object.class)
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "OK")
-        ,
+        @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 404, message = "The resource not found")
     }
     )
@@ -1918,13 +1917,12 @@ public class IndexController {
         }
         return rm;
     }
-    
+
     //Ambil Wastage Detail
     @RequestMapping(value = "/wastage-detail", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk melihat data wastage (detail)", response = Object.class)
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "OK")
-        ,
+        @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 404, message = "The resource not found")
     }
     )
@@ -1948,8 +1946,11 @@ public class IndexController {
     //list data M_OUTLET yang tipenya HO
     @RequestMapping(value = "/list-outlet-report")
     @ApiOperation(value = "Mepampilkan list outlet untuk report", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "ok"), @ApiResponse(code = 400, message = "The resource not found")})
-    public @ResponseBody Response reportOrderEntry() throws IOException {
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "ok"),
+        @ApiResponse(code = 400, message = "The resource not found")})
+    public @ResponseBody
+    Response reportOrderEntry() throws IOException {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         Response rm = new Response();
         try {
@@ -1961,7 +1962,7 @@ public class IndexController {
         }
         return rm;
     }
-    
+
     //Add Insert to Receiving Header & Detail by KP (07-06-2023)
     @RequestMapping(value = "/insert-wastage-headetail", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk insert header dan detail Wastage", response = Object.class)
@@ -1990,8 +1991,8 @@ public class IndexController {
         rm.setItem(list);
         return rm;
     }
-    
-        ///////////////NEW METHOD INSERT ORDER DETAIL BY DONA 7 AUG 2023////
+
+    ///////////////NEW METHOD INSERT ORDER DETAIL BY DONA 7 AUG 2023////
     @RequestMapping(value = "/list-stock-opname", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk list stock opname", response = Object.class)
     @ApiResponses(value = {
@@ -2036,7 +2037,7 @@ public class IndexController {
         rm.setItem(list);
         return rm;
     }
-    
+
     @RequestMapping(value = "/view-mpcs-temp", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view MPCS Template", response = Object.class)
     @ApiResponses(value = {
@@ -2061,7 +2062,7 @@ public class IndexController {
         rm.setData(list);
         return rm;
     }
-    
+
     @RequestMapping(value = "/view-mpcs-plan", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view MPCS Plan / Projection", response = Object.class)
     @ApiResponses(value = {
@@ -2086,7 +2087,7 @@ public class IndexController {
         rm.setData(list);
         return rm;
     }
-    
+
     @RequestMapping(value = "/mpcs-project", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk insert MPCS Plan / Project", response = Object.class)
     @ApiResponses(value = {
@@ -2114,14 +2115,14 @@ public class IndexController {
         rm.setItem(list);
         return rm;
     }
+
     ///////////////////////////////Add Return Order by Pasca (10-08-2023)///////////////////////////////
     //Ambil Return Order Header
     @RequestMapping(value = "/return-order-header", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk melihat data return order (header)", response = Object.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK")
-            ,
-            @ApiResponse(code = 404, message = "The resource not found")
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")
     }
     )
     public @ResponseBody
@@ -2140,13 +2141,13 @@ public class IndexController {
         }
         return rm;
     }
+
     //Ambil Return Order Detail
     @RequestMapping(value = "/return-order-detail", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk melihat data return order (detail)", response = Object.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK")
-            ,
-            @ApiResponse(code = 404, message = "The resource not found")
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")
     }
     )
     public @ResponseBody
@@ -2165,12 +2166,12 @@ public class IndexController {
         }
         return rm;
     }
+
     @RequestMapping(value = "/list-supplier-gudang-return", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk melihat list supplier dan gudang di return order", response = Object.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK")
-            ,
-            @ApiResponse(code = 404, message = "The resource not found")
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")
     }
     )
     public @ResponseBody
@@ -2193,9 +2194,8 @@ public class IndexController {
     @RequestMapping(value = "/list-item-supplier-gudang-return", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk melihat list item supplier dan gudang di return order", response = Object.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK")
-            ,
-            @ApiResponse(code = 404, message = "The resource not found")
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")
     }
     )
     public @ResponseBody
@@ -2219,8 +2219,8 @@ public class IndexController {
     @RequestMapping(value = "/insert-return-order-headetail", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk insert header dan detail Return Order", response = Object.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 404, message = "The resource not found"),}
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
     )
     public @ResponseBody
     ResponseMessage InsertReturnOrderHeaderDetail(@RequestBody String param) throws IOException, Exception {
@@ -2240,34 +2240,70 @@ public class IndexController {
         rm.setItem(list);
         return rm;
     }
-    
+
     //////////////////////New Method Generate Template Stock Opname 15 AUG 2023 ////////////////////////
     @RequestMapping(value = "/update-template-stock-opname", produces = MediaType.APPLICATION_JSON_VALUE)
-   // @RequestMapping(value = "/insert-wastage-headetail", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Digunakan untuk insert header dan detail Wastage", response = Object.class)
+    @ApiOperation(value = "Digunakan untuk insert order header dan detail", response = Object.class)
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 404, message = "The resource not found"),}
     )
     public @ResponseBody
     ResponseMessage updateTemplateStockOpnameHeader(@RequestBody String param) throws IOException, Exception {
+        ResponseMessage rm = new ResponseMessage();
+        boolean hdr = false;
+        boolean dtl = false;
         Gson gsn = new Gson();
         Map<String, Object> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
         JsonObject result = gsn.fromJson(param, JsonObject.class);
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        ResponseMessage rm = new ResponseMessage();
+
+        //Header
+        Map<String, String> headerParam = new HashMap<String, String>();
+        String cdTempl = result.getAsJsonObject().getAsJsonPrimitive("cdTemplate").getAsString();
+        String tempName = result.getAsJsonObject().getAsJsonPrimitive("templateName").getAsString();;
+        String usrpd = result.getAsJsonObject().getAsJsonPrimitive("userUpd").getAsString();
+        headerParam.put("cdTemplate", cdTempl);
+        headerParam.put("templateName", tempName);
+        headerParam.put("status", result.getAsJsonObject().getAsJsonPrimitive("status").getAsString());
+        headerParam.put("userUpd", usrpd);
         try {
-            processServices.updateTemplateStockOpnameHeader(result);
-            rm.setSuccess(true);
-            rm.setMessage("Insert Template Stock Opname Successfuly");
+            processServices.updateTemplateStockOpnameHeader(headerParam);
+            hdr = true;
+            System.out.println("Success Insert Header!");
         } catch (Exception e) {
-            rm.setSuccess(false);
-            rm.setMessage("Insert Template Stock Opname Failed: " + e.getMessage());
-            System.err.println(e);
+            hdr = false;
+            System.out.println("Exception: " + e);
         }
-        rm.setItem(list);
+        //Details
+        JsonArray emp = result.getAsJsonObject().getAsJsonArray("itemList");
+        for (int i = 0; i < emp.size(); i++) {
+            Map<String, String> detailParam = new HashMap<String, String>();
+            detailParam.put("cdTemplate", cdTempl);
+            detailParam.put("itemCode", emp.get(i).getAsJsonObject().getAsJsonPrimitive("itemCode").getAsString());
+            detailParam.put("stat", emp.get(i).getAsJsonObject().getAsJsonPrimitive("stat").getAsString());
+            detailParam.put("userUpd", usrpd);
+            try {
+                processServices.updateTemplateStockOpnameDetail(detailParam);
+                dtl = true;
+                System.out.println("Success Insert Detail ke-" + i);
+            } catch (Exception e) {
+                dtl = false;
+                System.out.println("Exception: " + e);
+            }
+            detailParam.clear();
+        }
+
+        if (hdr && dtl) {
+            rm.setSuccess(true);
+            rm.setMessage("Insert Done Successfuly");
+        } else {
+            rm.setSuccess(false);
+            rm.setMessage("Failed to Insert");
+        }
+
         return rm;
-}
+    }
+    
     
 }
