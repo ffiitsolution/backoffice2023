@@ -7,6 +7,8 @@ package com.ffi.api.backoffice.dao.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ffi.api.backoffice.dao.ReportDao;
+import com.google.gson.Gson;
+import com.google.gson.internal.LinkedTreeMap;
 import net.sf.jasperreports.engine.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,10 +18,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -824,6 +823,82 @@ public class ReportDaoImpl implements ReportDao {
         }
 
         ClassPathResource classPathResource = new ClassPathResource("report/freeMeal.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
+
+    @Override
+    public JasperPrint jasperReportSalesByTime(Map<String, Object> param, Connection connection) throws IOException, JRException {
+        Map<String, Object> hashMap = new HashMap<>();
+
+        hashMap.put("fromDate", param.get("fromDate"));
+        hashMap.put("toDate", param.get("toDate"));
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("address", param.get("outletName"));
+
+        ArrayList<Object> listPos = (ArrayList<Object>) param.get("pos");
+        StringBuilder posCode = new StringBuilder();
+        for (Object object : listPos){
+            if (object.toString().equals("Semua")) {
+                hashMap.put("posCode", object.toString());
+                hashMap.put("posCode1", "000");
+                hashMap.put("posCode2", "zzz");
+            } else {
+                Gson gson = new Gson();
+                LinkedTreeMap jsonPos = gson.fromJson(object.toString(),LinkedTreeMap.class);
+                if (jsonPos.containsKey("posCode1")) {
+                    hashMap.put("posCode1", jsonPos.get("posCode1"));
+                    posCode.append(jsonPos.get("posName1")).append(" s/d ");
+                } else {
+                    hashMap.put("posCode2", jsonPos.get("posCode2"));
+                    posCode.append(jsonPos.get("posName2"));
+                }
+                hashMap.put("posCode", posCode.toString());
+            }
+        }
+
+        ArrayList<Object> listCashier = (ArrayList<Object>) param.get("cashier");
+        StringBuilder cashierCode = new StringBuilder();
+        for (Object object : listCashier) {
+            if (object.toString().equals("Semua")) {
+                hashMap.put("cashierCode", "Semua");
+                hashMap.put("cashierCode1", "000");
+                hashMap.put("cashierCode2", "zzz");
+            } else {
+                Gson gson = new Gson();
+                LinkedTreeMap jsonCashier = gson.fromJson(object.toString(), LinkedTreeMap.class);
+                if (jsonCashier.containsKey("cashierCode1")) {
+                    hashMap.put("cashierCode1", jsonCashier.get("cashierCode1"));
+                    cashierCode.append(jsonCashier.get("cashierName1")).append(" s/d ");
+                } else {
+                    hashMap.put("cashierCode2", jsonCashier.get("cashierCode2"));
+                    cashierCode.append(jsonCashier.get("cashierName2"));
+                }
+                hashMap.put("cashierCode", cashierCode.toString());
+            }
+        }
+        ArrayList<Object> listShift = (ArrayList<Object>) param.get("shift");
+        StringBuilder shiftCode = new StringBuilder();
+        for (Object object : listShift) {
+            if (object.toString().equals("Semua")) {
+                hashMap.put("shiftCode", "Semua");
+                hashMap.put("shiftCode1", "000");
+                hashMap.put("shiftCode2", "zzz");
+            } else {
+                Gson gson = new Gson();
+                LinkedTreeMap jsonCashier = gson.fromJson(object.toString(), LinkedTreeMap.class);
+                if (jsonCashier.containsKey("shiftCode1")) {
+                    hashMap.put("shiftCode1", jsonCashier.get("shiftCode1"));
+                    shiftCode.append(jsonCashier.get("shiftName1")).append(" s/d ");
+                } else {
+                    hashMap.put("shiftCode2", jsonCashier.get("shiftCode2"));
+                    shiftCode.append(jsonCashier.get("shiftName2"));
+                }
+                hashMap.put("shiftCode", shiftCode.toString());
+            }
+        }
+
+        ClassPathResource classPathResource = new ClassPathResource("report/salesTime.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }
