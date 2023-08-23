@@ -903,4 +903,31 @@ public class ReportDaoImpl implements ReportDao {
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }
 
+    @Override
+    public List<Map<String, Object>> listParamReport(Map<String, String> param) {
+        String query = null;
+        if (param.get("typeParam").equals("Pos"))
+            query = "SELECT POS_CODE, POS_DESCRIPTION FROM M_POS mp WHERE STATUS = 'A' AND POS_CODE != ' ' " +
+                    "ORDER BY POS_CODE ASC";
+        if (param.get("typeParam").equals("Kasir"))
+            query = "SELECT STAFF_POS_CODE, STAFF_NAME FROM M_POS_STAFF WHERE ACCESS_level = 'KSR' AND STATUS = " +
+                    "'A' ORDER BY STAFF_POS_CODE ASC";
+
+        List<Map<String, Object>> list = jdbcTemplate.query(query, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                if (param.get("typeParam").equals("Pos")) {
+                    rt.put("posCode", rs.getString("POS_CODE"));
+                    rt.put("posDescription", rs.getString("POS_DESCRIPTION"));
+                } else if (param.get("typeParam").equals("Kasir")) {
+                    rt.put("userId", rs.getString("STAFF_POS_CODE"));
+                    rt.put("name", rs.getString("STAFF_NAME"));
+                }
+                return rt;
+            }
+        });
+        return list;
+    }
+
 }

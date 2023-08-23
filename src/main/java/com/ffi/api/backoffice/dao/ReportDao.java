@@ -52,4 +52,6 @@ public interface ReportDao {
     /////////////////////////////////DONE///////////////////////////////////////
     ///////////////NEW METHOD REPORT receive BY PASCA 23 August 2023////
     JasperPrint jasperReportSalesByTime (Map<String, Object> param, Connection connection) throws IOException, JRException;
+
+    List<Map<String, Object>> listParamReport(Map<String, String> param);
 }

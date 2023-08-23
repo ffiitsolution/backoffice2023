@@ -20,7 +20,9 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.sf.jasperreports.engine.*;
@@ -394,5 +396,29 @@ public class ReportController {
         headers.add("Content-Disposition", "inline; filename=salesByTime.pdf");
 
         return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+    }
+
+    @RequestMapping(value = "/list-param-report", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk mengambil list param report", response = Object.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 404, message = "The resource not found")
+    }
+    )
+    public @ResponseBody
+    Response viewReturnOrderHeader(@RequestBody String param) throws JRException, IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response rm = new Response();
+        try {
+            list = reportServices.listParamReport(balance);
+            rm.setData(list);
+            rm.setRecordsTotal(list.size());
+        } catch (Exception e) {
+            rm.setRecordsTotal(0);
+        }
+        return rm;
     }
 }
