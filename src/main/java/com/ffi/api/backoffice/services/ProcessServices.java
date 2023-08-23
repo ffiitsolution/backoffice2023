@@ -192,5 +192,10 @@ public class ProcessServices {
     public void deleteTempLateDetail(Map<String, String> balance) {
         dao.deleteTempLateDetail(balance);
     }
+    
+        public void insertMasterItem(Map<String, String> balance) {
+        dao.insertMasterItem(balance);
+    }
+
     ///////////////////////done
 }

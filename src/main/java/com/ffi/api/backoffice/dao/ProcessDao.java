@@ -106,6 +106,8 @@ public interface ProcessDao {
     public void updateTemplateStockOpnameDetail(Map<String, String> mapping);
     
     public void deleteTempLateDetail(Map<String, String> mapping);
+    
+    public void insertMasterItem(Map<String, String> mapping);
 
     /////////////done
 }

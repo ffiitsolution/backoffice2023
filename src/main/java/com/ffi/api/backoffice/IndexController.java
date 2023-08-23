@@ -2306,5 +2306,36 @@ public class IndexController {
         return rm;
     }
     
-    
+        ///////////////new method from dona 23-08-2023////////////////////////////
+
+    @RequestMapping(value = "/insert-master-item", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk insert supplier", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage insertMasterItem(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        ResponseMessage rm = new ResponseMessage();
+        try {
+            processServices.insertMasterItem(balance);
+            rm.setSuccess(true);
+            rm.setMessage("Insert Success Successfuly");
+
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Insert Failed Successfuly: " + e.getMessage());
+        }
+
+        rm.setItem(list);
+
+        return rm;
+    }
+
+    ///////////////done 
 }

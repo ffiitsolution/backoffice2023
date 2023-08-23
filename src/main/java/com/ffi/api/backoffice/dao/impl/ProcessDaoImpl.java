@@ -1521,4 +1521,27 @@ public class ProcessDaoImpl implements ProcessDao {
     }
 
 ////////////////////////DONE
+    @Override
+    public void insertMasterItem(Map<String, String> balance) {
+        //Delete existing Detail
+        String qy = "INSERT INTO M_ITEM"
+                + "(ITEM_CODE,CD_BRAND,ITEM_DESCRIPTION,CD_LEVEL_1,CD_LEVEL_2,CD_LEVEL_3, "
+                + "      CD_LEVEL_4,AMT_COST,UOM_WAREHOUSE,CONV_WAREHOUSE,UOM_PURCHASE,CONV_STOCK "
+                + "      ,UOM_STOCK,CD_WAREHOUSE,FLAG_OTHERS,FLAG_MATERIAL,FLAG_HALF_FINISH, "
+                + "      FLAG_FINISHED_GOOD,FLAG_OPEN_MARKET,FLAG_TRANSFER_LOC,FLAG_CANVASING, "
+                + "      FLAG_STOCK,PLU,CD_SUPPLIER_DEFAULT,MIN_STOCK,MAX_STOCK,QTY_STOCK, "
+                + "      CD_MENU_ITEM,CD_ITEM_LEFTOVER,STATUS,USER_UPD,DATE_UPD,TIME_UPD, "
+                + "      FLAG_PAKET)"
+                + " VALUES(:cdTemplate,:itemCode,:stat,:userUpd,:dateUpd,:timeUpd)";
+        Map param = new HashMap();
+        param.put("cdTemplate", balance.get("cdTemplate"));
+        param.put("itemCode", balance.get("itemCode"));
+        param.put("stat", balance.get("stat"));
+        param.put("userUpd", balance.get("userUpd"));
+        param.put("dateUpd", dateNow);
+        param.put("timeUpd", timeStamp);
+        jdbcTemplate.update(qy, param);
+        System.out.println("query insert header: " + qy);
+    }
+
 }
