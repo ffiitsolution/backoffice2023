@@ -95,4 +95,7 @@ public class ReportServices {
     public JasperPrint jasperReportSalesByTime(Map<String, Object> param, Connection connection) throws JRException, IOException {
         return dao.jasperReportSalesByTime(param, connection);
     }
+    public List<Map<String, Object>> listParamReport(Map<String, String> param) {
+        return dao.listParamReport(param);
+    }
 }
