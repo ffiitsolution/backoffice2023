@@ -2242,7 +2242,6 @@ public class IndexController {
     }
 
     //////////////////////New Method Generate Template Stock Opname 15 AUG 2023 ////////////////////////
-    
     @RequestMapping(value = "/update-template-stock-opname", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk insert order header dan detail", response = Object.class)
     @ApiResponses(value = {
@@ -2305,11 +2304,10 @@ public class IndexController {
 
         return rm;
     }
-    
-        ///////////////new method from dona 23-08-2023////////////////////////////
 
+    ///////////////new method from dona 23-08-2023////////////////////////////
     @RequestMapping(value = "/insert-master-item", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Digunakan untuk insert supplier", response = Object.class)
+    @ApiOperation(value = "Digunakan untuk insert master item", response = Object.class)
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 404, message = "The resource not found"),}
@@ -2317,25 +2315,24 @@ public class IndexController {
     public @ResponseBody
     ResponseMessage insertMasterItem(@RequestBody String param) throws IOException, Exception {
         Gson gsn = new Gson();
-        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        Map<String, Object> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-
+        JsonObject result = gsn.fromJson(param, JsonObject.class);
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         ResponseMessage rm = new ResponseMessage();
         try {
-            processServices.insertMasterItem(balance);
+            processServices.insertMasterItem(result);
+            //prosesServices.updateMCounter(balance);
             rm.setSuccess(true);
-            rm.setMessage("Insert Success Successfuly");
-
+            rm.setMessage("Insert Master Item Successfuly");
         } catch (Exception e) {
             rm.setSuccess(false);
-            rm.setMessage("Insert Failed Successfuly: " + e.getMessage());
+            rm.setMessage("Insert Master Item Failed: " + e.getMessage());
+            System.err.println(e);
         }
-
         rm.setItem(list);
-
         return rm;
     }
-
+   
     ///////////////done 
 }

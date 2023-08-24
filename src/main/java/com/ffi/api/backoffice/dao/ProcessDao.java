@@ -107,7 +107,7 @@ public interface ProcessDao {
     
     public void deleteTempLateDetail(Map<String, String> mapping);
     
-    public void insertMasterItem(Map<String, String> mapping);
+    public void insertMasterItem(JsonObject mapping);
 
     /////////////done
 }

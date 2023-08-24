@@ -193,8 +193,8 @@ public class ProcessServices {
         dao.deleteTempLateDetail(balance);
     }
     
-        public void insertMasterItem(Map<String, String> balance) {
-        dao.insertMasterItem(balance);
+        public void insertMasterItem(JsonObject balancing) {
+        dao.insertMasterItem(balancing);
     }
 
     ///////////////////////done
