@@ -98,4 +98,9 @@ public class ReportServices {
     public List<Map<String, Object>> listParamReport(Map<String, String> param) {
         return dao.listParamReport(param);
     }
+    ///////////////////////END//////////////////////////////
+    ///////////////NEW METHOD REPORT BY PASCA 25 August 2023////
+    public JasperPrint jasperReportSalesByDate(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        return dao.jasperReportSalesByDate(param, connection);
+    }
 }

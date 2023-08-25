@@ -40,6 +40,7 @@
         <defaultValueExpression><![CDATA[]]></defaultValueExpression>
     </parameter>
     <parameter name="address" class="java.lang.String"/>
+    <parameter name="user" class="java.lang.String"/>
     <queryString>
         <![CDATA[SELECT
 	'00' AS jam,
@@ -516,21 +517,21 @@ WHERE
                 <textElement>
                     <font size="8"/>
                 </textElement>
-                <text><![CDATA[Periode        : ]]></text>
+                <text><![CDATA[Periode       ]]></text>
             </staticText>
             <staticText>
                 <reportElement x="3" y="56" width="55" height="11" uuid="2c3cadd3-058f-460d-b0cb-31b1b886b967"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
-                <text><![CDATA[Pos#             : ]]></text>
+                <text><![CDATA[Pos]]></text>
             </staticText>
             <staticText>
                 <reportElement x="3" y="66" width="55" height="11" uuid="51e0ab36-42e0-40c0-93b7-0499ad4c59c0"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
-                <text><![CDATA[Cashier        : ]]></text>
+                <text><![CDATA[Cashier        ]]></text>
             </staticText>
             <staticText>
                 <reportElement x="36" y="78" width="100" height="20" uuid="49a57f28-7f01-4534-a304-db8e4b7b94ac"/>
@@ -549,36 +550,14 @@ WHERE
                 <textElement>
                     <font size="8"/>
                 </textElement>
-                <textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{fromDate}))
-+ " s/d " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{toDate}))]]></textFieldExpression>
-            </textField>
-            <textField>
-                <reportElement x="437" y="39" width="114" height="11" isPrintWhenDetailOverflows="true" uuid="ca38d693-201f-47d5-972c-c7db54e4e497"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <textFieldExpression><![CDATA["Tanggal Cetak : " + new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
-            </textField>
-            <textField>
-                <reportElement x="437" y="49" width="114" height="11" isPrintWhenDetailOverflows="true" uuid="52bda56b-8b8d-4394-aea8-085763aaf0fc"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <textFieldExpression><![CDATA["Jam Cetak : " + new SimpleDateFormat("hh:mm:ss a").format(new Date())]]></textFieldExpression>
-            </textField>
-            <textField>
-                <reportElement x="437" y="29" width="114" height="11" uuid="5d42b63a-6544-4df3-ac6c-52d14de910a6"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <textFieldExpression><![CDATA["Shift : " + $P{shiftCode}]]></textFieldExpression>
+                <textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{fromDate})) + " s/d " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{toDate}))]]></textFieldExpression>
             </textField>
             <textField>
                 <reportElement x="57" y="56" width="283" height="11" uuid="18b09b86-04ce-42ea-8683-e3c2e4d9786b"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
-                <textFieldExpression><![CDATA[$P{posCode}]]></textFieldExpression>
+                <textFieldExpression><![CDATA[" : "  +  $P{posCode}]]></textFieldExpression>
             </textField>
             <textField>
                 <reportElement x="78" y="10" width="262" height="11" uuid="08764410-0629-492c-b82a-8170370903d3"/>
@@ -592,8 +571,50 @@ WHERE
                 <textElement>
                     <font size="8"/>
                 </textElement>
-                <textFieldExpression><![CDATA[$P{cashierCode}]]></textFieldExpression>
+                <textFieldExpression><![CDATA[" : " + $P{cashierCode}]]></textFieldExpression>
             </textField>
+            <staticText>
+                <reportElement x="350" y="66" width="55" height="11" uuid="fa7076db-4b2f-4272-82ab-728bb1ffb380"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Shift]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="404" y="66" width="150" height="11" uuid="6ca057b2-3428-4744-8197-2ae720b21e36"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + $P{shiftCode}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="404" y="56" width="150" height="11" uuid="43dcdbd8-76b6-457d-840b-cedb0de63444"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + $P{user}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="350" y="56" width="55" height="11" uuid="404aa493-64d2-4423-947a-f2a585cc7631"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[User ]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="404" y="46" width="150" height="11" uuid="5cddb687-5a3c-4c75-b1db-1df2275dec26"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(new Date())]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="350" y="46" width="55" height="11" uuid="b3e84b0f-23d6-4a2b-8a7b-e38489fedb64"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Tanggal Cetak ]]></text>
+            </staticText>
         </band>
     </columnHeader>
     <detail>

@@ -835,6 +835,7 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("toDate", param.get("toDate"));
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("address", param.get("outletName"));
+        hashMap.put("user", param.get("user"));
 
         ArrayList<Object> listPos = (ArrayList<Object>) param.get("pos");
         StringBuilder posCode = new StringBuilder();
@@ -906,14 +907,21 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public List<Map<String, Object>> listParamReport(Map<String, String> param) {
         String query = null;
-        if (param.get("typeParam").equals("Pos"))
+        Map<String, Object> hashMap = new HashMap<>();
+        if (param.get("typeParam").equals("Pos")){
             query = "SELECT POS_CODE, POS_DESCRIPTION FROM M_POS mp WHERE STATUS = 'A' AND POS_CODE != ' ' " +
-                    "ORDER BY POS_CODE ASC";
-        if (param.get("typeParam").equals("Kasir"))
+                    "AND OUTLET_CODE =:outletCode ORDER BY POS_CODE ASC";
+            hashMap.put("outletCode", param.get("outletCode"));
+        } else if (param.get("typeParam").equals("Kasir")) {
             query = "SELECT STAFF_POS_CODE, STAFF_NAME FROM M_POS_STAFF WHERE ACCESS_level = 'KSR' AND STATUS = " +
-                    "'A' ORDER BY STAFF_POS_CODE ASC";
+                    "'A' AND OUTLET_CODE =:outletCode ORDER BY STAFF_POS_CODE ASC";
+            hashMap.put("outletCode", param.get("outletCode"));
+        } else if (param.get("typeParam").equals("OrderType")) {
+            query = "SELECT CODE, DESCRIPTION FROM M_GLOBAL WHERE COND LIKE '%ORDER_TYPE%' AND CODE BETWEEN '000' AND 'zzz'";
+        }
 
-        List<Map<String, Object>> list = jdbcTemplate.query(query, new RowMapper<Map<String, Object>>() {
+        assert query != null;
+        List<Map<String, Object>> list = jdbcTemplate.query(query, hashMap, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
@@ -923,6 +931,9 @@ public class ReportDaoImpl implements ReportDao {
                 } else if (param.get("typeParam").equals("Kasir")) {
                     rt.put("userId", rs.getString("STAFF_POS_CODE"));
                     rt.put("name", rs.getString("STAFF_NAME"));
+                } else if (param.get("typeParam").equals("OrderType")) {
+                    rt.put("code", rs.getString("CODE"));
+                    rt.put("description", rs.getString("DESCRIPTION"));
                 }
                 return rt;
             }
@@ -930,4 +941,89 @@ public class ReportDaoImpl implements ReportDao {
         return list;
     }
 
+    @Override
+    public JasperPrint jasperReportSalesByDate(Map<String, Object> param, Connection connection) throws IOException, JRException {
+        Map<String, Object> hashMap = new HashMap<>();
+
+        hashMap.put("fromDate", param.get("fromDate"));
+        hashMap.put("toDate", param.get("toDate"));
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("outletName", param.get("outletName"));
+        hashMap.put("user", param.get("user"));
+
+        if (param.get("orderTypeName").equals("Semua") && param.get("orderTypeCode").equals("Semua")) {
+            hashMap.put("orderTypeName", "Semua");
+            hashMap.put("orderTypeCode1", "000");
+            hashMap.put("orderTypeCode2", "zzz");
+        } else {
+            hashMap.put("orderTypeName", param.get("orderTypeName"));
+            hashMap.put("orderTypeCode1", param.get("orderTypeCode"));
+            hashMap.put("orderTypeCode2", param.get("orderTypeCode"));
+        }
+
+        ArrayList<Object> listPos = (ArrayList<Object>) param.get("pos");
+        StringBuilder posCode = new StringBuilder();
+        for (Object object : listPos){
+            if (object.toString().equals("Semua")) {
+                hashMap.put("posCode", object.toString());
+                hashMap.put("posCode1", "000");
+                hashMap.put("posCode2", "zzz");
+            } else {
+                Gson gson = new Gson();
+                LinkedTreeMap jsonPos = gson.fromJson(object.toString(),LinkedTreeMap.class);
+                if (jsonPos.containsKey("posCode1")) {
+                    hashMap.put("posCode1", jsonPos.get("posCode1"));
+                    posCode.append(jsonPos.get("posName1")).append(" s/d ");
+                } else {
+                    hashMap.put("posCode2", jsonPos.get("posCode2"));
+                    posCode.append(jsonPos.get("posName2"));
+                }
+                hashMap.put("posCode", posCode.toString());
+            }
+        }
+
+        ArrayList<Object> listCashier = (ArrayList<Object>) param.get("cashier");
+        StringBuilder cashierCode = new StringBuilder();
+        for (Object object : listCashier) {
+            if (object.toString().equals("Semua")) {
+                hashMap.put("cashierCode", "Semua");
+                hashMap.put("cashierCode1", "000");
+                hashMap.put("cashierCode2", "zzz");
+            } else {
+                Gson gson = new Gson();
+                LinkedTreeMap jsonCashier = gson.fromJson(object.toString(), LinkedTreeMap.class);
+                if (jsonCashier.containsKey("cashierCode1")) {
+                    hashMap.put("cashierCode1", jsonCashier.get("cashierCode1"));
+                    cashierCode.append(jsonCashier.get("cashierName1")).append(" s/d ");
+                } else {
+                    hashMap.put("cashierCode2", jsonCashier.get("cashierCode2"));
+                    cashierCode.append(jsonCashier.get("cashierName2"));
+                }
+                hashMap.put("cashierCode", cashierCode.toString());
+            }
+        }
+        ArrayList<Object> listShift = (ArrayList<Object>) param.get("shift");
+        StringBuilder shiftCode = new StringBuilder();
+        for (Object object : listShift) {
+            if (object.toString().equals("Semua")) {
+                hashMap.put("shiftCode", "Semua");
+                hashMap.put("shiftCode1", "000");
+                hashMap.put("shiftCode2", "zzz");
+            } else {
+                Gson gson = new Gson();
+                LinkedTreeMap jsonCashier = gson.fromJson(object.toString(), LinkedTreeMap.class);
+                if (jsonCashier.containsKey("shiftCode1")) {
+                    hashMap.put("shiftCode1", jsonCashier.get("shiftCode1"));
+                    shiftCode.append(jsonCashier.get("shiftName1")).append(" s/d ");
+                } else {
+                    hashMap.put("shiftCode2", jsonCashier.get("shiftCode2"));
+                    shiftCode.append(jsonCashier.get("shiftName2"));
+                }
+                hashMap.put("shiftCode", shiftCode.toString());
+            }
+        }
+        ClassPathResource classPathResource = new ClassPathResource("report/salesDate.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
 }
