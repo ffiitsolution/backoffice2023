@@ -339,12 +339,10 @@ public class ViewDoaImpl implements ViewDao {
         String qry = "SELECT "
                 + "    MMI.MENU_ITEM_CODE, "
                 + "    MI.ITEM_DESCRIPTION, "
-                + "    -- MMI.MENU_GROUP_CODE, "
                 + "    MG.DESCRIPTION AS MENU_GROUP_NAME, "
                 + "    MP.PRICE, "
                 + "    MP.PRICE_TYPE_CODE AS PRICE_TYPE_CODE, "
                 + "    MMI.TAXABLE "
-                + "    -- MG.DESCRIPTION AS ORDER_DESCRIPTION "
                 + "FROM M_MENU_ITEM MMI "
                 + "LEFT JOIN M_ITEM MI "
                 + "ON MMI.MENU_ITEM_CODE = MI.ITEM_CODE  "
@@ -354,17 +352,18 @@ public class ViewDoaImpl implements ViewDao {
                 + "ON MOP.PRICE_TYPE_CODE = MP.PRICE_TYPE_CODE  "
                 + "LEFT JOIN M_GLOBAL MG "
                 + "ON MMI.MENU_GROUP_CODE = MG.CODE AND MG.COND = 'GROUP' "
-                + "WHERE MMI.MENU_GROUP_CODE LIKE :Menu_Group_Code  "
+                + "WHERE MMI.MENU_GROUP_CODE  LIKE:menuGroupCode  "
                 + "AND MMI.MENU_ITEM_CODE LIKE '%%' "
                 + "AND MMI.STATUS = 'A'  "
                 + "AND MI.STATUS = 'A'  "
-                + "AND MMI.OUTLET_CODE LIKE :Outlet_Code  "
-                + "AND MOP.OUTLET_CODE LIKE :Outlet_Code  "
+                + "AND MMI.OUTLET_CODE LIKE :outletCode  "
+                + "AND MOP.OUTLET_CODE LIKE :outletCode  "
                 + "AND MOP.ORDER_TYPE = 'ETA' "
                 + "ORDER BY MMI.MENU_ITEM_CODE";
+
         Map prm = new HashMap();
-        prm.put("Outlet_Code", "%" + ref.get("outlet_code") + "%");
-        prm.put("Menu_Group_Code", "%" + ref.get("menu_group_code") + "%");
+        prm.put("outletCode", "%" + ref.get("outletCode") + "%");
+        prm.put("menuGroupCode", "%" + ref.get("menuGroupCode") + "%");
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
@@ -1422,9 +1421,6 @@ public class ViewDoaImpl implements ViewDao {
         }).toString();
     }
 
-    
-    
-    
     ///////////////////done
     ///////////////NEW METHOD LIST ORDER HEADER BY DONA 27 APRIL 2023////
     @Override
@@ -2271,7 +2267,6 @@ public class ViewDoaImpl implements ViewDao {
         return list;
     }
 
-
     //Added View MPCS by KP (09-08-2023)
     @Override
     public List<Map<String, Object>> listTemplateMpcs(Map<String, String> ref) {
@@ -2299,22 +2294,22 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
-    
+
     @Override
     public List<Map<String, Object>> listProjectMpcs(Map<String, String> ref) {
-        String qry = "select seq_mpcs, time_mpcs, 0 as qty_proj from template_mpcs " +
-                "where outlet_code = :outletCode " +
-                "and time_mpcs not in " +
-                "(select time_mpcs from t_summ_mpcs " +
-                "where outlet_code = :outletCode " +
-                "and mpcs_group = :mpcsGrp " +
-                "and date_mpcs = :dateMpcs) " +
-                "union all " +
-                "select seq_mpcs, time_mpcs, qty_proj from t_summ_mpcs " +
-                "where outlet_code = :outletCode " +
-                "and mpcs_group = :mpcsGrp " +
-                "and date_mpcs = :dateMpcs " +
-                "order by seq_mpcs, time_mpcs ";
+        String qry = "select seq_mpcs, time_mpcs, 0 as qty_proj from template_mpcs "
+                + "where outlet_code = :outletCode "
+                + "and time_mpcs not in "
+                + "(select time_mpcs from t_summ_mpcs "
+                + "where outlet_code = :outletCode "
+                + "and mpcs_group = :mpcsGrp "
+                + "and date_mpcs = :dateMpcs) "
+                + "union all "
+                + "select seq_mpcs, time_mpcs, qty_proj from t_summ_mpcs "
+                + "where outlet_code = :outletCode "
+                + "and mpcs_group = :mpcsGrp "
+                + "and date_mpcs = :dateMpcs "
+                + "order by seq_mpcs, time_mpcs ";
         System.err.println("q :" + qry);
         Map prm = new HashMap();
         prm.put("outletCode", ref.get("outlet"));
@@ -2334,15 +2329,15 @@ public class ViewDoaImpl implements ViewDao {
         return list;
     }
     //End of MPCS
-    
+
     @Override
     public List<Map<String, Object>> listReturnOrderHeader(Map<String, String> param) {
-        String query = "SELECT a.RETURN_NO, a.RETURN_DATE, a.REMARK, CASE WHEN a.TYPE_RETURN = '0' THEN 'Supplier' ELSE 'Gudang' " +
-                "END AS TYPE_RETURN, CONCAT(b.DESCRIPTION, CONCAT(c.OUTLET_NAME, d.SUPPLIER_NAME)) AS return_to," +
-                " a.STATUS FROM T_RETURN_HEADER a LEFT JOIN M_GLOBAL b ON a.RETURN_TO = b.CODE AND b.COND = :city" +
-                " LEFT JOIN M_OUTLET c ON a.RETURN_TO  = c.OUTLET_CODE LEFT JOIN M_SUPPLIER d ON a.RETURN_TO = " +
-                "d.CD_SUPPLIER WHERE a.RETURN_DATE BETWEEN TO_DATE(:startDate, 'dd-mm-yyyy') AND TO_DATE(:endDate, 'dd-mm-yyyy') " +
-                "ORDER BY RETURN_DATE ASC";
+        String query = "SELECT a.RETURN_NO, a.RETURN_DATE, a.REMARK, CASE WHEN a.TYPE_RETURN = '0' THEN 'Supplier' ELSE 'Gudang' "
+                + "END AS TYPE_RETURN, CONCAT(b.DESCRIPTION, CONCAT(c.OUTLET_NAME, d.SUPPLIER_NAME)) AS return_to,"
+                + " a.STATUS FROM T_RETURN_HEADER a LEFT JOIN M_GLOBAL b ON a.RETURN_TO = b.CODE AND b.COND = :city"
+                + " LEFT JOIN M_OUTLET c ON a.RETURN_TO  = c.OUTLET_CODE LEFT JOIN M_SUPPLIER d ON a.RETURN_TO = "
+                + "d.CD_SUPPLIER WHERE a.RETURN_DATE BETWEEN TO_DATE(:startDate, 'dd-mm-yyyy') AND TO_DATE(:endDate, 'dd-mm-yyyy') "
+                + "ORDER BY RETURN_DATE ASC";
 
         Map<String, Object> sqlParam = new HashMap<>();
         sqlParam.put("startDate", param.get("startDate"));
@@ -2350,7 +2345,7 @@ public class ViewDoaImpl implements ViewDao {
         sqlParam.put("city", "X_" + param.get("city"));
         System.err.println("q :" + query);
 
-        List<Map<String, Object>> list = jdbcTemplate.query(query,sqlParam, new RowMapper<Map<String, Object>>() {
+        List<Map<String, Object>> list = jdbcTemplate.query(query, sqlParam, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
@@ -2368,14 +2363,14 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listReturnOrderDetail(Map<String, String> param) {
-        String query = "SELECT a.ITEM_CODE, b.ITEM_DESCRIPTION, a.QTY_WAREHOUSE, a.UOM_WAREHOUSE, a.QTY_PURCHASE, " +
-                "a.UOM_PURCHASE, a.TOTAL_QTY, b.UOM_STOCK FROM T_RETURN_DETAIL a LEFT JOIN M_ITEM b ON a.ITEM_CODE = " +
-                "b.ITEM_CODE WHERE RETURN_NO = :returnNo";
+        String query = "SELECT a.ITEM_CODE, b.ITEM_DESCRIPTION, a.QTY_WAREHOUSE, a.UOM_WAREHOUSE, a.QTY_PURCHASE, "
+                + "a.UOM_PURCHASE, a.TOTAL_QTY, b.UOM_STOCK FROM T_RETURN_DETAIL a LEFT JOIN M_ITEM b ON a.ITEM_CODE = "
+                + "b.ITEM_CODE WHERE RETURN_NO = :returnNo";
 
         Map<String, Object> sqlParam = new HashMap<>();
         sqlParam.put("returnNo", param.get("returnNo"));
 
-        List<Map<String, Object>> list = jdbcTemplate.query(query,sqlParam, new RowMapper<Map<String, Object>>() {
+        List<Map<String, Object>> list = jdbcTemplate.query(query, sqlParam, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
@@ -2396,10 +2391,12 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> listSupplierGudangReturnOrder(Map<String, String> param) {
         String query = null;
-        if (param.get("typeReturn").equals("Gudang"))
+        if (param.get("typeReturn").equals("Gudang")) {
             query = "SELECT * FROM M_GLOBAL WHERE COND ='WAREHOUSE' AND STATUS = 'A'";
-        if (param.get("typeReturn").equals("Supplier"))
+        }
+        if (param.get("typeReturn").equals("Supplier")) {
             query = "SELECT * FROM M_SUPPLIER ORDER BY SUPPLIER_NAME ASC";
+        }
 
         List<Map<String, Object>> list = jdbcTemplate.query(query, new RowMapper<Map<String, Object>>() {
             @Override
@@ -2423,13 +2420,13 @@ public class ViewDoaImpl implements ViewDao {
         String query = null;
         Map<String, Object> sqlParam = new HashMap<>();
         if (param.containsKey("cdSupplier")) {
-            query = "SELECT b.ITEM_DESCRIPTION, b.STATUS, b.UOM_WAREHOUSE, b.UOM_PURCHASE, b.UOM_STOCK, b.ITEM_CODE " +
-                    "FROM M_ITEM_SUPPLIER a LEFT JOIN M_ITEM b ON a.ITEM_CODE = b.ITEM_CODE WHERE CD_SUPPLIER =:cdSupplier";
+            query = "SELECT b.ITEM_DESCRIPTION, b.STATUS, b.UOM_WAREHOUSE, b.UOM_PURCHASE, b.UOM_STOCK, b.ITEM_CODE "
+                    + "FROM M_ITEM_SUPPLIER a LEFT JOIN M_ITEM b ON a.ITEM_CODE = b.ITEM_CODE WHERE CD_SUPPLIER =:cdSupplier";
             sqlParam.put("cdSupplier", param.get("cdSupplier"));
         }
         if (param.containsKey("cdWarehouse")) {
-            query = "SELECT ITEM_DESCRIPTION, STATUS, UOM_WAREHOUSE, UOM_PURCHASE, UOM_STOCK, ITEM_CODE FROM M_ITEM WHERE " +
-                    "CD_WAREHOUSE =:cdWarehouse ORDER BY ITEM_CODE ASC";
+            query = "SELECT ITEM_DESCRIPTION, STATUS, UOM_WAREHOUSE, UOM_PURCHASE, UOM_STOCK, ITEM_CODE FROM M_ITEM WHERE "
+                    + "CD_WAREHOUSE =:cdWarehouse ORDER BY ITEM_CODE ASC";
             sqlParam.put("cdWarehouse", param.get("cdWarehouse"));
         }
         List<Map<String, Object>> list = jdbcTemplate.query(query, sqlParam, new RowMapper<Map<String, Object>>() {
