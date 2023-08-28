@@ -79,7 +79,7 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listSupplier(Map<String, String> balance) {
-        String qry = "SELECT  CD_TEMPLATE, TEMPLATE_NAME, CP_NAME, FLAG_CANVASING, STATUS, ADDRESS_1, "
+        String qry = "SELECT  CD_SUPPLIER, SUPPLIER_NAME, CP_NAME, FLAG_CANVASING, STATUS, ADDRESS_1, "
                 + "ADDRESS_2, CITY, ZIP_CODE, PHONE, FAX, HOMEPAGE, CP_TITLE, CP_MOBILE, CP_PHONE, "
                 + "CP_PHONE_EXT, CP_EMAIL, USER_UPD, DATE_UPD, TIME_UPD FROM m_supplier"
                 + " where status like :status"
@@ -95,8 +95,8 @@ public class ViewDoaImpl implements ViewDao {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap< String, Object>();
-                rt.put("cdTemplate", rs.getString("CD_TEMPLATE"));
-                rt.put("supplierName", rs.getString("TEMPLATE_NAME"));
+                rt.put("cdSupllier", rs.getString("CD_SUPPLIER"));
+                rt.put("supplierName", rs.getString("SUPPLIER_NAME"));
                 rt.put("cpName", rs.getString("CP_NAME"));
                 rt.put("flagCanvasing", rs.getString("FLAG_CANVASING"));
                 rt.put("status", rs.getString("STATUS"));
