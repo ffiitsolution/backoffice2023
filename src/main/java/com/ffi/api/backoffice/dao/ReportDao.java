@@ -60,4 +60,6 @@ public interface ReportDao {
     ///////////////NEW METHOD REPORT receive BY PASCA 28 August 2023////
     JasperPrint jasperReportSalesByMenu (Map<String, Object> param, Connection connection) throws JRException, IOException;
     JasperPrint jasperReportMenuVsDetail (Map<String, Object> param, Connection connection) throws JRException, IOException;
+    JasperPrint jasperReportSummarySalesByItemCode (Map<String, Object> param, Connection connection) throws JRException, IOException;
+
 }

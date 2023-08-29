@@ -1158,8 +1158,85 @@ public class ReportDaoImpl implements ReportDao {
                 hashMap.put("shiftCode", shiftCode.toString());
             }
         }
-        System.out.println(hashMap);
+
         ClassPathResource classPathResource = new ClassPathResource("report/menuVsDetail.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
+
+    @Override
+    public JasperPrint jasperReportSummarySalesByItemCode(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        Map<String, Object> hashMap = new HashMap<>();
+        hashMap.put("user", param.get("user"));
+        hashMap.put("fromDate", param.get("fromDate"));
+        hashMap.put("toDate", param.get("toDate"));
+        hashMap.put("fromTime", param.get("fromTime"));
+        hashMap.put("toTime", param.get("toTime"));
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("outletName", param.get("outletName"));
+
+        List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
+        StringBuilder posCode = new StringBuilder();
+        if (listPos.size() == 1){
+            hashMap.put("pos", "Semua");
+            hashMap.put("pos1", "000");
+            hashMap.put("pos2", "zzz");
+        } else {
+            for (Map<String, Object> object : listPos){
+                if (object.containsKey("posCode1")) {
+                    hashMap.put("pos1", object.get("posCode1"));
+                    posCode.append(object.get("posName1")).append(" s/d ");
+                } else {
+                    hashMap.put("pos2", object.get("posCode2"));
+                    posCode.append(object.get("posName2"));
+                }
+                hashMap.put("pos", posCode.toString());
+            }
+        }
+
+        List<Map<String, Object>> listCashier = (List<Map<String, Object>>) param.get("cashier");
+        StringBuilder cashierCode = new StringBuilder();
+        if (listCashier.size() == 1) {
+            hashMap.put("cashier", "Semua");
+            hashMap.put("cashier1", "000");
+            hashMap.put("cashier2", "zzz");
+        } else {
+            for (Map<String, Object> object : listCashier) {
+                if (object.containsKey("cashierCode1")) {
+                    hashMap.put("cashier1", object.get("cashierCode1"));
+                    cashierCode.append(object.get("cashierName1")).append(" s/d ");
+                } else {
+                    hashMap.put("cashier2", object.get("cashierCode2"));
+                    cashierCode.append(object.get("cashierName2"));
+                }
+                hashMap.put("cashier", cashierCode.toString());
+            }
+        }
+
+        List<Map<String, Object>> listShift = (List<Map<String, Object>>) param.get("shift");
+        StringBuilder shiftCode = new StringBuilder();
+        if (listShift.size() == 1) {
+            hashMap.put("shift", "Semua");
+            hashMap.put("shift1", "000");
+            hashMap.put("shift2", "zzz");
+        } else {
+            for (Map<String, Object> object : listShift) {
+                if (object.containsKey("shiftCode1")) {
+                    hashMap.put("shift1", object.get("shiftCode1"));
+                    shiftCode.append(object.get("shiftName1")).append(" s/d ");
+                } else {
+                    hashMap.put("shift2", object.get("shiftCode2"));
+                    shiftCode.append(object.get("shiftName2"));
+                }
+                hashMap.put("shift", shiftCode.toString());
+            }
+        }
+        if (!param.containsKey("Detail")){
+            ClassPathResource classPathResource = new ClassPathResource("report/ReportSummarySalesbyItemCode.jrxml");
+            JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+            return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+        }
+        ClassPathResource classPathResource = new ClassPathResource("report/ReportSalesDetailByItemCode.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }
