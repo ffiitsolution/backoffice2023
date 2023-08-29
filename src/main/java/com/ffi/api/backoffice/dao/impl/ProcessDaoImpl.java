@@ -1530,6 +1530,7 @@ public class ProcessDaoImpl implements ProcessDao {
         prm.put("ItemCode", ref.get("item"));
         prm.put("status", ref.get("stat"));
         System.err.println("q :" + qry);
+        
         return jdbcTemplate.queryForObject(qry, prm, new RowMapper() {
             @Override
             public String mapRow(ResultSet rs, int i) throws SQLException {
@@ -1541,6 +1542,7 @@ public class ProcessDaoImpl implements ProcessDao {
 
     @Override
     public void insertMasterItem(JsonObject balancing) {
+        String userU = balancing.getAsJsonPrimitive("userUpd").getAsString();
         JsonArray emp = balancing.getAsJsonObject().getAsJsonArray("itemList");
         for (int i = 0; i < emp.size(); i++) {
             Map<String, String> detailParam = new HashMap<String, String>();
@@ -1575,7 +1577,9 @@ public class ProcessDaoImpl implements ProcessDao {
             detailParam.put("cdLtemLeftover", emp.get(i).getAsJsonObject().getAsJsonPrimitive("cdLtemLeftover").getAsString());
             detailParam.put("status", emp.get(i).getAsJsonObject().getAsJsonPrimitive("status").getAsString());
             detailParam.put("flagPaket", emp.get(i).getAsJsonObject().getAsJsonPrimitive("flagPaket").getAsString());
+            detailParam.put("userUpd", userU);
             inserUpdateMaster(detailParam);
+              //  System.out.println(detailParam);
             detailParam.clear();
         }
     }
@@ -1586,6 +1590,7 @@ public class ProcessDaoImpl implements ProcessDao {
         Map paramkirim = new HashMap();
         paramkirim.put("item", balance.get("itemCode"));
         paramkirim.put("stat", balance.get("status"));
+        System.out.println(paramkirim);
         String itemExisting = itemExist(paramkirim);
         if (itemExisting.equals('0')) {
             String qy = "INSERT INTO M_ITEM"
@@ -1649,7 +1654,7 @@ public class ProcessDaoImpl implements ProcessDao {
             jdbcTemplate.update(qy, param);
             System.out.println("query insert item: " + qy);
         } else {
-            String qy = "UPDATE M_ITEM SET STATUS=:status where ITEM_CODE=:itemCode";
+            String qy = "UPDATE M_ITEM SET STATUS=:status,USER_UPD=:userUpd,DATE_UPD=:dateUpd,TIME_UPD=:timeUpd where ITEM_CODE=:itemCode";
             Map param = new HashMap();
             param.put("itemCode", balance.get("itemCode"));
             param.put("status", balance.get("status"));
