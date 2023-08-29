@@ -837,63 +837,58 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("address", param.get("outletName"));
         hashMap.put("user", param.get("user"));
 
-        ArrayList<Object> listPos = (ArrayList<Object>) param.get("pos");
+        List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
         StringBuilder posCode = new StringBuilder();
-        for (Object object : listPos){
-            if (object.toString().equals("Semua")) {
-                hashMap.put("posCode", object.toString());
-                hashMap.put("posCode1", "000");
-                hashMap.put("posCode2", "zzz");
-            } else {
-                Gson gson = new Gson();
-                LinkedTreeMap jsonPos = gson.fromJson(object.toString(),LinkedTreeMap.class);
-                if (jsonPos.containsKey("posCode1")) {
-                    hashMap.put("posCode1", jsonPos.get("posCode1"));
-                    posCode.append(jsonPos.get("posName1")).append(" s/d ");
+        if (listPos.size() == 1){
+            hashMap.put("posCode", "Semua");
+            hashMap.put("posCode1", "000");
+            hashMap.put("posCode2", "zzz");
+        } else {
+            for (Map<String, Object> object : listPos){
+                if (object.containsKey("posCode1")) {
+                    hashMap.put("posCode1", object.get("posCode1"));
+                    posCode.append(object.get("posName1")).append(" s/d ");
                 } else {
-                    hashMap.put("posCode2", jsonPos.get("posCode2"));
-                    posCode.append(jsonPos.get("posName2"));
+                    hashMap.put("posCode2", object.get("posCode2"));
+                    posCode.append(object.get("posName2"));
                 }
                 hashMap.put("posCode", posCode.toString());
             }
         }
 
-        ArrayList<Object> listCashier = (ArrayList<Object>) param.get("cashier");
+        List<Map<String, Object>> listCashier = (List<Map<String, Object>>) param.get("cashier");
         StringBuilder cashierCode = new StringBuilder();
-        for (Object object : listCashier) {
-            if (object.toString().equals("Semua")) {
-                hashMap.put("cashierCode", "Semua");
-                hashMap.put("cashierCode1", "000");
-                hashMap.put("cashierCode2", "zzz");
-            } else {
-                Gson gson = new Gson();
-                LinkedTreeMap jsonCashier = gson.fromJson(object.toString(), LinkedTreeMap.class);
-                if (jsonCashier.containsKey("cashierCode1")) {
-                    hashMap.put("cashierCode1", jsonCashier.get("cashierCode1"));
-                    cashierCode.append(jsonCashier.get("cashierName1")).append(" s/d ");
+        if (listCashier.size() == 1) {
+            hashMap.put("cashierCode", "Semua");
+            hashMap.put("cashierCode1", "000");
+            hashMap.put("cashierCode2", "zzz");
+        } else {
+            for (Map<String, Object> object : listCashier) {
+                if (object.containsKey("cashierCode1")) {
+                    hashMap.put("cashierCode1", object.get("cashierCode1"));
+                    cashierCode.append(object.get("cashierName1")).append(" s/d ");
                 } else {
-                    hashMap.put("cashierCode2", jsonCashier.get("cashierCode2"));
-                    cashierCode.append(jsonCashier.get("cashierName2"));
+                    hashMap.put("cashierCode2", object.get("cashierCode2"));
+                    cashierCode.append(object.get("cashierName2"));
                 }
                 hashMap.put("cashierCode", cashierCode.toString());
             }
         }
-        ArrayList<Object> listShift = (ArrayList<Object>) param.get("shift");
+
+        List<Map<String, Object>> listShift = (List<Map<String, Object>>) param.get("shift");
         StringBuilder shiftCode = new StringBuilder();
-        for (Object object : listShift) {
-            if (object.toString().equals("Semua")) {
-                hashMap.put("shiftCode", "Semua");
-                hashMap.put("shiftCode1", "000");
-                hashMap.put("shiftCode2", "zzz");
-            } else {
-                Gson gson = new Gson();
-                LinkedTreeMap jsonCashier = gson.fromJson(object.toString(), LinkedTreeMap.class);
-                if (jsonCashier.containsKey("shiftCode1")) {
-                    hashMap.put("shiftCode1", jsonCashier.get("shiftCode1"));
-                    shiftCode.append(jsonCashier.get("shiftName1")).append(" s/d ");
+        if (listShift.size() == 1) {
+            hashMap.put("shiftCode", "Semua");
+            hashMap.put("shiftCode1", "000");
+            hashMap.put("shiftCode2", "zzz");
+        } else {
+            for (Map<String, Object> object : listShift) {
+                if (object.containsKey("shiftCode1")) {
+                    hashMap.put("shiftCode1", object.get("shiftCode1"));
+                    shiftCode.append(object.get("shiftName1")).append(" s/d ");
                 } else {
-                    hashMap.put("shiftCode2", jsonCashier.get("shiftCode2"));
-                    shiftCode.append(jsonCashier.get("shiftName2"));
+                    hashMap.put("shiftCode2", object.get("shiftCode2"));
+                    shiftCode.append(object.get("shiftName2"));
                 }
                 hashMap.put("shiftCode", shiftCode.toString());
             }
@@ -961,68 +956,210 @@ public class ReportDaoImpl implements ReportDao {
             hashMap.put("orderTypeCode2", param.get("orderTypeCode"));
         }
 
-        ArrayList<Object> listPos = (ArrayList<Object>) param.get("pos");
+        List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
         StringBuilder posCode = new StringBuilder();
-        for (Object object : listPos){
-            if (object.toString().equals("Semua")) {
-                hashMap.put("posCode", object.toString());
-                hashMap.put("posCode1", "000");
-                hashMap.put("posCode2", "zzz");
-            } else {
-                Gson gson = new Gson();
-                LinkedTreeMap jsonPos = gson.fromJson(object.toString(),LinkedTreeMap.class);
-                if (jsonPos.containsKey("posCode1")) {
-                    hashMap.put("posCode1", jsonPos.get("posCode1"));
-                    posCode.append(jsonPos.get("posName1")).append(" s/d ");
+        if (listPos.size() == 1){
+            hashMap.put("posCode", "Semua");
+            hashMap.put("posCode1", "000");
+            hashMap.put("posCode2", "zzz");
+        } else {
+            for (Map<String, Object> object : listPos){
+                if (object.containsKey("posCode1")) {
+                    hashMap.put("posCode1", object.get("posCode1"));
+                    posCode.append(object.get("posName1")).append(" s/d ");
                 } else {
-                    hashMap.put("posCode2", jsonPos.get("posCode2"));
-                    posCode.append(jsonPos.get("posName2"));
+                    hashMap.put("posCode2", object.get("posCode2"));
+                    posCode.append(object.get("posName2"));
                 }
                 hashMap.put("posCode", posCode.toString());
             }
         }
 
-        ArrayList<Object> listCashier = (ArrayList<Object>) param.get("cashier");
+        List<Map<String, Object>> listCashier = (List<Map<String, Object>>) param.get("cashier");
         StringBuilder cashierCode = new StringBuilder();
-        for (Object object : listCashier) {
-            if (object.toString().equals("Semua")) {
-                hashMap.put("cashierCode", "Semua");
-                hashMap.put("cashierCode1", "000");
-                hashMap.put("cashierCode2", "zzz");
-            } else {
-                Gson gson = new Gson();
-                LinkedTreeMap jsonCashier = gson.fromJson(object.toString(), LinkedTreeMap.class);
-                if (jsonCashier.containsKey("cashierCode1")) {
-                    hashMap.put("cashierCode1", jsonCashier.get("cashierCode1"));
-                    cashierCode.append(jsonCashier.get("cashierName1")).append(" s/d ");
+        if (listCashier.size() == 1) {
+            hashMap.put("cashierCode", "Semua");
+            hashMap.put("cashierCode1", "000");
+            hashMap.put("cashierCode2", "zzz");
+        } else {
+            for (Map<String, Object> object : listCashier) {
+                if (object.containsKey("cashierCode1")) {
+                    hashMap.put("cashierCode1", object.get("cashierCode1"));
+                    cashierCode.append(object.get("cashierName1")).append(" s/d ");
                 } else {
-                    hashMap.put("cashierCode2", jsonCashier.get("cashierCode2"));
-                    cashierCode.append(jsonCashier.get("cashierName2"));
+                    hashMap.put("cashierCode2", object.get("cashierCode2"));
+                    cashierCode.append(object.get("cashierName2"));
                 }
                 hashMap.put("cashierCode", cashierCode.toString());
             }
         }
-        ArrayList<Object> listShift = (ArrayList<Object>) param.get("shift");
+
+        List<Map<String, Object>> listShift = (List<Map<String, Object>>) param.get("shift");
         StringBuilder shiftCode = new StringBuilder();
-        for (Object object : listShift) {
-            if (object.toString().equals("Semua")) {
-                hashMap.put("shiftCode", "Semua");
-                hashMap.put("shiftCode1", "000");
-                hashMap.put("shiftCode2", "zzz");
-            } else {
-                Gson gson = new Gson();
-                LinkedTreeMap jsonCashier = gson.fromJson(object.toString(), LinkedTreeMap.class);
-                if (jsonCashier.containsKey("shiftCode1")) {
-                    hashMap.put("shiftCode1", jsonCashier.get("shiftCode1"));
-                    shiftCode.append(jsonCashier.get("shiftName1")).append(" s/d ");
+        if (listShift.size() == 1) {
+            hashMap.put("shiftCode", "Semua");
+            hashMap.put("shiftCode1", "000");
+            hashMap.put("shiftCode2", "zzz");
+        } else {
+            for (Map<String, Object> object : listShift) {
+                if (object.containsKey("shiftCode1")) {
+                    hashMap.put("shiftCode1", object.get("shiftCode1"));
+                    shiftCode.append(object.get("shiftName1")).append(" s/d ");
                 } else {
-                    hashMap.put("shiftCode2", jsonCashier.get("shiftCode2"));
-                    shiftCode.append(jsonCashier.get("shiftName2"));
+                    hashMap.put("shiftCode2", object.get("shiftCode2"));
+                    shiftCode.append(object.get("shiftName2"));
                 }
                 hashMap.put("shiftCode", shiftCode.toString());
             }
         }
+
         ClassPathResource classPathResource = new ClassPathResource("report/salesDate.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
+
+    @Override
+    public JasperPrint jasperReportSalesByMenu(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        Map<String, Object> hashMap = new HashMap<>();
+        hashMap.put("user", param.get("user"));
+        hashMap.put("fromDate", param.get("fromDate"));
+        hashMap.put("toDate", param.get("toDate"));
+        hashMap.put("fromTime", param.get("fromTime"));
+        hashMap.put("toTime", param.get("toTime"));
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("outletName", param.get("outletName"));
+
+        List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
+        StringBuilder posCode = new StringBuilder();
+        if (listPos.size() == 1){
+            hashMap.put("posCode", "Semua");
+            hashMap.put("posCode1", "000");
+            hashMap.put("posCode2", "zzz");
+        } else {
+            for (Map<String, Object> object : listPos){
+                if (object.containsKey("posCode1")) {
+                    hashMap.put("posCode1", object.get("posCode1"));
+                    posCode.append(object.get("posName1")).append(" s/d ");
+                } else {
+                    hashMap.put("posCode2", object.get("posCode2"));
+                    posCode.append(object.get("posName2"));
+                }
+                hashMap.put("posCode", posCode.toString());
+            }
+        }
+
+        List<Map<String, Object>> listCashier = (List<Map<String, Object>>) param.get("cashier");
+        StringBuilder cashierCode = new StringBuilder();
+        if (listCashier.size() == 1) {
+            hashMap.put("cashierCode", "Semua");
+            hashMap.put("cashierCode1", "000");
+            hashMap.put("cashierCode2", "zzz");
+        } else {
+            for (Map<String, Object> object : listCashier) {
+                if (object.containsKey("cashierCode1")) {
+                    hashMap.put("cashierCode1", object.get("cashierCode1"));
+                    cashierCode.append(object.get("cashierName1")).append(" s/d ");
+                } else {
+                    hashMap.put("cashierCode2", object.get("cashierCode2"));
+                    cashierCode.append(object.get("cashierName2"));
+                }
+                hashMap.put("cashierCode", cashierCode.toString());
+            }
+        }
+
+        List<Map<String, Object>> listShift = (List<Map<String, Object>>) param.get("shift");
+        StringBuilder shiftCode = new StringBuilder();
+        if (listShift.size() == 1) {
+            hashMap.put("shiftCode", "Semua");
+            hashMap.put("shiftCode1", "000");
+            hashMap.put("shiftCode2", "zzz");
+        } else {
+            for (Map<String, Object> object : listShift) {
+                if (object.containsKey("shiftCode1")) {
+                    hashMap.put("shiftCode1", object.get("shiftCode1"));
+                    shiftCode.append(object.get("shiftName1")).append(" s/d ");
+                } else {
+                    hashMap.put("shiftCode2", object.get("shiftCode2"));
+                    shiftCode.append(object.get("shiftName2"));
+                }
+                hashMap.put("shiftCode", shiftCode.toString());
+            }
+        }
+
+        ClassPathResource classPathResource = new ClassPathResource("report/salesMenu.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
+
+    @Override
+    public JasperPrint jasperReportMenuVsDetail(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        Map<String, Object> hashMap = new HashMap<>();
+        hashMap.put("user", param.get("user"));
+        hashMap.put("fromDate", param.get("fromDate"));
+        hashMap.put("toDate", param.get("toDate"));
+        hashMap.put("fromTime", param.get("fromTime"));
+        hashMap.put("toTime", param.get("toTime"));
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("outletName", param.get("outletName"));
+
+        List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
+        StringBuilder posCode = new StringBuilder();
+        if (listPos.size() == 1){
+            hashMap.put("posCode", "Semua");
+            hashMap.put("posCode1", "000");
+            hashMap.put("posCode2", "zzz");
+        } else {
+            for (Map<String, Object> object : listPos){
+                if (object.containsKey("posCode1")) {
+                    hashMap.put("posCode1", object.get("posCode1"));
+                    posCode.append(object.get("posName1")).append(" s/d ");
+                } else {
+                    hashMap.put("posCode2", object.get("posCode2"));
+                    posCode.append(object.get("posName2"));
+                }
+                hashMap.put("posCode", posCode.toString());
+            }
+        }
+
+        List<Map<String, Object>> listCashier = (List<Map<String, Object>>) param.get("cashier");
+        StringBuilder cashierCode = new StringBuilder();
+        if (listCashier.size() == 1) {
+            hashMap.put("cashierCode", "Semua");
+            hashMap.put("cashierCode1", "000");
+            hashMap.put("cashierCode2", "zzz");
+        } else {
+            for (Map<String, Object> object : listCashier) {
+                if (object.containsKey("cashierCode1")) {
+                    hashMap.put("cashierCode1", object.get("cashierCode1"));
+                    cashierCode.append(object.get("cashierName1")).append(" s/d ");
+                } else {
+                    hashMap.put("cashierCode2", object.get("cashierCode2"));
+                    cashierCode.append(object.get("cashierName2"));
+                }
+                hashMap.put("cashierCode", cashierCode.toString());
+            }
+        }
+
+        List<Map<String, Object>> listShift = (List<Map<String, Object>>) param.get("shift");
+        StringBuilder shiftCode = new StringBuilder();
+        if (listShift.size() == 1) {
+            hashMap.put("shiftCode", "Semua");
+            hashMap.put("shiftCode1", "000");
+            hashMap.put("shiftCode2", "zzz");
+        } else {
+            for (Map<String, Object> object : listShift) {
+                if (object.containsKey("shiftCode1")) {
+                    hashMap.put("shiftCode1", object.get("shiftCode1"));
+                    shiftCode.append(object.get("shiftName1")).append(" s/d ");
+                } else {
+                    hashMap.put("shiftCode2", object.get("shiftCode2"));
+                    shiftCode.append(object.get("shiftName2"));
+                }
+                hashMap.put("shiftCode", shiftCode.toString());
+            }
+        }
+        System.out.println(hashMap);
+        ClassPathResource classPathResource = new ClassPathResource("report/menuVsDetail.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }

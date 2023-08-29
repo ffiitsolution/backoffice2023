@@ -1,0 +1,651 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="menuVsDetail" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="36574a0a-fd5f-485b-bb67-ec614c3d0bd1">
+    <property name="ireport.zoom" value="1.2100000000000046"/>
+    <property name="ireport.x" value="0"/>
+    <property name="ireport.y" value="0"/>
+    <parameter name="outletCode" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="fromDate" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="toDate" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="cashierCode1" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="cashierCode2" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="fromTime" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="toTime" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="posCode1" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="posCode2" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="shiftCode1" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="shiftCode2" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="posCode" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="shiftCode" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="cashierCode" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="user" class="java.lang.String"/>
+    <parameter name="outletName" class="java.lang.String"/>
+    <queryString>
+        <![CDATA[SELECT   a.*,b.total_amount,b.total_discount,b.sumamt
+  FROM   (  SELECT   a.OUTLET_CODE,
+                     c.outlet_name,
+                     a.MENU,
+                     a.ITEM_DESCRIPTION,
+                     a.MENU_QTY_EI,
+                     a.MENU_QTY_TA,
+                     a.TOTAL_MENU_QTY,
+                     b.MENU_ITEM_DETAIL,
+                     b.MENU_ITEM_DETAIL_DESCRIPTION,
+                     SUM (b.TOTAL_QTY_EI) TOTAL_QTY_EI,
+                     SUM (b.TOTAL_QTY_TA) TOTAL_QTY_TA,
+                     SUM (b.TOTAL_QTY) TOTAL_QTY
+              FROM         (  SELECT   OUTLET_CODE,
+                                       MENU,
+                                       ITEM_DESCRIPTION,
+                                       SUM (
+                                          DECODE (trans_type, 'EI', Total_Qty, 0)
+                                       )
+                                          MENU_QTY_EI,
+                                       SUM (
+                                          DECODE (trans_type, 'TA', Total_Qty, 0)
+                                       )
+                                          MENU_QTY_TA,
+                                       SUM (Total_Qty) TOTAL_MENU_QTY
+                                FROM   (  SELECT   (b.outlet_code) OUTLET_CODE,
+                                                   (a.menu_item_code) MENU,
+                                                   c.ITEM_DESCRIPTION,
+                                                   CASE
+                                                      WHEN NVL (a.trans_type, 'TA') <>
+                                                              'EI'
+                                                      THEN
+                                                         'TA'
+                                                      ELSE
+                                                         'EI'
+                                                   END
+                                                      trans_type,
+                                                   SUM (a.item_qty) Total_Qty
+                                            FROM         (SELECT   *
+                                                            FROM   t_pos_bill_item
+                                                           WHERE   OUTLET_CODE IN
+                                                                         ($P{outletCode})
+                                                                   AND trans_date BETWEEN $P{fromDate}
+                                                                                      AND  $P{toDate})
+                                                         a
+                                                      JOIN
+                                                         (SELECT   *
+                                                            FROM   t_pos_bill
+                                                           WHERE   OUTLET_CODE IN
+                                                                         ($P{outletCode})
+                                                                   AND delivery_status =
+                                                                         'CLS'
+                                                                   AND trans_date BETWEEN $P{fromDate}
+                                                                                      AND  $P{toDate}
+                                                                   AND pos_code BETWEEN $P{posCode1}
+                                                                                    AND  $P{posCode2}
+                                                                   AND cashier_code BETWEEN $P{cashierCode1}
+                                                                                        AND  $P{cashierCode2}
+                                                                   AND shift_code BETWEEN $P{shiftCode1}
+                                                                                      AND  $P{shiftCode2})
+                                                         b
+                                                      ON a.region_code =
+                                                            b.region_code
+                                                         AND a.outlet_code =
+                                                               b.outlet_code
+                                                         AND a.pos_code =
+                                                               b.pos_code
+                                                         AND a.day_seq = b.day_seq
+                                                         AND a.bill_no = b.bill_no
+                                                   JOIN
+                                                      m_item c
+                                                   ON a.menu_item_code =
+                                                         c.item_code
+                                        GROUP BY   b.outlet_code,
+                                                   a.menu_item_code,
+                                                   c.item_description,
+                                                   a.trans_type)
+                            GROUP BY   OUTLET_CODE, MENU, item_description
+                            ORDER BY   MENU) a
+                        JOIN
+                           (  SELECT   MENU_ITEM,
+                                       MENU_ITEM_DESCRIPTION,
+                                       MENU_ITEM_DETAIL,
+                                       MENU_ITEM_DETAIL_DESCRIPTION,
+                                       SUM (
+                                          DECODE (trans_type, 'EI', total_qty, 0)
+                                       )
+                                          TOTAL_QTY_EI,
+                                       SUM (
+                                          DECODE (trans_type, 'TA', total_qty, 0)
+                                       )
+                                          TOTAL_QTY_TA,
+                                       SUM (total_qty) TOTAL_QTY
+                                FROM   (  SELECT   (b.menu_item_code) MENU_ITEM,
+                                                   (e.item_description)
+                                                      MENU_ITEM_DESCRIPTION,
+                                                   SUM (b.item_qty) total_menu_qty,
+                                                   (a.menu_item_code)
+                                                      MENU_ITEM_DETAIL,
+                                                   (d.item_description)
+                                                      MENU_ITEM_DETAIL_DESCRIPTION,
+                                                   CASE
+                                                      WHEN NVL (b.trans_type, 'TA') <>
+                                                              'EI'
+                                                      THEN
+                                                         'TA'
+                                                      ELSE
+                                                         'EI'
+                                                   END
+                                                      trans_type,
+                                                   SUM (a.item_qty) total_qty
+                                            FROM               (SELECT   *
+                                                                  FROM   t_pos_bill_item_detail
+                                                                 WHERE   OUTLET_CODE IN
+                                                                               ($P{outletCode})
+                                                                         AND trans_date BETWEEN $P{fromDate}
+                                                                                            AND  $P{toDate})
+                                                               a
+                                                            JOIN
+                                                               (SELECT   *
+                                                                  FROM   t_pos_bill_item
+                                                                 WHERE   OUTLET_CODE IN
+                                                                               ($P{outletCode})
+                                                                         AND trans_date BETWEEN $P{fromDate}
+                                                                                            AND  $P{toDate})
+                                                               b
+                                                            ON a.region_code =
+                                                                  b.region_code
+                                                               AND a.outlet_code =
+                                                                     b.outlet_code
+                                                               AND a.pos_code =
+                                                                     b.pos_code
+                                                               AND a.day_seq =
+                                                                     b.day_seq
+                                                               AND a.bill_no =
+                                                                     b.bill_no
+                                                               AND a.item_seq =
+                                                                     b.item_seq
+                                                         JOIN
+                                                            (SELECT   *
+                                                               FROM   t_pos_bill
+                                                              WHERE   OUTLET_CODE IN
+                                                                            ($P{outletCode})
+                                                                      AND delivery_status =
+                                                                            'CLS'
+                                                                      AND trans_date BETWEEN $P{fromDate}
+                                                                                         AND  $P{toDate}
+                                                                      AND pos_code BETWEEN $P{posCode1}
+                                                                                       AND  $P{posCode2}
+                                                                      AND cashier_code BETWEEN $P{cashierCode1}
+                                                                                           AND  $P{cashierCode2}
+                                                                      AND shift_code BETWEEN $P{shiftCode1}
+                                                                                         AND  $P{shiftCode2})
+                                                            c
+                                                         ON a.region_code =
+                                                               c.region_code
+                                                            AND a.outlet_code =
+                                                                  c.outlet_code
+                                                            AND a.pos_code =
+                                                                  c.pos_code
+                                                            AND a.day_seq =
+                                                                  c.day_seq
+                                                            AND a.bill_no =
+                                                                  c.bill_no
+                                                      JOIN
+                                                         m_item d
+                                                      ON a.menu_item_code =
+                                                            d.item_code
+                                                   JOIN
+                                                      m_item e
+                                                   ON b.menu_item_code =
+                                                         e.item_code
+                                        GROUP BY   a.menu_item_code,
+                                                   d.item_description,
+                                                   b.menu_item_code,
+                                                   e.item_description,
+                                                   b.trans_type)
+                            GROUP BY   MENU_ITEM,
+                                       MENU_ITEM_DESCRIPTION,
+                                       MENU_ITEM_DETAIL,
+                                       MENU_ITEM_DETAIL_DESCRIPTION
+                            ORDER BY   MENU_ITEM) b
+                        ON a.menu = b.menu_item
+                     JOIN
+                        m_outlet c
+                     ON a.OUTLET_CODE = c.outlet_code
+          GROUP BY   a.OUTLET_CODE,
+                     c.outlet_name,
+                     a.MENU,
+                     a.ITEM_DESCRIPTION,
+                     a.MENU_QTY_EI,
+                     a.MENU_QTY_TA,
+                     a.TOTAL_MENU_QTY,
+                     b.MENU_ITEM_DETAIL,
+                     b.MENU_ITEM_DETAIL_DESCRIPTION
+          ORDER BY   a.MENU, b.MENU_ITEM_DETAIL) a left join
+          (SELECT   $P{outletCode} as outlet_code,SUM (TOTAL_AMOUNT) AS total_amount,
+         SUM (total_discount) AS TOTAL_DISCOUNT,
+         SUM (TOTAL_AMOUNT - TOTAL_DISCOUNT) AS sumamt
+  FROM   T_POS_BILL
+ WHERE   outlet_code = $P{outletCode}
+         AND trans_date BETWEEN $P{fromDate}
+                            AND  $P{toDate}
+         AND pos_code BETWEEN $P{posCode1} AND $P{posCode2}
+         AND shift_code BETWEEN $P{shiftCode1} AND $P{shiftCode2}
+         AND cashier_code BETWEEN $P{cashierCode1} AND  $P{cashierCode2}
+                      and delivery_status='CLS') b
+                      on A.OUTLET_CODE=B.OUTLET_CODE]]>
+    </queryString>
+    <field name="OUTLET_CODE" class="java.lang.String"/>
+    <field name="OUTLET_NAME" class="java.lang.String"/>
+    <field name="MENU" class="java.lang.String"/>
+    <field name="ITEM_DESCRIPTION" class="java.lang.String"/>
+    <field name="MENU_QTY_EI" class="java.math.BigDecimal"/>
+    <field name="MENU_QTY_TA" class="java.math.BigDecimal"/>
+    <field name="TOTAL_MENU_QTY" class="java.math.BigDecimal"/>
+    <field name="MENU_ITEM_DETAIL" class="java.lang.String"/>
+    <field name="MENU_ITEM_DETAIL_DESCRIPTION" class="java.lang.String"/>
+    <field name="TOTAL_QTY_EI" class="java.math.BigDecimal"/>
+    <field name="TOTAL_QTY_TA" class="java.math.BigDecimal"/>
+    <field name="TOTAL_QTY" class="java.math.BigDecimal"/>
+    <field name="TOTAL_AMOUNT" class="java.math.BigDecimal"/>
+    <field name="TOTAL_DISCOUNT" class="java.math.BigDecimal"/>
+    <field name="SUMAMT" class="java.math.BigDecimal"/>
+    <variable name="SUMEI" class="java.math.BigDecimal" resetType="Group" resetGroup="GroupHeader" calculation="Sum">
+        <variableExpression><![CDATA[$F{TOTAL_QTY_EI}]]></variableExpression>
+    </variable>
+    <variable name="SUMTA" class="java.math.BigDecimal" resetType="Group" resetGroup="GroupHeader" calculation="Sum">
+        <variableExpression><![CDATA[$F{TOTAL_QTY_TA}]]></variableExpression>
+    </variable>
+    <variable name="TOTAL" class="java.math.BigDecimal" resetType="Group" resetGroup="GroupHeader" calculation="Sum">
+        <variableExpression><![CDATA[$F{TOTAL_QTY}]]></variableExpression>
+    </variable>
+    <group name="GroupHeader">
+        <groupExpression><![CDATA[$F{MENU}]]></groupExpression>
+        <groupHeader>
+            <band height="14">
+                <textField>
+                    <reportElement x="0" y="0" width="36" height="13" uuid="dd0380c0-0da4-407a-ba41-3ff21d50d96d"/>
+                    <textElement>
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[$F{MENU}]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="36" y="0" width="100" height="13" uuid="eb222a1d-76dc-4760-bbc3-d14ddfde8def"/>
+                    <textElement>
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="137" y="0" width="23" height="13" uuid="f4a9cdc6-f925-4cdb-b549-0c81f7e8a825"/>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[$F{MENU_QTY_EI}]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="160" y="0" width="30" height="13" uuid="6b278fe9-2024-4e88-abc5-80fb9e092cfd"/>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[$F{MENU_QTY_TA}]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="192" y="0" width="34" height="13" uuid="391a1a79-9257-404d-92a6-c53813afdd51"/>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[$F{TOTAL_MENU_QTY}]]></textFieldExpression>
+                </textField>
+            </band>
+        </groupHeader>
+        <groupFooter>
+            <band height="17">
+                <staticText>
+                    <reportElement x="2" y="0" width="100" height="15" uuid="28073571-d7be-4d41-8927-aea4194bd338"/>
+                    <textElement>
+                        <font size="9" isBold="true"/>
+                    </textElement>
+                    <text><![CDATA[GRAND TOTAL]]></text>
+                </staticText>
+                <textField>
+                    <reportElement x="102" y="2" width="100" height="13" uuid="ac327e20-711a-45c1-88b4-b9e8f3b5b4d7"/>
+                    <textElement>
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="464" y="2" width="27" height="15" uuid="e69996bb-9b4d-4e30-b68d-f58185655f0f"/>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[$V{SUMEI}]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="491" y="2" width="26" height="15" uuid="534f38a5-acd6-44b3-aa52-1c86c8bf206c"/>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[$V{SUMTA}]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="519" y="2" width="34" height="15" uuid="53f4d04d-df2d-4d0c-b15d-7f029654c0be"/>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[$V{TOTAL}]]></textFieldExpression>
+                </textField>
+                <line>
+                    <reportElement x="0" y="0" width="553" height="1" uuid="eb4f0176-6376-4a0e-ba4a-9c012412e425"/>
+                </line>
+                <line>
+                    <reportElement x="0" y="16" width="553" height="1" uuid="118356df-63f2-4ed5-a3de-22317d27c281"/>
+                </line>
+            </band>
+        </groupFooter>
+    </group>
+    <background>
+        <band splitType="Stretch"/>
+    </background>
+    <pageHeader>
+        <band height="100" splitType="Stretch">
+            <textField pattern="#,##0.00">
+                <reportElement x="2" y="85" width="100" height="15" uuid="838a96b1-9c78-4901-b3a9-835e851c3201"/>
+                <textElement textAlignment="Right"/>
+                <textFieldExpression><![CDATA[$F{TOTAL_AMOUNT}]]></textFieldExpression>
+            </textField>
+            <textField pattern="#,##0.00">
+                <reportElement x="102" y="85" width="100" height="15" uuid="d9aeeae1-88a0-4bc2-bbe1-2a348e7a294e"/>
+                <textElement textAlignment="Right"/>
+                <textFieldExpression><![CDATA[$F{TOTAL_DISCOUNT}]]></textFieldExpression>
+            </textField>
+            <textField pattern="#,##0.00">
+                <reportElement x="202" y="85" width="100" height="15" uuid="52f264da-0e2c-41fc-ba70-d8088c3204a9"/>
+                <textElement textAlignment="Right"/>
+                <textFieldExpression><![CDATA[$F{SUMAMT}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="2" y="70" width="100" height="15" uuid="d5e4f5eb-1de0-406b-a450-cbfdfbbe90f4"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[TOTAL AMOUNT]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="102" y="70" width="100" height="15" uuid="4de46317-1a5b-4b0e-8d5f-c193518955a0"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[TOTAL DISCOUNT]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="202" y="70" width="100" height="15" uuid="af6fd579-3ef7-4282-825b-ef187416483b"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[TAXABLE]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="404" y="40" width="150" height="11" uuid="32cabedf-1783-4168-bbd9-6a9f42cb816f"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + $P{shiftCode}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="404" y="60" width="283" height="11" uuid="0251171a-2e8b-4d19-af81-e3450bf8b43e"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{fromDate})) + " s/d " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{toDate}))]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="78" y="0" width="112" height="11" uuid="fba382f6-d072-40cb-bef9-0f6fd99524a2"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="350" y="50" width="55" height="11" uuid="c0220291-c3b6-443c-845a-a0fc2e781d39"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Pos]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="350" y="20" width="55" height="11" uuid="9580257a-96ed-4c17-9a90-c87a2879fa1c"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Tanggal Cetak ]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="350" y="40" width="55" height="11" uuid="a9c1fdb7-9ef2-4882-9126-6c2fbfda9139"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Shift]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="350" y="30" width="55" height="11" uuid="4a80a34e-b2d2-4abf-91e2-e2279945944b"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[User ]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="370" y="0" width="161" height="19" uuid="50060bf4-e993-4813-8738-14bd2e38b90c"/>
+                <textElement textAlignment="Center">
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Menu Vs Detail]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="78" y="10" width="141" height="11" uuid="65cc2415-22b1-4b3d-a148-9b0ac905aa69"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{outletName}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="404" y="20" width="150" height="11" uuid="646b828d-72c1-42f8-9e3b-92d04c3b4904"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(new Date())]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="350" y="70" width="55" height="11" uuid="25bfaae2-d2ca-405c-bcfa-0b55131502b4"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Cashier        ]]></text>
+            </staticText>
+            <image>
+                <reportElement x="21" y="0" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="b3ce89ea-57b5-49ff-b282-4b6f4a413e53"/>
+                <imageExpression><![CDATA["logo/logoKfc.png"]]></imageExpression>
+            </image>
+            <textField>
+                <reportElement x="404" y="70" width="283" height="11" uuid="908bb8f0-6bf0-405a-83d1-f9e008cc5daa"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + $P{cashierCode}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="350" y="60" width="55" height="11" uuid="85cba518-9ba3-4ca7-965f-f39cba7a20b0"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Periode       ]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="404" y="30" width="150" height="11" uuid="4708b72f-d785-4b3c-9f34-87a3feac4521"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + $P{user}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="404" y="50" width="283" height="11" uuid="1a74df5a-2a38-4fac-aa4e-6e472c0bd6e6"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : "  +  $P{posCode}]]></textFieldExpression>
+            </textField>
+        </band>
+    </pageHeader>
+    <columnHeader>
+        <band height="15" splitType="Stretch">
+            <staticText>
+                <reportElement x="247" y="0" width="51" height="15" uuid="bcf80d28-fce4-4bf6-9673-2c8b64defb6d"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[MNU DTL]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="298" y="0" width="163" height="15" uuid="f6fc304c-f660-451a-bed7-9a4a1e3f5526"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[NAMA DETAIL]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="0" y="0" width="51" height="15" uuid="127d97e4-0809-4955-b40d-e1c459cd5172"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[MENU]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="51" y="0" width="32" height="15" uuid="e5249e98-92f1-4602-b051-dcd1a337c7e4"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[DESCRIPTION]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="137" y="0" width="23" height="15" uuid="5528c29d-6d23-44eb-8e4f-37d93443a0d9"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[EI]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="167" y="0" width="23" height="15" uuid="8cda2588-8668-4b0d-a2e5-13d58bb1cad6"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[TA]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="192" y="0" width="34" height="15" uuid="52392a2f-1c43-4d7e-a70a-71d3a0d950eb"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[TOTAL]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="464" y="0" width="27" height="15" uuid="b6db54a9-a400-458b-8042-a65223d10c58"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[EI]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="491" y="0" width="23" height="15" uuid="8d8bce48-fe2f-4fe8-8aae-5f385589f163"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[TA]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="519" y="0" width="34" height="15" uuid="0ae08a99-0c55-4e89-9824-3915e60fe260"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[TOTAL]]></text>
+            </staticText>
+            <line>
+                <reportElement x="0" y="13" width="553" height="1" uuid="0c793d3a-dc1d-49e7-a7df-1970c1403cd2"/>
+            </line>
+            <line>
+                <reportElement x="0" y="1" width="553" height="1" uuid="ac772fef-e7d3-4b22-af70-5dffd9623197"/>
+            </line>
+        </band>
+    </columnHeader>
+    <detail>
+        <band height="16" splitType="Stretch">
+            <textField>
+                <reportElement x="247" y="0" width="51" height="15" uuid="60c73488-0cbc-4e97-81fa-5b570d69ce39"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{MENU_ITEM_DETAIL}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="298" y="0" width="163" height="15" uuid="2add6e1f-9c92-4129-8ab0-d67439eba102"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{MENU_ITEM_DETAIL_DESCRIPTION}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="464" y="0" width="27" height="15" uuid="84204d25-8543-4f77-83a0-8ee0f5ee7e40"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{TOTAL_QTY_EI}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="491" y="0" width="26" height="15" uuid="566379fd-3854-4125-afa5-eecf4991a44d"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{TOTAL_QTY_TA}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="519" y="0" width="34" height="15" uuid="3f27f846-1ead-4f6a-bb5a-64915287c39a"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{TOTAL_QTY}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+    <columnFooter>
+        <band splitType="Stretch"/>
+    </columnFooter>
+    <pageFooter>
+        <band splitType="Stretch"/>
+    </pageFooter>
+    <summary>
+        <band height="42" splitType="Stretch"/>
+    </summary>
+</jasperReport>

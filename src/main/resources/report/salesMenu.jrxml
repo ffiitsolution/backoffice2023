@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="salesMenu" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="d7057390-4672-4728-80bd-a55ad6bca27c">
+    <property name="ireport.zoom" value="1.4641000000000013"/>
+    <property name="ireport.x" value="0"/>
+    <property name="ireport.y" value="0"/>
+    <parameter name="outletCode" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="posCode" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="posCode1" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="posCode2" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="shiftCode" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="shiftCode1" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="shiftCode2" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="fromDate" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="toDate" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="cashierCode" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="cashierCode1" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="cashierCode2" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="user" class="java.lang.String"/>
+    <parameter name="outletName" class="java.lang.String"/>
+    <parameter name="fromTime" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="toTime" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <queryString>
+        <![CDATA[SELECT Z.*,M.ITEM_DESCRIPTION FROM (
+SELECT   a.menu_item_code,
+              SUM (CASE WHEN a.trans_type = 'EI' THEN a.item_qty ELSE 0 END)
+                 AS ei_qty,
+              SUM (CASE WHEN a.trans_type = 'EI' THEN a.amount ELSE 0 END)
+                 AS ei_amt,
+              SUM (CASE WHEN a.trans_type = 'TA' THEN a.item_qty ELSE 0 END)
+                 AS ta_qty,
+              SUM (CASE WHEN a.trans_type = 'TA' THEN a.amount ELSE 0 END)
+                 AS ta_amt
+       FROM   (
+SELECT   menu_item_code,
+                          trans_type,
+                          SUM (item_qty) AS item_qty,
+                          SUM (AMOUNT) AS amount
+ FROM(
+   SELECT   B.MENU_ITEM_CODE,
+            c.item_description,
+            B.TRANS_TYPE,
+            B.ITEM_QTY,
+            B.AMOUNT
+     FROM      (  SELECT   menu_item_code,
+                           trans_type,
+                           SUM (item_qty) item_qty,
+                           SUM (amount) amount
+                    FROM   (  SELECT   menu_item_code,
+                                       CASE
+                                          WHEN NVL (trans_type, 'TA') <> 'EI'
+                                          THEN
+                                             'TA'
+                                          ELSE
+                                             'EI'
+                                       END
+                                          trans_type,
+                                       SUM (item_qty) item_qty,
+                                       SUM (amount) amount
+                                FROM   (  SELECT   a.pos_code,
+                                                   a.item_seq,
+                                                   a.trans_type,
+                                                   a.menu_item_code,
+                                                   SUM (item_qty) item_qty,
+                                                   SUM (amount) amount
+                                            FROM      t_pos_bill_item a
+                                                   LEFT JOIN
+                                                      t_pos_bill b
+                                                   ON a.bill_no = b.bill_no
+                                                      AND a.pos_code = b.pos_code
+                                           WHERE   b.delivery_status = 'CLS'
+                                                   AND b.OUTLET_CODE IN ($P{outletCode})
+                                                   AND b.time_upd BETWEEN $P{fromTime}
+                                                                      AND  $P{toTime}
+                                                   AND b.pos_code BETWEEN $P{posCode1}
+                                                                      AND  $P{posCode2}
+                                                   AND b.shift_code BETWEEN $P{shiftCode1}
+                                                                        AND  $P{shiftCode2}
+                                                   AND b.cashier_code BETWEEN $P{cashierCode1}
+                                                                          AND  $P{cashierCode2}
+                                                   AND b.trans_date BETWEEN $P{fromDate}
+                                                                        AND  $P{toDate}
+                                        GROUP BY   a.pos_code,
+                                                   a.item_seq,
+                                                   a.trans_type,
+                                                   a.menu_item_code
+                                        UNION ALL
+                                          SELECT   pos_code,
+                                                   item_seq,
+                                                   trans_type,
+                                                   menu_item_code,
+                                                   SUM (a.item_qty) item_qty,
+                                                   SUM (a.amount) amount
+                                            FROM   (  SELECT   a.pos_code,
+                                                               a.item_seq,
+                                                               b.trans_type,
+                                                               a.menu_item_code,
+                                                               SUM (a.item_qty)
+                                                                  item_qty,
+                                                               SUM (a.amount) amount
+                                                        FROM      t_pos_bill_item_detail a
+                                                               LEFT JOIN
+                                                                  t_pos_bill_item b
+                                                               ON a.pos_code =
+                                                                     b.pos_code
+                                                                  AND A.BILL_NO =
+                                                                        B.BILL_NO
+                                                                  AND A.ITEM_SEQ =
+                                                                        B.ITEM_SEQ
+                                                       WHERE   a.amount > 0
+                                                               AND a.menu_item_code <>
+                                                                     B.MENU_ITEM_CODE
+                                                               AND a.menu_item_code LIKE
+                                                                     'X%'
+                                                               AND b.trans_date BETWEEN $P{fromDate}
+                                                                                    AND  $P{toDate}
+                                                    GROUP BY   a.pos_code,
+                                                               a.item_seq,
+                                                               b.trans_type,
+                                                               a.menu_item_code
+                                                    UNION ALL
+                                                      SELECT   a.pos_code,
+                                                               a.item_seq,
+                                                               b.trans_type,
+                                                               b.menu_item_code,
+                                                               0 AS item_qty,
+                                                               SUM (-a.amount) amount
+                                                        FROM      t_pos_bill_item_detail a
+                                                               LEFT JOIN
+                                                                  t_pos_bill_item b
+                                                               ON a.pos_code =
+                                                                     b.pos_code
+                                                                  AND A.BILL_NO =
+                                                                        B.BILL_NO
+                                                                  AND A.ITEM_SEQ =
+                                                                        B.ITEM_SEQ
+                                                       WHERE   a.amount > 0
+                                                               AND a.menu_item_code <>
+                                                                     B.MENU_ITEM_CODE
+                                                               AND a.menu_item_code LIKE
+                                                                     'X%'
+                                                               AND a.trans_date BETWEEN $P{fromDate}
+                                                                                    AND  $P{toDate}
+                                                    GROUP BY   a.pos_code,
+                                                               a.item_seq,
+                                                               b.trans_type,
+                                                               b.menu_item_code) a
+                                        GROUP BY   pos_code,
+                                                   item_seq,
+                                                   trans_type,
+                                                   menu_item_code
+                                        UNION ALL
+                                          SELECT   pos_code,
+                                                   item_seq,
+                                                   trans_type,
+                                                   menu_item_code,
+                                                   SUM (b.item_qty) item_qty,
+                                                   SUM (b.amount) amount
+                                            FROM   (  SELECT   a.pos_code,
+                                                               a.item_seq,
+                                                               b.trans_type,
+                                                               a.menu_item_code,
+                                                               SUM (a.item_qty)
+                                                                  item_qty,
+                                                               SUM (a.amount) amount
+                                                        FROM      t_pos_bill_item_detail a
+                                                               LEFT JOIN
+                                                                  t_pos_bill_item b
+                                                               ON a.pos_code =
+                                                                     b.pos_code
+                                                                  AND A.BILL_NO =
+                                                                        B.BILL_NO
+                                                                  AND A.ITEM_SEQ =
+                                                                        B.ITEM_SEQ
+                                                       WHERE   a.amount > 0
+                                                               AND a.menu_item_code <>
+                                                                     B.MENU_ITEM_CODE
+                                                               AND a.menu_item_code LIKE
+                                                                     '1%'
+                                                               AND b.trans_date BETWEEN $P{fromDate}
+                                                                                    AND  $P{toDate}
+                                                    GROUP BY   a.pos_code,
+                                                               a.item_seq,
+                                                               b.trans_type,
+                                                               a.menu_item_code
+                                                    UNION ALL
+                                                      SELECT   a.pos_code,
+                                                               a.item_seq,
+                                                               b.trans_type,
+                                                               b.menu_item_code,
+                                                               0 AS item_qty,
+                                                               SUM (-a.amount) amount
+                                                        FROM      t_pos_bill_item_detail a
+                                                               LEFT JOIN
+                                                                  t_pos_bill_item b
+                                                               ON a.pos_code =
+                                                                     b.pos_code
+                                                                  AND A.BILL_NO =
+                                                                        B.BILL_NO
+                                                                  AND A.ITEM_SEQ =
+                                                                        B.ITEM_SEQ
+                                                       WHERE   a.amount > 0
+                                                               AND a.menu_item_code <>
+                                                                     B.MENU_ITEM_CODE
+                                                               AND a.menu_item_code LIKE
+                                                                     '1%'
+                                                               AND a.trans_date BETWEEN $P{fromDate}
+                                                                                    AND  $P{toDate}
+                                                    GROUP BY   a.pos_code,
+                                                               a.item_seq,
+                                                               b.trans_type,
+                                                               b.menu_item_code) b
+                                        GROUP BY   pos_code,
+                                                   item_seq,
+                                                   trans_type,
+                                                   menu_item_code)
+                            GROUP BY   trans_type, menu_item_code) a
+                GROUP BY   menu_item_code, trans_type) b
+            LEFT JOIN
+               m_item c
+            ON b.menu_item_code = c.plu) a
+               GROUP BY   menu_item_code, trans_type) a
+                  GROUP BY   a.menu_item_code
+   ORDER BY   a.menu_item_code)Z
+LEFT JOIN M_ITEM M
+ON Z.MENU_ITEM_CODE=M.ITEM_CODE
+ORDER BY  Z.MENU_ITEM_CODE ASC]]>
+    </queryString>
+    <field name="MENU_ITEM_CODE" class="java.lang.String"/>
+    <field name="EI_QTY" class="java.math.BigDecimal"/>
+    <field name="EI_AMT" class="java.math.BigDecimal"/>
+    <field name="TA_QTY" class="java.math.BigDecimal"/>
+    <field name="TA_AMT" class="java.math.BigDecimal"/>
+    <field name="ITEM_DESCRIPTION" class="java.lang.String"/>
+    <background>
+        <band splitType="Stretch"/>
+    </background>
+    <columnHeader>
+        <band height="98" splitType="Stretch">
+            <staticText>
+                <reportElement x="78" y="0" width="112" height="11" uuid="c76e3e98-1913-4951-bfb9-2b422647e0c4"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
+            </staticText>
+            <image>
+                <reportElement x="21" y="0" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="ff031250-4bbe-4ccc-bfa6-a940d641e6b4"/>
+                <imageExpression><![CDATA["logo/logoKfc.png"]]></imageExpression>
+            </image>
+            <staticText>
+                <reportElement x="370" y="0" width="161" height="19" uuid="03a9c2cd-9797-4e2b-9fec-fc142e1d3512"/>
+                <textElement textAlignment="Center">
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Sales by Menu]]></text>
+            </staticText>
+            <line>
+                <reportElement x="2" y="96" width="552" height="1" uuid="d8146f8b-39f6-4b81-adc3-57ddc3f727de"/>
+            </line>
+            <line>
+                <reportElement x="2" y="78" width="552" height="1" uuid="5ba62eac-2697-47a8-8b04-35ab52362401"/>
+            </line>
+            <staticText>
+                <reportElement x="3" y="56" width="55" height="11" uuid="d83a5a4e-b4be-408c-95e4-4eedad28b085"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Pos]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="57" y="66" width="283" height="11" uuid="6ab2d024-8f89-4726-9ee4-5c2afcc4f7b6"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + $P{cashierCode}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="57" y="56" width="283" height="11" uuid="49d241be-c680-4c79-92fb-c3e132ffc010"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : "  +  $P{posCode}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="3" y="46" width="55" height="11" uuid="c237d651-dc45-41bd-99eb-af4c72f05648"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Periode       ]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="3" y="66" width="55" height="11" uuid="1e200d9e-5918-4ece-8f85-3b64b56ca614"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Cashier        ]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="57" y="46" width="283" height="11" uuid="918e604f-b409-415f-9b67-11fbfbfd575e"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{fromDate})) + " s/d " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{toDate}))]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="350" y="56" width="55" height="11" uuid="14126061-4bad-4741-86e8-482b49029332"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[User ]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="350" y="46" width="55" height="11" uuid="94c3d1c6-c3df-481c-be63-88c76508279e"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Tanggal Cetak ]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="404" y="56" width="150" height="11" uuid="60d8f802-fb47-453d-b487-49cb1b11497b"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + $P{user}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="404" y="46" width="150" height="11" uuid="da0b6936-0e75-452f-833d-657044183fa2"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(new Date())]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="404" y="66" width="150" height="11" uuid="399d9d00-ecdf-443e-9845-5cddc94cb5e0"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + $P{shiftCode}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="350" y="66" width="55" height="11" uuid="689b656c-1797-4903-899e-846b09e2f75b"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Shift]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="78" y="10" width="141" height="11" uuid="bcd26bac-d92a-43cc-bc90-a44c2a0c55f1"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{outletName}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="2" y="78" width="50" height="20" uuid="b6892f30-8cef-4218-b978-3685d078d65c"/>
+                <text><![CDATA[Kode]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="51" y="78" width="212" height="20" uuid="55826934-df89-4e78-a81f-de3679b2c964"/>
+                <text><![CDATA[ITEM_DESCRIPTION]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="262" y="78" width="74" height="20" uuid="7aa1b883-90f5-4fb0-94b9-dbcd88d83e0f"/>
+                <text><![CDATA[EI_QTY]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="335" y="78" width="74" height="20" uuid="7422935f-7d73-482a-b1d4-c1ca36db39b7"/>
+                <text><![CDATA[EI_AMT]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="408" y="78" width="74" height="20" uuid="aef3851a-b731-4d44-993c-c54cf571a719"/>
+                <text><![CDATA[TA_QTY]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="481" y="78" width="74" height="20" uuid="ae1fef67-b7a8-4926-86f4-971545e8039c"/>
+                <text><![CDATA[TA_AMT]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+    <detail>
+        <band height="23" splitType="Stretch">
+            <textField>
+                <reportElement x="2" y="0" width="50" height="20" uuid="14542420-6dd9-4ca0-b517-2099ffbc01ee"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{MENU_ITEM_CODE}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="51" y="0" width="212" height="20" uuid="ebb1690d-4d82-4af9-87e5-5e073c20924c"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="262" y="0" width="74" height="20" uuid="cc06bcae-238b-4d0d-ae69-e4354adcf371"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{EI_QTY}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="335" y="0" width="74" height="20" uuid="c4bbd23c-416a-482c-9851-dd385c590351"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{EI_AMT})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="408" y="0" width="74" height="20" uuid="585fa916-e0c3-4a1f-86d5-9920106f4950"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{TA_QTY}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="481" y="0" width="74" height="20" uuid="5a396554-ad26-4648-ae78-1dd41f2a001f"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{TA_AMT})]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+    <summary>
+        <band height="42" splitType="Stretch"/>
+    </summary>
+</jasperReport>
