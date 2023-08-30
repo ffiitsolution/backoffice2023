@@ -1231,7 +1231,7 @@ public class ReportDaoImpl implements ReportDao {
                 hashMap.put("shift", shiftCode.toString());
             }
         }
-        if (param.get("detail").equals(0)){
+        if (param.get("detail").equals(0.0)){
             ClassPathResource classPathResource = new ClassPathResource("report/ReportSummarySalesbyItemCode.jrxml");
             JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
             return JasperFillManager.fillReport(jasperReport, hashMap, connection);
