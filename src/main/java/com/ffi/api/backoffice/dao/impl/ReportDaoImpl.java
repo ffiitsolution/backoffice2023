@@ -836,6 +836,8 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("address", param.get("outletName"));
         hashMap.put("user", param.get("user"));
+        hashMap.put("fromTime", param.get("fromTime").toString().substring(0, 2));
+        hashMap.put("toTime", param.get("toTime").toString().substring(0, 2));
 
         List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
         StringBuilder posCode = new StringBuilder();
