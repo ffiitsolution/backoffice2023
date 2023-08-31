@@ -41,6 +41,9 @@
     <parameter name="cashier" class="java.lang.String"/>
     <parameter name="pos" class="java.lang.String"/>
     <parameter name="shift" class="java.lang.String"/>
+    <parameter name="brand" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
     <queryString>
         <![CDATA[SELECT END.*,END.EI+END.TA AS SUMETA FROM(
 SELECT A.*,M.ITEM_DESCRIPTION,M.uom_stock FROM( SELECT   a.ITEM, SUM (a.TOTAL_EI) AS ei, SUM (a.TOTAL_TA) AS ta
@@ -67,7 +70,10 @@ SELECT A.*,M.ITEM_DESCRIPTION,M.uom_stock FROM( SELECT   a.ITEM, SUM (a.TOTAL_EI
                                      FROM      (  SELECT   a.menu_item_code,
                                                            SUM (a.EI) EI,
                                                            SUM (a.TA) TA
-                                                    FROM   (  SELECT   a.menu_item_code,
+
+                                                    FROM  (
+                                                              select * from (
+ (  SELECT   a.menu_item_code,
                                                                        SUM (a.item_qty)
                                                                           ei,
                                                                        0 AS ta
@@ -114,7 +120,7 @@ SELECT A.*,M.ITEM_DESCRIPTION,M.uom_stock FROM( SELECT   a.ITEM, SUM (a.TOTAL_EI
                                                                WHERE   a.outlet_code =
                                                                          $P{outletCode}
                                                                        AND a.trans_date BETWEEN $P{fromDate}
-                                                                                            AND  $P{toDate}
+                                                                                            AND $P{toDate}
                                                                        AND b.pos_code BETWEEN $P{pos1}
                                                                                           AND  $P{pos2}
                                                                        AND b.shift_code BETWEEN $P{shift1}
@@ -175,7 +181,7 @@ SELECT A.*,M.ITEM_DESCRIPTION,M.uom_stock FROM( SELECT   a.ITEM, SUM (a.TOTAL_EI
                                                                WHERE   a.outlet_code =
                                                                          $P{outletCode}
                                                                        AND a.trans_date BETWEEN $P{fromDate}
-                                                                                            AND  $P{toDate}
+                                                                                            AND $P{toDate}
                                                                        AND b.pos_code BETWEEN $P{pos1}
                                                                                           AND  $P{pos2}
                                                                        AND b.shift_code BETWEEN $P{shift1}
@@ -225,10 +231,10 @@ SELECT A.*,M.ITEM_DESCRIPTION,M.uom_stock FROM( SELECT   a.ITEM, SUM (a.TOTAL_EI
                                                                              c.menu_item_code
                                                                           AND c.menu_set =
                                                                                 'Y'
-                                                               WHERE   a.trans_date BETWEEN '26/July/2023'
-                                                                                        AND  '26/July/2023'
+                                                               WHERE   a.trans_date BETWEEN $P{fromDate}
+                                                                                        AND  $P{toDate}
                                                                        AND a.outlet_code =
-                                                                             '0208'
+                                                                             $P{outletCode}
                                                             GROUP BY   A.MENU_ITEM_CODE
                                                             UNION ALL
                                                               SELECT   a.menu_item_code,
@@ -271,7 +277,7 @@ SELECT A.*,M.ITEM_DESCRIPTION,M.uom_stock FROM( SELECT   a.ITEM, SUM (a.TOTAL_EI
                                                                WHERE   a.outlet_code =
                                                                          $P{outletCode}
                                                                        AND a.trans_date BETWEEN $P{fromDate}
-                                                                                            AND  $P{toDate}
+                                                                                            AND $P{toDate}
                                                                        AND b.pos_code BETWEEN $P{pos1}
                                                                                           AND  $P{pos2}
                                                                        AND b.shift_code BETWEEN $P{shift1}
@@ -282,7 +288,14 @@ SELECT A.*,M.ITEM_DESCRIPTION,M.uom_stock FROM( SELECT   a.ITEM, SUM (a.TOTAL_EI
                                                                                            AND  $P{toTime}
                                                                        AND b.delivery_status =
                                                                              'CLS'
-                                                            GROUP BY   A.MENU_ITEM_CODE)
+                                                            GROUP BY   A.MENU_ITEM_CODE)) a
+                                                            left join
+
+                                                             (SELECT CODE,DESCRIPTION FROM M_GLOBAL WHERE COND='IS_BRAND' AND DESCRIPTION IN('KFC','BB')) g
+                                                                ON a.menu_item_code=g.code
+                                                                where
+                                                                g.description=$P{brand}
+                                                            )
                                                            a
                                                 GROUP BY   a.menu_item_code) b
                                             LEFT JOIN

@@ -47,215 +47,267 @@
     </parameter>
     <parameter name="user" class="java.lang.String"/>
     <parameter name="outletName" class="java.lang.String"/>
+    <parameter name="brand" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
     <queryString>
-        <![CDATA[SELECT   a.*,b.total_amount,b.total_discount,b.sumamt
-  FROM   (  SELECT   a.OUTLET_CODE,
-                     c.outlet_name,
-                     a.MENU,
-                     a.ITEM_DESCRIPTION,
-                     a.MENU_QTY_EI,
-                     a.MENU_QTY_TA,
-                     a.TOTAL_MENU_QTY,
-                     b.MENU_ITEM_DETAIL,
-                     b.MENU_ITEM_DETAIL_DESCRIPTION,
-                     SUM (b.TOTAL_QTY_EI) TOTAL_QTY_EI,
-                     SUM (b.TOTAL_QTY_TA) TOTAL_QTY_TA,
-                     SUM (b.TOTAL_QTY) TOTAL_QTY
-              FROM         (  SELECT   OUTLET_CODE,
-                                       MENU,
-                                       ITEM_DESCRIPTION,
-                                       SUM (
-                                          DECODE (trans_type, 'EI', Total_Qty, 0)
-                                       )
-                                          MENU_QTY_EI,
-                                       SUM (
-                                          DECODE (trans_type, 'TA', Total_Qty, 0)
-                                       )
-                                          MENU_QTY_TA,
-                                       SUM (Total_Qty) TOTAL_MENU_QTY
-                                FROM   (  SELECT   (b.outlet_code) OUTLET_CODE,
-                                                   (a.menu_item_code) MENU,
-                                                   c.ITEM_DESCRIPTION,
-                                                   CASE
-                                                      WHEN NVL (a.trans_type, 'TA') <>
-                                                              'EI'
-                                                      THEN
-                                                         'TA'
-                                                      ELSE
-                                                         'EI'
-                                                   END
-                                                      trans_type,
-                                                   SUM (a.item_qty) Total_Qty
-                                            FROM         (SELECT   *
-                                                            FROM   t_pos_bill_item
-                                                           WHERE   OUTLET_CODE IN
-                                                                         ($P{outletCode})
-                                                                   AND trans_date BETWEEN $P{fromDate}
-                                                                                      AND  $P{toDate})
-                                                         a
-                                                      JOIN
-                                                         (SELECT   *
-                                                            FROM   t_pos_bill
-                                                           WHERE   OUTLET_CODE IN
-                                                                         ($P{outletCode})
-                                                                   AND delivery_status =
-                                                                         'CLS'
-                                                                   AND trans_date BETWEEN $P{fromDate}
-                                                                                      AND  $P{toDate}
-                                                                   AND pos_code BETWEEN $P{posCode1}
-                                                                                    AND  $P{posCode2}
-                                                                   AND cashier_code BETWEEN $P{cashierCode1}
-                                                                                        AND  $P{cashierCode2}
-                                                                   AND shift_code BETWEEN $P{shiftCode1}
-                                                                                      AND  $P{shiftCode2})
-                                                         b
-                                                      ON a.region_code =
-                                                            b.region_code
-                                                         AND a.outlet_code =
-                                                               b.outlet_code
-                                                         AND a.pos_code =
-                                                               b.pos_code
-                                                         AND a.day_seq = b.day_seq
-                                                         AND a.bill_no = b.bill_no
-                                                   JOIN
-                                                      m_item c
-                                                   ON a.menu_item_code =
-                                                         c.item_code
-                                        GROUP BY   b.outlet_code,
-                                                   a.menu_item_code,
-                                                   c.item_description,
-                                                   a.trans_type)
-                            GROUP BY   OUTLET_CODE, MENU, item_description
-                            ORDER BY   MENU) a
+        <![CDATA[SELECT   a.*,
+         b.total_amount,
+         b.total_discount,
+         b.sumamt
+  FROM      (  SELECT   a.OUTLET_CODE,
+                        c.outlet_name,
+                        a.MENU,
+                        a.ITEM_DESCRIPTION,
+                        a.MENU_QTY_EI,
+                        a.MENU_QTY_TA,
+                        a.TOTAL_MENU_QTY,
+                        b.MENU_ITEM_DETAIL,
+                        b.MENU_ITEM_DETAIL_DESCRIPTION,
+                        SUM (b.TOTAL_QTY_EI) TOTAL_QTY_EI,
+                        SUM (b.TOTAL_QTY_TA) TOTAL_QTY_TA,
+                        SUM (b.TOTAL_QTY) TOTAL_QTY
+                 FROM         (SELECT   *
+                                 FROM      (  SELECT   OUTLET_CODE,
+                                                       MENU,
+                                                       ITEM_DESCRIPTION,
+                                                       SUM(DECODE (trans_type,
+                                                                   'EI',
+                                                                   Total_Qty,
+                                                                   0))
+                                                          MENU_QTY_EI,
+                                                       SUM(DECODE (trans_type,
+                                                                   'TA',
+                                                                   Total_Qty,
+                                                                   0))
+                                                          MENU_QTY_TA,
+                                                       SUM (Total_Qty)
+                                                          TOTAL_MENU_QTY
+                                                FROM   (  SELECT   (b.outlet_code)
+                                                                      OUTLET_CODE,
+                                                                   (a.menu_item_code)
+                                                                      MENU,
+                                                                   c.ITEM_DESCRIPTION,
+                                                                   CASE
+                                                                      WHEN NVL (
+                                                                              a.trans_type,
+                                                                              'TA'
+                                                                           ) <>
+                                                                              'EI'
+                                                                      THEN
+                                                                         'TA'
+                                                                      ELSE
+                                                                         'EI'
+                                                                   END
+                                                                      trans_type,
+                                                                   SUM (a.item_qty)
+                                                                      Total_Qty
+                                                            FROM         (SELECT   *
+                                                                            FROM   t_pos_bill_item
+                                                                           WHERE   OUTLET_CODE IN
+                                                                                         ($P{outletCode})
+                                                                                   AND trans_date BETWEEN $P{fromDate}
+                                                                                                      AND  $P{toDate})
+                                                                         a
+                                                                      JOIN
+                                                                         (SELECT   *
+                                                                            FROM   t_pos_bill
+                                                                           WHERE   OUTLET_CODE IN
+                                                                                         ($P{outletCode})
+                                                                                   AND delivery_status =
+                                                                                         'CLS'
+                                                                                   AND trans_date BETWEEN $P{fromDate}
+                                                                                                      AND  $P{toDate}
+                                                                                   AND pos_code BETWEEN $P{posCode1}
+                                                                                                    AND  $P{posCode2}
+                                                                                   AND cashier_code BETWEEN $P{cashierCode1}
+                                                                                                        AND  $P{cashierCode2}
+                                                                                   AND shift_code BETWEEN $P{shiftCode1}
+                                                                                                      AND  $P{shiftCode2})
+                                                                         b
+                                                                      ON a.region_code =
+                                                                            b.region_code
+                                                                         AND a.outlet_code =
+                                                                               b.outlet_code
+                                                                         AND a.pos_code =
+                                                                               b.pos_code
+                                                                         AND a.day_seq =
+                                                                               b.day_seq
+                                                                         AND a.bill_no =
+                                                                               b.bill_no
+                                                                   JOIN
+                                                                      m_item c
+                                                                   ON a.menu_item_code =
+                                                                         c.item_code
+                                                        GROUP BY   b.outlet_code,
+                                                                   a.menu_item_code,
+                                                                   c.item_description,
+                                                                   a.trans_type)
+                                            GROUP BY   OUTLET_CODE,
+                                                       MENU,
+                                                       item_description
+                                            ORDER BY   MENU) a
+                                        LEFT JOIN
+                                           (SELECT   CODE, DESCRIPTION
+                                              FROM   M_GLOBAL
+                                             WHERE   COND = 'IS_BRAND'
+                                                     AND DESCRIPTION IN
+                                                              ('KFC', 'BB')) g
+                                        ON a.menu = g.code
+                                WHERE   g.description = $P{brand}) a
+                           JOIN
+                              (  SELECT   MENU_ITEM,
+                                          MENU_ITEM_DESCRIPTION,
+                                          MENU_ITEM_DETAIL,
+                                          MENU_ITEM_DETAIL_DESCRIPTION,
+                                          SUM(DECODE (trans_type,
+                                                      'EI', total_qty,
+                                                      0))
+                                             TOTAL_QTY_EI,
+                                          SUM(DECODE (trans_type,
+                                                      'TA', total_qty,
+                                                      0))
+                                             TOTAL_QTY_TA,
+                                          SUM (total_qty) TOTAL_QTY
+                                   FROM   (SELECT   *
+                                             FROM      ((  SELECT   (b.menu_item_code)
+                                                                       MENU_ITEM,
+                                                                    (e.item_description)
+                                                                       MENU_ITEM_DESCRIPTION,
+                                                                    SUM (
+                                                                       b.item_qty
+                                                                    )
+                                                                       total_menu_qty,
+                                                                    (a.menu_item_code)
+                                                                       MENU_ITEM_DETAIL,
+                                                                    (d.item_description)
+                                                                       MENU_ITEM_DETAIL_DESCRIPTION,
+                                                                    CASE
+                                                                       WHEN NVL (
+                                                                               b.trans_type,
+                                                                               'TA'
+                                                                            ) <>
+                                                                               'EI'
+                                                                       THEN
+                                                                          'TA'
+                                                                       ELSE
+                                                                          'EI'
+                                                                    END
+                                                                       trans_type,
+                                                                    SUM (
+                                                                       a.item_qty
+                                                                    )
+                                                                       total_qty
+                                                             FROM               (SELECT   *
+                                                                                   FROM   t_pos_bill_item_detail
+                                                                                  WHERE   OUTLET_CODE IN
+                                                                                                ($P{outletCode})
+                                                                                          AND trans_date BETWEEN $P{fromDate}
+                                                                                                             AND  $P{toDate})
+                                                                                a
+                                                                             JOIN
+                                                                                (SELECT   *
+                                                                                   FROM   t_pos_bill_item
+                                                                                  WHERE   OUTLET_CODE IN
+                                                                                                ($P{outletCode})
+                                                                                          AND trans_date BETWEEN $P{fromDate}
+                                                                                                             AND  $P{toDate})
+                                                                                b
+                                                                             ON a.region_code =
+                                                                                   b.region_code
+                                                                                AND a.outlet_code =
+                                                                                      b.outlet_code
+                                                                                AND a.pos_code =
+                                                                                      b.pos_code
+                                                                                AND a.day_seq =
+                                                                                      b.day_seq
+                                                                                AND a.bill_no =
+                                                                                      b.bill_no
+                                                                                AND a.item_seq =
+                                                                                      b.item_seq
+                                                                          JOIN
+                                                                             (SELECT   *
+                                                                                FROM   t_pos_bill
+                                                                               WHERE   OUTLET_CODE IN
+                                                                                             ($P{outletCode})
+                                                                                       AND delivery_status =
+                                                                                             'CLS'
+                                                                                       AND trans_date BETWEEN $P{fromDate}
+                                                                                                          AND  $P{toDate}
+                                                                                       AND pos_code BETWEEN $P{posCode1}
+                                                                                                        AND  $P{posCode2}
+                                                                                       AND cashier_code BETWEEN $P{cashierCode1}
+                                                                                                            AND  $P{cashierCode2}
+                                                                                       AND shift_code BETWEEN $P{shiftCode1}
+                                                                                                          AND  $P{shiftCode2})
+                                                                             c
+                                                                          ON a.region_code =
+                                                                                c.region_code
+                                                                             AND a.outlet_code =
+                                                                                   c.outlet_code
+                                                                             AND a.pos_code =
+                                                                                   c.pos_code
+                                                                             AND a.day_seq =
+                                                                                   c.day_seq
+                                                                             AND a.bill_no =
+                                                                                   c.bill_no
+                                                                       JOIN
+                                                                          m_item d
+                                                                       ON a.menu_item_code =
+                                                                             d.item_code
+                                                                    JOIN
+                                                                       m_item e
+                                                                    ON b.menu_item_code =
+                                                                          e.item_code
+                                                         GROUP BY   a.menu_item_code,
+                                                                    d.item_description,
+                                                                    b.menu_item_code,
+                                                                    e.item_description,
+                                                                    b.trans_type)) a
+                                                    LEFT JOIN
+                                                       (SELECT   CODE,
+                                                                 DESCRIPTION
+                                                          FROM   M_GLOBAL
+                                                         WHERE   COND =
+                                                                    'IS_BRAND'
+                                                                 AND DESCRIPTION IN
+                                                                          ('KFC',
+                                                                           'BB'))
+                                                       g
+                                                    ON a.menu_item = g.code
+                                            WHERE   g.description = $P{brand})
+                               GROUP BY   MENU_ITEM,
+                                          MENU_ITEM_DESCRIPTION,
+                                          MENU_ITEM_DETAIL,
+                                          MENU_ITEM_DETAIL_DESCRIPTION
+                               ORDER BY   MENU_ITEM) b
+                           ON a.menu = b.menu_item
                         JOIN
-                           (  SELECT   MENU_ITEM,
-                                       MENU_ITEM_DESCRIPTION,
-                                       MENU_ITEM_DETAIL,
-                                       MENU_ITEM_DETAIL_DESCRIPTION,
-                                       SUM (
-                                          DECODE (trans_type, 'EI', total_qty, 0)
-                                       )
-                                          TOTAL_QTY_EI,
-                                       SUM (
-                                          DECODE (trans_type, 'TA', total_qty, 0)
-                                       )
-                                          TOTAL_QTY_TA,
-                                       SUM (total_qty) TOTAL_QTY
-                                FROM   (  SELECT   (b.menu_item_code) MENU_ITEM,
-                                                   (e.item_description)
-                                                      MENU_ITEM_DESCRIPTION,
-                                                   SUM (b.item_qty) total_menu_qty,
-                                                   (a.menu_item_code)
-                                                      MENU_ITEM_DETAIL,
-                                                   (d.item_description)
-                                                      MENU_ITEM_DETAIL_DESCRIPTION,
-                                                   CASE
-                                                      WHEN NVL (b.trans_type, 'TA') <>
-                                                              'EI'
-                                                      THEN
-                                                         'TA'
-                                                      ELSE
-                                                         'EI'
-                                                   END
-                                                      trans_type,
-                                                   SUM (a.item_qty) total_qty
-                                            FROM               (SELECT   *
-                                                                  FROM   t_pos_bill_item_detail
-                                                                 WHERE   OUTLET_CODE IN
-                                                                               ($P{outletCode})
-                                                                         AND trans_date BETWEEN $P{fromDate}
-                                                                                            AND  $P{toDate})
-                                                               a
-                                                            JOIN
-                                                               (SELECT   *
-                                                                  FROM   t_pos_bill_item
-                                                                 WHERE   OUTLET_CODE IN
-                                                                               ($P{outletCode})
-                                                                         AND trans_date BETWEEN $P{fromDate}
-                                                                                            AND  $P{toDate})
-                                                               b
-                                                            ON a.region_code =
-                                                                  b.region_code
-                                                               AND a.outlet_code =
-                                                                     b.outlet_code
-                                                               AND a.pos_code =
-                                                                     b.pos_code
-                                                               AND a.day_seq =
-                                                                     b.day_seq
-                                                               AND a.bill_no =
-                                                                     b.bill_no
-                                                               AND a.item_seq =
-                                                                     b.item_seq
-                                                         JOIN
-                                                            (SELECT   *
-                                                               FROM   t_pos_bill
-                                                              WHERE   OUTLET_CODE IN
-                                                                            ($P{outletCode})
-                                                                      AND delivery_status =
-                                                                            'CLS'
-                                                                      AND trans_date BETWEEN $P{fromDate}
-                                                                                         AND  $P{toDate}
-                                                                      AND pos_code BETWEEN $P{posCode1}
-                                                                                       AND  $P{posCode2}
-                                                                      AND cashier_code BETWEEN $P{cashierCode1}
-                                                                                           AND  $P{cashierCode2}
-                                                                      AND shift_code BETWEEN $P{shiftCode1}
-                                                                                         AND  $P{shiftCode2})
-                                                            c
-                                                         ON a.region_code =
-                                                               c.region_code
-                                                            AND a.outlet_code =
-                                                                  c.outlet_code
-                                                            AND a.pos_code =
-                                                                  c.pos_code
-                                                            AND a.day_seq =
-                                                                  c.day_seq
-                                                            AND a.bill_no =
-                                                                  c.bill_no
-                                                      JOIN
-                                                         m_item d
-                                                      ON a.menu_item_code =
-                                                            d.item_code
-                                                   JOIN
-                                                      m_item e
-                                                   ON b.menu_item_code =
-                                                         e.item_code
-                                        GROUP BY   a.menu_item_code,
-                                                   d.item_description,
-                                                   b.menu_item_code,
-                                                   e.item_description,
-                                                   b.trans_type)
-                            GROUP BY   MENU_ITEM,
-                                       MENU_ITEM_DESCRIPTION,
-                                       MENU_ITEM_DETAIL,
-                                       MENU_ITEM_DETAIL_DESCRIPTION
-                            ORDER BY   MENU_ITEM) b
-                        ON a.menu = b.menu_item
-                     JOIN
-                        m_outlet c
-                     ON a.OUTLET_CODE = c.outlet_code
-          GROUP BY   a.OUTLET_CODE,
-                     c.outlet_name,
-                     a.MENU,
-                     a.ITEM_DESCRIPTION,
-                     a.MENU_QTY_EI,
-                     a.MENU_QTY_TA,
-                     a.TOTAL_MENU_QTY,
-                     b.MENU_ITEM_DETAIL,
-                     b.MENU_ITEM_DETAIL_DESCRIPTION
-          ORDER BY   a.MENU, b.MENU_ITEM_DETAIL) a left join
-          (SELECT   $P{outletCode} as outlet_code,SUM (TOTAL_AMOUNT) AS total_amount,
-         SUM (total_discount) AS TOTAL_DISCOUNT,
-         SUM (TOTAL_AMOUNT - TOTAL_DISCOUNT) AS sumamt
-  FROM   T_POS_BILL
- WHERE   outlet_code = $P{outletCode}
-         AND trans_date BETWEEN $P{fromDate}
-                            AND  $P{toDate}
-         AND pos_code BETWEEN $P{posCode1} AND $P{posCode2}
-         AND shift_code BETWEEN $P{shiftCode1} AND $P{shiftCode2}
-         AND cashier_code BETWEEN $P{cashierCode1} AND  $P{cashierCode2}
-                      and delivery_status='CLS') b
-                      on A.OUTLET_CODE=B.OUTLET_CODE]]>
+                           m_outlet c
+                        ON a.OUTLET_CODE = c.outlet_code
+             GROUP BY   a.OUTLET_CODE,
+                        c.outlet_name,
+                        a.MENU,
+                        a.ITEM_DESCRIPTION,
+                        a.MENU_QTY_EI,
+                        a.MENU_QTY_TA,
+                        a.TOTAL_MENU_QTY,
+                        b.MENU_ITEM_DETAIL,
+                        b.MENU_ITEM_DETAIL_DESCRIPTION
+             ORDER BY   a.MENU, b.MENU_ITEM_DETAIL) a
+         LEFT JOIN
+            (SELECT   $P{outletCode} AS outlet_code,
+                      SUM (TOTAL_AMOUNT) AS total_amount,
+                      SUM (total_discount) AS TOTAL_DISCOUNT,
+                      SUM (TOTAL_AMOUNT - TOTAL_DISCOUNT) AS sumamt
+               FROM   T_POS_BILL
+              WHERE       outlet_code = $P{outletCode}
+                      AND trans_date BETWEEN $P{fromDate} AND $P{toDate}
+                      AND pos_code BETWEEN $P{posCode1} AND $P{posCode2}
+                      AND shift_code BETWEEN $P{shiftCode1} AND $P{shiftCode2}
+                      AND cashier_code BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+                      AND delivery_status = 'CLS') b
+         ON A.OUTLET_CODE = B.OUTLET_CODE]]>
     </queryString>
     <field name="OUTLET_CODE" class="java.lang.String"/>
     <field name="OUTLET_NAME" class="java.lang.String"/>

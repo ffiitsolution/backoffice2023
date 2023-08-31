@@ -47,6 +47,9 @@
     <parameter name="toTime" class="java.lang.String">
         <defaultValueExpression><![CDATA[]]></defaultValueExpression>
     </parameter>
+    <parameter name="brand" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
     <queryString>
         <![CDATA[SELECT Z.*,M.ITEM_DESCRIPTION FROM (
 SELECT   a.menu_item_code,
@@ -84,164 +87,162 @@ SELECT   menu_item_code,
                                           trans_type,
                                        SUM (item_qty) item_qty,
                                        SUM (amount) amount
-                                FROM   (  SELECT   a.pos_code,
-                                                   a.item_seq,
-                                                   a.trans_type,
-                                                   a.menu_item_code,
-                                                   SUM (item_qty) item_qty,
-                                                   SUM (amount) amount
-                                            FROM      t_pos_bill_item a
-                                                   LEFT JOIN
-                                                      t_pos_bill b
-                                                   ON a.bill_no = b.bill_no
-                                                      AND a.pos_code = b.pos_code
-                                           WHERE   b.delivery_status = 'CLS'
-                                                   AND b.OUTLET_CODE IN ($P{outletCode})
-                                                   AND b.time_upd BETWEEN $P{fromTime}
-                                                                      AND  $P{toTime}
-                                                   AND b.pos_code BETWEEN $P{posCode1}
-                                                                      AND  $P{posCode2}
-                                                   AND b.shift_code BETWEEN $P{shiftCode1}
-                                                                        AND  $P{shiftCode2}
-                                                   AND b.cashier_code BETWEEN $P{cashierCode1}
-                                                                          AND  $P{cashierCode2}
-                                                   AND b.trans_date BETWEEN $P{fromDate}
-                                                                        AND  $P{toDate}
-                                        GROUP BY   a.pos_code,
-                                                   a.item_seq,
-                                                   a.trans_type,
-                                                   a.menu_item_code
-                                        UNION ALL
-                                          SELECT   pos_code,
-                                                   item_seq,
-                                                   trans_type,
-                                                   menu_item_code,
-                                                   SUM (a.item_qty) item_qty,
-                                                   SUM (a.amount) amount
-                                            FROM   (  SELECT   a.pos_code,
-                                                               a.item_seq,
-                                                               b.trans_type,
-                                                               a.menu_item_code,
-                                                               SUM (a.item_qty)
-                                                                  item_qty,
-                                                               SUM (a.amount) amount
-                                                        FROM      t_pos_bill_item_detail a
-                                                               LEFT JOIN
-                                                                  t_pos_bill_item b
-                                                               ON a.pos_code =
-                                                                     b.pos_code
-                                                                  AND A.BILL_NO =
-                                                                        B.BILL_NO
-                                                                  AND A.ITEM_SEQ =
-                                                                        B.ITEM_SEQ
-                                                       WHERE   a.amount > 0
-                                                               AND a.menu_item_code <>
-                                                                     B.MENU_ITEM_CODE
-                                                               AND a.menu_item_code LIKE
-                                                                     'X%'
-                                                               AND b.trans_date BETWEEN $P{fromDate}
-                                                                                    AND  $P{toDate}
-                                                    GROUP BY   a.pos_code,
-                                                               a.item_seq,
-                                                               b.trans_type,
-                                                               a.menu_item_code
-                                                    UNION ALL
-                                                      SELECT   a.pos_code,
-                                                               a.item_seq,
-                                                               b.trans_type,
-                                                               b.menu_item_code,
-                                                               0 AS item_qty,
-                                                               SUM (-a.amount) amount
-                                                        FROM      t_pos_bill_item_detail a
-                                                               LEFT JOIN
-                                                                  t_pos_bill_item b
-                                                               ON a.pos_code =
-                                                                     b.pos_code
-                                                                  AND A.BILL_NO =
-                                                                        B.BILL_NO
-                                                                  AND A.ITEM_SEQ =
-                                                                        B.ITEM_SEQ
-                                                       WHERE   a.amount > 0
-                                                               AND a.menu_item_code <>
-                                                                     B.MENU_ITEM_CODE
-                                                               AND a.menu_item_code LIKE
-                                                                     'X%'
-                                                               AND a.trans_date BETWEEN $P{fromDate}
-                                                                                    AND  $P{toDate}
-                                                    GROUP BY   a.pos_code,
-                                                               a.item_seq,
-                                                               b.trans_type,
-                                                               b.menu_item_code) a
-                                        GROUP BY   pos_code,
-                                                   item_seq,
-                                                   trans_type,
-                                                   menu_item_code
-                                        UNION ALL
-                                          SELECT   pos_code,
-                                                   item_seq,
-                                                   trans_type,
-                                                   menu_item_code,
-                                                   SUM (b.item_qty) item_qty,
-                                                   SUM (b.amount) amount
-                                            FROM   (  SELECT   a.pos_code,
-                                                               a.item_seq,
-                                                               b.trans_type,
-                                                               a.menu_item_code,
-                                                               SUM (a.item_qty)
-                                                                  item_qty,
-                                                               SUM (a.amount) amount
-                                                        FROM      t_pos_bill_item_detail a
-                                                               LEFT JOIN
-                                                                  t_pos_bill_item b
-                                                               ON a.pos_code =
-                                                                     b.pos_code
-                                                                  AND A.BILL_NO =
-                                                                        B.BILL_NO
-                                                                  AND A.ITEM_SEQ =
-                                                                        B.ITEM_SEQ
-                                                       WHERE   a.amount > 0
-                                                               AND a.menu_item_code <>
-                                                                     B.MENU_ITEM_CODE
-                                                               AND a.menu_item_code LIKE
-                                                                     '1%'
-                                                               AND b.trans_date BETWEEN $P{fromDate}
-                                                                                    AND  $P{toDate}
-                                                    GROUP BY   a.pos_code,
-                                                               a.item_seq,
-                                                               b.trans_type,
-                                                               a.menu_item_code
-                                                    UNION ALL
-                                                      SELECT   a.pos_code,
-                                                               a.item_seq,
-                                                               b.trans_type,
-                                                               b.menu_item_code,
-                                                               0 AS item_qty,
-                                                               SUM (-a.amount) amount
-                                                        FROM      t_pos_bill_item_detail a
-                                                               LEFT JOIN
-                                                                  t_pos_bill_item b
-                                                               ON a.pos_code =
-                                                                     b.pos_code
-                                                                  AND A.BILL_NO =
-                                                                        B.BILL_NO
-                                                                  AND A.ITEM_SEQ =
-                                                                        B.ITEM_SEQ
-                                                       WHERE   a.amount > 0
-                                                               AND a.menu_item_code <>
-                                                                     B.MENU_ITEM_CODE
-                                                               AND a.menu_item_code LIKE
-                                                                     '1%'
-                                                               AND a.trans_date BETWEEN $P{fromDate}
-                                                                                    AND  $P{toDate}
-                                                    GROUP BY   a.pos_code,
-                                                               a.item_seq,
-                                                               b.trans_type,
-                                                               b.menu_item_code) b
-                                        GROUP BY   pos_code,
-                                                   item_seq,
-                                                   trans_type,
-                                                   menu_item_code)
-                            GROUP BY   trans_type, menu_item_code) a
+                                FROM
+
+( SELECT   a.pos_code,
+            a.item_seq,
+            a.trans_type,
+            a.menu_item_code,
+            SUM (item_qty) item_qty,
+            SUM (amount) amount
+     FROM      t_pos_bill_item a
+            LEFT JOIN
+               t_pos_bill b
+            ON a.bill_no = b.bill_no AND a.pos_code = b.pos_code
+    WHERE       b.delivery_status = 'CLS'
+            AND b.OUTLET_CODE IN $P{outletCode}
+            AND b.time_upd BETWEEN $P{fromTime} AND $P{toTime}
+            AND b.pos_code BETWEEN $P{posCode1} AND $P{posCode2}
+            AND b.shift_code BETWEEN $P{shiftCode1} AND $P{shiftCode2}
+            AND b.cashier_code BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+            AND b.trans_date BETWEEN $P{fromDate} AND $P{toDate}
+ GROUP BY   a.pos_code,
+            a.item_seq,
+            a.trans_type,
+            a.menu_item_code
+ UNION ALL
+   SELECT   pos_code,
+            item_seq,
+            trans_type,
+            menu_item_code,
+            SUM (a.item_qty) item_qty,
+            SUM (a.amount) amount
+     FROM   (  SELECT   a.pos_code,
+                        a.item_seq,
+                        b.trans_type,
+                        a.menu_item_code,
+                        SUM (a.item_qty) item_qty,
+                        SUM (a.amount) amount
+                 FROM         t_pos_bill_item_detail a
+                           LEFT JOIN
+                              t_pos_bill_item b
+                           ON     a.pos_code = b.pos_code
+                              AND A.BILL_NO = B.BILL_NO
+                              AND A.ITEM_SEQ = B.ITEM_SEQ
+                        LEFT JOIN
+                           (SELECT   CODE, DESCRIPTION
+                              FROM   M_GLOBAL
+                             WHERE   COND = 'IS_BRAND'
+                                     AND DESCRIPTION IN ('KFC', 'BB')) g
+                        ON a.menu_item_code = g.code
+                WHERE       a.amount > 0
+                        AND a.menu_item_code <> B.MENU_ITEM_CODE
+                        AND a.menu_item_code LIKE 'X%'
+                        AND b.trans_date BETWEEN $P{fromDate} AND $P{toDate}
+                        AND g.description = $P{brand}
+             GROUP BY   a.pos_code,
+                        a.item_seq,
+                        b.trans_type,
+                        a.menu_item_code
+             UNION ALL
+               SELECT   a.pos_code,
+                        a.item_seq,
+                        b.trans_type,
+                        b.menu_item_code,
+                        0 AS item_qty,
+                        SUM (-a.amount) amount
+                 FROM         t_pos_bill_item_detail a
+                           LEFT JOIN
+                              t_pos_bill_item b
+                           ON     a.pos_code = b.pos_code
+                              AND A.BILL_NO = B.BILL_NO
+                              AND A.ITEM_SEQ = B.ITEM_SEQ
+                        LEFT JOIN
+                           (SELECT   CODE, DESCRIPTION
+                              FROM   M_GLOBAL
+                             WHERE   COND = 'IS_BRAND'
+                                     AND DESCRIPTION IN ('KFC', 'BB')) g
+                        ON a.menu_item_code = g.code
+                WHERE       a.amount > 0
+                        AND a.menu_item_code <> B.MENU_ITEM_CODE
+                        AND a.menu_item_code LIKE 'X%'
+                        AND a.trans_date BETWEEN $P{fromDate} AND $P{toDate}
+                        AND g.description = $P{brand}
+             GROUP BY   a.pos_code,
+                        a.item_seq,
+                        b.trans_type,
+                        b.menu_item_code) a
+ GROUP BY   pos_code,
+            item_seq,
+            trans_type,
+            menu_item_code
+ UNION ALL
+   SELECT   pos_code,
+            item_seq,
+            trans_type,
+            menu_item_code,
+            SUM (b.item_qty) item_qty,
+            SUM (b.amount) amount
+     FROM   (  SELECT   a.pos_code,
+                        a.item_seq,
+                        b.trans_type,
+                        a.menu_item_code,
+                        SUM (a.item_qty) item_qty,
+                        SUM (a.amount) amount
+                 FROM         t_pos_bill_item_detail a
+                           LEFT JOIN
+                              t_pos_bill_item b
+                           ON     a.pos_code = b.pos_code
+                              AND A.BILL_NO = B.BILL_NO
+                              AND A.ITEM_SEQ = B.ITEM_SEQ
+                        LEFT JOIN
+                           (SELECT   CODE, DESCRIPTION
+                              FROM   M_GLOBAL
+                             WHERE   COND = 'IS_BRAND'
+                                     AND DESCRIPTION IN ('KFC', 'BB')) g
+                        ON a.menu_item_code = g.code
+                WHERE       a.amount > 0
+                        AND a.menu_item_code <> B.MENU_ITEM_CODE
+                        AND a.menu_item_code LIKE '1%'
+                        AND b.trans_date BETWEEN $P{fromDate} AND $P{toDate}
+                        AND g.description = $P{brand}
+             GROUP BY   a.pos_code,
+                        a.item_seq,
+                        b.trans_type,
+                        a.menu_item_code
+             UNION ALL
+               SELECT   a.pos_code,
+                        a.item_seq,
+                        b.trans_type,
+                        b.menu_item_code,
+                        0 AS item_qty,
+                        SUM (-a.amount) amount
+                 FROM         t_pos_bill_item_detail a
+                           LEFT JOIN
+                              t_pos_bill_item b
+                           ON     a.pos_code = b.pos_code
+                              AND A.BILL_NO = B.BILL_NO
+                              AND A.ITEM_SEQ = B.ITEM_SEQ
+                        LEFT JOIN
+                           (SELECT   CODE, DESCRIPTION
+                              FROM   M_GLOBAL
+                             WHERE   COND = 'IS_BRAND'
+                                     AND DESCRIPTION IN ('KFC', 'BB')) g
+                        ON a.menu_item_code = g.code
+                WHERE       a.amount > 0
+                        AND a.menu_item_code <> B.MENU_ITEM_CODE
+                        AND a.menu_item_code LIKE '1%'
+                        AND a.trans_date BETWEEN $P{fromDate} AND $P{toDate}
+                        AND g.description = $P{brand}
+             GROUP BY   a.pos_code,
+                        a.item_seq,
+                        b.trans_type,
+                        b.menu_item_code) b
+ GROUP BY   pos_code,
+            item_seq,
+            trans_type,
+            menu_item_code)
+  GROUP BY   trans_type, menu_item_code) a
                 GROUP BY   menu_item_code, trans_type) b
             LEFT JOIN
                m_item c
@@ -251,7 +252,8 @@ SELECT   menu_item_code,
    ORDER BY   a.menu_item_code)Z
 LEFT JOIN M_ITEM M
 ON Z.MENU_ITEM_CODE=M.ITEM_CODE
-ORDER BY  Z.MENU_ITEM_CODE ASC]]>
+ORDER BY  Z.MENU_ITEM_CODE ASC
+]]>
     </queryString>
     <field name="MENU_ITEM_CODE" class="java.lang.String"/>
     <field name="EI_QTY" class="java.math.BigDecimal"/>

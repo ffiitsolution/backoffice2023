@@ -1030,6 +1030,7 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("toTime", param.get("toTime"));
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("outletName", param.get("outletName"));
+        hashMap.put("brand", param.get("brand"));
 
         List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
         StringBuilder posCode = new StringBuilder();
@@ -1103,6 +1104,7 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("toTime", param.get("toTime"));
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("outletName", param.get("outletName"));
+        hashMap.put("brand", param.get("brand"));
 
         List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
         StringBuilder posCode = new StringBuilder();
@@ -1176,6 +1178,7 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("toTime", param.get("toTime"));
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("outletName", param.get("outletName"));
+        hashMap.put("brand", param.get("brand"));
 
         List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
         StringBuilder posCode = new StringBuilder();
