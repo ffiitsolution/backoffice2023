@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ReportSalesDetailByItemCode" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="73165d4e-39af-4431-9de0-ccdcd5a12995">
-    <property name="ireport.zoom" value="1.3310000000000062"/>
+    <property name="ireport.zoom" value="1.3310000000000162"/>
     <property name="ireport.x" value="0"/>
     <property name="ireport.y" value="0"/>
     <parameter name="outletCode" class="java.lang.String">
@@ -42,305 +42,281 @@
     <parameter name="brand" class="java.lang.String">
         <defaultValueExpression><![CDATA[]]></defaultValueExpression>
     </parameter>
+    <parameter name="brand1" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="brand2" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
     <queryString>
-        <![CDATA[SELECT Z.*,B.TOTAL_AMOUNT,B.TOTAL_DISCOUNT,B.SUMAMT FROM(
-   SELECT
-    $P{outletCode} AS OUTLET_CODE,a.ITEM,
-            a.ITEM_DESCRIPTION,
-            a.MENU,
-            a.KETERANGAN,
-            a.EI,
-            a.RESEP_EI,
-            a.TOTAL_EI,
-            a.TA,
-            a.RESEP_TA,
-            a.TOTAL_TA,
-            a.UOM_STOCK
-     FROM   (  SELECT   c.item_code AS ITEM,
-                        e.item_description,
-                        c.menu_item_code AS Menu,
-                        d.item_description AS keterangan,
-                        c.ei,
-                        c.resep_ei,
-                        c.total_ei,
-                        c.ta,
-                        c.resep_ta,
-                        c.total_ta,
-                        c.uom_stock
-                 FROM         (  SELECT   c.item_code,
-                                          b.menu_item_code,
-                                          EI,
-                                          qty_stock_e AS resep_EI,
-                                          (EI * qty_stock_e) AS Total_EI,
-                                          TA,
-                                          qty_stock_t AS resep_TA,
-                                          (TA * qty_stock_t) AS total_TA,
-                                          UOM_STOCK
-                                   FROM     (
-                                              select * from (
-(  SELECT   a.menu_item_code,SUM (a.item_qty) ei,0 AS ta
-                                                              FROM         t_pos_bill_item_detail a
-                                                                        JOIN
-                                                                           t_pos_bill b
-                                                                        ON a.bill_no =
-                                                                              b.bill_no
-                                                                           AND a.trans_Date =
-                                                                                 b.trans_date
-                                                                           AND a.day_seq =
-                                                                                 b.day_seq
-                                                                           AND a.pos_code =
-                                                                                 b.pos_code
-                                                                           AND a.outlet_code =
-                                                                                 b.outlet_code
-                                                                           AND b.delivery_status =
-                                                                                 'CLS'
-                                                                     JOIN
-                                                                        t_pos_bill_item c
-                                                                     ON a.bill_no =
-                                                                           c.bill_no
-                                                                        AND a.trans_Date =
-                                                                              c.trans_date
-                                                                        AND a.day_seq =
-                                                                              c.day_seq
-                                                                        AND a.pos_code =
-                                                                              c.pos_code
-                                                                        AND a.outlet_code =
-                                                                              c.outlet_code
-                                                                        AND a.item_seq =
-                                                                              c.item_seq
-                                                                        AND CASE
-                                                                              WHEN NVL (
-                                                                                      c.trans_type,
-                                                                                      'TA'
-                                                                                   ) <>
-                                                                                      'EI'
-                                                                              THEN
-                                                                                 'TA'
-                                                                              ELSE
-                                                                                 'EI'
-                                                                           END = 'EI'
+        <![CDATA[SELECT
+  Z.*,
+  B.TOTAL_AMOUNT,
+  B.TOTAL_DISCOUNT,
+  B.SUMAMT
+FROM
+  (
+    SELECT
+      $P{outletCode}AS OUTLET_CODE,
+      a.ITEM,
+      a.ITEM_DESCRIPTION,
+      a.MENU,
+      a.KETERANGAN,
+      a.EI,
+      a.RESEP_EI,
+      a.TOTAL_EI,
+      a.TA,
+      a.RESEP_TA,
+      a.TOTAL_TA,
+      a.UOM_STOCK
+    FROM
+      (
+        SELECT
+          c.item_code AS ITEM,
+          e.item_description,
+          c.menu_item_code AS Menu,
+          d.item_description AS keterangan,
+          c.ei,
+          c.resep_ei,
+          c.total_ei,
+          c.ta,
+          c.resep_ta,
+          c.total_ta,
+          c.uom_stock
+        FROM
+          (
+            SELECT
+              c.item_code,
+              b.menu_item_code,
+              EI,
+              qty_stock_e AS resep_EI,
+              (EI * qty_stock_e) AS Total_EI,
+              TA,
+              qty_stock_t AS resep_TA,
+              (TA * qty_stock_t) AS total_TA,
+              UOM_STOCK
+            FROM
+              (
+SELECT
+  a.menu_item_code,
+  SUM (a.item_qty) ei,
+  0 AS ta
+FROM
+  t_pos_bill_item_detail a
+  JOIN t_pos_bill b ON a.bill_no = b.bill_no
+  AND a.trans_Date = b.trans_date
+  AND a.day_seq = b.day_seq
+  AND a.pos_code = b.pos_code
+  AND a.outlet_code = b.outlet_code
+  AND b.delivery_status = 'CLS'
+  JOIN t_pos_bill_item c ON a.bill_no = c.bill_no
+  AND a.trans_Date = c.trans_date
+  AND a.day_seq = c.day_seq
+  AND a.pos_code = c.pos_code
+  AND a.outlet_code = c.outlet_code
+  AND a.item_seq = c.item_seq
+  AND CASE WHEN NVL (c.trans_type, 'TA') <> 'EI' THEN 'TA' ELSE 'EI' END = 'EI'
+  LEFT JOIN (
+    SELECT
+      CODE,
+      DESCRIPTION
+    FROM
+      M_GLOBAL
+    WHERE
+      COND = 'IS_BRAND'
+      AND DESCRIPTION IN ('KFC', 'BB')
+  ) g ON a.menu_item_code = g.code
+WHERE
+  a.outlet_code = $P{outletCode}
+  AND a.trans_date BETWEEN $P{fromDate}
+  AND $P{toDate}
+  AND b.pos_code BETWEEN $P{pos1}
+  AND $P{pos2}
+  AND b.shift_code BETWEEN $P{shift1}
+  AND $P{shift2}
+  AND b.cashier_code BETWEEN $P{cashier1}
+  AND $P{cashier2}
+  AND b.BILL_time BETWEEN $P{fromTime}
+  AND $P{toTime}
+  AND b.delivery_status = 'CLS'
+  AND g.description IN ($P{brand1}, $P{brand2})
+GROUP BY
+  A.MENU_ITEM_CODE
+UNION ALL
+SELECT
+  a.menu_item_code,
+  0 AS ei,
+  SUM (a.item_qty) AS ta
+FROM
+  t_pos_bill_item_detail a
+  JOIN t_pos_bill b ON a.bill_no = b.bill_no
+  AND a.trans_Date = b.trans_date
+  AND a.day_seq = b.day_seq
+  AND a.pos_code = b.pos_code
+  AND a.outlet_code = b.outlet_code
+  AND b.delivery_status = 'CLS'
+  JOIN t_pos_bill_item c ON a.bill_no = c.bill_no
+  AND a.trans_Date = c.trans_date
+  AND a.day_seq = c.day_seq
+  AND a.pos_code = c.pos_code
+  AND a.outlet_code = c.outlet_code
+  AND a.item_seq = c.item_seq
+  AND CASE WHEN NVL (c.trans_type, 'TA') <> 'EI' THEN 'TA' ELSE 'EI' END <> 'EI'
+  LEFT JOIN (
+    SELECT
+      CODE,
+      DESCRIPTION
+    FROM
+      M_GLOBAL
+    WHERE
+      COND = 'IS_BRAND'
+      AND DESCRIPTION IN ('KFC', 'BB')
+  ) g ON a.menu_item_code = g.code
+WHERE
+  a.outlet_code = $P{outletCode}
+  AND a.trans_date BETWEEN $P{fromDate}
+  AND $P{toDate}
+  AND b.pos_code BETWEEN $P{pos1}
+  AND $P{pos2}
+  AND b.shift_code BETWEEN $P{shift1}
+  AND $P{shift2}
+  AND b.cashier_code BETWEEN $P{cashier1}
+  AND $P{cashier2}
+  AND b.BILL_time BETWEEN $P{fromTime}
+  AND $P{toTime}
+  AND b.delivery_status = 'CLS'
+  AND g.description IN ($P{brand1}, $P{brand2})
+GROUP BY
+  A.MENU_ITEM_CODE
+UNION ALL
+SELECT
+  a.menu_item_code,
+  SUM (a.item_qty) ei,
+  0 AS ta
+FROM
+  t_pos_bill_item a
+  JOIN t_pos_bill b ON a.trans_date = b.trans_date
+  AND a.pos_code = b.pos_code
+  AND a.outlet_code = b.outlet_code
+  AND a.day_seq = b.day_seq
+  AND a.bill_no = b.bill_no
+  AND b.delivery_status = 'CLS'
+  AND CASE WHEN NVL (A.trans_type, 'TA') <> 'EI' THEN 'TA' ELSE 'EI' END = 'EI'
+  JOIN m_menu_item c ON a.menu_item_code = c.menu_item_code
+  AND c.menu_set = 'Y'
+  LEFT JOIN (
+    SELECT
+      CODE,
+      DESCRIPTION
+    FROM
+      M_GLOBAL
+    WHERE
+      COND = 'IS_BRAND'
+      AND DESCRIPTION IN ('KFC', 'BB')
+  ) g ON a.menu_item_code = g.code
+WHERE
+  a.trans_date BETWEEN $P{fromDate}
+  AND $P{toDate}
+  AND a.outlet_code = $P{outletCode}
+  AND g.description IN ($P{brand1}, $P{brand2})
+GROUP BY
+  A.MENU_ITEM_CODE
+UNION ALL
+SELECT
+  a.menu_item_code,
+  0 AS ei,
+  SUM (a.item_qty) AS ta
+FROM
+  t_pos_bill_item a
+  JOIN t_pos_bill b ON a.trans_date = b.trans_date
+  AND a.pos_code = b.pos_code
+  AND a.outlet_code = b.outlet_code
+  AND a.day_seq = b.day_seq
+  AND a.bill_no = b.bill_no
+  AND b.delivery_status = 'CLS'
+  AND CASE WHEN NVL (A.trans_type, 'TA') <> 'EI' THEN 'TA' ELSE 'EI' END <> 'EI'
+  JOIN m_menu_item c ON a.menu_item_code = c.menu_item_code
+  AND c.menu_set = 'Y'
+  LEFT JOIN (
+    SELECT
+      CODE,
+      DESCRIPTION
+    FROM
+      M_GLOBAL
+    WHERE
+      COND = 'IS_BRAND'
+      AND DESCRIPTION IN ('KFC', 'BB')
+  ) g ON a.menu_item_code = g.code
+WHERE
+  a.outlet_code = $P{outletCode}
+  AND a.trans_date BETWEEN $P{fromDate}
+  AND $P{toDate}
+  AND b.pos_code BETWEEN $P{pos1}
+  AND $P{pos2}
+  AND b.shift_code BETWEEN $P{shift1}
+  AND $P{shift2}
+  AND b.cashier_code BETWEEN $P{cashier1}
+  AND $P{cashier2}
+  AND b.BILL_time BETWEEN $P{fromTime}
+  AND $P{toTime}
+  AND b.delivery_status = 'CLS'
+  AND g.description IN ($P{brand1}, $P{brand2})
+GROUP BY
+  A.MENU_ITEM_CODE
 
-                                                             WHERE   a.outlet_code =
-                                                                       $P{outletCode}
-                                                                     AND a.trans_date BETWEEN $P{fromDate}
-                                                                                         AND $P{toDate}
-                                                                     AND b.pos_code BETWEEN $P{pos1}
-                                                                                        AND $P{pos2}
-                                                                     AND b.shift_code BETWEEN $P{shift1}
-                                                                                          AND  $P{shift2}
-                                                                     AND b.cashier_code BETWEEN $P{cashier1}
-                                                                                            AND  $P{cashier2}
-                                                                     AND b.BILL_time BETWEEN $P{fromTime}
-                                                                                         AND $P{toTime}
-                                                                     AND b.delivery_status =
-                                                                           'CLS'
-                                                          GROUP BY   A.MENU_ITEM_CODE
-                                                          UNION ALL
-                                                            SELECT   a.menu_item_code,
-                                                                     0 AS ei,
-                                                                     SUM (a.item_qty)
-                                                                        AS ta
-                                                              FROM         t_pos_bill_item_detail a
-                                                                        JOIN
-                                                                           t_pos_bill b
-                                                                        ON a.bill_no =
-                                                                              b.bill_no
-                                                                           AND a.trans_Date =
-                                                                                 b.trans_date
-                                                                           AND a.day_seq =
-                                                                                 b.day_seq
-                                                                           AND a.pos_code =
-                                                                                 b.pos_code
-                                                                           AND a.outlet_code =
-                                                                                 b.outlet_code
-                                                                           AND b.delivery_status =
-                                                                                 'CLS'
-                                                                     JOIN
-                                                                        t_pos_bill_item c
-                                                                     ON a.bill_no =
-                                                                           c.bill_no
-                                                                        AND a.trans_Date =
-                                                                              c.trans_date
-                                                                        AND a.day_seq =
-                                                                              c.day_seq
-                                                                        AND a.pos_code =
-                                                                              c.pos_code
-                                                                        AND a.outlet_code =
-                                                                              c.outlet_code
-                                                                        AND a.item_seq =
-                                                                              c.item_seq
-                                                                        AND CASE
-                                                                              WHEN NVL (
-                                                                                      c.trans_type,
-                                                                                      'TA'
-                                                                                   ) <>
-                                                                                      'EI'
-                                                                              THEN
-                                                                                 'TA'
-                                                                              ELSE
-                                                                                 'EI'
-                                                                           END <>
-                                                                              'EI'
-                                                             WHERE   a.outlet_code =
-                                                                      $P{outletCode}
-                                                                     AND a.trans_date BETWEEN $P{fromDate}
-                                                                                          AND $P{toDate}
-                                                                     AND b.pos_code BETWEEN $P{pos1}
-                                                                                        AND $P{pos2}
-                                                                     AND b.shift_code BETWEEN $P{shift1}
-                                                                                          AND  $P{shift2}
-                                                                     AND b.cashier_code BETWEEN $P{cashier1}
-                                                                                            AND $P{cashier2}
-                                                                     AND b.BILL_time BETWEEN $P{fromTime}
-                                                                                         AND  $P{toTime}
-                                                                     AND b.delivery_status =
-                                                                           'CLS'
-                                                          GROUP BY   A.MENU_ITEM_CODE
-                                                          UNION ALL
-                                                            SELECT   a.menu_item_code,
-                                                                     SUM (a.item_qty)
-                                                                        ei,
-                                                                     0 AS ta
-                                                              FROM         t_pos_bill_item a
-                                                                        JOIN
-                                                                           t_pos_bill b
-                                                                        ON a.trans_date =
-                                                                              b.trans_date
-                                                                           AND a.pos_code =
-                                                                                 b.pos_code
-                                                                           AND a.outlet_code =
-                                                                                 b.outlet_code
-                                                                           AND a.day_seq =
-                                                                                 b.day_seq
-                                                                           AND a.bill_no =
-                                                                                 b.bill_no
-                                                                           AND b.delivery_status =
-                                                                                 'CLS'
-                                                                           AND CASE
-                                                                                 WHEN NVL (
-                                                                                         A.trans_type,
-                                                                                         'TA'
-                                                                                      ) <>
-                                                                                         'EI'
-                                                                                 THEN
-                                                                                    'TA'
-                                                                                 ELSE
-                                                                                    'EI'
-                                                                              END =
-                                                                                 'EI'
-                                                                     JOIN
-                                                                        m_menu_item c
-                                                                     ON a.menu_item_code =
-                                                                           c.menu_item_code
-                                                                        AND c.menu_set =
-                                                                              'Y'
-                                                             WHERE   a.trans_date BETWEEN $P{fromDate}
-                                                                                      AND  $P{toDate}
-                                                                     AND a.outlet_code =
-                                                                       $P{outletCode}
-                                                          GROUP BY   A.MENU_ITEM_CODE
-                                                          UNION ALL
-                                                            SELECT   a.menu_item_code,
-                                                                     0 AS ei,
-                                                                     SUM (a.item_qty)
-                                                                        AS ta
-                                                              FROM         t_pos_bill_item a
-                                                                        JOIN
-                                                                           t_pos_bill b
-                                                                        ON a.trans_date =
-                                                                              b.trans_date
-                                                                           AND a.pos_code =
-                                                                                 b.pos_code
-                                                                           AND a.outlet_code =
-                                                                                 b.outlet_code
-                                                                           AND a.day_seq =
-                                                                                 b.day_seq
-                                                                           AND a.bill_no =
-                                                                                 b.bill_no
-                                                                           AND b.delivery_status =
-                                                                                 'CLS'
-                                                                           AND CASE
-                                                                                 WHEN NVL (
-                                                                                         A.trans_type,
-                                                                                         'TA'
-                                                                                      ) <>
-                                                                                         'EI'
-                                                                                 THEN
-                                                                                    'TA'
-                                                                                 ELSE
-                                                                                    'EI'
-                                                                              END <>
-                                                                                 'EI'
-                                                                     JOIN
-                                                                        m_menu_item c
-                                                                     ON a.menu_item_code =
-                                                                           c.menu_item_code
-                                                                        AND c.menu_set =
-                                                                              'Y'
-                                                             WHERE   a.outlet_code =
-                                                                      $P{outletCode}
-                                                                     AND a.trans_date BETWEEN $P{fromDate}
-                                                                                          AND  $P{toDate}
-                                                                     AND b.pos_code BETWEEN $P{pos1}
-                                                                                        AND  $P{pos2}
-                                                                     AND b.shift_code BETWEEN $P{shift1}
-                                                                                          AND  $P{shift2}
-                                                                     AND b.cashier_code BETWEEN $P{cashier1}
-                                                                                            AND  $P{cashier2}
-                                                                     AND b.BILL_time BETWEEN $P{fromTime}
-                                                                                         AND $P{toTime}
-                                                                     AND b.delivery_status =
-                                                                           'CLS'
-                                                          GROUP BY   A.MENU_ITEM_CODE))a
-                                                           left join
-
-                                                             (SELECT CODE,DESCRIPTION FROM M_GLOBAL WHERE COND='IS_BRAND' AND DESCRIPTION IN('KFC','BB')) g
-                                                                ON a.menu_item_code=g.code
-                                                                where
-                                                                g.description=$P{brand}
-                                              ) b
-                                          LEFT JOIN
-                                             m_group_item c
-                                          ON b.menu_item_code = c.group_item_code
-                                  WHERE   c.status = 'A'
-                               GROUP BY   b.menu_item_code,
-                                          EI,
-                                          TA,
-                                          qty_stock_e,
-                                          qty_stock_t,
-                                          UOM_STOCK,
-                                          c.item_code) C
-                           LEFT JOIN
-                              m_item d
-                           ON d.item_code = c.menu_item_code
-                        LEFT JOIN
-                           m_item e
-                        ON e.item_code = c.item_code
-             GROUP BY   c.item_code,
-                        e.item_description,
-                        c.menu_item_code,
-                        d.item_description,
-                        c.ei,
-                        c.resep_ei,
-                        c.total_ei,
-                        c.ta,
-                        c.resep_ta,
-                        c.total_ta,
-                        c.uom_stock) a)Z left join
-          (SELECT $P{outletCode}   as outlet_code,SUM (TOTAL_AMOUNT) AS total_amount,
-         SUM (total_discount) AS TOTAL_DISCOUNT,
-         SUM (TOTAL_AMOUNT - TOTAL_DISCOUNT) AS sumamt
-  FROM   T_POS_BILL
- WHERE   outlet_code = $P{outletCode}
-         AND trans_date BETWEEN $P{fromDate}
-                            AND  $P{toDate}
-         AND pos_code BETWEEN $P{pos1} AND $P{pos2}
-         AND shift_code BETWEEN $P{shift1} AND $P{shift2}
-         AND cashier_code BETWEEN $P{cashier1} AND $P{cashier2}
-         AND bill_time BETWEEN $P{fromTime} AND  $P{toTime}
-                      and delivery_status='CLS') b
-                      on Z.OUTLET_CODE=B.OUTLET_CODE
-ORDER BY ITEM ASC]]>
+              ) b
+              LEFT JOIN m_group_item c ON b.menu_item_code = c.group_item_code
+            WHERE
+              c.status = 'A'
+            GROUP BY
+              b.menu_item_code,
+              EI,
+              TA,
+              qty_stock_e,
+              qty_stock_t,
+              UOM_STOCK,
+              c.item_code
+          ) C
+          LEFT JOIN m_item d ON d.item_code = c.menu_item_code
+          LEFT JOIN m_item e ON e.item_code = c.item_code
+        GROUP BY
+          c.item_code,
+          e.item_description,
+          c.menu_item_code,
+          d.item_description,
+          c.ei,
+          c.resep_ei,
+          c.total_ei,
+          c.ta,
+          c.resep_ta,
+          c.total_ta,
+          c.uom_stock
+      ) a
+  ) Z
+  left join (
+    SELECT
+      $P{outletCode}as outlet_code,
+      SUM (TOTAL_AMOUNT) AS total_amount,
+      SUM (total_discount) AS TOTAL_DISCOUNT,
+      SUM (TOTAL_AMOUNT - TOTAL_DISCOUNT) AS sumamt
+    FROM
+      T_POS_BILL
+    WHERE
+      outlet_code = $P{outletCode}
+      AND trans_date BETWEEN $P{fromDate}
+      AND $P{toDate}
+      AND pos_code BETWEEN $P{pos1}
+      AND $P{pos2}
+      AND shift_code BETWEEN $P{shift1}
+      AND $P{shift2}
+      AND cashier_code BETWEEN $P{cashier1}
+      AND $P{cashier2}
+      AND bill_time BETWEEN $P{fromTime}
+      AND $P{toTime}
+      and delivery_status = 'CLS'
+  ) b on Z.OUTLET_CODE = B.OUTLET_CODE
+ORDER BY
+  ITEM ASC]]>
     </queryString>
     <field name="OUTLET_CODE" class="java.lang.String"/>
     <field name="ITEM" class="java.lang.String"/>
@@ -360,83 +336,103 @@ ORDER BY ITEM ASC]]>
     <group name="GroupByItem">
         <groupExpression><![CDATA[$F{ITEM}]]></groupExpression>
         <groupHeader>
-            <band height="18">
+            <band height="36">
                 <textField>
-                    <reportElement x="0" y="0" width="33" height="12" uuid="ae7515f5-649a-4ae0-ab77-f6b405bf222a"/>
-                    <textElement>
+                    <reportElement x="11" y="8" width="34" height="24" uuid="ae7515f5-649a-4ae0-ab77-f6b405bf222a"/>
+                    <textElement verticalAlignment="Middle">
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{ITEM}]]></textFieldExpression>
                 </textField>
-                <textField>
-                    <reportElement x="33" y="0" width="165" height="12" uuid="7e570d3c-d10d-4626-aa20-86b874fe196b"/>
-                    <textElement>
+                <textField textAdjust="StretchHeight">
+                    <reportElement x="48" y="8" width="147" height="24" uuid="7e570d3c-d10d-4626-aa20-86b874fe196b"/>
+                    <textElement verticalAlignment="Middle">
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
                 </textField>
                 <staticText>
-                    <reportElement x="198" y="0" width="30" height="15" uuid="c3a01bdf-f65e-46ad-9188-d4086c56fccb"/>
-                    <textElement>
+                    <reportElement x="197" y="8" width="33" height="24" uuid="c3a01bdf-f65e-46ad-9188-d4086c56fccb"/>
+                    <textElement verticalAlignment="Middle">
                         <font size="8"/>
                     </textElement>
                     <text><![CDATA[CODE]]></text>
                 </staticText>
                 <staticText>
-                    <reportElement x="238" y="0" width="100" height="15" uuid="072cd1ef-8d7c-4fac-9014-f2d2198a8063"/>
-                    <textElement>
+                    <reportElement x="231" y="8" width="97" height="24" uuid="072cd1ef-8d7c-4fac-9014-f2d2198a8063"/>
+                    <textElement verticalAlignment="Middle">
                         <font size="8"/>
                     </textElement>
                     <text><![CDATA[DESKRIPSI]]></text>
                 </staticText>
                 <staticText>
-                    <reportElement x="338" y="0" width="17" height="15" uuid="90f63b0d-773a-40f5-8953-92e0f46e6673"/>
-                    <textElement>
+                    <reportElement x="520" y="20" width="35" height="12" uuid="337a6e13-2135-44d5-b74a-d906f80d4b3b"/>
+                    <textElement textAlignment="Center">
+                        <font size="8"/>
+                    </textElement>
+                    <text><![CDATA[UOM]]></text>
+                </staticText>
+                <line>
+                    <reportElement x="10" y="4" width="545" height="1" uuid="87c9fc29-cfe1-41b4-9b58-e6a916eda857"/>
+                </line>
+                <line>
+                    <reportElement x="10" y="34" width="545" height="1" uuid="27774a9d-f6bb-47f5-89a2-6c41b6db0388"/>
+                </line>
+                <staticText>
+                    <reportElement x="425" y="20" width="25" height="12" uuid="ae617c22-2b13-4ad5-b594-e7154c76661e"/>
+                    <textElement textAlignment="Right">
                         <font size="8"/>
                     </textElement>
                     <text><![CDATA[QTY]]></text>
                 </staticText>
                 <staticText>
-                    <reportElement x="367" y="0" width="26" height="15" uuid="5f505c8b-591d-45cf-84ed-4bedcdca3a7b"/>
-                    <textElement>
-                        <font size="8"/>
-                    </textElement>
-                    <text><![CDATA[RESEP]]></text>
-                </staticText>
-                <staticText>
-                    <reportElement x="393" y="0" width="29" height="15" uuid="aab50b4d-d48d-44e7-8c82-fd1cc534b560"/>
-                    <textElement>
+                    <reportElement x="492" y="20" width="27" height="12" uuid="642d9962-60e9-410a-bbb6-d99d93176cd9"/>
+                    <textElement textAlignment="Right">
                         <font size="8"/>
                     </textElement>
                     <text><![CDATA[TOTAL]]></text>
                 </staticText>
                 <staticText>
-                    <reportElement x="426" y="0" width="33" height="16" uuid="ef932c8b-e06a-4d62-aaac-2ce4d1042f0d"/>
-                    <textElement>
+                    <reportElement x="424" y="7" width="95" height="12" uuid="1b69197a-0a8e-4ba1-8ee6-5aae5ecde722"/>
+                    <textElement textAlignment="Center">
+                        <font size="8" isBold="true"/>
+                    </textElement>
+                    <text><![CDATA[TA]]></text>
+                </staticText>
+                <staticText>
+                    <reportElement x="453" y="20" width="37" height="12" uuid="37994af9-44d2-4906-8cf0-a311cbb17605"/>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <text><![CDATA[RESEP]]></text>
+                </staticText>
+                <staticText>
+                    <reportElement x="356" y="20" width="37" height="12" uuid="398b3e61-8ccc-4565-a5fd-c292811ca43a"/>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <text><![CDATA[RESEP]]></text>
+                </staticText>
+                <staticText>
+                    <reportElement x="328" y="7" width="95" height="12" uuid="11db15ff-f808-490d-a2b1-1421047ce7f1"/>
+                    <textElement textAlignment="Center">
+                        <font size="8" isBold="true"/>
+                    </textElement>
+                    <text><![CDATA[EI]]></text>
+                </staticText>
+                <staticText>
+                    <reportElement x="328" y="20" width="25" height="12" uuid="7d0dd7fc-1e39-4ebb-857c-9685a9134db4"/>
+                    <textElement textAlignment="Right">
                         <font size="8"/>
                     </textElement>
                     <text><![CDATA[QTY]]></text>
                 </staticText>
                 <staticText>
-                    <reportElement x="459" y="0" width="28" height="15" uuid="f1401a3d-6efb-4f93-9e73-28b97755c59a"/>
-                    <textElement>
+                    <reportElement x="396" y="20" width="27" height="12" uuid="d1897572-a58d-48c4-a506-768e0006c0aa"/>
+                    <textElement textAlignment="Right">
                         <font size="8"/>
                     </textElement>
-                    <text><![CDATA[RESEP_TA]]></text>
-                </staticText>
-                <staticText>
-                    <reportElement x="489" y="0" width="28" height="12" uuid="d5f9b2b0-7ca6-4c83-823d-76d088acdf35"/>
-                    <textElement>
-                        <font size="8"/>
-                    </textElement>
-                    <text><![CDATA[TOTAL_TA]]></text>
-                </staticText>
-                <staticText>
-                    <reportElement x="518" y="0" width="37" height="15" uuid="337a6e13-2135-44d5-b74a-d906f80d4b3b"/>
-                    <textElement>
-                        <font size="8"/>
-                    </textElement>
-                    <text><![CDATA[UOM_STOCK]]></text>
+                    <text><![CDATA[TOTAL]]></text>
                 </staticText>
             </band>
         </groupHeader>
@@ -445,13 +441,13 @@ ORDER BY ITEM ASC]]>
         <band splitType="Stretch"/>
     </background>
     <pageHeader>
-        <band height="105" splitType="Stretch">
+        <band height="98" splitType="Stretch">
             <staticText>
-                <reportElement x="346" y="1" width="188" height="20" uuid="41fb3175-c60e-41c0-a423-2cd05e5023c3"/>
+                <reportElement x="-19" y="32" width="570" height="15" uuid="41fb3175-c60e-41c0-a423-2cd05e5023c3"/>
                 <textElement textAlignment="Center">
                     <font isBold="true"/>
                 </textElement>
-                <text><![CDATA[DETAIL SALES BY ITEM CODE]]></text>
+                <text><![CDATA[Report Detail Summary by Item Code]]></text>
             </staticText>
             <textField>
                 <reportElement x="67" y="12" width="141" height="11" uuid="36d9e0db-0c73-4233-ac3f-cf0f8a614fdc"/>
@@ -467,188 +463,215 @@ ORDER BY ITEM ASC]]>
                 </textElement>
                 <text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
             </staticText>
-            <image>
-                <reportElement x="10" y="2" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="0c1974f4-7817-4dfd-9dc0-df78d0497341"/>
-                <imageExpression><![CDATA["logo/logoKfc.png"]]></imageExpression>
-            </image>
             <staticText>
-                <reportElement x="347" y="52" width="55" height="11" uuid="9454bdd6-db41-4972-8897-ee4004718ed4"/>
+                <reportElement x="383" y="31" width="55" height="11" uuid="9454bdd6-db41-4972-8897-ee4004718ed4"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
                 <text><![CDATA[Pos]]></text>
             </staticText>
             <staticText>
-                <reportElement x="347" y="72" width="55" height="11" uuid="522e7667-fa4c-4884-a700-cca7a0d2fb4b"/>
+                <reportElement x="383" y="51" width="55" height="11" uuid="522e7667-fa4c-4884-a700-cca7a0d2fb4b"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
                 <text><![CDATA[Cashier        ]]></text>
             </staticText>
             <staticText>
-                <reportElement x="347" y="62" width="55" height="11" uuid="f4e26ead-5b11-4307-ae5b-f31a46ce3230"/>
+                <reportElement x="383" y="41" width="55" height="11" uuid="f4e26ead-5b11-4307-ae5b-f31a46ce3230"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
                 <text><![CDATA[Periode       ]]></text>
             </staticText>
             <textField>
-                <reportElement x="401" y="52" width="283" height="11" uuid="582246d8-4633-4d56-8e15-335af927f1d0"/>
+                <reportElement x="437" y="31" width="283" height="11" uuid="582246d8-4633-4d56-8e15-335af927f1d0"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[" : "  +  $P{pos}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="401" y="32" width="150" height="11" uuid="dd84f257-a90c-4e47-b07a-0e5688bb9d47"/>
+                <reportElement x="437" y="11" width="150" height="11" uuid="dd84f257-a90c-4e47-b07a-0e5688bb9d47"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[" : " + $P{user}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="401" y="42" width="150" height="11" uuid="c52359d6-753d-4bde-a7b4-4ba81b4bf140"/>
+                <reportElement x="437" y="21" width="150" height="11" uuid="c52359d6-753d-4bde-a7b4-4ba81b4bf140"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[" : " + $P{shift}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="401" y="22" width="150" height="11" uuid="fe229c8f-58de-4bc6-a78b-4d93b33d5dc8"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(new Date())]]></textFieldExpression>
-            </textField>
-            <textField>
-                <reportElement x="401" y="62" width="283" height="11" uuid="2d899bdb-925d-4db2-bb05-a9a671a46a5b"/>
+                <reportElement x="437" y="41" width="283" height="11" uuid="2d899bdb-925d-4db2-bb05-a9a671a46a5b"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{fromDate})) + " s/d " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{toDate}))]]></textFieldExpression>
             </textField>
             <staticText>
-                <reportElement x="347" y="42" width="55" height="11" uuid="a263c0d5-02be-4b24-b446-3be9fe427a38"/>
+                <reportElement x="383" y="21" width="55" height="11" uuid="a263c0d5-02be-4b24-b446-3be9fe427a38"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
                 <text><![CDATA[Shift]]></text>
             </staticText>
             <textField>
-                <reportElement x="401" y="72" width="283" height="11" uuid="baee56d2-c98d-4a88-ac4c-93c38026c889"/>
+                <reportElement x="437" y="51" width="283" height="11" uuid="baee56d2-c98d-4a88-ac4c-93c38026c889"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[" : " + $P{cashier}]]></textFieldExpression>
             </textField>
             <staticText>
-                <reportElement x="347" y="32" width="55" height="11" uuid="870e0b6d-0181-428d-8e1a-571296ca783c"/>
+                <reportElement x="383" y="11" width="55" height="11" uuid="870e0b6d-0181-428d-8e1a-571296ca783c"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
                 <text><![CDATA[User ]]></text>
             </staticText>
-            <staticText>
-                <reportElement x="347" y="22" width="55" height="11" uuid="793635ca-e819-4548-97b6-d25a66a9741e"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <text><![CDATA[Tanggal Cetak ]]></text>
-            </staticText>
             <textField pattern="#,##0.00">
-                <reportElement x="10" y="88" width="100" height="15" uuid="9001281a-f9a2-448a-8d84-7889889e2ccb"/>
+                <reportElement x="10" y="82" width="100" height="15" uuid="9001281a-f9a2-448a-8d84-7889889e2ccb"/>
                 <textElement>
                     <font size="8" isBold="true"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$F{TOTAL_AMOUNT}]]></textFieldExpression>
             </textField>
             <textField pattern="#,##0.00">
-                <reportElement x="110" y="88" width="100" height="15" uuid="9d97a23b-47bc-4e56-859d-f94c94700bc9"/>
+                <reportElement x="110" y="82" width="100" height="15" uuid="9d97a23b-47bc-4e56-859d-f94c94700bc9"/>
                 <textElement>
                     <font size="8" isBold="true"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$F{TOTAL_DISCOUNT}]]></textFieldExpression>
             </textField>
             <textField pattern="#,##0.00">
-                <reportElement x="210" y="88" width="100" height="15" uuid="2aab9534-3978-4921-885a-c5f26193a339"/>
+                <reportElement x="210" y="82" width="100" height="15" uuid="2aab9534-3978-4921-885a-c5f26193a339"/>
                 <textElement>
                     <font size="8" isBold="true"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$F{SUMAMT}]]></textFieldExpression>
             </textField>
-        </band>
-    </pageHeader>
-    <columnHeader>
-        <band height="16" splitType="Stretch">
-            <staticText>
-                <reportElement x="338" y="0" width="180" height="12" uuid="65f2b83c-90ca-4367-a681-1bd5e716fecc"/>
+            <textField>
+                <reportElement x="437" y="1" width="150" height="11" uuid="99f243ed-5e0f-423b-b922-aa34884e0b5b"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
-                <text><![CDATA[EI                                   /                                  TA]]></text>
+                <textFieldExpression><![CDATA[" : " + $V{PAGE_NUMBER}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="383" y="1" width="55" height="11" uuid="98138351-e74a-4e49-a87a-463b6ede3190"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Halaman]]></text>
             </staticText>
+            <staticText>
+                <reportElement x="383" y="61" width="55" height="11" uuid="40420068-e283-4625-8f4e-e63b35ab4789"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Brand]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="437" y="61" width="283" height="11" uuid="5a943039-041f-41d8-8f30-104d9291e91b"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + $P{brand}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="10" y="69" width="90" height="12" uuid="fff84141-35c3-4f91-941c-dc8454396c2a"/>
+                <textElement>
+                    <font size="8" isBold="true"/>
+                </textElement>
+                <text><![CDATA[TOTAL AMOUNT]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="110" y="69" width="90" height="12" uuid="17943e68-4426-405c-a872-ea27133e0852"/>
+                <textElement>
+                    <font size="8" isBold="true"/>
+                </textElement>
+                <text><![CDATA[TOTAL DISCOUNT]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="210" y="69" width="90" height="12" uuid="0852b5c9-2c60-4c25-a6f0-ac82e9059361"/>
+                <textElement>
+                    <font size="8" isBold="true"/>
+                </textElement>
+                <text><![CDATA[TAXABLE]]></text>
+            </staticText>
+            <image>
+                <reportElement x="10" y="2" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="13734d59-c5c6-4b35-8889-e974354be658"/>
+                <imageExpression><![CDATA["logo/logoKfc.png"]]></imageExpression>
+            </image>
         </band>
+    </pageHeader>
+    <columnHeader>
+        <band splitType="Stretch"/>
     </columnHeader>
     <detail>
-        <band height="13" splitType="Stretch">
+        <band height="15" splitType="Stretch">
             <textField>
-                <reportElement x="198" y="0" width="30" height="12" uuid="eb81c5d1-11b7-4312-8da7-aa7024044ee0"/>
+                <reportElement x="197" y="1" width="33" height="12" uuid="eb81c5d1-11b7-4312-8da7-aa7024044ee0"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$F{MENU}]]></textFieldExpression>
             </textField>
-            <textField>
-                <reportElement x="238" y="0" width="100" height="12" uuid="d7f6d4fa-fd8f-4300-a34a-5597e038da9b"/>
+            <textField textAdjust="StretchHeight">
+                <reportElement x="231" y="1" width="97" height="12" uuid="d7f6d4fa-fd8f-4300-a34a-5597e038da9b"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$F{KETERANGAN}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="338" y="0" width="28" height="12" uuid="14ec3240-296c-4249-b1a0-f5624d8a2bbd"/>
+                <reportElement x="328" y="1" width="25" height="12" uuid="14ec3240-296c-4249-b1a0-f5624d8a2bbd"/>
                 <textElement textAlignment="Right">
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$F{EI}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="367" y="0" width="26" height="12" uuid="e5ba10b0-34fd-4b2f-9c7a-493447e11360"/>
+                <reportElement x="355" y="1" width="37" height="12" uuid="e5ba10b0-34fd-4b2f-9c7a-493447e11360"/>
                 <textElement textAlignment="Right">
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$F{RESEP_EI}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="393" y="0" width="29" height="12" uuid="27535738-0cc5-49fa-b104-be4d7390610f"/>
+                <reportElement x="396" y="0" width="27" height="12" uuid="27535738-0cc5-49fa-b104-be4d7390610f"/>
                 <textElement textAlignment="Right">
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$F{TOTAL_EI}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="422" y="0" width="37" height="12" uuid="d57f9628-9436-4aa6-b355-2d820b4ebfb7"/>
+                <reportElement x="425" y="1" width="25" height="12" uuid="d57f9628-9436-4aa6-b355-2d820b4ebfb7"/>
                 <textElement textAlignment="Right">
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$F{TA}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="459" y="0" width="28" height="12" uuid="31e37d58-f975-420b-95db-be2362771e82"/>
+                <reportElement x="453" y="1" width="37" height="12" uuid="31e37d58-f975-420b-95db-be2362771e82"/>
                 <textElement textAlignment="Right">
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$F{RESEP_TA}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="487" y="0" width="30" height="12" uuid="3de56444-6619-4eec-8f91-5b8eb3b2856d"/>
+                <reportElement x="492" y="1" width="27" height="12" uuid="3de56444-6619-4eec-8f91-5b8eb3b2856d"/>
                 <textElement textAlignment="Right">
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$F{TOTAL_TA}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="518" y="0" width="37" height="12" uuid="c2b56b9d-6b57-4571-a39d-3058e0b4a583"/>
+                <reportElement x="520" y="1" width="35" height="12" uuid="c2b56b9d-6b57-4571-a39d-3058e0b4a583"/>
                 <textElement textAlignment="Center">
                     <font size="8"/>
                 </textElement>
@@ -656,7 +679,25 @@ ORDER BY ITEM ASC]]>
             </textField>
         </band>
     </detail>
+    <pageFooter>
+        <band height="70">
+            <textField>
+                <reportElement x="105" y="59" width="150" height="11" uuid="00f497c9-f377-437a-b889-503903d6c214"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(new Date())]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="3" y="59" width="103" height="11" uuid="32ea5904-2cb7-4fdb-8199-7cdb5b3f1bf4"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Tanggal dan Jam Cetak ]]></text>
+            </staticText>
+        </band>
+    </pageFooter>
     <summary>
-        <band height="42" splitType="Stretch"/>
+        <band splitType="Stretch"/>
     </summary>
 </jasperReport>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="menuVsDetail" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="36574a0a-fd5f-485b-bb67-ec614c3d0bd1">
-    <property name="ireport.zoom" value="1.2100000000000046"/>
+    <property name="ireport.zoom" value="1.3310000000000073"/>
     <property name="ireport.x" value="0"/>
     <property name="ireport.y" value="0"/>
     <parameter name="outletCode" class="java.lang.String">
@@ -48,6 +48,12 @@
     <parameter name="user" class="java.lang.String"/>
     <parameter name="outletName" class="java.lang.String"/>
     <parameter name="brand" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="brand1" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="brand2" class="java.lang.String">
         <defaultValueExpression><![CDATA[]]></defaultValueExpression>
     </parameter>
     <queryString>
@@ -154,7 +160,7 @@
                                                      AND DESCRIPTION IN
                                                               ('KFC', 'BB')) g
                                         ON a.menu = g.code
-                                WHERE   g.description = $P{brand}) a
+                                WHERE   g.description IN ($P{brand1}, $P{brand2})) a
                            JOIN
                               (  SELECT   MENU_ITEM,
                                           MENU_ITEM_DESCRIPTION,
@@ -275,7 +281,7 @@
                                                                            'BB'))
                                                        g
                                                     ON a.menu_item = g.code
-                                            WHERE   g.description = $P{brand})
+                                            WHERE   g.description IN ($P{brand1}, $P{brand2}))
                                GROUP BY   MENU_ITEM,
                                           MENU_ITEM_DESCRIPTION,
                                           MENU_ITEM_DETAIL,
@@ -462,14 +468,14 @@
                 <text><![CDATA[TAXABLE]]></text>
             </staticText>
             <textField>
-                <reportElement x="404" y="40" width="150" height="11" uuid="32cabedf-1783-4168-bbd9-6a9f42cb816f"/>
+                <reportElement x="436" y="21" width="150" height="11" uuid="32cabedf-1783-4168-bbd9-6a9f42cb816f"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[" : " + $P{shiftCode}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="404" y="60" width="283" height="11" uuid="0251171a-2e8b-4d19-af81-e3450bf8b43e"/>
+                <reportElement x="436" y="41" width="283" height="11" uuid="0251171a-2e8b-4d19-af81-e3450bf8b43e"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
@@ -483,39 +489,39 @@
                 <text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
             </staticText>
             <staticText>
-                <reportElement x="350" y="50" width="55" height="11" uuid="c0220291-c3b6-443c-845a-a0fc2e781d39"/>
+                <reportElement x="382" y="31" width="55" height="11" uuid="c0220291-c3b6-443c-845a-a0fc2e781d39"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
                 <text><![CDATA[Pos]]></text>
             </staticText>
             <staticText>
-                <reportElement x="350" y="20" width="55" height="11" uuid="9580257a-96ed-4c17-9a90-c87a2879fa1c"/>
+                <reportElement x="382" y="1" width="55" height="11" uuid="9580257a-96ed-4c17-9a90-c87a2879fa1c"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
-                <text><![CDATA[Tanggal Cetak ]]></text>
+                <text><![CDATA[Halaman]]></text>
             </staticText>
             <staticText>
-                <reportElement x="350" y="40" width="55" height="11" uuid="a9c1fdb7-9ef2-4882-9126-6c2fbfda9139"/>
+                <reportElement x="382" y="21" width="55" height="11" uuid="a9c1fdb7-9ef2-4882-9126-6c2fbfda9139"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
                 <text><![CDATA[Shift]]></text>
             </staticText>
             <staticText>
-                <reportElement x="350" y="30" width="55" height="11" uuid="4a80a34e-b2d2-4abf-91e2-e2279945944b"/>
+                <reportElement x="382" y="11" width="55" height="11" uuid="4a80a34e-b2d2-4abf-91e2-e2279945944b"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
                 <text><![CDATA[User ]]></text>
             </staticText>
             <staticText>
-                <reportElement x="370" y="0" width="161" height="19" uuid="50060bf4-e993-4813-8738-14bd2e38b90c"/>
+                <reportElement x="150" y="40" width="209" height="19" uuid="50060bf4-e993-4813-8738-14bd2e38b90c"/>
                 <textElement textAlignment="Center">
                     <font size="12" isBold="true"/>
                 </textElement>
-                <text><![CDATA[Menu Vs Detail]]></text>
+                <text><![CDATA[Report Menu & Detail Modifier]]></text>
             </staticText>
             <textField>
                 <reportElement x="78" y="10" width="141" height="11" uuid="65cc2415-22b1-4b3d-a148-9b0ac905aa69"/>
@@ -525,14 +531,14 @@
                 <textFieldExpression><![CDATA[$P{outletName}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="404" y="20" width="150" height="11" uuid="646b828d-72c1-42f8-9e3b-92d04c3b4904"/>
+                <reportElement x="436" y="1" width="150" height="11" uuid="646b828d-72c1-42f8-9e3b-92d04c3b4904"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
-                <textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(new Date())]]></textFieldExpression>
+                <textFieldExpression><![CDATA[" : " + $V{PAGE_NUMBER}]]></textFieldExpression>
             </textField>
             <staticText>
-                <reportElement x="350" y="70" width="55" height="11" uuid="25bfaae2-d2ca-405c-bcfa-0b55131502b4"/>
+                <reportElement x="382" y="51" width="55" height="11" uuid="25bfaae2-d2ca-405c-bcfa-0b55131502b4"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
@@ -543,32 +549,46 @@
                 <imageExpression><![CDATA["logo/logoKfc.png"]]></imageExpression>
             </image>
             <textField>
-                <reportElement x="404" y="70" width="283" height="11" uuid="908bb8f0-6bf0-405a-83d1-f9e008cc5daa"/>
+                <reportElement x="436" y="51" width="283" height="11" uuid="908bb8f0-6bf0-405a-83d1-f9e008cc5daa"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[" : " + $P{cashierCode}]]></textFieldExpression>
             </textField>
             <staticText>
-                <reportElement x="350" y="60" width="55" height="11" uuid="85cba518-9ba3-4ca7-965f-f39cba7a20b0"/>
+                <reportElement x="382" y="41" width="55" height="11" uuid="85cba518-9ba3-4ca7-965f-f39cba7a20b0"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
                 <text><![CDATA[Periode       ]]></text>
             </staticText>
             <textField>
-                <reportElement x="404" y="30" width="150" height="11" uuid="4708b72f-d785-4b3c-9f34-87a3feac4521"/>
+                <reportElement x="436" y="11" width="150" height="11" uuid="4708b72f-d785-4b3c-9f34-87a3feac4521"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[" : " + $P{user}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="404" y="50" width="283" height="11" uuid="1a74df5a-2a38-4fac-aa4e-6e472c0bd6e6"/>
+                <reportElement x="436" y="31" width="283" height="11" uuid="1a74df5a-2a38-4fac-aa4e-6e472c0bd6e6"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[" : "  +  $P{posCode}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="382" y="61" width="55" height="11" uuid="b551d018-f725-427c-b844-edf0a97c1292"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Brand]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="436" y="61" width="283" height="11" uuid="a32e09de-146b-4888-87be-a6e28bc79fde"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + $P{brand}]]></textFieldExpression>
             </textField>
         </band>
     </pageHeader>
@@ -695,7 +715,22 @@
         <band splitType="Stretch"/>
     </columnFooter>
     <pageFooter>
-        <band splitType="Stretch"/>
+        <band height="20" splitType="Stretch">
+            <textField>
+                <reportElement x="105" y="6" width="150" height="11" uuid="f1ad7352-c1bb-4c3b-9607-f82f73019a12"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(new Date())]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="3" y="6" width="103" height="11" uuid="13c541e7-eb8d-4218-922e-595c7a818ef7"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Tanggal dan Jan Cetak ]]></text>
+            </staticText>
+        </band>
     </pageFooter>
     <summary>
         <band height="42" splitType="Stretch"/>

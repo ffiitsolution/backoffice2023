@@ -39,13 +39,6 @@
     <parameter name="shiftCode2" class="java.lang.String">
         <defaultValueExpression><![CDATA[]]></defaultValueExpression>
     </parameter>
-    <parameter name="orderTypeCode1" class="java.lang.String">
-        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
-    </parameter>
-    <parameter name="orderTypeCode2" class="java.lang.String">
-        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
-    </parameter>
-    <parameter name="orderTypeName" class="java.lang.String"/>
     <parameter name="outletName" class="java.lang.String"/>
     <parameter name="user" class="java.lang.String"/>
     <queryString>
@@ -142,8 +135,8 @@ AND $P{toDate}
 					M_GLOBAL
 				WHERE
 					COND LIKE '%ORDER_TYPE%'
-					AND CODE BETWEEN $P{orderTypeCode1}
-AND $P{orderTypeCode2}))
+					AND CODE BETWEEN '000'
+AND 'zzz'))
 a
 		JOIN
 (
@@ -253,11 +246,11 @@ TOTAL_CLAIM
                 <reportElement x="2" y="78" width="552" height="1" uuid="220c2045-a0e6-4c09-8e8b-6f39808cd864"/>
             </line>
             <staticText>
-                <reportElement x="369" y="0" width="161" height="19" uuid="ef16a081-aae5-409c-8f96-d1677b920d8e"/>
+                <reportElement x="196" y="28" width="161" height="19" uuid="ef16a081-aae5-409c-8f96-d1677b920d8e"/>
                 <textElement textAlignment="Center">
                     <font size="12" isBold="true"/>
                 </textElement>
-                <text><![CDATA[Daily Sales Report]]></text>
+                <text><![CDATA[Sales By Date]]></text>
             </staticText>
             <image>
                 <reportElement x="21" y="0" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="6b7f9666-f046-4f4c-be14-b871ba198ca5"/>
@@ -277,20 +270,6 @@ TOTAL_CLAIM
                 </textElement>
                 <text><![CDATA[Periode   ]]></text>
             </staticText>
-            <staticText>
-                <reportElement x="3" y="46" width="55" height="11" uuid="4801c6f7-3a66-457b-9a9e-5aa72426cd1d"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <text><![CDATA[Order Type ]]></text>
-            </staticText>
-            <textField>
-                <reportElement x="57" y="46" width="141" height="11" uuid="717d6876-c0b5-4fbd-bb28-0ddec0ec2b5a"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <textFieldExpression><![CDATA[" : " + $P{orderTypeName}]]></textFieldExpression>
-            </textField>
             <textField>
                 <reportElement x="57" y="66" width="236" height="11" uuid="0daa34cb-b8f8-422b-8564-cbe3f7cde39e"/>
                 <textElement>
@@ -307,7 +286,7 @@ TOTAL_CLAIM
                 <textFieldExpression><![CDATA[$P{outletName}]]></textFieldExpression>
             </textField>
             <staticText>
-                <reportElement x="350" y="46" width="55" height="11" uuid="bc02c070-7050-4db4-b27a-9d8e87332c4d"/>
+                <reportElement x="397" y="46" width="55" height="11" uuid="bc02c070-7050-4db4-b27a-9d8e87332c4d"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
@@ -321,39 +300,39 @@ TOTAL_CLAIM
                 <text><![CDATA[Cashier ]]></text>
             </staticText>
             <staticText>
-                <reportElement x="350" y="66" width="55" height="11" uuid="55f4928f-198f-4db1-8e23-fb602b2f3589"/>
+                <reportElement x="397" y="66" width="55" height="11" uuid="55f4928f-198f-4db1-8e23-fb602b2f3589"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
                 <text><![CDATA[Shift]]></text>
             </staticText>
             <staticText>
-                <reportElement x="350" y="56" width="55" height="11" uuid="79dd4346-d2c2-4163-9b65-65daa6f94c50"/>
+                <reportElement x="397" y="56" width="55" height="11" uuid="79dd4346-d2c2-4163-9b65-65daa6f94c50"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
                 <text><![CDATA[User ]]></text>
             </staticText>
             <textField>
-                <reportElement x="404" y="56" width="150" height="11" uuid="f6c34652-9cad-4ab1-8049-a5179913745a"/>
+                <reportElement x="451" y="56" width="150" height="11" uuid="f6c34652-9cad-4ab1-8049-a5179913745a"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[" : " + $P{user}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="404" y="36" width="150" height="11" uuid="ea79cb17-f4e7-41ea-88c0-fc38573510b6"/>
+                <reportElement x="494" y="1" width="150" height="11" uuid="ea79cb17-f4e7-41ea-88c0-fc38573510b6"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
-                <textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(new Date())]]></textFieldExpression>
+                <textFieldExpression><![CDATA[" : " + $V{PAGE_NUMBER}]]></textFieldExpression>
             </textField>
             <staticText>
-                <reportElement x="350" y="36" width="55" height="11" uuid="1183a193-f824-429e-8b33-687d1966a6c1"/>
+                <reportElement x="440" y="1" width="55" height="11" uuid="1183a193-f824-429e-8b33-687d1966a6c1"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
-                <text><![CDATA[Tanggal Cetak ]]></text>
+                <text><![CDATA[Halaman]]></text>
             </staticText>
             <textField>
                 <reportElement x="57" y="56" width="211" height="11" uuid="e2713941-49de-43f2-a116-c42b27482ec1"/>
@@ -363,14 +342,14 @@ TOTAL_CLAIM
                 <textFieldExpression><![CDATA[" : " + $P{cashierCode}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="404" y="46" width="150" height="11" uuid="c916868d-befd-4887-b656-a4f64c107937"/>
+                <reportElement x="451" y="46" width="150" height="11" uuid="c916868d-befd-4887-b656-a4f64c107937"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[" : " + $P{posCode}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="404" y="66" width="150" height="11" uuid="3245e8b1-dedf-400b-9ff4-73391f7b2aa1"/>
+                <reportElement x="451" y="66" width="150" height="11" uuid="3245e8b1-dedf-400b-9ff4-73391f7b2aa1"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
@@ -390,6 +369,24 @@ TOTAL_CLAIM
             </textField>
         </band>
     </detail>
+    <pageFooter>
+        <band height="20">
+            <textField>
+                <reportElement x="105" y="6" width="150" height="11" uuid="127fbb15-6f89-4a19-a941-de430a25dd17"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(new Date())]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="3" y="6" width="103" height="11" uuid="d794a27a-9463-4440-9819-8533216b01dc"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Tanggal dan Jan Cetak ]]></text>
+            </staticText>
+        </band>
+    </pageFooter>
     <summary>
         <band height="42" splitType="Stretch"/>
     </summary>

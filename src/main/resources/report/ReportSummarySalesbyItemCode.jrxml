@@ -44,6 +44,12 @@
     <parameter name="brand" class="java.lang.String">
         <defaultValueExpression><![CDATA[]]></defaultValueExpression>
     </parameter>
+    <parameter name="brand1" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="brand2" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
     <queryString>
         <![CDATA[SELECT END.*,END.EI+END.TA AS SUMETA FROM(
 SELECT A.*,M.ITEM_DESCRIPTION,M.uom_stock FROM( SELECT   a.ITEM, SUM (a.TOTAL_EI) AS ei, SUM (a.TOTAL_TA) AS ta
@@ -294,7 +300,7 @@ SELECT A.*,M.ITEM_DESCRIPTION,M.uom_stock FROM( SELECT   a.ITEM, SUM (a.TOTAL_EI
                                                              (SELECT CODE,DESCRIPTION FROM M_GLOBAL WHERE COND='IS_BRAND' AND DESCRIPTION IN('KFC','BB')) g
                                                                 ON a.menu_item_code=g.code
                                                                 where
-                                                                g.description=$P{brand}
+                                                                g.description IN ($P{brand1}, $P{brand2})
                                                             )
                                                            a
                                                 GROUP BY   a.menu_item_code) b
@@ -366,15 +372,8 @@ SELECT A.*,M.ITEM_DESCRIPTION,M.uom_stock FROM( SELECT   a.ITEM, SUM (a.TOTAL_EI
                 </textElement>
                 <textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{fromDate})) + " s/d " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{toDate}))]]></textFieldExpression>
             </textField>
-            <staticText>
-                <reportElement x="352" y="55" width="55" height="11" uuid="72ae1c51-d8a9-44f3-9e67-7a490ee23ec2"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <text><![CDATA[Tanggal Cetak ]]></text>
-            </staticText>
             <textField>
-                <reportElement x="406" y="75" width="150" height="11" uuid="c3effa57-7985-47df-939e-3b77a221f239"/>
+                <reportElement x="448" y="75" width="150" height="11" uuid="c3effa57-7985-47df-939e-3b77a221f239"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
@@ -402,26 +401,19 @@ SELECT A.*,M.ITEM_DESCRIPTION,M.uom_stock FROM( SELECT   a.ITEM, SUM (a.TOTAL_EI
                 <text><![CDATA[Cashier        ]]></text>
             </staticText>
             <staticText>
-                <reportElement x="351" y="3" width="188" height="20" uuid="aaccf8d5-aaaf-4ff4-964e-892bf85ff238"/>
+                <reportElement x="190" y="34" width="188" height="20" uuid="aaccf8d5-aaaf-4ff4-964e-892bf85ff238"/>
                 <textElement textAlignment="Center">
                     <font isBold="true"/>
                 </textElement>
                 <text><![CDATA[SALES BY ITEM CODE]]></text>
             </staticText>
             <staticText>
-                <reportElement x="352" y="65" width="55" height="11" uuid="541381f2-7d48-4972-81a8-f5e9e84db369"/>
+                <reportElement x="394" y="65" width="55" height="11" uuid="541381f2-7d48-4972-81a8-f5e9e84db369"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
                 <text><![CDATA[User ]]></text>
             </staticText>
-            <textField>
-                <reportElement x="406" y="55" width="150" height="11" uuid="e65810f0-3e95-4e8e-87c4-5a1e79db2adf"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(new Date())]]></textFieldExpression>
-            </textField>
             <staticText>
                 <reportElement x="3" y="75" width="55" height="11" uuid="96a6de03-797c-4764-8f1e-eb1efad4c2a9"/>
                 <textElement>
@@ -430,14 +422,14 @@ SELECT A.*,M.ITEM_DESCRIPTION,M.uom_stock FROM( SELECT   a.ITEM, SUM (a.TOTAL_EI
                 <text><![CDATA[Pos]]></text>
             </staticText>
             <staticText>
-                <reportElement x="352" y="75" width="55" height="11" uuid="31c121f6-834d-46b1-b29e-93711bdd98e4"/>
+                <reportElement x="394" y="75" width="55" height="11" uuid="31c121f6-834d-46b1-b29e-93711bdd98e4"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
                 <text><![CDATA[Shift]]></text>
             </staticText>
             <textField>
-                <reportElement x="406" y="65" width="150" height="11" uuid="74631453-560f-484b-b393-a9e9073128aa"/>
+                <reportElement x="448" y="65" width="150" height="11" uuid="74631453-560f-484b-b393-a9e9073128aa"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
@@ -449,6 +441,34 @@ SELECT A.*,M.ITEM_DESCRIPTION,M.uom_stock FROM( SELECT   a.ITEM, SUM (a.TOTAL_EI
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[" : "  +  $P{pos}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="467" y="0" width="41" height="11" uuid="1e618589-9499-4fea-a5f3-333c63855caa"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Halaman]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="507" y="0" width="91" height="11" uuid="95a89bbd-047d-4bc4-8ee0-1264810588a7"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + $V{PAGE_NUMBER}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="394" y="55" width="55" height="11" uuid="b1cbc617-0ca9-4efe-955f-ba942c7b4ab9"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Brand]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="448" y="55" width="150" height="11" uuid="2e8c6939-e901-4b0a-a69d-bcb708b275b6"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + $P{brand}]]></textFieldExpression>
             </textField>
         </band>
     </pageHeader>
@@ -519,6 +539,24 @@ SELECT A.*,M.ITEM_DESCRIPTION,M.uom_stock FROM( SELECT   a.ITEM, SUM (a.TOTAL_EI
             </textField>
         </band>
     </detail>
+    <pageFooter>
+        <band height="20">
+            <textField>
+                <reportElement x="105" y="6" width="150" height="11" uuid="2d29de34-b74f-4adc-84c3-7e6a0c40e425"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(new Date())]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="3" y="6" width="103" height="11" uuid="a8816746-3752-4953-922d-fdc068eaa49a"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Tanggal dan Jan Cetak ]]></text>
+            </staticText>
+        </band>
+    </pageFooter>
     <summary>
         <band height="42" splitType="Stretch"/>
     </summary>

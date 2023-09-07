@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="salesTime" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="fb24ca8e-3c89-4eb5-bc3e-e6901e79de57">
-    <property name="ireport.zoom" value="1.3310000000000073"/>
+    <property name="ireport.zoom" value="1.6105100000000103"/>
     <property name="ireport.x" value="0"/>
     <property name="ireport.y" value="0"/>
     <parameter name="outletCode" class="java.lang.String">
@@ -518,11 +518,11 @@ WHERE JAM BETWEEN $P{fromTime} AND $P{toTime}]]>
                 <reportElement x="2" y="77" width="552" height="1" uuid="e6625f22-3157-47e3-8d41-d9ad8ea135d1"/>
             </line>
             <staticText>
-                <reportElement x="393" y="0" width="161" height="19" uuid="a99eec76-cc29-4763-922c-589320cb8235"/>
+                <reportElement x="180" y="25" width="198" height="19" uuid="a99eec76-cc29-4763-922c-589320cb8235"/>
                 <textElement textAlignment="Center">
                     <font size="12" isBold="true"/>
                 </textElement>
-                <text><![CDATA[Sales by Time Report]]></text>
+                <text><![CDATA[Sales by Time Per HOUR]]></text>
             </staticText>
             <image>
                 <reportElement x="21" y="0" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="d713fa0c-c833-403d-af40-850e5da1b3a7"/>
@@ -612,20 +612,6 @@ WHERE JAM BETWEEN $P{fromTime} AND $P{toTime}]]>
                 </textElement>
                 <text><![CDATA[User ]]></text>
             </staticText>
-            <textField>
-                <reportElement x="404" y="46" width="150" height="11" uuid="5cddb687-5a3c-4c75-b1db-1df2275dec26"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(new Date())]]></textFieldExpression>
-            </textField>
-            <staticText>
-                <reportElement x="350" y="46" width="55" height="11" uuid="b3e84b0f-23d6-4a2b-8a7b-e38489fedb64"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <text><![CDATA[Tanggal Cetak ]]></text>
-            </staticText>
             <staticText>
                 <reportElement x="17" y="78" width="100" height="20" uuid="edff1e40-11ca-4c48-b2a4-8e55177490cf"/>
                 <text><![CDATA[JAM]]></text>
@@ -665,7 +651,7 @@ WHERE JAM BETWEEN $P{fromTime} AND $P{toTime}]]>
         </band>
     </detail>
     <summary>
-        <band height="42" splitType="Stretch">
+        <band height="50" splitType="Stretch">
             <line>
                 <reportElement x="2" y="24" width="552" height="1" uuid="c758ab38-54c1-408b-a466-50df4cb84302"/>
             </line>
@@ -687,6 +673,20 @@ WHERE JAM BETWEEN $P{fromTime} AND $P{toTime}]]>
                 <reportElement x="289" y="6" width="100" height="20" uuid="c7808646-e6a5-4f78-8a95-93743fa855d8"/>
                 <textFieldExpression><![CDATA[$V{sumTotalAmount}]]></textFieldExpression>
             </textField>
+            <textField>
+                <reportElement x="105" y="34" width="150" height="11" uuid="0528cdac-0b24-4f34-828a-f29206bda39c"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(new Date())]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="3" y="34" width="103" height="11" uuid="66ea2f93-294f-4774-a9bf-f04f086e176b"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Tanggal dan Jan Cetak ]]></text>
+            </staticText>
         </band>
     </summary>
 </jasperReport>
