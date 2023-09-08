@@ -116,4 +116,8 @@ public class ReportServices {
         return dao.jasperReportSummarySalesByItemCode(param, connection);
     }
 
+    public JasperPrint jasperReportStockCard(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        return dao.jasperReportStockCard(param, connection);
+    }
+
 }

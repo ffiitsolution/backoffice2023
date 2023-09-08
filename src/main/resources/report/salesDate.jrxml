@@ -42,187 +42,147 @@
     <parameter name="outletName" class="java.lang.String"/>
     <parameter name="user" class="java.lang.String"/>
     <queryString>
-        <![CDATA[SELECT
-	*
-FROM
-	(
-	SELECT
-		TOTAL_PENDAPATAN,
-		TOTAL_PENJUALAN,
-		TOTAL_PENJUALAN_FNB,
-		AMT_CD,
-		CHARGE_BILL,
-		TAX_CHARGE_BILL,
-		TAXABLE,
-		TAX,
-		PPN,
-		ROUNDING_BILL,
-		GROSS_SALES,
-		TOTAL_DP_PAID,
-		TOTAL_REFUND,
-		TRANSAKSI,
-		CUSTOMER,
-		DISCOUNT,
-		DONASI,
-		TICKET_AVG,
-		CUST_AVERAGE,
-		TOTAL_CLAIM
-	FROM
-		(
-		SELECT
-			sales_bill - charge_bill total_pendapatan,
-			amt_bill total_penjualan,
-			amt_bill - amt_cd total_penjualan_fnb,
-			amt_cd,
-			charge_bill,
-			tax_charge_bill,
-			amt_bill - discount_bill taxable,
-			tax_bill - tax_cd + tax_charge_bill TAX,
-			tax_cd ppn,
-			rounding_bill,
-			sales_bill - charge_bill gross_sales,
-			total_dp_paid,
-			total_refund,
-			transaksi,
-			customer,
-			discount,
-			donasi,
-			TICKET_AVG,
-			CUST_AVERAGE,
-			total_claim
-		FROM
-			(
-			SELECT
-				'XX' pid,
-				SUM (total_amount) amt_bill,
-				SUM (total_discount) discount_bill,
-				SUM (total_tax) tax_bill,
-				SUM (total_rounding) rounding_bill,
-				SUM (total_charge) charge_bill,
-				SUM (total_tax_charge) tax_charge_bill,
-				SUM (total_sales) sales_bill,
-				SUM (total_dp_paid) total_dp_paid,
-				SUM (total_refund) total_refund,
-				COUNT (bill_no) transaksi,
-				SUM (total_customer) customer,
-				SUM (total_discount) discount,
-				SUM (total_donation) donasi,
-				ROUND( (SUM (TOTAL_AMOUNT)
-- SUM (TOTAL_DISCOUNT))
-/ (NVL (SUM (TOTAL_CUSTOMER), 1)))
-CUST_AVERAGE,
-				ROUND( (SUM (TOTAL_AMOUNT)
-- SUM (TOTAL_DISCOUNT))
-/ (COUNT (1)))
-TICKET_AVG,
-				0 AS TOTAL_CLAIM
-			FROM
-				t_pos_bill
-			WHERE
-				(DELIVERY_STATUS IN (' ', 'CLS')
-					OR DELIVERY_STATUS IS NULL)
-				AND OUTLET_CODE IN ($P{outletCode})
-				AND TRANS_DATE BETWEEN $P{fromDate}
-AND $P{toDate}
-				AND POS_CODE BETWEEN $P{posCode1} AND $P{posCode2}
-				AND CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
-				AND SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
-				AND order_type IN
-(
-				SELECT
-					CODE
-				FROM
-					M_GLOBAL
-				WHERE
-					COND LIKE '%ORDER_TYPE%'
-					AND CODE BETWEEN '000'
-AND 'zzz'))
-a
-		JOIN
-(
-			SELECT
-				'XX' pid,
-				SUM (amount) amt_cd,
-				SUM (amt_tax) tax_cd
-			FROM
-				(
-				SELECT
-					x.*
-				FROM
-					(
-					SELECT
-						*
-					FROM
-						t_pos_bill_item_detail
-					WHERE
-						TRANS_DATE BETWEEN $P{fromDate}
-AND $P{toDate}
-						AND POS_CODE BETWEEN $P{posCode1}
-AND $P{posCode2}
-						AND menu_item_code IN
-(
-						SELECT
-							menu_item_code
-						FROM
-							m_menu_item
-						WHERE
-							menu_group_code =
-'G07'
-					UNION ALL
-						SELECT
-							modifier_item_code
-						FROM
-							m_modifier_item
-						WHERE
-							modifier_group_code IN
-('M1Q',
-'M19',
-'M20')))
-x
-				JOIN
-(
-					SELECT
-						*
-					FROM
-						t_pos_bill
-					WHERE
-						TRANS_DATE BETWEEN $P{fromDate}
-AND $P{toDate}
-						AND POS_CODE BETWEEN $P{posCode1}
-AND $P{posCode2}
-						AND delivery_status =
-'CLS') y
-ON
-					x.outlet_code = y.outlet_code
-					AND x.pos_code = y.pos_code
-					AND x.day_seq = y.day_seq
-					AND x.bill_no = y.bill_no)) b
-ON
-			a.pid = b.pid))T
-
-unpivot (
-v FOR k IN (TOTAL_PENDAPATAN,
+        <![CDATA[select * from(
+select TOTAL_PENDAPATAN,
 TOTAL_PENJUALAN,
 TOTAL_PENJUALAN_FNB,
-AMT_CD,
-CHARGE_BILL,
-TAX_CHARGE_BILL,
-TAXABLE,
-TAX,
-PPN,
-ROUNDING_BILL,
-GROSS_SALES,
-TOTAL_DP_PAID,
-TOTAL_REFUND,
-TRANSAKSI,
-CUSTOMER,
-DISCOUNT,
+TOTAL_PENJUALAN_CD,
+KUPON_DIGUNAKAN,
+KUPON_TERPAKAI,
+DEBIT,
+BCA,
+MANDIRI,
+BNI,
+BRI,
+OTR,
+KEMBALIAN   ,
+BIAYA_ANTAR ,
+TAX_BIAYA_ANTAR,
 DONASI,
-TICKET_AVG,
-CUST_AVERAGE,
-TOTAL_CLAIM
-)
-) u]]>
+DITERIMACSH ,
+DITERIMAVCR ,
+DITERIMADEBIT,
+CASH,
+TAXABLE,
+PAJAK_RESTORAN,
+PPN,
+PEMBULATAN,
+GROSS_SALES,
+MODAL,
+CASH_PULL
+from(
+select'XX' pid,total_pendapatan,total_penjualan,total_penjualan_fnb,total_penjualan_cd,kupon_digunakan,kupon_terpakai,debit,BCA,MANDIRI,BNI,BRI,OTR,kembalian,biaya_antar,tax_biaya_antar,donasi,
+DITERIMACSH,DITERIMAVCR,DITERIMADEBIT,0 as CASH,taxable,pajak_restoran,ppn,pembulatan,gross_sales,modal,cash_pull
+ from (select 'XX' pid,total_pendapatan,a as total_penjualan,(a-amt_cd)total_penjualan_fnb,amt_cd as total_penjualan_cd,
+kupon_digunakan,kupon_terpakai,debit,BCA,MANDIRI,BNI,BRI,OTR,0 as kembalian, c as biaya_antar,k as tax_biaya_antar,j as donasi,
+taxable,((d-tax_cd)+k)pajak_restoran,tax_cd ppn,total_pendapatan as gross_sales, ((total_pendapatan-taxable)-((d-tax_cd)+k))-tax_cd as pembulatan,modal,cash_pull
+from(
+select 'XX' pid,
+sum(total_amount)a,sum(total_discount)b,sum(total_charge)c,sum(total_tax)d,sum(total_rounding)e,sum(total_sales)f,
+sum(total_dp_paid)g,sum(total_payment)h,sum(total_sales)-sum(total_charge) as total_pendapatan,sum(total_donation)j,sum(total_tax_charge)k,sum(total_amount)-sum(total_discount)taxable
+from t_pos_bill where
+OUTLET_CODE IN ($P{outletCode})
+AND TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
+AND POS_CODE BETWEEN $P{posCode1} AND $P{posCode2}
+AND CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+AND SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
+AND delivery_status='CLS') a
+join
+(SELECT   'XX' pid, SUM (amount) amt_cd, SUM (amt_tax) tax_cd FROM   (SELECT   x.*
+ FROM (
+ SELECT * FROM t_pos_bill_item_detail WHERE TRANS_DATE BETWEEN $P{fromDate} AND  $P{toDate} AND POS_CODE BETWEEN $P{posCode1} AND  $P{posCode2}
+ AND menu_item_code IN (SELECT   menu_item_code FROM m_menu_item WHERE   menu_group_code ='G07'
+    UNION ALL
+SELECT   modifier_item_code FROM m_modifier_item WHERE   modifier_group_code IN ('M1Q','M19','M20')))x
+JOIN (SELECT * FROM t_pos_bill WHERE   TRANS_DATE BETWEEN $P{fromDate} AND  $P{toDate}
+AND POS_CODE BETWEEN $P{posCode1} AND $P{posCode2}
+AND delivery_status = 'CLS') y
+ON x.outlet_code = y.outlet_code AND x.pos_code = y.pos_code
+AND x.day_seq = y.day_seq
+AND x.bill_no = y.bill_no)) b
+ON a.pid = b.pid
+join
+(SELECT 'XX' pid, sum(payment_amount)kupon_digunakan,sum(payment_used)kupon_terpakai
+from t_pos_bill_payment where TRANS_DATE BETWEEN $P{fromDate} AND  $P{toDate} AND POS_CODE BETWEEN $P{posCode1} AND  $P{posCode2} and payment_method_code='VCR' ) c
+ON a.pid = c.pid
+join
+(SELECT 'XX' pid, sum(payment_used)debit
+from t_pos_bill_payment where TRANS_DATE BETWEEN $P{fromDate} AND  $P{toDate} AND POS_CODE BETWEEN $P{posCode1} AND  $P{posCode2}
+and payment_method_code in(select payment_method_code from m_payment_method where payment_type_code='DBT')) d
+ON a.pid = d.pid
+join
+(SELECT 'XX' pid, sum(payment_used)BCA
+from t_pos_bill_payment where TRANS_DATE BETWEEN $P{fromDate} AND  $P{toDate} AND POS_CODE BETWEEN $P{posCode1} AND  $P{posCode2}
+and payment_method_code='BCA') e
+ON a.pid = e.pid
+join
+(SELECT 'XX' pid, sum(payment_used)MANDIRI
+from t_pos_bill_payment where TRANS_DATE BETWEEN $P{fromDate} AND  $P{toDate} AND POS_CODE BETWEEN $P{posCode1} AND  $P{posCode2}
+and payment_method_code='MND') f
+ON a.pid = f.pid
+join
+(SELECT 'XX' pid, sum(payment_used)BNI
+from t_pos_bill_payment where TRANS_DATE BETWEEN $P{fromDate} AND  $P{toDate} AND POS_CODE BETWEEN $P{posCode1} AND  $P{posCode2}
+and payment_method_code='BNI') g
+ON a.pid = g.pid
+join
+(SELECT 'XX' pid, sum(payment_used)BRI
+from t_pos_bill_payment where TRANS_DATE BETWEEN $P{fromDate} AND  $P{toDate} AND POS_CODE BETWEEN $P{posCode1} AND  $P{posCode2}
+and payment_method_code='BRI') h
+ON a.pid = h.pid
+join
+(SELECT 'XX' pid, sum(payment_used)OTR
+from t_pos_bill_payment where TRANS_DATE BETWEEN $P{fromDate} AND  $P{toDate} AND POS_CODE BETWEEN $P{posCode1} AND  $P{posCode2}
+and payment_method_code not in('BNI','BCA','VCR','MND','BRI','CSH')) i
+ON a.pid = i.pid
+join
+(SELECT 'XX'pid,sum(trans_amount)modal from t_pos_day_trans where trans_date BETWEEN $P{fromDate} AND  $P{toDate} AND POS_CODE BETWEEN $P{posCode1} AND  $P{posCode2}  and trans_code='OPF')j
+ON a.pid = j.pid
+join
+(SELECT 'XX'pid,sum(trans_amount)cash_pull from t_pos_day_trans where trans_date BETWEEN $P{fromDate} AND  $P{toDate} AND POS_CODE BETWEEN $P{posCode1} AND  $P{posCode2}  and trans_code in('SLS','OPF','DP','DNT'))k
+ON a.pid = k.pid)a
+join
+(select 'XX'pid,DITERIMACSH,DITERIMAVCR,DITERIMADEBIT from(
+(select 'XX'pid,sum(CSH)DITERIMACSH,sum(VCR)DITERIMAVCR,sum(DEBIT)DITERIMADEBIT from (
+select 'XX'pid,
+case when payment_method_code='CSH' then sum(payment_used) else 0 end as CSH,
+case when payment_method_code='VCR' then sum(payment_used) else 0 end as VCR,
+case when payment_method_code not in('CSH','VCR') then sum(payment_used) else 0 end as debit
+from t_pos_book_payment where TRANS_DATE BETWEEN $P{fromDate} AND  $P{toDate} group by payment_method_code))))l
+ON a.pid = l.pid))
+
+unpivot
+
+(V  FOR K IN(
+TOTAL_PENDAPATAN ,
+TOTAL_PENJUALAN ,
+TOTAL_PENJUALAN_FNB ,
+TOTAL_PENJUALAN_CD ,
+KUPON_DIGUNAKAN ,
+KUPON_TERPAKAI ,
+DEBIT ,
+BCA ,
+MANDIRI ,
+BNI ,
+BRI ,
+OTR ,
+KEMBALIAN ,
+BIAYA_ANTAR ,
+TAX_BIAYA_ANTAR ,
+DONASI ,
+DITERIMACSH ,
+DITERIMAVCR ,
+DITERIMADEBIT ,
+CASH ,
+TAXABLE ,
+PAJAK_RESTORAN ,
+PPN ,
+PEMBULATAN ,
+GROSS_SALES ,
+MODAL ,
+CASH_PULL
+))
+U   ]]>
     </queryString>
     <field name="K" class="java.lang.String"/>
     <field name="V" class="java.math.BigDecimal"/>

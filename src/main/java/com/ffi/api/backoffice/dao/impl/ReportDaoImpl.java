@@ -915,6 +915,9 @@ public class ReportDaoImpl implements ReportDao {
             hashMap.put("outletCode", param.get("outletCode"));
         } else if (param.get("typeParam").equals("OrderType")) {
             query = "SELECT CODE, DESCRIPTION FROM M_GLOBAL WHERE COND LIKE '%ORDER_TYPE%' AND CODE BETWEEN '000' AND 'zzz'";
+        } else if (param.get("typeParam").equals("itemCode")) {
+            query = "SELECT ITEM_CODE, ITEM_DESCRIPTION FROM M_ITEM WHERE STATUS = 'A' AND FLAG_PAKET = 'N' " +
+                    "AND FLAG_MATERIAL = 'Y' ORDER BY ITEM_CODE asc";
         }
 
         assert query != null;
@@ -931,6 +934,9 @@ public class ReportDaoImpl implements ReportDao {
                 } else if (param.get("typeParam").equals("OrderType")) {
                     rt.put("code", rs.getString("CODE"));
                     rt.put("description", rs.getString("DESCRIPTION"));
+                } else if (param.get("typeParam").equals("itemCode")) {
+                    rt.put("itemCode", rs.getString("ITEM_CODE"));
+                    rt.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
                 }
                 return rt;
             }
@@ -1259,6 +1265,30 @@ public class ReportDaoImpl implements ReportDao {
             return JasperFillManager.fillReport(jasperReport, hashMap, connection);
         }
         ClassPathResource classPathResource = new ClassPathResource("report/ReportSalesDetailByItemCode.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
+
+    @Override
+    public JasperPrint jasperReportStockCard(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        Map<String, Object> hashMap = new HashMap<>();
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("fromDate", param.get("fromDate"));
+        hashMap.put("toDate", param.get("toDate"));
+        hashMap.put("user", param.get("user"));
+
+        List<String> test = (List<String>) param.get("itemCode");
+        StringBuilder item = new StringBuilder();
+        item.append("'").append(test.get(0)).append("'");
+
+        for (int i = 1; i < test.size(); i++) {
+            item.append(", '").append(test.get(i)).append("'");
+        }
+
+        hashMap.put("itemCode", item.toString());
+
+
+        ClassPathResource classPathResource = new ClassPathResource("report/ReportStockCard.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }
