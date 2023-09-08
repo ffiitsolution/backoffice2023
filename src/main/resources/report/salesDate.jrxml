@@ -182,7 +182,7 @@ GROSS_SALES ,
 MODAL ,
 CASH_PULL
 ))
-U   ]]>
+U]]>
     </queryString>
     <field name="K" class="java.lang.String"/>
     <field name="V" class="java.math.BigDecimal"/>
@@ -192,11 +192,11 @@ U   ]]>
     <columnHeader>
         <band height="98" splitType="Stretch">
             <staticText>
-                <reportElement x="58" y="78" width="100" height="20" uuid="68be17c9-a449-4f20-b2b1-c8d696905599"/>
+                <reportElement x="5" y="78" width="100" height="20" uuid="68be17c9-a449-4f20-b2b1-c8d696905599"/>
                 <text><![CDATA[Keterangan]]></text>
             </staticText>
             <staticText>
-                <reportElement x="363" y="78" width="100" height="20" uuid="11a413b1-7c6a-4686-8840-352600dae2b8"/>
+                <reportElement x="450" y="78" width="100" height="20" uuid="11a413b1-7c6a-4686-8840-352600dae2b8"/>
                 <text><![CDATA[Nilai]]></text>
             </staticText>
             <line>
@@ -320,11 +320,11 @@ U   ]]>
     <detail>
         <band height="25" splitType="Stretch">
             <textField>
-                <reportElement x="58" y="0" width="140" height="20" uuid="605c2bb0-8765-4d06-8445-5f2cb0ec2525"/>
+                <reportElement x="5" y="0" width="140" height="20" uuid="605c2bb0-8765-4d06-8445-5f2cb0ec2525"/>
                 <textFieldExpression><![CDATA[$F{K}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="363" y="0" width="100" height="20" uuid="546ac859-4792-4190-b188-4c213490d857"/>
+                <reportElement x="450" y="0" width="100" height="20" uuid="546ac859-4792-4190-b188-4c213490d857"/>
                 <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{V})]]></textFieldExpression>
             </textField>
         </band>
