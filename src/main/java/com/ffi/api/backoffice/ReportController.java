@@ -502,7 +502,7 @@ public class ReportController {
     /////////////////////////////////DONE///////////////////////////////////////
     ///////////////NEW METHOD REPORT BY PASCA 07 September 2023////
     @CrossOrigin
-    @RequestMapping(value = "/report-stock-cart-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/report-stock-card-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan report stock cart", response = Object.class)
     @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jasperReportStockCard(@RequestBody String param) throws SQLException, JRException, IOException {
