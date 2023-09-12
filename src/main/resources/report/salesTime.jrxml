@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="salesTime" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="fb24ca8e-3c89-4eb5-bc3e-e6901e79de57">
-    <property name="ireport.zoom" value="1.6105100000000103"/>
+    <property name="ireport.zoom" value="1.6105100000000105"/>
     <property name="ireport.x" value="0"/>
     <property name="ireport.y" value="0"/>
     <parameter name="outletCode" class="java.lang.String">
@@ -49,7 +49,7 @@
     </parameter>
     <queryString>
         <![CDATA[SELECT * FROM(
-select z.*,NVL((z.total_amount/b.total)*100, 0) as persentage from (
+select z.*,NVL((z.total_amount/b.total)*100, 0) as persentage, (z.TRANSAKSI/d.total_persentasi)*100 AS TOTAL_PERSENTASI from (
 select a.*,$P{outletCode} as outlet_code from (
 SELECT
 	'00' AS jam,
@@ -492,7 +492,16 @@ left join
             AND shift_code BETWEEN $P{shiftCode1} AND $P{shiftCode2}
             AND time_upd between '000000' and '235959'
             AND (delivery_status IN (' ', 'CLS') OR delivery_status IS NULL)) b
-on z.outlet_code=b.outlet_code)
+on z.outlet_code=b.outlet_code
+LEFT JOIN (SELECT   $P{outletCode} AS outlet_code, COUNT(0)  as total_persentasi FROM   t_pos_bill
+    WHERE       outlet_code IN $P{outletCode}
+            AND trans_date BETWEEN $P{fromDate} AND $P{toDate}
+            AND pos_code BETWEEN $P{posCode1} AND $P{posCode2}
+            AND cashier_code BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+            AND shift_code BETWEEN $P{shiftCode1} AND $P{shiftCode2}
+            AND time_upd between '000000' and '235959'
+            AND (delivery_status IN (' ', 'CLS') OR delivery_status IS NULL)) d
+ON z.outlet_code = d.outlet_code)
 WHERE JAM BETWEEN $P{fromTime} AND $P{toTime}]]>
     </queryString>
     <field name="JAM" class="java.lang.String"/>
@@ -500,6 +509,7 @@ WHERE JAM BETWEEN $P{fromTime} AND $P{toTime}]]>
     <field name="TOTAL_AMOUNT" class="java.math.BigDecimal"/>
     <field name="OUTLET_CODE" class="java.lang.String"/>
     <field name="PERSENTAGE" class="java.math.BigDecimal"/>
+    <field name="TOTAL_PERSENTASI" class="java.math.BigDecimal"/>
     <variable name="sumTotalTransaksi" class="java.math.BigDecimal" calculation="Sum">
         <variableExpression><![CDATA[$F{TRANSAKSI}]]></variableExpression>
     </variable>
@@ -510,24 +520,20 @@ WHERE JAM BETWEEN $P{fromTime} AND $P{toTime}]]>
         <band splitType="Stretch"/>
     </background>
     <columnHeader>
-        <band height="98" splitType="Stretch">
+        <band height="102" splitType="Stretch">
             <line>
-                <reportElement x="2" y="96" width="552" height="1" uuid="e884bac4-0f57-4cf8-a235-c7c9ba7cb0d4"/>
+                <reportElement x="2" y="100" width="552" height="1" uuid="e884bac4-0f57-4cf8-a235-c7c9ba7cb0d4"/>
             </line>
             <line>
-                <reportElement x="2" y="77" width="552" height="1" uuid="e6625f22-3157-47e3-8d41-d9ad8ea135d1"/>
+                <reportElement x="2" y="81" width="552" height="1" uuid="e6625f22-3157-47e3-8d41-d9ad8ea135d1"/>
             </line>
             <staticText>
-                <reportElement x="180" y="25" width="198" height="19" uuid="a99eec76-cc29-4763-922c-589320cb8235"/>
+                <reportElement x="2" y="25" width="552" height="19" uuid="a99eec76-cc29-4763-922c-589320cb8235"/>
                 <textElement textAlignment="Center">
                     <font size="12" isBold="true"/>
                 </textElement>
                 <text><![CDATA[Sales by Time Per HOUR]]></text>
             </staticText>
-            <image>
-                <reportElement x="21" y="0" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="d713fa0c-c833-403d-af40-850e5da1b3a7"/>
-                <imageExpression><![CDATA["logo/logoKfc.png"]]></imageExpression>
-            </image>
             <staticText>
                 <reportElement x="78" y="0" width="112" height="11" uuid="a0f17ed7-b5b7-4829-b17c-66a30ec05452"/>
                 <textElement>
@@ -613,45 +619,85 @@ WHERE JAM BETWEEN $P{fromTime} AND $P{toTime}]]>
                 <text><![CDATA[User ]]></text>
             </staticText>
             <staticText>
-                <reportElement x="17" y="78" width="100" height="20" uuid="edff1e40-11ca-4c48-b2a4-8e55177490cf"/>
+                <reportElement x="17" y="82" width="100" height="18" uuid="edff1e40-11ca-4c48-b2a4-8e55177490cf"/>
+                <textElement verticalAlignment="Middle"/>
                 <text><![CDATA[JAM]]></text>
             </staticText>
             <staticText>
-                <reportElement x="154" y="78" width="100" height="20" uuid="6a7fdd13-b44d-45b2-bc61-3079db15587a"/>
+                <reportElement x="126" y="82" width="100" height="18" uuid="6a7fdd13-b44d-45b2-bc61-3079db15587a"/>
+                <textElement verticalAlignment="Middle"/>
                 <text><![CDATA[TRANSAKSI]]></text>
             </staticText>
             <staticText>
-                <reportElement x="289" y="78" width="100" height="20" uuid="bc09e110-f029-40e7-9ece-613124a5c816"/>
-                <text><![CDATA[TOTAL AMOUNT]]></text>
+                <reportElement x="342" y="82" width="100" height="18" uuid="bc09e110-f029-40e7-9ece-613124a5c816"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle"/>
+                <text><![CDATA[TOTAL SALES]]></text>
             </staticText>
             <staticText>
-                <reportElement x="427" y="78" width="100" height="20" uuid="11fb013e-60ad-4c89-af30-ce3f254f620c"/>
-                <text><![CDATA[PERSENTAGE]]></text>
+                <reportElement x="451" y="82" width="100" height="18" uuid="11fb013e-60ad-4c89-af30-ce3f254f620c"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <text><![CDATA[%]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="404" y="45" width="150" height="11" uuid="8de420ea-c28c-405b-96fa-a979ec14a48a"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + $V{PAGE_NUMBER}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="350" y="45" width="55" height="11" uuid="4daa863c-a886-4ce7-a60b-a5e3e84da14b"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Halaman]]></text>
+            </staticText>
+            <image>
+                <reportElement x="22" y="0" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="88270e27-9da4-439f-b7d3-014c289a7dd9"/>
+                <imageExpression><![CDATA["logo/logoKfc.png"]]></imageExpression>
+            </image>
+            <staticText>
+                <reportElement x="226" y="82" width="100" height="18" uuid="e07f5c0c-ca7c-437e-984e-30818218318d"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <text><![CDATA[%]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="265" y="1" width="100" height="20" uuid="7edd6aba-31e4-4d16-a6cc-f86a392ff457"/>
+                <text><![CDATA[TOTAL_PERSENTASI]]></text>
             </staticText>
         </band>
     </columnHeader>
     <detail>
         <band height="23" splitType="Stretch">
             <textField>
-                <reportElement x="17" y="0" width="100" height="20" uuid="8ebc9182-2197-4839-9f21-8a3efc0c68b6"/>
+                <reportElement x="17" y="2" width="100" height="18" uuid="8ebc9182-2197-4839-9f21-8a3efc0c68b6"/>
+                <textElement verticalAlignment="Middle"/>
                 <textFieldExpression><![CDATA[$F{JAM}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="154" y="0" width="100" height="20" uuid="6e9f13da-302b-4e9f-9993-8bac9a2fc944"/>
+                <reportElement x="126" y="2" width="100" height="18" uuid="6e9f13da-302b-4e9f-9993-8bac9a2fc944"/>
+                <textElement verticalAlignment="Middle"/>
                 <textFieldExpression><![CDATA[$F{TRANSAKSI}]]></textFieldExpression>
             </textField>
             <textField pattern="#,##0.00">
-                <reportElement x="289" y="0" width="100" height="20" uuid="7df019bf-4d10-4585-94f4-e53d7aed8d0a"/>
+                <reportElement x="342" y="2" width="100" height="18" uuid="7df019bf-4d10-4585-94f4-e53d7aed8d0a"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle"/>
                 <textFieldExpression><![CDATA[$F{TOTAL_AMOUNT}]]></textFieldExpression>
             </textField>
             <textField pattern="">
-                <reportElement x="427" y="0" width="100" height="20" uuid="dbd2cf6b-53cf-4d52-800a-d6d57aa0b3f3"/>
-                <textFieldExpression><![CDATA[new DecimalFormat("###0.00").format($F{PERSENTAGE}) + "     %"]]></textFieldExpression>
+                <reportElement x="451" y="2" width="100" height="18" uuid="dbd2cf6b-53cf-4d52-800a-d6d57aa0b3f3"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[new DecimalFormat("###0.00").format($F{PERSENTAGE}) + "%"]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="226" y="2" width="100" height="18" uuid="2e4c07bb-fb56-4ec5-a80f-776926932d21"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA[new DecimalFormat("###0.00").format($F{TOTAL_PERSENTASI}) + "%"]]></textFieldExpression>
             </textField>
         </band>
     </detail>
     <summary>
-        <band height="50" splitType="Stretch">
+        <band height="108" splitType="Stretch">
             <line>
                 <reportElement x="2" y="24" width="552" height="1" uuid="c758ab38-54c1-408b-a466-50df4cb84302"/>
             </line>
@@ -659,29 +705,31 @@ WHERE JAM BETWEEN $P{fromTime} AND $P{toTime}]]>
                 <reportElement x="2" y="5" width="552" height="1" uuid="e880fd0b-5706-4447-9dbd-6c375bdf39ac"/>
             </line>
             <textField>
-                <reportElement x="17" y="6" width="100" height="20" uuid="61b64f9e-1725-437f-a25a-750ac573f6b9"/>
-                <textElement>
+                <reportElement x="17" y="6" width="100" height="18" uuid="61b64f9e-1725-437f-a25a-750ac573f6b9"/>
+                <textElement verticalAlignment="Middle">
                     <font isBold="true"/>
                 </textElement>
                 <textFieldExpression><![CDATA["Total " + $V{COLUMN_COUNT} + " Jam"]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="154" y="6" width="100" height="20" uuid="a99d03d7-1b44-488f-b2f4-028fe02a5445"/>
+                <reportElement x="126" y="6" width="100" height="18" uuid="a99d03d7-1b44-488f-b2f4-028fe02a5445"/>
+                <textElement verticalAlignment="Middle"/>
                 <textFieldExpression><![CDATA[$V{sumTotalTransaksi}]]></textFieldExpression>
             </textField>
             <textField pattern="#,##0.00">
-                <reportElement x="289" y="6" width="100" height="20" uuid="c7808646-e6a5-4f78-8a95-93743fa855d8"/>
+                <reportElement x="342" y="6" width="100" height="18" uuid="c7808646-e6a5-4f78-8a95-93743fa855d8"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle"/>
                 <textFieldExpression><![CDATA[$V{sumTotalAmount}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="105" y="34" width="150" height="11" uuid="0528cdac-0b24-4f34-828a-f29206bda39c"/>
+                <reportElement x="104" y="97" width="150" height="11" uuid="0528cdac-0b24-4f34-828a-f29206bda39c"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(new Date())]]></textFieldExpression>
             </textField>
             <staticText>
-                <reportElement x="3" y="34" width="103" height="11" uuid="66ea2f93-294f-4774-a9bf-f04f086e176b"/>
+                <reportElement x="2" y="97" width="103" height="11" uuid="66ea2f93-294f-4774-a9bf-f04f086e176b"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>

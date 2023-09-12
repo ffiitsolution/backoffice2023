@@ -32,6 +32,8 @@ import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -518,5 +520,16 @@ public class ReportController {
         headers.add("Content-Disposition", "inline; filename=stockCart.pdf");
 
         return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+    }
+
+    @PostMapping("/test/{size}/{page}")
+    public Page<Map<String, Object>> getTestPagination(@PathVariable(value = "size") int size,
+                                                      @PathVariable(value = "page") int page) {
+
+        PageRequest pageable = PageRequest.of(page, size);
+        Page<Map<String, Object>> result = reportServices.getTestPagination(pageable);
+        System.out.println(result);
+
+        return result;
     }
 }

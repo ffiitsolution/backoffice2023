@@ -13,6 +13,9 @@ import net.sf.jasperreports.engine.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -1291,5 +1294,34 @@ public class ReportDaoImpl implements ReportDao {
         ClassPathResource classPathResource = new ClassPathResource("report/ReportStockCard.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
+
+    @Override
+    public Page<Map<String, Object>> getTestPagination(Pageable pageable) {
+        String queryCount = "SELECT DISTINCT count(*) FROM T_STOCK_CARD a LEFT JOIN M_ITEM b ON a.ITEM_CODE = b.ITEM_CODE";
+        Map<String, Object> prm = new HashMap<>();
+        int count = Integer.parseInt(Objects.requireNonNull(jdbcTemplate.queryForObject(queryCount,prm, new RowMapper<String>() {
+            @Override
+            public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return rs.getString(1) == null ? "0" : rs.getString(1);
+            }
+        })));
+
+        String query = "SELECT DISTINCT a.ITEM_CODE, b.ITEM_DESCRIPTION FROM T_STOCK_CARD a LEFT JOIN M_ITEM b ON " +
+                "a.ITEM_CODE = b.ITEM_CODE ORDER BY ITEM_CODE ASC OFFSET " + pageable.getOffset() + " ROWS FETCH NEXT " +
+                pageable.getPageSize() + " ROWS ONLY";
+
+        System.out.println(query);
+
+        List<Map<String, Object>> list = jdbcTemplate.query(query, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("itemCode", rs.getString("ITEM_CODE"));
+                rt.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
+                return rt;
+            }
+        });
+        return new PageImpl<Map<String, Object>>(list, pageable, count);
     }
 }

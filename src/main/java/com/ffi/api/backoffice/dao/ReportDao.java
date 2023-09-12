@@ -6,6 +6,8 @@ package com.ffi.api.backoffice.dao;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperPrint;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -62,6 +64,7 @@ public interface ReportDao {
     JasperPrint jasperReportMenuVsDetail (Map<String, Object> param, Connection connection) throws JRException, IOException;
     JasperPrint jasperReportSummarySalesByItemCode (Map<String, Object> param, Connection connection) throws JRException, IOException;
     JasperPrint jasperReportStockCard (Map<String, Object> param, Connection connection) throws JRException, IOException;
+    Page<Map<String, Object>> getTestPagination(Pageable pageable);
 
 
 }

@@ -8,6 +8,8 @@ import com.ffi.api.backoffice.dao.ReportDao;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperPrint;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -120,4 +122,7 @@ public class ReportServices {
         return dao.jasperReportStockCard(param, connection);
     }
 
+    public Page<Map<String, Object>> getTestPagination(Pageable pageable){
+        return dao.getTestPagination(pageable);
+    }
 }
