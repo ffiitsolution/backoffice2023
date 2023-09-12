@@ -1300,7 +1300,8 @@ public class ReportDaoImpl implements ReportDao {
 
     @Override
     public Page<Map<String, Object>> getTestPagination(Pageable pageable) {
-        String queryCount = "SELECT DISTINCT count(*) FROM T_STOCK_CARD a LEFT JOIN M_ITEM b ON a.ITEM_CODE = b.ITEM_CODE";
+        String queryCount = "SELECT COUNT(ITEM_CODE) FROM (SELECT DISTINCT (a.ITEM_CODE)  FROM T_STOCK_CARD a " +
+                "LEFT JOIN M_ITEM b ON a.ITEM_CODE = b.ITEM_CODE)";
         Map<String, Object> prm = new HashMap<>();
         int count = Integer.parseInt(Objects.requireNonNull(jdbcTemplate.queryForObject(queryCount,prm, new RowMapper<String>() {
             @Override

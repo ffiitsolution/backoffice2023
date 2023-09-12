@@ -667,10 +667,6 @@ WHERE JAM BETWEEN $P{fromJam} AND $P{toJam}]]>
                 <textElement textAlignment="Center" verticalAlignment="Middle"/>
                 <text><![CDATA[%]]></text>
             </staticText>
-            <staticText>
-                <reportElement x="265" y="1" width="100" height="20" uuid="7edd6aba-31e4-4d16-a6cc-f86a392ff457"/>
-                <text><![CDATA[TOTAL_PERSENTASI]]></text>
-            </staticText>
         </band>
     </columnHeader>
     <detail>
