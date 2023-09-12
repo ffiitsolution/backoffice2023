@@ -47,6 +47,12 @@
     <parameter name="toTime" class="java.lang.String">
         <defaultValueExpression><![CDATA[]]></defaultValueExpression>
     </parameter>
+    <parameter name="fromJam" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="toJam" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
     <queryString>
         <![CDATA[SELECT * FROM(
 select z.*,NVL((z.total_amount/b.total)*100, 0) as persentage, (z.TRANSAKSI/d.total_persentasi)*100 AS TOTAL_PERSENTASI from (
@@ -490,7 +496,7 @@ left join
             AND pos_code BETWEEN $P{posCode1} AND $P{posCode2}
             AND cashier_code BETWEEN $P{cashierCode1} AND $P{cashierCode2}
             AND shift_code BETWEEN $P{shiftCode1} AND $P{shiftCode2}
-            AND time_upd between '000000' and '235959'
+            AND time_upd between $P{fromTime} AND $P{toTime}
             AND (delivery_status IN (' ', 'CLS') OR delivery_status IS NULL)) b
 on z.outlet_code=b.outlet_code
 LEFT JOIN (SELECT   $P{outletCode} AS outlet_code, COUNT(0)  as total_persentasi FROM   t_pos_bill
@@ -499,10 +505,10 @@ LEFT JOIN (SELECT   $P{outletCode} AS outlet_code, COUNT(0)  as total_persentasi
             AND pos_code BETWEEN $P{posCode1} AND $P{posCode2}
             AND cashier_code BETWEEN $P{cashierCode1} AND $P{cashierCode2}
             AND shift_code BETWEEN $P{shiftCode1} AND $P{shiftCode2}
-            AND time_upd between '000000' and '235959'
+            AND time_upd between $P{fromTime} AND $P{toTime}
             AND (delivery_status IN (' ', 'CLS') OR delivery_status IS NULL)) d
 ON z.outlet_code = d.outlet_code)
-WHERE JAM BETWEEN $P{fromTime} AND $P{toTime}]]>
+WHERE JAM BETWEEN $P{fromJam} AND $P{toJam}]]>
     </queryString>
     <field name="JAM" class="java.lang.String"/>
     <field name="TRANSAKSI" class="java.math.BigDecimal"/>
