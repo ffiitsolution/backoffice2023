@@ -55,7 +55,7 @@
     </parameter>
     <queryString>
         <![CDATA[SELECT * FROM(
-select z.*,NVL((z.total_amount/b.total)*100, 0) as persentage, (z.TRANSAKSI/d.total_persentasi)*100 AS TOTAL_PERSENTASI from (
+select z.*,NVL((z.total_amount/b.total)*100, 0) as persentage, NVL((z.TRANSAKSI/NULLIF(d.total_persentasi, 0))*100, 0) AS TOTAL_PERSENTASI from (
 select a.*,$P{outletCode} as outlet_code from (
 SELECT
 	'00' AS jam,
