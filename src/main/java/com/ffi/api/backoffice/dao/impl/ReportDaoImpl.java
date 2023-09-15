@@ -1268,10 +1268,11 @@ public class ReportDaoImpl implements ReportDao {
             ClassPathResource classPathResource = new ClassPathResource("report/ReportSummarySalesbyItemCode.jrxml");
             JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
             return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+        } else {
+            ClassPathResource classPathResource = new ClassPathResource("report/ReportSalesDetailByItemCode.jrxml");
+            JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+            return JasperFillManager.fillReport(jasperReport, hashMap, connection);
         }
-        ClassPathResource classPathResource = new ClassPathResource("report/ReportSalesDetailByItemCode.jrxml");
-        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
-        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }
 
     @Override

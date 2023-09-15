@@ -1,57 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ReportSummarySalesbyItemCode" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6bb117e1-89a2-438b-9004-122ab48111d8">
-    <property name="ireport.zoom" value="1.6105100000000043"/>
-    <property name="ireport.x" value="0"/>
-    <property name="ireport.y" value="0"/>
-    <parameter name="outletCode" class="java.lang.String">
-        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
-    </parameter>
-    <parameter name="shift1" class="java.lang.String">
-        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
-    </parameter>
-    <parameter name="shift2" class="java.lang.String">
-        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
-    </parameter>
-    <parameter name="pos1" class="java.lang.String">
-        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
-    </parameter>
-    <parameter name="pos2" class="java.lang.String">
-        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
-    </parameter>
-    <parameter name="fromDate" class="java.lang.String">
-        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
-    </parameter>
-    <parameter name="toDate" class="java.lang.String">
-        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
-    </parameter>
-    <parameter name="fromTime" class="java.lang.String">
-        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
-    </parameter>
-    <parameter name="toTime" class="java.lang.String">
-        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
-    </parameter>
-    <parameter name="cashier1" class="java.lang.String">
-        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
-    </parameter>
-    <parameter name="cashier2" class="java.lang.String">
-        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
-    </parameter>
-    <parameter name="user" class="java.lang.String"/>
-    <parameter name="outletName" class="java.lang.String"/>
-    <parameter name="cashier" class="java.lang.String"/>
-    <parameter name="pos" class="java.lang.String"/>
-    <parameter name="shift" class="java.lang.String"/>
-    <parameter name="brand" class="java.lang.String">
-        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
-    </parameter>
-    <parameter name="brand1" class="java.lang.String">
-        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
-    </parameter>
-    <parameter name="brand2" class="java.lang.String">
-        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
-    </parameter>
-    <queryString>
-        <![CDATA[SELECT END.*,END.EI+END.TA AS SUMETA FROM(
+	<property name="ireport.zoom" value="1.6105100000000043"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="outletCode" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="shift1" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="shift2" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="pos1" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="pos2" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="fromDate" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="toDate" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="fromTime" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="toTime" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="cashier1" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="cashier2" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="user" class="java.lang.String"/>
+	<parameter name="outletName" class="java.lang.String"/>
+	<parameter name="cashier" class="java.lang.String"/>
+	<parameter name="pos" class="java.lang.String"/>
+	<parameter name="shift" class="java.lang.String"/>
+	<parameter name="brand" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="brand1" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="brand2" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT END.*,END.EI+END.TA AS SUMETA FROM(
 SELECT A.*,M.ITEM_DESCRIPTION,M.uom_stock FROM( SELECT   a.ITEM, SUM (a.TOTAL_EI) AS ei, SUM (a.TOTAL_TA) AS ta
        FROM   (  SELECT   c.item_code AS ITEM,
                           e.item_description,
@@ -335,233 +335,233 @@ SELECT A.*,M.ITEM_DESCRIPTION,M.uom_stock FROM( SELECT   a.ITEM, SUM (a.TOTAL_EI
    GROUP BY   a.item)A LEFT JOIN
    M_ITEM M
    ON A.ITEM=M.ITEM_CODE )END ORDER BY ITEM ASC]]>
-    </queryString>
-    <field name="ITEM" class="java.lang.String"/>
-    <field name="EI" class="java.math.BigDecimal"/>
-    <field name="TA" class="java.math.BigDecimal"/>
-    <field name="ITEM_DESCRIPTION" class="java.lang.String"/>
-    <field name="UOM_STOCK" class="java.lang.String"/>
-    <field name="SUMETA" class="java.math.BigDecimal"/>
-    <background>
-        <band splitType="Stretch"/>
-    </background>
-    <pageHeader>
-        <band height="89" splitType="Stretch">
-            <textField>
-                <reportElement x="65" y="11" width="141" height="11" uuid="4c9593ab-6123-447b-be10-cad7a6942c84"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <textFieldExpression><![CDATA[$P{outletName}]]></textFieldExpression>
-            </textField>
-            <staticText>
-                <reportElement x="65" y="1" width="112" height="11" uuid="4c769eb6-8ce5-4c4f-81a0-a3598f050cc7"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
-            </staticText>
-            <textField>
-                <reportElement x="57" y="55" width="283" height="11" uuid="40323b70-d8d7-4819-860f-3d77bb8dd8a6"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{fromDate})) + " s/d " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{toDate}))]]></textFieldExpression>
-            </textField>
-            <textField>
-                <reportElement x="448" y="75" width="150" height="11" uuid="c3effa57-7985-47df-939e-3b77a221f239"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <textFieldExpression><![CDATA[" : " + $P{shift}]]></textFieldExpression>
-            </textField>
-            <staticText>
-                <reportElement x="3" y="55" width="55" height="11" uuid="d1baadfd-93b7-4b0c-8a63-80fa19cd6b18"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <text><![CDATA[Periode       ]]></text>
-            </staticText>
-            <textField>
-                <reportElement x="57" y="65" width="283" height="11" uuid="ccc7391d-debd-41f3-92b9-c94700b1e723"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <textFieldExpression><![CDATA[" : " + $P{cashier}]]></textFieldExpression>
-            </textField>
-            <staticText>
-                <reportElement x="3" y="65" width="55" height="11" uuid="9b464bc4-1265-449d-8dc2-a65b66fc5779"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <text><![CDATA[Cashier        ]]></text>
-            </staticText>
-            <staticText>
-                <reportElement x="1" y="33" width="553" height="18" uuid="aaccf8d5-aaaf-4ff4-964e-892bf85ff238"/>
-                <textElement textAlignment="Center">
-                    <font isBold="true"/>
-                </textElement>
-                <text><![CDATA[Report Summary Sales by Item Code]]></text>
-            </staticText>
-            <staticText>
-                <reportElement x="394" y="65" width="55" height="11" uuid="541381f2-7d48-4972-81a8-f5e9e84db369"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <text><![CDATA[User ]]></text>
-            </staticText>
-            <staticText>
-                <reportElement x="3" y="75" width="55" height="11" uuid="96a6de03-797c-4764-8f1e-eb1efad4c2a9"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <text><![CDATA[Pos]]></text>
-            </staticText>
-            <staticText>
-                <reportElement x="394" y="75" width="55" height="11" uuid="31c121f6-834d-46b1-b29e-93711bdd98e4"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <text><![CDATA[Shift]]></text>
-            </staticText>
-            <textField>
-                <reportElement x="448" y="65" width="150" height="11" uuid="74631453-560f-484b-b393-a9e9073128aa"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <textFieldExpression><![CDATA[" : " + $P{user}]]></textFieldExpression>
-            </textField>
-            <textField>
-                <reportElement x="57" y="75" width="283" height="11" uuid="06098c5e-483c-46d3-bc7e-22f8fe5425bc"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <textFieldExpression><![CDATA[" : "  +  $P{pos}]]></textFieldExpression>
-            </textField>
-            <staticText>
-                <reportElement x="467" y="0" width="41" height="11" uuid="1e618589-9499-4fea-a5f3-333c63855caa"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <text><![CDATA[Halaman]]></text>
-            </staticText>
-            <textField>
-                <reportElement x="507" y="0" width="91" height="11" uuid="95a89bbd-047d-4bc4-8ee0-1264810588a7"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <textFieldExpression><![CDATA[" : " + $V{PAGE_NUMBER}]]></textFieldExpression>
-            </textField>
-            <staticText>
-                <reportElement x="394" y="55" width="55" height="11" uuid="b1cbc617-0ca9-4efe-955f-ba942c7b4ab9"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <text><![CDATA[Brand]]></text>
-            </staticText>
-            <textField>
-                <reportElement x="448" y="55" width="150" height="11" uuid="2e8c6939-e901-4b0a-a69d-bcb708b275b6"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <textFieldExpression><![CDATA[" : " + $P{brand}]]></textFieldExpression>
-            </textField>
-            <image>
-                <reportElement x="8" y="1" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="f999b9e5-65c8-4601-88a6-8dcc16dd60ae"/>
-                <imageExpression><![CDATA["logo/logoKfc.png"]]></imageExpression>
-            </image>
-        </band>
-    </pageHeader>
-    <columnHeader>
-        <band height="32" splitType="Stretch">
-            <staticText>
-                <reportElement x="7" y="6" width="61" height="20" uuid="f10881a4-ecf2-4a5d-b861-1a6c9a198654"/>
-                <textElement verticalAlignment="Middle"/>
-                <text><![CDATA[ITEM]]></text>
-            </staticText>
-            <staticText>
-                <reportElement x="70" y="6" width="200" height="20" uuid="777062b8-e390-40d4-a82b-c1d88827ab40"/>
-                <textElement textAlignment="Left" verticalAlignment="Middle"/>
-                <text><![CDATA[DESKRIPSI]]></text>
-            </staticText>
-            <staticText>
-                <reportElement x="331" y="6" width="65" height="20" uuid="0e040eb9-6abe-4945-be92-875ddc9c129e"/>
-                <textElement textAlignment="Right" verticalAlignment="Middle"/>
-                <text><![CDATA[TOTAL EI	]]></text>
-            </staticText>
-            <staticText>
-                <reportElement x="405" y="6" width="65" height="20" uuid="76a0cdbf-4b70-4fa5-b3e0-4c93bfa34495"/>
-                <textElement textAlignment="Right" verticalAlignment="Middle"/>
-                <text><![CDATA[TOTAL TA]]></text>
-            </staticText>
-            <staticText>
-                <reportElement x="479" y="6" width="75" height="20" uuid="2cf4904f-0076-4e80-abf7-06bc6d40d5d7"/>
-                <textElement textAlignment="Right" verticalAlignment="Middle"/>
-                <text><![CDATA[JUMLAH]]></text>
-            </staticText>
-            <staticText>
-                <reportElement x="278" y="6" width="50" height="20" uuid="e88b3cbf-7e7b-464f-9268-4457ba3b0237"/>
-                <textElement textAlignment="Left" verticalAlignment="Middle"/>
-                <text><![CDATA[UOM]]></text>
-            </staticText>
-            <line>
-                <reportElement x="1" y="5" width="553" height="1" uuid="e3cf50b5-9b8a-4739-9460-fd531ca19eb0"/>
-            </line>
-            <line>
-                <reportElement x="1" y="26" width="553" height="1" uuid="dbc0fd4c-ebf9-4abe-bf44-3334c2048baa"/>
-            </line>
-        </band>
-    </columnHeader>
-    <detail>
-        <band height="25" splitType="Stretch">
-            <textField>
-                <reportElement x="7" y="4" width="61" height="20" uuid="cedafe5b-46cc-4c51-8786-1b47276c40df"/>
-                <textFieldExpression><![CDATA[$F{ITEM}]]></textFieldExpression>
-            </textField>
-            <textField>
-                <reportElement x="71" y="4" width="199" height="20" uuid="0faf240c-d474-44e7-bebe-455d701c4fd8"/>
-                <textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
-            </textField>
-            <textField pattern="#,##0.00">
-                <reportElement x="331" y="4" width="65" height="20" uuid="ca1d739e-4189-41e4-a388-91ce3d19078d"/>
-                <textElement textAlignment="Right" verticalAlignment="Middle"/>
-                <textFieldExpression><![CDATA[$F{EI}]]></textFieldExpression>
-            </textField>
-            <textField pattern="#,##0.00">
-                <reportElement x="405" y="4" width="65" height="20" uuid="ca0576ce-c52a-486a-8185-2dde75bcaac1"/>
-                <textElement textAlignment="Right" verticalAlignment="Middle"/>
-                <textFieldExpression><![CDATA[$F{TA}]]></textFieldExpression>
-            </textField>
-            <textField pattern="#,##0.00">
-                <reportElement x="479" y="4" width="75" height="20" uuid="3c936c29-4c4b-495a-b761-b1ae5c35854c"/>
-                <textElement textAlignment="Right" verticalAlignment="Middle"/>
-                <textFieldExpression><![CDATA[$F{SUMETA}]]></textFieldExpression>
-            </textField>
-            <textField>
-                <reportElement x="278" y="4" width="50" height="20" uuid="c9cb216b-e86d-4599-a7b6-d088015166ae"/>
-                <textFieldExpression><![CDATA[$F{UOM_STOCK}]]></textFieldExpression>
-            </textField>
-        </band>
-    </detail>
-    <pageFooter>
-        <band height="20"/>
-    </pageFooter>
-    <summary>
-        <band height="42" splitType="Stretch">
-            <staticText>
-                <reportElement x="3" y="30" width="103" height="11" uuid="a8816746-3752-4953-922d-fdc068eaa49a"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <text><![CDATA[Tanggal dan Jan Cetak ]]></text>
-            </staticText>
-            <textField>
-                <reportElement x="106" y="30" width="150" height="11" uuid="2d29de34-b74f-4adc-84c3-7e6a0c40e425"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(new Date())]]></textFieldExpression>
-            </textField>
-        </band>
-    </summary>
+	</queryString>
+	<field name="ITEM" class="java.lang.String"/>
+	<field name="EI" class="java.math.BigDecimal"/>
+	<field name="TA" class="java.math.BigDecimal"/>
+	<field name="ITEM_DESCRIPTION" class="java.lang.String"/>
+	<field name="UOM_STOCK" class="java.lang.String"/>
+	<field name="SUMETA" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="89" splitType="Stretch">
+			<textField>
+				<reportElement x="65" y="11" width="141" height="11" uuid="4c9593ab-6123-447b-be10-cad7a6942c84"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{outletName}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="65" y="1" width="112" height="11" uuid="4c769eb6-8ce5-4c4f-81a0-a3598f050cc7"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="57" y="55" width="283" height="11" uuid="40323b70-d8d7-4819-860f-3d77bb8dd8a6"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{fromDate})) + " s/d " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{toDate}))]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="448" y="75" width="150" height="11" uuid="c3effa57-7985-47df-939e-3b77a221f239"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" : " + $P{shift}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="3" y="55" width="55" height="11" uuid="d1baadfd-93b7-4b0c-8a63-80fa19cd6b18"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Periode       ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="57" y="65" width="283" height="11" uuid="ccc7391d-debd-41f3-92b9-c94700b1e723"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" : " + $P{cashier}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="3" y="65" width="55" height="11" uuid="9b464bc4-1265-449d-8dc2-a65b66fc5779"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Cashier        ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="33" width="553" height="18" uuid="aaccf8d5-aaaf-4ff4-964e-892bf85ff238"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Report Summary Sales by Item Code]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="394" y="65" width="55" height="11" uuid="541381f2-7d48-4972-81a8-f5e9e84db369"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[User ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="3" y="75" width="55" height="11" uuid="96a6de03-797c-4764-8f1e-eb1efad4c2a9"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Pos]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="394" y="75" width="55" height="11" uuid="31c121f6-834d-46b1-b29e-93711bdd98e4"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Shift]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="448" y="65" width="150" height="11" uuid="74631453-560f-484b-b393-a9e9073128aa"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" : " + $P{user}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="57" y="75" width="283" height="11" uuid="06098c5e-483c-46d3-bc7e-22f8fe5425bc"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" : "  +  $P{pos}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="467" y="0" width="41" height="11" uuid="1e618589-9499-4fea-a5f3-333c63855caa"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Halaman]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="507" y="0" width="91" height="11" uuid="95a89bbd-047d-4bc4-8ee0-1264810588a7"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" : " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="394" y="55" width="55" height="11" uuid="b1cbc617-0ca9-4efe-955f-ba942c7b4ab9"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Brand]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="448" y="55" width="150" height="11" uuid="2e8c6939-e901-4b0a-a69d-bcb708b275b6"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" : " + $P{brand}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="8" y="1" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="f999b9e5-65c8-4601-88a6-8dcc16dd60ae"/>
+				<imageExpression><![CDATA["logo/logoKfc.png"]]></imageExpression>
+			</image>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="32" splitType="Stretch">
+			<staticText>
+				<reportElement x="7" y="6" width="61" height="20" uuid="f10881a4-ecf2-4a5d-b861-1a6c9a198654"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[ITEM]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="70" y="6" width="200" height="20" uuid="777062b8-e390-40d4-a82b-c1d88827ab40"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle"/>
+				<text><![CDATA[DESKRIPSI]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="331" y="6" width="65" height="20" uuid="0e040eb9-6abe-4945-be92-875ddc9c129e"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[TOTAL EI	]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="405" y="6" width="65" height="20" uuid="76a0cdbf-4b70-4fa5-b3e0-4c93bfa34495"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[TOTAL TA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="479" y="6" width="75" height="20" uuid="2cf4904f-0076-4e80-abf7-06bc6d40d5d7"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[JUMLAH]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="278" y="6" width="50" height="20" uuid="e88b3cbf-7e7b-464f-9268-4457ba3b0237"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle"/>
+				<text><![CDATA[UOM]]></text>
+			</staticText>
+			<line>
+				<reportElement x="1" y="5" width="553" height="1" uuid="e3cf50b5-9b8a-4739-9460-fd531ca19eb0"/>
+			</line>
+			<line>
+				<reportElement x="1" y="26" width="553" height="1" uuid="dbc0fd4c-ebf9-4abe-bf44-3334c2048baa"/>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="25" splitType="Stretch">
+			<textField>
+				<reportElement x="7" y="4" width="61" height="20" uuid="cedafe5b-46cc-4c51-8786-1b47276c40df"/>
+				<textFieldExpression><![CDATA[$F{ITEM}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="71" y="4" width="199" height="20" uuid="0faf240c-d474-44e7-bebe-455d701c4fd8"/>
+				<textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="331" y="4" width="65" height="20" uuid="ca1d739e-4189-41e4-a388-91ce3d19078d"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{EI}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="405" y="4" width="65" height="20" uuid="ca0576ce-c52a-486a-8185-2dde75bcaac1"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{TA}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="479" y="4" width="75" height="20" uuid="3c936c29-4c4b-495a-b761-b1ae5c35854c"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{SUMETA}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="278" y="4" width="50" height="20" uuid="c9cb216b-e86d-4599-a7b6-d088015166ae"/>
+				<textFieldExpression><![CDATA[$F{UOM_STOCK}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="20"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch">
+			<staticText>
+				<reportElement x="3" y="30" width="103" height="11" uuid="a8816746-3752-4953-922d-fdc068eaa49a"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Tanggal dan Jan Cetak ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="106" y="30" width="150" height="11" uuid="2d29de34-b74f-4adc-84c3-7e6a0c40e425"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(new Date())]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
 </jasperReport>
