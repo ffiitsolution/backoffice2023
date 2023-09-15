@@ -477,7 +477,7 @@ public class ReportController {
         conn.close();
         byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=salesByDate.pdf");
+        headers.add("Content-Disposition", "inline; filename=salesByMenu&Detail.pdf");
 
         return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
     }
