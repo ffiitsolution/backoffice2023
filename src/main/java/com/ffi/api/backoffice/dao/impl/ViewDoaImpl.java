@@ -369,11 +369,11 @@ public class ViewDoaImpl implements ViewDao {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("menuitemcode", rs.getString("menu_item_code"));
-                rt.put("itemdescription", rs.getString("item_description"));
-                rt.put("menugroupname", rs.getString("menu_group_name"));
+                rt.put("menuItemCode", rs.getString("menu_item_code"));
+                rt.put("itemDescription", rs.getString("item_description"));
+                rt.put("menuGroupName", rs.getString("menu_group_name"));
                 rt.put("price", rs.getString("price"));
-                rt.put("pricetypecode", rs.getString("price_type_code"));
+                rt.put("priceTypeCode", rs.getString("price_type_code"));
                 rt.put("taxable", rs.getString("taxable"));
                 return rt;
             }

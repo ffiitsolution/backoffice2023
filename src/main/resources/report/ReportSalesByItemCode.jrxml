@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ReportSalesByItemCode" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="317043c1-b39b-42da-9b58-cb34498e83c5">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="outletCode" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="fromDate" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="toDate" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="pos1" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="pos2" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="shift1" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="shift2" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="cashier1" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="cashier2" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="fromTime" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="toTime" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT Z.*,M.ITEM_DESCRIPTION FROM (
+SELECT   a.menu_item_code,
+              SUM (CASE WHEN a.trans_type = 'EI' THEN a.item_qty ELSE 0 END)
+                 AS ei_qty,
+              SUM (CASE WHEN a.trans_type = 'EI' THEN a.amount ELSE 0 END)
+                 AS ei_amt,
+              SUM (CASE WHEN a.trans_type = 'TA' THEN a.item_qty ELSE 0 END)
+                 AS ta_qty,
+              SUM (CASE WHEN a.trans_type = 'TA' THEN a.amount ELSE 0 END)
+                 AS ta_amt
+       FROM   (
+SELECT   menu_item_code,
+                          trans_type,
+                          SUM (item_qty) AS item_qty,
+                          SUM (AMOUNT) AS amount
+ FROM(
+   SELECT   B.MENU_ITEM_CODE,
+            c.item_description,
+            B.TRANS_TYPE,
+            B.ITEM_QTY,
+            B.AMOUNT
+     FROM      (  SELECT   menu_item_code,
+                           trans_type,
+                           SUM (item_qty) item_qty,
+                           SUM (amount) amount
+                    FROM   (  SELECT   menu_item_code,
+                                       CASE
+                                          WHEN NVL (trans_type, 'TA') <> 'EI'
+                                          THEN
+                                             'TA'
+                                          ELSE
+                                             'EI'
+                                       END
+                                          trans_type,
+                                       SUM (item_qty) item_qty,
+                                       SUM (amount) amount
+                                FROM   (  SELECT   a.pos_code,
+                                                   a.item_seq,
+                                                   a.trans_type,
+                                                   a.menu_item_code,
+                                                   SUM (item_qty) item_qty,
+                                                   SUM (amount) amount
+                                            FROM      t_pos_bill_item a
+                                                   LEFT JOIN
+                                                      t_pos_bill b
+                                                   ON a.bill_no = b.bill_no
+                                                      AND a.pos_code = b.pos_code
+                                           WHERE   b.delivery_status = 'CLS'
+                                                   AND b.OUTLET_CODE IN ($P{outletCode})
+                                                   AND b.time_upd BETWEEN $P{fromTime}
+                                                                      AND  $P{toTime}
+                                                   AND b.pos_code BETWEEN $P{pos1}
+                                                                      AND  $P{pos2}
+                                                   AND b.shift_code BETWEEN $P{shift1}
+                                                                        AND  $P{shift2}
+                                                   AND b.cashier_code BETWEEN $P{cashier1}
+                                                                          AND  $P{cashier2}
+                                                   AND b.trans_date BETWEEN $P{fromDate}
+                                                                        AND  $P{toDate}
+                                        GROUP BY   a.pos_code,
+                                                   a.item_seq,
+                                                   a.trans_type,
+                                                   a.menu_item_code
+                                        UNION ALL
+                                          SELECT   pos_code,
+                                                   item_seq,
+                                                   trans_type,
+                                                   menu_item_code,
+                                                   SUM (a.item_qty) item_qty,
+                                                   SUM (a.amount) amount
+                                            FROM   (  SELECT   a.pos_code,
+                                                               a.item_seq,
+                                                               b.trans_type,
+                                                               a.menu_item_code,
+                                                               SUM (a.item_qty)
+                                                                  item_qty,
+                                                               SUM (a.amount) amount
+                                                        FROM      t_pos_bill_item_detail a
+                                                               LEFT JOIN
+                                                                  t_pos_bill_item b
+                                                               ON a.pos_code =
+                                                                     b.pos_code
+                                                                  AND A.BILL_NO =
+                                                                        B.BILL_NO
+                                                                  AND A.ITEM_SEQ =
+                                                                        B.ITEM_SEQ
+                                                       WHERE   a.amount > 0
+                                                               AND a.menu_item_code <>
+                                                                     B.MENU_ITEM_CODE
+                                                               AND a.menu_item_code LIKE
+                                                                     'X%'
+                                                               AND b.trans_date BETWEEN $P{fromDate}
+                                                                                    AND  $P{toDate}
+                                                    GROUP BY   a.pos_code,
+                                                               a.item_seq,
+                                                               b.trans_type,
+                                                               a.menu_item_code
+                                                    UNION ALL
+                                                      SELECT   a.pos_code,
+                                                               a.item_seq,
+                                                               b.trans_type,
+                                                               b.menu_item_code,
+                                                               0 AS item_qty,
+                                                               SUM (-a.amount) amount
+                                                        FROM      t_pos_bill_item_detail a
+                                                               LEFT JOIN
+                                                                  t_pos_bill_item b
+                                                               ON a.pos_code =
+                                                                     b.pos_code
+                                                                  AND A.BILL_NO =
+                                                                        B.BILL_NO
+                                                                  AND A.ITEM_SEQ =
+                                                                        B.ITEM_SEQ
+                                                       WHERE   a.amount > 0
+                                                               AND a.menu_item_code <>
+                                                                     B.MENU_ITEM_CODE
+                                                               AND a.menu_item_code LIKE
+                                                                     'X%'
+                                                               AND a.trans_date BETWEEN $P{fromDate}
+                                                                                    AND  $P{toDate}
+                                                    GROUP BY   a.pos_code,
+                                                               a.item_seq,
+                                                               b.trans_type,
+                                                               b.menu_item_code) a
+                                        GROUP BY   pos_code,
+                                                   item_seq,
+                                                   trans_type,
+                                                   menu_item_code
+                                        UNION ALL
+                                          SELECT   pos_code,
+                                                   item_seq,
+                                                   trans_type,
+                                                   menu_item_code,
+                                                   SUM (b.item_qty) item_qty,
+                                                   SUM (b.amount) amount
+                                            FROM   (  SELECT   a.pos_code,
+                                                               a.item_seq,
+                                                               b.trans_type,
+                                                               a.menu_item_code,
+                                                               SUM (a.item_qty)
+                                                                  item_qty,
+                                                               SUM (a.amount) amount
+                                                        FROM      t_pos_bill_item_detail a
+                                                               LEFT JOIN
+                                                                  t_pos_bill_item b
+                                                               ON a.pos_code =
+                                                                     b.pos_code
+                                                                  AND A.BILL_NO =
+                                                                        B.BILL_NO
+                                                                  AND A.ITEM_SEQ =
+                                                                        B.ITEM_SEQ
+                                                       WHERE   a.amount > 0
+                                                               AND a.menu_item_code <>
+                                                                     B.MENU_ITEM_CODE
+                                                               AND a.menu_item_code LIKE
+                                                                     '1%'
+                                                               AND b.trans_date BETWEEN $P{fromDate}
+                                                                                    AND  $P{toDate}
+                                                    GROUP BY   a.pos_code,
+                                                               a.item_seq,
+                                                               b.trans_type,
+                                                               a.menu_item_code
+                                                    UNION ALL
+                                                      SELECT   a.pos_code,
+                                                               a.item_seq,
+                                                               b.trans_type,
+                                                               b.menu_item_code,
+                                                               0 AS item_qty,
+                                                               SUM (-a.amount) amount
+                                                        FROM      t_pos_bill_item_detail a
+                                                               LEFT JOIN
+                                                                  t_pos_bill_item b
+                                                               ON a.pos_code =
+                                                                     b.pos_code
+                                                                  AND A.BILL_NO =
+                                                                        B.BILL_NO
+                                                                  AND A.ITEM_SEQ =
+                                                                        B.ITEM_SEQ
+                                                       WHERE   a.amount > 0
+                                                               AND a.menu_item_code <>
+                                                                     B.MENU_ITEM_CODE
+                                                               AND a.menu_item_code LIKE
+                                                                     '1%'
+                                                               AND a.trans_date BETWEEN $P{fromDate}
+                                                                                    AND  $P{toDate}
+                                                    GROUP BY   a.pos_code,
+                                                               a.item_seq,
+                                                               b.trans_type,
+                                                               b.menu_item_code) b
+                                        GROUP BY   pos_code,
+                                                   item_seq,
+                                                   trans_type,
+                                                   menu_item_code)
+                            GROUP BY   trans_type, menu_item_code) a
+                GROUP BY   menu_item_code, trans_type) b
+            LEFT JOIN
+               m_item c
+            ON b.menu_item_code = c.plu) a
+               GROUP BY   menu_item_code, trans_type) a
+                  GROUP BY   a.menu_item_code
+   ORDER BY   a.menu_item_code)Z
+LEFT JOIN M_ITEM M
+ON Z.MENU_ITEM_CODE=M.ITEM_CODE
+ORDER BY  Z.MENU_ITEM_CODE ASC]]>
+	</queryString>
+	<field name="MENU_ITEM_CODE" class="java.lang.String"/>
+	<field name="EI_QTY" class="java.math.BigDecimal"/>
+	<field name="EI_AMT" class="java.math.BigDecimal"/>
+	<field name="TA_QTY" class="java.math.BigDecimal"/>
+	<field name="TA_AMT" class="java.math.BigDecimal"/>
+	<field name="ITEM_DESCRIPTION" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="15" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="164" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="26" splitType="Stretch">
+			<staticText>
+				<reportElement x="11" y="2" width="100" height="20" uuid="10adce6f-a951-4bbd-bbfd-1fd7f30fc930"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[MENU_ITEM_CODE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="225" y="2" width="49" height="20" uuid="40975481-e3d6-48db-b184-3db0da322a30"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[EI_QTY]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="285" y="2" width="100" height="20" uuid="51f381e5-ce70-499a-b86f-bd97eef71dfc"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[EI_AMT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="451" y="2" width="100" height="20" uuid="1b51d5c0-6c2e-4b03-a52d-72dec5bebe2f"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[TA_AMT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="397" y="2" width="49" height="20" uuid="71ca76e2-4335-4a14-88fd-15cf5c1c9456"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[TA_QTY]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="122" y="2" width="100" height="20" uuid="4948281c-fae4-489e-86c4-bb7e228179c6"/>
+				<text><![CDATA[ITEM_DESCRIPTION]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="26" splitType="Stretch">
+			<textField>
+				<reportElement x="11" y="0" width="100" height="20" uuid="95430b5e-06c2-4bcc-afd2-3756fd280f1e"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{MENU_ITEM_CODE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="225" y="0" width="49" height="20" uuid="07b96366-2ea6-4d2f-a646-4c17da1c9531"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{EI_QTY}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="285" y="0" width="100" height="20" uuid="3d4ae371-8f28-4ea3-a66a-f12d990c0e8b"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{EI_AMT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="451" y="0" width="100" height="20" uuid="99434662-a68f-4d88-9d42-9a8d89a01fff"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{TA_AMT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="397" y="6" width="49" height="20" uuid="b8fe9608-0e0c-48a4-b4be-354323232b71"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{TA_QTY}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="122" y="6" width="100" height="20" uuid="12c2efe6-06bd-4152-835f-730161cecd69"/>
+				<textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>
