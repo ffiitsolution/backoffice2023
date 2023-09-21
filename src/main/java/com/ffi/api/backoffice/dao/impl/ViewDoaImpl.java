@@ -2140,6 +2140,44 @@ public class ViewDoaImpl implements ViewDao {
                 prm.put("outletTo", param.get("department"));
             }
             query = queryBuilder.toString();
+        } else if (name.equals("transaksiKasir")) {
+            query = "SELECT COUNT(*) FROM T_POS_DAY_TRANS WHERE TRANS_DATE BETWEEN :fromDate AND :toDate " +
+                    "AND CASHIER_CODE BETWEEN :cashierCode1 AND :cashierCode2 AND SHIFT_CODE BETWEEN :shiftCode1 AND " +
+                    ":shiftCode2 AND TRANS_CODE != 'DNT' AND OUTLET_CODE = :outletCode";
+
+            prm.put("outletCode", param.get("outletCode"));
+            prm.put("fromDate", param.get("fromDate"));
+            prm.put("toDate", param.get("toDate"));
+
+            List<Map<String, Object>> listCashier = (List<Map<String, Object>>) param.get("cashier");
+            StringBuilder cashierCode = new StringBuilder();
+            if (listCashier.size() == 1) {
+                prm.put("cashierCode1", "000");
+                prm.put("cashierCode2", "zzz");
+            } else {
+                for (Map<String, Object> object : listCashier) {
+                    if (object.containsKey("cashierCode1")) {
+                        prm.put("cashierCode1", object.get("cashierCode1"));
+                    } else {
+                        prm.put("cashierCode2", object.get("cashierCode2"));
+                    }
+                }
+            }
+
+            List<Map<String, Object>> listShift = (List<Map<String, Object>>) param.get("shift");
+            StringBuilder shiftCode = new StringBuilder();
+            if (listShift.size() == 1) {
+                prm.put("shiftCode1", "000");
+                prm.put("shiftCode2", "zzz");
+            } else {
+                for (Map<String, Object> object : listShift) {
+                    if (object.containsKey("shiftCode1")) {
+                        prm.put("shiftCode1", object.get("shiftCode1"));
+                    } else {
+                        prm.put("shiftCode2", object.get("shiftCode2"));
+                    }
+                }
+            }
         }
         assert query != null;
         return Integer.valueOf(Objects.requireNonNull(jdbcTemplate.queryForObject(query, prm, new RowMapper<String>() {

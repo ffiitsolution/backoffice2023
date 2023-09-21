@@ -426,14 +426,14 @@
         <groupExpression><![CDATA[$F{MENU}]]></groupExpression>
         <groupHeader>
             <band height="15">
-                <textField isStretchWithOverflow="true">
+                <textField textAdjust="StretchHeight">
                     <reportElement x="2" y="2" width="48" height="12" uuid="dd0380c0-0da4-407a-ba41-3ff21d50d96d"/>
                     <textElement>
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{MENU}]]></textFieldExpression>
                 </textField>
-                <textField isStretchWithOverflow="true">
+                <textField textAdjust="StretchHeight">
                     <reportElement x="53" y="2" width="85" height="12" uuid="eb222a1d-76dc-4760-bbc3-d14ddfde8def"/>
                     <textElement>
                         <font size="8"/>
@@ -674,7 +674,7 @@
     </pageHeader>
     <detail>
         <band height="14" splitType="Stretch">
-            <textField isStretchWithOverflow="true">
+            <textField textAdjust="StretchHeight">
                 <reportElement x="298" y="0" width="163" height="12" uuid="2add6e1f-9c92-4129-8ab0-d67439eba102"/>
                 <textElement>
                     <font size="8"/>

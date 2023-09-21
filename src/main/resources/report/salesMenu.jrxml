@@ -501,7 +501,7 @@ WHERE g.description IN ($P{brand1}, $P{brand2})]]>
                 </textElement>
                 <textFieldExpression><![CDATA[$F{MENU_ITEM_CODE}]]></textFieldExpression>
             </textField>
-            <textField isStretchWithOverflow="true">
+            <textField textAdjust="StretchHeight">
                 <reportElement x="51" y="2" width="212" height="18" uuid="ebb1690d-4d82-4af9-87e5-5e073c20924c"/>
                 <textElement verticalAlignment="Middle">
                     <font size="8"/>

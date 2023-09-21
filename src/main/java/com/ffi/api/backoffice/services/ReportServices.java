@@ -125,4 +125,8 @@ public class ReportServices {
     public Page<Map<String, Object>> getTestPagination(Pageable pageable){
         return dao.getTestPagination(pageable);
     }
+
+    public JasperPrint jasperReportTransaksiKasir(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        return dao.jasperReportTransaksiKasir(param, connection);
+    }
 }

@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="transaksiKasir" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="886e2a39-56bf-4713-9b0c-a51daf92aa8d">
+    <property name="ireport.zoom" value="1.2100000000000029"/>
+    <property name="ireport.x" value="0"/>
+    <property name="ireport.y" value="0"/>
+    <parameter name="fromDate" class="java.lang.String"/>
+    <parameter name="toDate" class="java.lang.String"/>
+    <parameter name="cashierCode" class="java.lang.String"/>
+    <parameter name="shiftCode" class="java.lang.String"/>
+    <parameter name="user" class="java.lang.String"/>
+    <parameter name="cashierCode1" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="cashierCode2" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="shiftCode1" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="shiftCode2" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="outletCode" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="address" class="java.lang.String"/>
+    <queryString>
+        <![CDATA[SELECT
+	a.*,
+	b."SUM(ABS(TRANS_AMOUNT))" AS TOTAL_MODAL_AWAL,
+	c."SUM(ABS(TRANS_AMOUNT))" AS TOTAL_SETOR,
+	d."SUM(ABS(TRANS_AMOUNT))" AS TOTAL_SALES,
+	e."SUM(ABS(TRANS_AMOUNT))" AS TOTAL_SETOR_SHIFT
+
+FROM
+	(
+	SELECT
+		OUTLET_CODE,
+		DENSE_RANK() OVER(ORDER BY CASHIER_CODE) AS num,
+		CASHIER_CODE,
+		CASE
+			WHEN SHIFT_CODE = 'S1' THEN '(Shift Satu)'
+			WHEN SHIFT_CODE = 'S2' THEN '(Shift Dua)'
+			ELSE '(Shift Tiga)'
+		END AS SHIFT_NAME,
+		POS_CODE,
+		TRANS_CODE,
+		CASE
+			WHEN TRANS_CODE = 'OPF' THEN 'Modal Awal'
+			WHEN TRANS_CODE = 'PRS' THEN 'Stor'
+			WHEN TRANS_CODE = 'SLS' THEN 'Sales'
+			WHEN TRANS_CODE = 'TLO' THEN 'Stor End Shift'
+		END AS TRANS_NAME,
+		ABS(TRANS_AMOUNT) AS TRANS_AMOUNT
+	FROM
+		T_POS_DAY_TRANS
+	WHERE
+		TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
+		AND CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+		AND SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
+		AND TRANS_CODE != 'DNT'
+		AND OUTLET_CODE = $P{outletCode}
+	ORDER BY
+		CASHIER_CODE,
+		TRANS_CODE ASC
+)a
+LEFT JOIN (
+	SELECT
+		OUTLET_CODE,
+		SUM(ABS(TRANS_AMOUNT))
+	FROM
+		T_POS_DAY_TRANS
+	WHERE
+		TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
+		AND CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+		AND SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
+		AND TRANS_CODE = 'OPF'
+		AND OUTLET_CODE = $P{outletCode}
+	GROUP BY
+		OUTLET_CODE)b
+ON
+	a.OUTLET_CODE = b.OUTLET_CODE
+LEFT JOIN (
+		SELECT
+		OUTLET_CODE,
+		SUM(ABS(TRANS_AMOUNT))
+	FROM
+		T_POS_DAY_TRANS
+	WHERE
+		TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
+		AND CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+		AND SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
+		AND TRANS_CODE = 'PRS'
+		AND OUTLET_CODE = $P{outletCode}
+	GROUP BY
+		OUTLET_CODE)c
+ON
+	a.OUTLET_CODE = c.OUTLET_CODE
+LEFT JOIN (
+		SELECT
+		OUTLET_CODE,
+		SUM(ABS(TRANS_AMOUNT))
+	FROM
+		T_POS_DAY_TRANS
+	WHERE
+		TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
+		AND CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+		AND SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
+		AND TRANS_CODE = 'SLS'
+		AND OUTLET_CODE = $P{outletCode}
+	GROUP BY
+		OUTLET_CODE)d
+ON
+	a.OUTLET_CODE = d.OUTLET_CODE
+LEFT JOIN (
+		SELECT
+		OUTLET_CODE,
+		SUM(ABS(TRANS_AMOUNT))
+	FROM
+		T_POS_DAY_TRANS
+	WHERE
+		TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
+		AND CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+		AND SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
+		AND TRANS_CODE = 'TLO'
+		AND OUTLET_CODE = $P{outletCode}
+	GROUP BY
+		OUTLET_CODE)e
+ON
+	a.OUTLET_CODE = e.OUTLET_CODE
+ORDER BY
+	a.NUM,
+	a.TRANS_CODE ASC]]>
+    </queryString>
+    <field name="OUTLET_CODE" class="java.lang.String"/>
+    <field name="NUM" class="java.math.BigDecimal"/>
+    <field name="CASHIER_CODE" class="java.lang.String"/>
+    <field name="SHIFT_NAME" class="java.lang.String"/>
+    <field name="POS_CODE" class="java.lang.String"/>
+    <field name="TRANS_CODE" class="java.lang.String"/>
+    <field name="TRANS_NAME" class="java.lang.String"/>
+    <field name="TRANS_AMOUNT" class="java.math.BigDecimal"/>
+    <field name="TOTAL_MODAL_AWAL" class="java.math.BigDecimal"/>
+    <field name="TOTAL_SETOR" class="java.math.BigDecimal"/>
+    <field name="TOTAL_SALES" class="java.math.BigDecimal"/>
+    <field name="TOTAL_SETOR_SHIFT" class="java.math.BigDecimal"/>
+    <group name="group">
+        <groupExpression><![CDATA[$F{NUM}]]></groupExpression>
+        <groupFooter>
+            <band height="20">
+                <line>
+                    <reportElement x="258" y="8" width="224" height="1" uuid="43949302-9fa8-468c-bba3-09b9420f207a"/>
+                </line>
+            </band>
+        </groupFooter>
+    </group>
+    <background>
+        <band splitType="Stretch"/>
+    </background>
+    <columnHeader>
+        <band height="98" splitType="Stretch">
+            <staticText>
+                <reportElement x="0" y="83" width="31" height="15" uuid="d382db65-a26d-444a-a021-a576e0a59468"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[NO]]></text>
+            </staticText>
+            <line>
+                <reportElement x="1" y="82" width="552" height="1" uuid="f6b8c15b-d1e5-4275-9e43-efbe3d70ffee"/>
+            </line>
+            <line>
+                <reportElement x="1" y="97" width="552" height="1" uuid="1b98b778-6a54-4ab4-9506-9dcff57b53d4"/>
+            </line>
+            <staticText>
+                <reportElement x="30" y="83" width="158" height="15" uuid="5c47be12-bbd4-4a92-8852-95538370eff7"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[NAMA KASIR]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="258" y="83" width="25" height="15" uuid="653b2dc8-ec99-465a-8cea-27a7e0c93939"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[POS]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="296" y="83" width="90" height="15" uuid="22ec6e10-17d8-4114-93bd-b3a594c9863f"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[TRANSAKSI]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="386" y="83" width="90" height="15" uuid="dae31c7e-23e3-49cc-b812-f16222b676a8"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[NILAI]]></text>
+            </staticText>
+            <image>
+                <reportElement x="12" y="0" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="ff2f527b-4d46-4f2c-8952-abafe1510b0a"/>
+                <imageExpression><![CDATA["logo/logoKfc.png"]]></imageExpression>
+            </image>
+            <staticText>
+                <reportElement x="68" y="0" width="112" height="11" uuid="f818bc66-eb17-4152-aa44-5bc546c46714"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="0" y="23" width="552" height="19" uuid="609d47a1-0ea6-4039-add3-3d54e01279bb"/>
+                <textElement textAlignment="Center">
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Report Transaksi Kasir]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="1" y="44" width="55" height="11" uuid="1cfadcb4-0e8d-4569-b6b0-7034f4c91a98"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Periode       ]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="55" y="44" width="283" height="11" uuid="02a8871a-cc53-45f9-a1aa-af9540abc936"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{fromDate})) + " s/d " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{toDate}))]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="1" y="54" width="55" height="11" uuid="dfc349fe-4a46-4081-ad64-4b1ec1f0f147"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Cashier        ]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="55" y="54" width="283" height="11" uuid="4271d8dc-6bb2-433b-baee-58b4c57882bb"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + $P{cashierCode}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="55" y="64" width="150" height="11" uuid="6ba3429b-352d-415a-b29b-513865ee1247"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + $P{shiftCode}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="1" y="64" width="55" height="11" uuid="9a71c4f6-2ba9-4645-b263-c1886c97792c"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Shift]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="447" y="44" width="150" height="11" uuid="1c62b4af-d07c-4903-abce-f83beb6acecb"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + $V{PAGE_NUMBER}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="345" y="44" width="103" height="11" uuid="839822f6-5c6e-4be6-8b69-50d57b0aaf6f"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Halaman]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="447" y="55" width="150" height="11" uuid="67f9a1bf-183b-48f1-a716-4712f8775737"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + $P{user}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="345" y="55" width="103" height="11" uuid="23c816d6-fe58-42ba-a67c-a7026735b2d0"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[User ]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="345" y="65" width="103" height="11" uuid="5b42e036-203e-4202-9b63-445749321f73"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Tanggal dan Jan Cetak ]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="447" y="65" width="150" height="11" uuid="bbe0e699-603a-4588-9a06-1676f4398afa"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(new Date())]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="68" y="10" width="203" height="11" uuid="0c074c56-1eff-46c7-a492-5c083588d794"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{address}]]></textFieldExpression>
+            </textField>
+        </band>
+    </columnHeader>
+    <detail>
+        <band height="17" splitType="Stretch">
+            <textField>
+                <reportElement isPrintRepeatedValues="false" x="0" y="0" width="31" height="15" uuid="210354de-123e-4940-99d5-478d349aeffd"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{NUM} + "."]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement isPrintRepeatedValues="false" x="30" y="0" width="158" height="15" uuid="41fd19a3-4d01-4e98-88e6-241711637198"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{CASHIER_CODE} + " - " + $F{SHIFT_NAME}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement isPrintRepeatedValues="false" x="258" y="0" width="25" height="15" uuid="f383a8a6-0f5c-4b19-8d49-fd7607fd4396"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{POS_CODE}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="296" y="0" width="90" height="15" uuid="80cea5b9-fc5a-45f4-8dd8-c1232f585067"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{TRANS_CODE} + " - " + $F{TRANS_NAME}]]></textFieldExpression>
+            </textField>
+            <textField pattern="#,##0.00">
+                <reportElement x="386" y="0" width="90" height="15" uuid="a6367085-6188-45b1-a966-ecc7faae196d"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{TRANS_AMOUNT}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+    <summary>
+        <band height="98" splitType="Stretch">
+            <staticText>
+                <reportElement x="171" y="0" width="100" height="15" uuid="aa4831f4-7cf2-483e-bd33-898572716e75"/>
+                <textElement>
+                    <font isBold="true" isItalic="true"/>
+                </textElement>
+                <text><![CDATA[Summary Total :]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="271" y="16" width="115" height="15" uuid="1f56dd7c-6354-46c0-8fc7-5714c28fbf7e"/>
+                <textElement>
+                    <font isBold="true" isItalic="false"/>
+                </textElement>
+                <text><![CDATA[OPF - Modal Awal]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="271" y="30" width="115" height="15" uuid="7e44a234-2e67-449b-8737-adb5c4d0faf1"/>
+                <textElement>
+                    <font isBold="true" isItalic="false"/>
+                </textElement>
+                <text><![CDATA[PRS - Setor]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="271" y="44" width="115" height="15" uuid="ae5cb704-dd9b-4e32-814d-54422f4be8f8"/>
+                <textElement>
+                    <font isBold="true" isItalic="false"/>
+                </textElement>
+                <text><![CDATA[SLS - Sales]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="271" y="58" width="115" height="15" uuid="43c765b7-3c6c-40a4-9cd5-bf28a0f1b7de"/>
+                <textElement>
+                    <font isBold="true" isItalic="false"/>
+                </textElement>
+                <text><![CDATA[TOL - Setor End Shift]]></text>
+            </staticText>
+            <textField pattern="#,##0.00">
+                <reportElement x="386" y="16" width="100" height="15" uuid="8086ca27-1ce5-472d-939a-06fd08953394"/>
+                <textElement textAlignment="Right">
+                    <font size="8" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{TOTAL_MODAL_AWAL}]]></textFieldExpression>
+            </textField>
+            <textField pattern="#,##0.00">
+                <reportElement x="386" y="30" width="100" height="15" uuid="f8e299f9-e36d-48d0-8354-4de40e9be0a4"/>
+                <textElement textAlignment="Right">
+                    <font size="8" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{TOTAL_SETOR}]]></textFieldExpression>
+            </textField>
+            <textField pattern="#,##0.00">
+                <reportElement x="386" y="45" width="100" height="14" uuid="c9d1c37f-cd3e-4b87-bcd0-38cb7c2558e8"/>
+                <textElement textAlignment="Right">
+                    <font size="8" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{TOTAL_SALES}]]></textFieldExpression>
+            </textField>
+            <textField pattern="#,##0.00">
+                <reportElement x="386" y="59" width="100" height="14" uuid="d06373d9-ddbd-4fdf-af1c-56e06cce4984"/>
+                <textElement textAlignment="Right">
+                    <font size="8" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{TOTAL_SETOR_SHIFT}]]></textFieldExpression>
+            </textField>
+        </band>
+    </summary>
+</jasperReport>
