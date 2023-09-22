@@ -51,7 +51,8 @@ FROM
 			WHEN TRANS_CODE = 'SLS' THEN 'Sales'
 			WHEN TRANS_CODE = 'TLO' THEN 'Stor End Shift'
 		END AS TRANS_NAME,
-		ABS(TRANS_AMOUNT) AS TRANS_AMOUNT
+		ABS(TRANS_AMOUNT) AS TRANS_AMOUNT,
+		TRANS_DATE
 	FROM
 		T_POS_DAY_TRANS
 	WHERE
@@ -61,6 +62,7 @@ FROM
 		AND TRANS_CODE != 'DNT'
 		AND OUTLET_CODE = $P{outletCode}
 	ORDER BY
+		TRANS_DATE,
 		CASHIER_CODE,
 		TRANS_CODE ASC
 )a
@@ -130,6 +132,8 @@ ON
 	a.OUTLET_CODE = e.OUTLET_CODE
 ORDER BY
 	a.NUM,
+	a.TRANS_DATE,
+	a.POS_CODE,
 	a.TRANS_CODE ASC]]>
     </queryString>
     <field name="OUTLET_CODE" class="java.lang.String"/>
@@ -140,6 +144,7 @@ ORDER BY
     <field name="TRANS_CODE" class="java.lang.String"/>
     <field name="TRANS_NAME" class="java.lang.String"/>
     <field name="TRANS_AMOUNT" class="java.math.BigDecimal"/>
+    <field name="TRANS_DATE" class="java.sql.Timestamp"/>
     <field name="TOTAL_MODAL_AWAL" class="java.math.BigDecimal"/>
     <field name="TOTAL_SETOR" class="java.math.BigDecimal"/>
     <field name="TOTAL_SALES" class="java.math.BigDecimal"/>
