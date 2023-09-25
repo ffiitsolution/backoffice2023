@@ -60,11 +60,11 @@ public class ProcessDaoImpl implements ProcessDao {
 
     @Override
     public void insertSupplier(Map<String, String> balance) {
-        String sql = "INSERT INTO M_SUPPLIER (CD_SUPPLIER,SUPPLIER_NAME,ADDRESS_1,ADDRESS_2,CITY,ZIP_CODE,PHONE,\n"
-                + "FAX,HOMEPAGE,CP_NAME,CP_TITLE,CP_PHONE,CP_PHONE_EXT,CP_MOBILE,CP_EMAIL,FLAG_CANVASING,\n"
-                + "STATUS,USER_UPD,DATE_UPD,TIME_UPD)\n"
-                + "values(:cdSupplier,:supplierName,:address1,:address2,:city,:zipCode,:phone,:fax,:homepage,\n"
-                + ":cpName,:cpTitle,:cpPhone,:cpPhoneExt,:cpMobile,:cpEmail,:flagCanvasing,:status,:userUpd,:dateUpd,:timeUpd)\n";
+        String sql = "INSERT INTO M_SUPPLIER (CD_SUPPLIER,SUPPLIER_NAME,ADDRESS_1,ADDRESS_2,CITY,ZIP_CODE,PHONE, "
+                + "FAX,HOMEPAGE,CP_NAME,CP_TITLE,CP_PHONE,CP_PHONE_EXT,CP_MOBILE,CP_EMAIL,FLAG_CANVASING, "
+                + "STATUS,USER_UPD,DATE_UPD,TIME_UPD) "
+                + "values(:cdSupplier,:supplierName,:address1,:address2,:city,:zipCode,:phone,:fax,:homepage, "
+                + ":cpName,:cpTitle,:cpPhone,:cpPhoneExt,:cpMobile,:cpEmail,:flagCanvasing,:status,:userUpd,:dateUpd,:timeUpd) ";
         Map param = new HashMap();
         param.put("cdSupplier", balance.get("cdSupplier"));
         param.put("supplierName", balance.get("supplierName"));
@@ -93,24 +93,24 @@ public class ProcessDaoImpl implements ProcessDao {
 
     @Override
     public void updateSupplier(Map<String, String> balance) {
-        String qy = "update m_supplier set SUPPLIER_NAME=:supplierName,\n"
-                + "ADDRESS_1=:address1,\n"
-                + "ADDRESS_2=:address2,\n"
-                + "CITY=:city,\n"
-                + "ZIP_CODE=:zipCode,\n"
-                + "PHONE=:phone,\n"
-                + "FAX=:fax,\n"
-                + "HOMEPAGE=:homepage,\n"
-                + "CP_NAME=:cpName,\n"
-                + "CP_TITLE=:cpTitle,\n"
-                + "CP_PHONE=:cpPhone,\n"
-                + "CP_PHONE_EXT=:cpPhoneExt,\n"
-                + "CP_MOBILE=:cpMobile,\n"
-                + "CP_EMAIL=:cpEmail,\n"
-                + "FLAG_CANVASING=:flagCanvasing,\n"
-                + "STATUS=:status,\n"
-                + "USER_UPD=:userUpd,\n"
-                + "DATE_UPD=:dateUpd,\n"
+        String qy = "update m_supplier set SUPPLIER_NAME=:supplierName, "
+                + "ADDRESS_1=:address1, "
+                + "ADDRESS_2=:address2, "
+                + "CITY=:city, "
+                + "ZIP_CODE=:zipCode, "
+                + "PHONE=:phone, "
+                + "FAX=:fax, "
+                + "HOMEPAGE=:homepage, "
+                + "CP_NAME=:cpName, "
+                + "CP_TITLE=:cpTitle, "
+                + "CP_PHONE=:cpPhone, "
+                + "CP_PHONE_EXT=:cpPhoneExt, "
+                + "CP_MOBILE=:cpMobile, "
+                + "CP_EMAIL=:cpEmail, "
+                + "FLAG_CANVASING=:flagCanvasing, "
+                + "STATUS=:status, "
+                + "USER_UPD=:userUpd, "
+                + "DATE_UPD=:dateUpd, "
                 + "TIME_UPD=:timeUpd "
                 + "where CD_SUPPLIER =:cdSupplier";
         Map param = new HashMap();
@@ -427,20 +427,20 @@ public class ProcessDaoImpl implements ProcessDao {
         String month = df.format(tgl);
         String year = dfYear.format(tgl);
 
-        String qy1 = "update m_counter \n"
-                + "       set COUNTER_NO = (select COUNTER_NO+1 FROM M_COUNTER \n"
-                + "                        where YEAR = :year \n"
-                + "                        AND MONTH= :month \n"
-                + "                        AND TRANS_TYPE = 'ID' \n"
-                + "                        AND OUTLET_CODE= :outletCode )\n"
+        String qy1 = "update m_counter  "
+                + "       set COUNTER_NO = (select COUNTER_NO+1 FROM M_COUNTER  "
+                + "                        where YEAR = :year  "
+                + "                        AND MONTH= :month  "
+                + "                        AND TRANS_TYPE = 'ID'  "
+                + "                        AND OUTLET_CODE= :outletCode ) "
                 + "where YEAR = :year AND MONTH= :month AND TRANS_TYPE = 'ID' AND OUTLET_CODE= :outletCode";
 
-        String qy2 = "update m_counter \n"
-                + "       set COUNTER_NO = (select COUNTER_NO+1 FROM M_COUNTER \n"
-                + "                        where YEAR = :year \n"
-                + "                        AND MONTH= :month \n"
-                + "                        AND TRANS_TYPE = :transType \n"
-                + "                        AND OUTLET_CODE= :outletCode )\n"
+        String qy2 = "update m_counter  "
+                + "       set COUNTER_NO = (select COUNTER_NO+1 FROM M_COUNTER  "
+                + "                        where YEAR = :year  "
+                + "                        AND MONTH= :month  "
+                + "                        AND TRANS_TYPE = :transType  "
+                + "                        AND OUTLET_CODE= :outletCode ) "
                 + "where YEAR = :year AND MONTH= :month AND TRANS_TYPE = :transType AND OUTLET_CODE= :outletCode";
 
         Map param = new HashMap();
@@ -553,18 +553,18 @@ public class ProcessDaoImpl implements ProcessDao {
 
         String opNo = opnameNumber(year, month, balance.getTransType(), balance.getOutletCode());
 
-        String qy = "INSERT INTO T_OPNAME_HEADER (OUTLET_CODE,CD_TEMPLATE,OPNAME_NO,OPNAME_DATE,REMARK,STATUS,USER_UPD,DATE_UPD,TIME_UPD)\n"
+        String qy = "INSERT INTO T_OPNAME_HEADER (OUTLET_CODE,CD_TEMPLATE,OPNAME_NO,OPNAME_DATE,REMARK,STATUS,USER_UPD,DATE_UPD,TIME_UPD) "
                 + "values(:outletCode,:cdTemplate,:opnameNo,:opnameDate,:remark,:status,:userUpd,:dateUpd,:timeUpd)";
 
-        String qry = "INSERT INTO T_OPNAME_DETAIL (\n"
-                + "SELECT SC.OUTLET_CODE,:opnameNo,SC.ITEM_CODE,\n"
-                + "(SC.QTY_BEGINNING+SC.QTY_IN-SC.QTY_OUT) QTY_FREEZE,0 COST_FREEZE,\n"
-                + "0 QTY_PURCH,I.UOM_PURCHASE,0 QTY_STOCK,I.UOM_STOCK,0 TOTAL_QTY,\n"
-                + " :userUpd USER_UPD,:dateUpd DATE_UPD,:timeUpd TIME_UPD\n"
-                + "FROM T_STOCK_CARD SC\n"
-                + "LEFT JOIN M_ITEM I ON I.ITEM_CODE = SC.ITEM_CODE\n"
-                + "WHERE SC.OUTLET_CODE = :outletCode AND I.STATUS = 'A'\n"
-                + "AND SC.TRANS_DATE = :opnameDate \n"
+        String qry = "INSERT INTO T_OPNAME_DETAIL ( "
+                + "SELECT SC.OUTLET_CODE,:opnameNo,SC.ITEM_CODE, "
+                + "(SC.QTY_BEGINNING+SC.QTY_IN-SC.QTY_OUT) QTY_FREEZE,0 COST_FREEZE, "
+                + "0 QTY_PURCH,I.UOM_PURCHASE,0 QTY_STOCK,I.UOM_STOCK,0 TOTAL_QTY, "
+                + " :userUpd USER_UPD,:dateUpd DATE_UPD,:timeUpd TIME_UPD "
+                + "FROM T_STOCK_CARD SC "
+                + "LEFT JOIN M_ITEM I ON I.ITEM_CODE = SC.ITEM_CODE "
+                + "WHERE SC.OUTLET_CODE = :outletCode AND I.STATUS = 'A' "
+                + "AND SC.TRANS_DATE = :opnameDate  "
                 + ")";
 
         Map param = new HashMap();
@@ -587,10 +587,10 @@ public class ProcessDaoImpl implements ProcessDao {
 
     public String opnameNumber(String year, String month, String transType, String outletCode) {
 
-        String sql = "SELECT :transType||ORDER_ID||COUNTNO ORDER_ID FROM (\n"
-                + "SELECT A.OUTLET_CODE||:month||A.YEAR AS ORDER_ID,A.COUNTER_NO+1 COUNTNO FROM M_COUNTER A\n"
-                + "LEFT JOIN M_OUTLET B\n"
-                + "ON B.OUTLET_CODE=A.OUTLET_CODE\n"
+        String sql = "SELECT :transType||ORDER_ID||COUNTNO ORDER_ID FROM ( "
+                + "SELECT A.OUTLET_CODE||:month||A.YEAR AS ORDER_ID,A.COUNTER_NO+1 COUNTNO FROM M_COUNTER A "
+                + "LEFT JOIN M_OUTLET B "
+                + "ON B.OUTLET_CODE=A.OUTLET_CODE "
                 + "WHERE A.YEAR = :year AND A.MONTH= :month AND A.TRANS_TYPE = :transType AND A.OUTLET_CODE= :outletCode)";
         Map param = new HashMap();
         param.put("year", year);
@@ -615,8 +615,8 @@ public class ProcessDaoImpl implements ProcessDao {
         String month = df.format(tgl);
         String year = dfYear.format(tgl);
 
-        String qy = "update m_counter set \n"
-                + "counter_no = (select counter_no+1 from M_COUNTER WHERE YEAR = :year AND MONTH= :month AND TRANS_TYPE = :transType AND OUTLET_CODE= :outletCode)\n"
+        String qy = "update m_counter set  "
+                + "counter_no = (select counter_no+1 from M_COUNTER WHERE YEAR = :year AND MONTH= :month AND TRANS_TYPE = :transType AND OUTLET_CODE= :outletCode) "
                 + "WHERE YEAR = :year AND MONTH= :month AND TRANS_TYPE = :transType AND OUTLET_CODE= :outletCode";
         Map param = new HashMap();
         param.put("year", year);
@@ -640,8 +640,8 @@ public class ProcessDaoImpl implements ProcessDao {
             String cekOsDetails = cekOsDetails(opnameDtls.getOutletCode(), opnameDtls.getOpnameNo(), dtls.getItemCode());
 
             if (cekOsDetails.equals("0")) {
-                qy = "INSERT INTO T_OPNAME_DETAIL (OUTLET_CODE,OPNAME_NO,ITEM_CODE,QTY_FREEZE,COST_FREEZE,QTY_PURCH,\n"
-                        + "UOM_PURCH,QTY_STOCK,UOM_STOCK,TOTAL_QTY,USER_UPD,DATE_UPD,TIME_UPD)\n"
+                qy = "INSERT INTO T_OPNAME_DETAIL (OUTLET_CODE,OPNAME_NO,ITEM_CODE,QTY_FREEZE,COST_FREEZE,QTY_PURCH, "
+                        + "UOM_PURCH,QTY_STOCK,UOM_STOCK,TOTAL_QTY,USER_UPD,DATE_UPD,TIME_UPD) "
                         + "values(:outletCode,:opnameNo,:itemCode,:qtyFreeze,:costFreeze,:qtyPurch,:uomPurch,:qtyStock,:uomStock,"
                         + ":totalQty,:userUpd,:dateUpd,:timeUpd)";
                 Map param = new HashMap();
@@ -661,9 +661,9 @@ public class ProcessDaoImpl implements ProcessDao {
                 param.put("timeUpd", timeStamp);
                 jdbcTemplate.update(qy, param);
             } else {
-                qy = "UPDATE T_OPNAME_DETAIL \n"
-                        + "SET QTY_PURCH = :qtyPurch , QTY_STOCK = :qtyStock, TOTAL_QTY = :totalQty,\n"
-                        + "USER_UPD = :userUpd, DATE_UPD = :dateUpd , TIME_UPD = :timeUpd\n"
+                qy = "UPDATE T_OPNAME_DETAIL  "
+                        + "SET QTY_PURCH = :qtyPurch , QTY_STOCK = :qtyStock, TOTAL_QTY = :totalQty, "
+                        + "USER_UPD = :userUpd, DATE_UPD = :dateUpd , TIME_UPD = :timeUpd "
                         + "WHERE OPNAME_NO = :opnameNo AND OUTLET_CODE = :outletCode AND ITEM_CODE = :itemCode";
                 Map param = new HashMap();
                 param.put("outletCode", opnameDtls.getOutletCode());
@@ -687,7 +687,7 @@ public class ProcessDaoImpl implements ProcessDao {
 
     public String cekOsDetails(String outletCode, String opnameNo, String itemCode) {
 
-        String sql = "select count(*) cek \n"
+        String sql = "select count(*) cek  "
                 + "from T_OPNAME_DETAIL where OUTLET_CODE = :outletCode and OPNAME_NO = :opnameNo and ITEM_CODE = :itemCode";
         Map param = new HashMap();
         param.put("opnameNo", opnameNo);
@@ -705,27 +705,27 @@ public class ProcessDaoImpl implements ProcessDao {
     @Override
     public void insertSoToScDtl(Map<String, String> balance) {
 
-        String qry = "INSERT INTO T_STOCK_CARD_DETAIL (\n"
-                + "SELECT * FROM (\n"
-                + "SELECT OUTLET_CODE,TRANS_DATE,ITEM_CODE,TRANS_TYPE,\n"
-                + "QTY QTY_IN,0 QTY_OUT,\n"
-                + "USER_UPD, DATE_UPD, TIME_UPD\n"
-                + "FROM (\n"
-                + "select OUTLET_CODE,:opnameDate TRANS_DATE,ITEM_CODE,:transType TRANS_TYPE,\n"
-                + "TOTAL_QTY - (QTY_FREEZE) QTY,:userUpd USER_UPD,:dateUpd DATE_UPD,:timeUpd TIME_UPD\n"
-                + "from T_OPNAME_DETAIL \n"
-                + "where OUTLET_CODE = :outletCode AND OPNAME_NO = :opnameNo)\n"
-                + "WHERE QTY < = 0\n"
-                + "union all\n"
-                + "SELECT OUTLET_CODE,TRANS_DATE,ITEM_CODE,TRANS_TYPE,\n"
-                + "0 QTY_IN, QTY QTY_OUT,\n"
-                + "USER_UPD, DATE_UPD, TIME_UPD\n"
-                + "FROM (\n"
-                + "select OUTLET_CODE,:opnameDate TRANS_DATE,ITEM_CODE,:transType TRANS_TYPE,\n"
-                + "TOTAL_QTY - (QTY_FREEZE) QTY,:userUpd USER_UPD, :dateUpd DATE_UPD, :timeUpd TIME_UPD\n"
-                + "from T_OPNAME_DETAIL \n"
-                + "where OUTLET_CODE = :outletCode AND OPNAME_NO = :opnameNo)\n"
-                + "WHERE QTY > 0)\n"
+        String qry = "INSERT INTO T_STOCK_CARD_DETAIL ( "
+                + "SELECT * FROM ( "
+                + "SELECT OUTLET_CODE,TRANS_DATE,ITEM_CODE,TRANS_TYPE, "
+                + "QTY QTY_IN,0 QTY_OUT, "
+                + "USER_UPD, DATE_UPD, TIME_UPD "
+                + "FROM ( "
+                + "select OUTLET_CODE,:opnameDate TRANS_DATE,ITEM_CODE,:transType TRANS_TYPE, "
+                + "TOTAL_QTY - (QTY_FREEZE) QTY,:userUpd USER_UPD,:dateUpd DATE_UPD,:timeUpd TIME_UPD "
+                + "from T_OPNAME_DETAIL  "
+                + "where OUTLET_CODE = :outletCode AND OPNAME_NO = :opnameNo) "
+                + "WHERE QTY < = 0 "
+                + "union all "
+                + "SELECT OUTLET_CODE,TRANS_DATE,ITEM_CODE,TRANS_TYPE, "
+                + "0 QTY_IN, QTY QTY_OUT, "
+                + "USER_UPD, DATE_UPD, TIME_UPD "
+                + "FROM ( "
+                + "select OUTLET_CODE,:opnameDate TRANS_DATE,ITEM_CODE,:transType TRANS_TYPE, "
+                + "TOTAL_QTY - (QTY_FREEZE) QTY,:userUpd USER_UPD, :dateUpd DATE_UPD, :timeUpd TIME_UPD "
+                + "from T_OPNAME_DETAIL  "
+                + "where OUTLET_CODE = :outletCode AND OPNAME_NO = :opnameNo) "
+                + "WHERE QTY > 0) "
                 + ")";
 
         Map param = new HashMap();
@@ -781,9 +781,9 @@ public class ProcessDaoImpl implements ProcessDao {
                 double totIn = qtyIn + in;
                 double totOut = qtyOut + out;
 
-                String qry2 = "UPDATE T_STOCK_CARD \n"
-                        + "SET QTY_IN = :qtyIn ,QTY_OUT = :qtyOut ,REMARK = :cdTrans , USER_UPD = :userUpd , \n"
-                        + "DATE_UPD = :dateUpd, TIME_UPD = :timeUpd\n"
+                String qry2 = "UPDATE T_STOCK_CARD  "
+                        + "SET QTY_IN = :qtyIn ,QTY_OUT = :qtyOut ,REMARK = :cdTrans , USER_UPD = :userUpd ,  "
+                        + "DATE_UPD = :dateUpd, TIME_UPD = :timeUpd "
                         + "WHERE OUTLET_CODE = :outletCode AND TRANS_DATE = :opnameDate AND ITEM_CODE = :itemCode ";
 
                 Map<String, Object> param1 = new HashMap<String, Object>();
@@ -850,9 +850,9 @@ public class ProcessDaoImpl implements ProcessDao {
                 double totIn = qtyIn + in;
                 double totOut = qtyOut + out;
 
-                String qry2 = "UPDATE T_STOCK_CARD \n"
-                        + "SET QTY_IN = :qtyIn ,QTY_OUT = :qtyOut ,REMARK = :cdTrans , USER_UPD = :userUpd , \n"
-                        + "DATE_UPD = :dateUpd, TIME_UPD = :timeUpd\n"
+                String qry2 = "UPDATE T_STOCK_CARD  "
+                        + "SET QTY_IN = :qtyIn ,QTY_OUT = :qtyOut ,REMARK = :cdTrans , USER_UPD = :userUpd ,  "
+                        + "DATE_UPD = :dateUpd, TIME_UPD = :timeUpd "
                         + "WHERE OUTLET_CODE = :outletCode AND TRANS_DATE = :opnameDate AND ITEM_CODE = :itemCode ";
 
                 Map<String, Object> param = new HashMap<String, Object>();
@@ -912,8 +912,8 @@ public class ProcessDaoImpl implements ProcessDao {
         Gson gson = new Gson();
         Map<String, Object> map1 = new HashMap<String, Object>();
         try {
-            String qry1 = "SELECT OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,TO_CHAR(ORDER_DATE,'DD-MON-YY')ORDER_DATE,ORDER_TO,\n"
-                    + "CD_SUPPLIER,TO_CHAR(DT_DUE,'DD-MON-YY')DT_DUE,TO_CHAR(DT_EXPIRED,'DD-MON-YY')DT_EXPIRED,REMARK,NO_OF_PRINT,STATUS\n"
+            String qry1 = "SELECT OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,TO_CHAR(ORDER_DATE,'DD-MON-YY')ORDER_DATE,ORDER_TO, "
+                    + "CD_SUPPLIER,TO_CHAR(DT_DUE,'DD-MON-YY')DT_DUE,TO_CHAR(DT_EXPIRED,'DD-MON-YY')DT_EXPIRED,REMARK,NO_OF_PRINT,STATUS "
                     + "FROM T_ORDER_HEADER WHERE ORDER_NO = :orderNo ";
             Map prm = new HashMap();
             prm.put("orderNo", balance.get("orderNo"));
@@ -921,8 +921,8 @@ public class ProcessDaoImpl implements ProcessDao {
             List<Map<String, Object>> list = jdbcTemplate.query(qry1, prm, new RowMapper<Map<String, Object>>() {
                 public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                     Map<String, Object> rh = new HashMap<String, Object>();
-                    String qry2 = "SELECT ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,\n"
-                            + "TOTAL_QTY_STOCK,UNIT_PRICE\n"
+                    String qry2 = "SELECT ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2, "
+                            + "TOTAL_QTY_STOCK,UNIT_PRICE "
                             + "FROM T_ORDER_DETAIL WHERE ORDER_NO = :orderNo ";
                     List<Map<String, Object>> list2 = jdbcTemplate.query(qry2, prm, new RowMapper<Map<String, Object>>() {
                         @Override
@@ -1530,7 +1530,7 @@ public class ProcessDaoImpl implements ProcessDao {
         prm.put("ItemCode", ref.get("item"));
         prm.put("status", ref.get("stat"));
         System.err.println("q :" + qry);
-        
+
         return jdbcTemplate.queryForObject(qry, prm, new RowMapper() {
             @Override
             public String mapRow(ResultSet rs, int i) throws SQLException {
@@ -1579,7 +1579,7 @@ public class ProcessDaoImpl implements ProcessDao {
             detailParam.put("flagPaket", emp.get(i).getAsJsonObject().getAsJsonPrimitive("flagPaket").getAsString());
             detailParam.put("userUpd", userU);
             inserUpdateMaster(detailParam);
-              //  System.out.println(detailParam);
+            //  System.out.println(detailParam);
             detailParam.clear();
         }
     }
@@ -1654,9 +1654,71 @@ public class ProcessDaoImpl implements ProcessDao {
             jdbcTemplate.update(qy, param);
             System.out.println("query insert item: " + qy);
         } else {
-            String qy = "UPDATE M_ITEM SET STATUS=:status,USER_UPD=:userUpd,DATE_UPD=:dateUpd,TIME_UPD=:timeUpd where ITEM_CODE=:itemCode";
+            String qy = "UPDATE M_ITEM SET  "
+                    + "CD_BRAND:=cdBrand, "
+                    + "ITEM_DESCRIPTION:=itemDescription, "
+                    + "CD_LEVEL_1:=cdLevel1, "
+                    + "CD_LEVEL_2:=cdLevel2, "
+                    + "CD_LEVEL_3:=cdLevel3, "
+                    + "CD_LEVEL_4:=cdLevel4, "
+                    + "AMT_COST:=amtCost, "
+                    + "UOM_WAREHOUSE:=uomWarehouse, "
+                    + "CONV_WAREHOUSE:=convWarehouse, "
+                    + "UOM_PURCHASE:=uomPurchase, "
+                    + "CONV_STOCK:=convStock, "
+                    + "UOM_STOCK:=uomStock, "
+                    + "CD_WAREHOUSE:=cdWarehouse, "
+                    + "FLAG_OTHERS:=flagOthers, "
+                    + "FLAG_MATERIAL:=flagMaterial, "
+                    + "FLAG_HALF_FINISH:=flagHalfFinish, "
+                    + "FLAG_FINISHED_GOOD:=flagFinishedGood, "
+                    + "FLAG_OPEN_MARKET:=flagOpenMarket, "
+                    + "FLAG_TRANSFER_LOC:=flagTransferLoc, "
+                    + "FLAG_CANVASING:=flagCanvasing, "
+                    + "FLAG_STOCK:=flagStock, "
+                    + "PLU:=plu, "
+                    + "CD_SUPPLIER_DEFAULT:=cdSupplierDefault, "
+                    + "MIN_STOCK:=minStock, "
+                    + "MAX_STOCK:=maxStock, "
+                    + "QTY_STOCK:=qtyStock, "
+                    + "CD_MENU_ITEM:=cdMenuitem, "
+                    + "CD_ITEM_LEFTOVER:=cdItemLeftover, "
+                    + "STATUS:=status, "
+                    + "USER_UPD:=userUpd, "
+                    + "DATE_UPD:=dateUpd, "
+                    + "TIME_UPD:=timeUpd, "
+                    + "FLAG_PAKET:=flagPaketwhere ITEM_CODE=:itemCode";
             Map param = new HashMap();
             param.put("itemCode", balance.get("itemCode"));
+            param.put("cdBrand", balance.get("cdBrand"));
+            param.put("itemDescription", balance.get("itemDescription"));
+            param.put("cdLevel1", balance.get("cdLevel1"));
+            param.put("cdLevel2", balance.get("cdLevel2"));
+            param.put("cdLevel3", balance.get("cdLevel3"));
+            param.put("cdLevel4", balance.get("cdLevel4"));
+            param.put("amtCost", balance.get("amtCost"));
+            param.put("uomWarehouse", balance.get("uomWarehouse"));
+            param.put("convWarehouse", balance.get("convWarehouse"));
+            param.put("uomPurchase", balance.get("uomPurchase"));
+            param.put("convStock", balance.get("convStock"));
+            param.put("uomStock", balance.get("uomStock"));
+            param.put("cdWarehouse", balance.get("cdWarehouse"));
+            param.put("flagOthers", balance.get("flagOthers"));
+            param.put("flagMaterial", balance.get("flagMaterial"));
+            param.put("flagHalfFinish", balance.get("flagHalfFinish"));
+            param.put("flagFinishedGood", balance.get("flagFinishedGood"));
+            param.put("flagOpenMarket", balance.get("flagOpenMarket"));
+            param.put("flagTransferLoc", balance.get("flagTransferLoc"));
+            param.put("flagCanvasing", balance.get("flagCanvasing"));
+            param.put("flagStock", balance.get("flagStock"));
+            param.put("plu", balance.get("plu"));
+            param.put("cdSupplierDefault", balance.get("cdSupplierDefault"));
+            param.put("minStock", balance.get("minStock"));
+            param.put("maxStock", balance.get("maxStock"));
+            param.put("qtyStock", balance.get("qtyStock"));
+            param.put("cdMenuitem", balance.get("cdMenuitem"));
+            param.put("cdItemLeftover", balance.get("cdItemLeftover"));
+            param.put("flagPaket", balance.get("flagPaket"));
             param.put("status", balance.get("status"));
             param.put("userUpd", balance.get("userUpd"));
             param.put("dateUpd", dateNow);
