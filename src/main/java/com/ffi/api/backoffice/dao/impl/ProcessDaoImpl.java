@@ -1773,7 +1773,7 @@ public class ProcessDaoImpl implements ProcessDao {
         System.out.println(paramkirim);
         String colorExisting = colorExist(paramkirim);
         if (colorExisting.equals('0')) {
-            String qy = "INSERT INTO M_ITEM"
+            String qy = "INSERT INTO M_COLOR"
                     + "(ITEM_CODE,CD_BRAND,ITEM_DESCRIPTION,CD_LEVEL_1,CD_LEVEL_2,CD_LEVEL_3, "
                     + "      CD_LEVEL_4,AMT_COST,UOM_WAREHOUSE,CONV_WAREHOUSE,UOM_PURCHASE,CONV_STOCK "
                     + "      ,UOM_STOCK,CD_WAREHOUSE,FLAG_OTHERS,FLAG_MATERIAL,FLAG_HALF_FINISH, "
