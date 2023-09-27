@@ -192,10 +192,15 @@ public class ProcessServices {
     public void deleteTempLateDetail(Map<String, String> balance) {
         dao.deleteTempLateDetail(balance);
     }
-    
-        public void insertMasterItem(JsonObject balancing) {
+
+    public void insertMasterItem(JsonObject balancing) {
         dao.insertMasterItem(balancing);
     }
+    ///////////////////////done
 
+    ///////////////NEW METHOD PROCES TRANSFER MASTER  26 SEP 2023////   
+        public void processTransferMasters(JsonObject balancing) {
+        dao.processTransferMasters(balancing);
+    }
     ///////////////////////done
 }

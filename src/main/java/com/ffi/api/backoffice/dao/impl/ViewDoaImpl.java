@@ -95,7 +95,7 @@ public class ViewDoaImpl implements ViewDao {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap< String, Object>();
-                rt.put("cdSupllier", rs.getString("CD_SUPPLIER"));
+                rt.put("cdSupplier", rs.getString("CD_SUPPLIER"));
                 rt.put("supplierName", rs.getString("SUPPLIER_NAME"));
                 rt.put("cpName", rs.getString("CP_NAME"));
                 rt.put("flagCanvasing", rs.getString("FLAG_CANVASING"));
