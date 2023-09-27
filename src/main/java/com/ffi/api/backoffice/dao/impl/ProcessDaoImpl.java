@@ -1583,7 +1583,8 @@ public class ProcessDaoImpl implements ProcessDao {
             detailParam.clear();
         }
     }
-
+    
+ 
     public void inserUpdateMaster(Map<String, String> balance) {
         //Delete existing Detail
 
@@ -1727,5 +1728,183 @@ public class ProcessDaoImpl implements ProcessDao {
             System.out.println("query update item: " + qy);
         }
     }
+    
+ public String colorExist(Map<String, String> ref) {
+        String qry = "select count(1) as existRow from m_item "
+                + "where ITEM_CODE = :ItemCode "
+                + "and status = :status ";
+        Map prm = new HashMap();
+        prm.put("ItemCode", ref.get("item"));
+        prm.put("status", ref.get("stat"));
+        System.err.println("q :" + qry);
 
+        return jdbcTemplate.queryForObject(qry, prm, new RowMapper() {
+            @Override
+            public String mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                return rs.getString("existRow");
+            }
+        }).toString();
+    }
+
+    @Override
+    public void processTransferMasters(JsonObject balancing) {
+        String userU = balancing.getAsJsonPrimitive("userUpd").getAsString();
+        JsonArray emp = balancing.getAsJsonObject().getAsJsonArray("itemList");
+        for (int i = 0; i < emp.size(); i++) {
+            Map<String, String> detailParam = new HashMap<String, String>();
+            detailParam.put("colorCode", emp.get(i).getAsJsonObject().getAsJsonPrimitive("colorCode").getAsString());
+            detailParam.put("colorName", emp.get(i).getAsJsonObject().getAsJsonPrimitive("colorName").getAsString());
+            detailParam.put("rValue", emp.get(i).getAsJsonObject().getAsJsonPrimitive("rValue").getAsString());
+            detailParam.put("gValue", emp.get(i).getAsJsonObject().getAsJsonPrimitive("gValue").getAsString());
+            detailParam.put("bValue", emp.get(i).getAsJsonObject().getAsJsonPrimitive("bValue").getAsString());
+            detailParam.put("userUpd", userU);
+            inserUpdateMaster(detailParam);
+            //  System.out.println(detailParam);
+            detailParam.clear();
+        }
+    }
+    public void processTransferMasters(Map<String, String> balance) {
+        //Delete existing Detail
+
+        Map paramkirim = new HashMap();
+        paramkirim.put("item", balance.get("itemCode"));
+        paramkirim.put("stat", balance.get("status"));
+        System.out.println(paramkirim);
+        String colorExisting = colorExist(paramkirim);
+        if (colorExisting.equals('0')) {
+            String qy = "INSERT INTO M_COLOR"
+                    + "(ITEM_CODE,CD_BRAND,ITEM_DESCRIPTION,CD_LEVEL_1,CD_LEVEL_2,CD_LEVEL_3, "
+                    + "      CD_LEVEL_4,AMT_COST,UOM_WAREHOUSE,CONV_WAREHOUSE,UOM_PURCHASE,CONV_STOCK "
+                    + "      ,UOM_STOCK,CD_WAREHOUSE,FLAG_OTHERS,FLAG_MATERIAL,FLAG_HALF_FINISH, "
+                    + "      FLAG_FINISHED_GOOD,FLAG_OPEN_MARKET,FLAG_TRANSFER_LOC,FLAG_CANVASING, "
+                    + "      FLAG_STOCK,PLU,CD_SUPPLIER_DEFAULT,MIN_STOCK,MAX_STOCK,QTY_STOCK, "
+                    + "      CD_MENU_ITEM,CD_ITEM_LEFTOVER,STATUS,USER_UPD,DATE_UPD,TIME_UPD, "
+                    + "      FLAG_PAKET)"
+                    + " VALUES(:itemCode,:cdBrand,:itemDescription,:cdLevel1,:cdLevel2,:cdLevel3,:cdLevel4,:amtCost,:uomWarehouse,:convWarehouse "
+                    + ",:uomPurchase "
+                    + ",:convStock "
+                    + ",:uomStock "
+                    + ",:cdWarehouse "
+                    + ",:flagOthers "
+                    + ",:flagMaterial "
+                    + ",:flagHalffinish "
+                    + ",:flagFinishedgood "
+                    + ",:flagOpenmarket "
+                    + ",:flagTransferloc "
+                    + ",:flagCanvasing "
+                    + ",:flagStock "
+                    + ",:plu,:cdSupplierDefault "
+                    + ",:minStock,:maxStock,:qtyStock,:cdMenuItem,:cdLtemLeftover,:status,:userUpd,:dateUpd,:timeUpd,:flagPaket)";
+            Map param = new HashMap();
+            param.put("itemCode", balance.get("itemCode"));
+            param.put("cdBrand", balance.get("cdBrand"));
+            param.put("itemDescription", balance.get("itemDescription"));
+            param.put("cdLevel1", balance.get("cdLevel1"));
+            param.put("cdLevel2", balance.get("cdLevel2"));
+            param.put("cdLevel3", balance.get("cdLevel3"));
+            param.put("cdLevel4", balance.get("cdLevel4"));
+            param.put("amtCost", balance.get("amtCost"));
+            param.put("uomWarehouse", balance.get("uomWarehouse"));
+            param.put("convWarehouse", balance.get("convWarehouse"));
+            param.put("uomPurchase", balance.get("uomPurchase"));
+            param.put("convStock", balance.get("convStock"));
+            param.put("uomStock", balance.get("uomStock"));
+            param.put("cdWarehouse", balance.get("cdWarehouse"));
+            param.put("flagOthers", balance.get("cpemail"));
+            param.put("flagMaterial", balance.get("flagcanvasing"));
+            param.put("flagHalffinish", balance.get("flagOthers"));
+            param.put("flagFinishedgood", balance.get("flagFinishedgood"));
+            param.put("flagOpenmarket", balance.get("flagOpenmarket"));
+            param.put("flagTransferloc", balance.get("flagTransferloc"));
+            param.put("flagCanvasing", balance.get("flagCanvasing"));
+            param.put("flagStock", balance.get("flagStock"));
+            param.put("plu", balance.get("plu"));
+            param.put("cdSupplierDefault", balance.get("cdSupplierDefault"));
+            param.put("minStock", balance.get("minStock"));
+            param.put("maxStock", balance.get("maxStock"));
+            param.put("qtyStock", balance.get("qtyStock"));
+            param.put("cdMenuItem", balance.get("cdMenuItem"));
+            param.put("cdLtemLeftover", balance.get("cdLtemLeftover"));
+            param.put("status", balance.get("status"));
+            param.put("userUpd", balance.get("userUpd"));
+            param.put("dateUpd", dateNow);
+            param.put("timeUpd", timeStamp);
+            param.put("flagPaket", balance.get("timeupd"));
+            jdbcTemplate.update(qy, param);
+            System.out.println("query insert item: " + qy);
+        } else {
+            String qy = "UPDATE M_ITEM SET  "
+                    + "CD_BRAND:=cdBrand, "
+                    + "ITEM_DESCRIPTION:=itemDescription, "
+                    + "CD_LEVEL_1:=cdLevel1, "
+                    + "CD_LEVEL_2:=cdLevel2, "
+                    + "CD_LEVEL_3:=cdLevel3, "
+                    + "CD_LEVEL_4:=cdLevel4, "
+                    + "AMT_COST:=amtCost, "
+                    + "UOM_WAREHOUSE:=uomWarehouse, "
+                    + "CONV_WAREHOUSE:=convWarehouse, "
+                    + "UOM_PURCHASE:=uomPurchase, "
+                    + "CONV_STOCK:=convStock, "
+                    + "UOM_STOCK:=uomStock, "
+                    + "CD_WAREHOUSE:=cdWarehouse, "
+                    + "FLAG_OTHERS:=flagOthers, "
+                    + "FLAG_MATERIAL:=flagMaterial, "
+                    + "FLAG_HALF_FINISH:=flagHalfFinish, "
+                    + "FLAG_FINISHED_GOOD:=flagFinishedGood, "
+                    + "FLAG_OPEN_MARKET:=flagOpenMarket, "
+                    + "FLAG_TRANSFER_LOC:=flagTransferLoc, "
+                    + "FLAG_CANVASING:=flagCanvasing, "
+                    + "FLAG_STOCK:=flagStock, "
+                    + "PLU:=plu, "
+                    + "CD_SUPPLIER_DEFAULT:=cdSupplierDefault, "
+                    + "MIN_STOCK:=minStock, "
+                    + "MAX_STOCK:=maxStock, "
+                    + "QTY_STOCK:=qtyStock, "
+                    + "CD_MENU_ITEM:=cdMenuitem, "
+                    + "CD_ITEM_LEFTOVER:=cdItemLeftover, "
+                    + "STATUS:=status, "
+                    + "USER_UPD:=userUpd, "
+                    + "DATE_UPD:=dateUpd, "
+                    + "TIME_UPD:=timeUpd, "
+                    + "FLAG_PAKET:=flagPaketwhere ITEM_CODE=:itemCode";
+            Map param = new HashMap();
+            param.put("itemCode", balance.get("itemCode"));
+            param.put("cdBrand", balance.get("cdBrand"));
+            param.put("itemDescription", balance.get("itemDescription"));
+            param.put("cdLevel1", balance.get("cdLevel1"));
+            param.put("cdLevel2", balance.get("cdLevel2"));
+            param.put("cdLevel3", balance.get("cdLevel3"));
+            param.put("cdLevel4", balance.get("cdLevel4"));
+            param.put("amtCost", balance.get("amtCost"));
+            param.put("uomWarehouse", balance.get("uomWarehouse"));
+            param.put("convWarehouse", balance.get("convWarehouse"));
+            param.put("uomPurchase", balance.get("uomPurchase"));
+            param.put("convStock", balance.get("convStock"));
+            param.put("uomStock", balance.get("uomStock"));
+            param.put("cdWarehouse", balance.get("cdWarehouse"));
+            param.put("flagOthers", balance.get("flagOthers"));
+            param.put("flagMaterial", balance.get("flagMaterial"));
+            param.put("flagHalfFinish", balance.get("flagHalfFinish"));
+            param.put("flagFinishedGood", balance.get("flagFinishedGood"));
+            param.put("flagOpenMarket", balance.get("flagOpenMarket"));
+            param.put("flagTransferLoc", balance.get("flagTransferLoc"));
+            param.put("flagCanvasing", balance.get("flagCanvasing"));
+            param.put("flagStock", balance.get("flagStock"));
+            param.put("plu", balance.get("plu"));
+            param.put("cdSupplierDefault", balance.get("cdSupplierDefault"));
+            param.put("minStock", balance.get("minStock"));
+            param.put("maxStock", balance.get("maxStock"));
+            param.put("qtyStock", balance.get("qtyStock"));
+            param.put("cdMenuitem", balance.get("cdMenuitem"));
+            param.put("cdItemLeftover", balance.get("cdItemLeftover"));
+            param.put("flagPaket", balance.get("flagPaket"));
+            param.put("status", balance.get("status"));
+            param.put("userUpd", balance.get("userUpd"));
+            param.put("dateUpd", dateNow);
+            param.put("timeUpd", timeStamp);
+            jdbcTemplate.update(qy, param);
+            System.out.println("query update item: " + qy);
+        }
+    }
 }

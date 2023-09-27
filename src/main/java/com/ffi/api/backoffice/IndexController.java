@@ -2333,6 +2333,48 @@ public class IndexController {
         rm.setItem(list);
         return rm;
     }
-   
+
+    ///////////////done 
+    ///////////////new method transfer master from dona 23-08-2023////////////////////////////
+    @RequestMapping(value = "/process-transfer-masters", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk insert master item", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage processTransferMasters(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, Object> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        JsonObject result = gsn.fromJson(param, JsonObject.class);
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        ResponseMessage rm = new ResponseMessage();
+        try {
+            processServices.processTransferMasters(result);
+            //prosesServices.updateMCounter(balance);
+            rm.setSuccess(true);
+            rm.setMessage("Insert Master Color Successfuly");
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Insert Master Color Failed: " + e.getMessage());
+            System.err.println(e);
+        }
+//        try {
+//            processServices.insertUpdateMasterDiscountMethod(result);
+//            //prosesServices.updateMCounter(balance);
+//            rm.setSuccess(true);
+//            rm.setMessage("Insert Master Discount Mehtod Successfuly");
+//        } catch (Exception e) {
+//            rm.setSuccess(false);
+//            rm.setMessage("Insert Master Discount Mehtod  Failed: " + e.getMessage());
+//            System.err.println(e);
+//        }
+//
+        rm.setItem(list);
+        return rm;
+
+    }
+
     ///////////////done 
 }
