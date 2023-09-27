@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -550,6 +551,28 @@ public class ReportController {
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=transaksiKasir.pdf");
+            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        } else
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/report-receipt-maintenance", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Menampilkan report receipt maintenance", response = Object.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    public ResponseEntity<byte[]> jasperReportReceiptMaintenance(@RequestBody String param) throws SQLException, JRException, IOException, ParseException {
+        Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
+        Gson gsn = new Gson();
+        Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        Integer cekDataReport = viewServices.cekDataReport(prm, "ReceiptMaintenance");
+        if (cekDataReport > 0){
+            JasperPrint jasperPrint = reportServices.jasperReportReceiptMaintenance(prm, conn);
+            conn.close();
+            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "inline; filename=ReceiptMaintenance.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
         } else
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());

@@ -23,8 +23,10 @@ import org.springframework.stereotype.Repository;
 import java.io.IOException;
 import java.sql.*;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Date;
 
 @Repository
 public class ReportDaoImpl implements ReportDao {
@@ -1378,6 +1380,84 @@ public class ReportDaoImpl implements ReportDao {
         }
 
         ClassPathResource classPathResource = new ClassPathResource("report/transaksiKasir.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
+
+    @Override
+    public JasperPrint jasperReportReceiptMaintenance(Map<String, Object> param, Connection connection) throws JRException, IOException, ParseException {
+        Date currentDate = new SimpleDateFormat("dd-MMM-yy").parse((String) param.get("periode"));
+        Date yesterdayDate = new Date(currentDate.getTime() - (1000 * 60 * 60 * 24));
+        String yesterdayDateString = new SimpleDateFormat("dd-MMM-yy").format(yesterdayDate);
+
+        String queryPos = "SELECT DISTINCT POS_CODE  FROM T_POS_BILL WHERE TRANS_DATE = '" + param.get("periode")
+                + "' AND OUTLET_CODE = '" + param.get("outletCode") + "' ORDER BY POS_CODE ASC ";
+
+        List<Map<String, Object>> listPos = jdbcTemplate.query(queryPos, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("posCode", rs.getString("POS_CODE"));
+                return rt;
+            }
+        });
+
+        StringBuilder queryDataReceipt = new StringBuilder();
+        queryDataReceipt.append("SELECT UTM.POS_CODE_NOW, JON.POS_DESCRIPTION, UTM.MIN_NOW, UTM.MAX_NOW, UTM.MIN_AGO, " +
+                "UTM.MAX_AGO FROM (");
+        queryDataReceipt.append("SELECT * FROM ( SELECT '").append(listPos.get(0).get("posCode")).append("'" +
+                "AS POS_CODE_NOW , MIN(BILL_NO) AS MIN_NOW, MAX(BILL_NO) AS MAX_NOW FROM T_POS_BILL WHERE TRANS_DATE " +
+                "= '").append(param.get("periode")).append("' AND POS_CODE = '").append(listPos.get(0).get("posCode"))
+                .append("' AND OUTLET_CODE = '").append(param.get("outletCode")).append("' " +
+                        ")A JOIN ( SELECT '").append(listPos.get(0).get("posCode")).append("' AS " +
+                        "POS_CODE_AGO, MIN(BILL_NO) AS MIN_AGO, MAX(BILL_NO) AS MAX_AGO FROM T_POS_BILL WHERE " +
+                        "TRANS_DATE = '").append(yesterdayDateString).append("' AND POS_CODE = '")
+                .append(listPos.get(0).get("posCode")).append("' AND OUTLET_CODE = '").append(param.get("outletCode"))
+                .append("')B ON A.POS_CODE_NOW = B.POS_CODE_AGO");
+
+        for (int i = 1; i < listPos.size(); i++) {
+            queryDataReceipt.append(" UNION ALL ");
+            queryDataReceipt.append("SELECT * FROM ( SELECT '").append(listPos.get(i).get("posCode")).append("' " +
+                            "AS POS_CODE_NOW , MIN(BILL_NO) AS MIN_NOW, MAX(BILL_NO) AS MAX_NOW FROM T_POS_BILL WHERE TRANS_DATE " +
+                            "= '").append(param.get("periode")).append("' AND POS_CODE = '").append(listPos.get(i).get("posCode"))
+                    .append("' AND OUTLET_CODE = '").append(param.get("outletCode")).append("'" +
+                            ")A JOIN ( SELECT '").append(listPos.get(i).get("posCode")).append("' AS " +
+                            "POS_CODE_AGO, MIN(BILL_NO) AS MIN_AGO, MAX(BILL_NO) AS MAX_AGO FROM T_POS_BILL WHERE " +
+                            "TRANS_DATE = '").append(yesterdayDateString).append("' AND POS_CODE = '")
+                    .append(listPos.get(i).get("posCode")).append("' AND OUTLET_CODE = '").append(param.get("outletCode"))
+                    .append("')B ON A.POS_CODE_NOW = B.POS_CODE_AGO");
+        }
+        queryDataReceipt.append(") UTM LEFT JOIN M_POS JON ON UTM.POS_CODE_NOW = JON.POS_CODE AND JON.OUTLET_CODE = '")
+                .append(param.get("outletCode")).append("' WHERE UTM.POS_CODE_NOW BETWEEN $P{posCode1} AND $P{posCode2}" +
+                        "ORDER BY UTM.POS_CODE_NOW ASC");
+
+            Map<String, Object> hashMap = new HashMap<>();
+        hashMap.put("query", queryDataReceipt.toString());
+        hashMap.put("dateNow", param.get("periode"));
+        hashMap.put("dateAgo", yesterdayDateString);
+        hashMap.put("user", param.get("user"));
+        hashMap.put("outletName", param.get("outletName"));
+
+        List<Map<String, Object>> listParamPos = (List<Map<String, Object>>) param.get("pos");
+        StringBuilder posCode = new StringBuilder();
+        if (listParamPos.size() == 1){
+            hashMap.put("posCode", "Semua");
+            hashMap.put("posCode1", "000");
+            hashMap.put("posCode2", "zzz");
+        } else {
+            for (Map<String, Object> object : listParamPos){
+                if (object.containsKey("posCode1")) {
+                    hashMap.put("posCode1", object.get("posCode1"));
+                    posCode.append(object.get("posName1")).append(" s/d ");
+                } else {
+                    hashMap.put("posCode2", object.get("posCode2"));
+                    posCode.append(object.get("posName2"));
+                }
+                hashMap.put("posCode", posCode.toString());
+            }
+        }
+
+        ClassPathResource classPathResource = new ClassPathResource("report/receiptMaintenance.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }

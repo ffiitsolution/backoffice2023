@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="transaksiKasir" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="886e2a39-56bf-4713-9b0c-a51daf92aa8d">
-    <property name="ireport.zoom" value="1.2100000000000029"/>
+    <property name="ireport.zoom" value="1.610510000000001"/>
     <property name="ireport.x" value="0"/>
     <property name="ireport.y" value="0"/>
     <parameter name="fromDate" class="java.lang.String"/>
@@ -30,7 +30,8 @@
 	b."SUM(ABS(TRANS_AMOUNT))" AS TOTAL_MODAL_AWAL,
 	c."SUM(ABS(TRANS_AMOUNT))" AS TOTAL_SETOR,
 	d."SUM(ABS(TRANS_AMOUNT))" AS TOTAL_SALES,
-	e."SUM(ABS(TRANS_AMOUNT))" AS TOTAL_SETOR_SHIFT
+	e."SUM(ABS(TRANS_AMOUNT))" AS TOTAL_SETOR_SHIFT,
+	f.STAFF_NAME
 
 FROM
 	(
@@ -130,6 +131,8 @@ LEFT JOIN (
 		OUTLET_CODE)e
 ON
 	a.OUTLET_CODE = e.OUTLET_CODE
+LEFT JOIN
+	M_POS_STAFF f ON a.CASHIER_CODE = f.STAFF_POS_CODE
 ORDER BY
 	a.NUM,
 	a.TRANS_DATE,
@@ -149,6 +152,7 @@ ORDER BY
     <field name="TOTAL_SETOR" class="java.math.BigDecimal"/>
     <field name="TOTAL_SALES" class="java.math.BigDecimal"/>
     <field name="TOTAL_SETOR_SHIFT" class="java.math.BigDecimal"/>
+    <field name="STAFF_NAME" class="java.lang.String"/>
     <group name="group">
         <groupExpression><![CDATA[$F{NUM}]]></groupExpression>
         <groupFooter>
@@ -326,13 +330,6 @@ ORDER BY
                 <textFieldExpression><![CDATA[$F{NUM} + "."]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement isPrintRepeatedValues="false" x="30" y="0" width="158" height="15" uuid="41fd19a3-4d01-4e98-88e6-241711637198"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <textFieldExpression><![CDATA[$F{CASHIER_CODE} + " - " + $F{SHIFT_NAME}]]></textFieldExpression>
-            </textField>
-            <textField>
                 <reportElement isPrintRepeatedValues="false" x="258" y="0" width="25" height="15" uuid="f383a8a6-0f5c-4b19-8d49-fd7607fd4396"/>
                 <textElement>
                     <font size="8"/>
@@ -352,6 +349,13 @@ ORDER BY
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$F{TRANS_AMOUNT}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement isPrintRepeatedValues="false" x="30" y="0" width="228" height="15" uuid="f2328bb0-26de-4d2a-ad48-8d47e0160858"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{CASHIER_CODE} + " - " + $F{STAFF_NAME} + " - " + $F{SHIFT_NAME}]]></textFieldExpression>
             </textField>
         </band>
     </detail>

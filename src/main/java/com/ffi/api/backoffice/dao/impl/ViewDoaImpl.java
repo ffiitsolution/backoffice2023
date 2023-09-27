@@ -2178,6 +2178,10 @@ public class ViewDoaImpl implements ViewDao {
                     }
                 }
             }
+        } else if (name.equals("ReceiptMaintenance")) {
+            query = "SELECT COUNT(*) FROM T_POS_BILL WHERE TRANS_DATE = :date AND OUTLET_CODE = :outletCode";
+            prm.put("date", param.get("periode"));
+            prm.put("outletCode", param.get("outletCode"));
         }
         assert query != null;
         return Integer.valueOf(Objects.requireNonNull(jdbcTemplate.queryForObject(query, prm, new RowMapper<String>() {

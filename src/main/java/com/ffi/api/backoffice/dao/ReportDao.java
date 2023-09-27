@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -66,5 +67,6 @@ public interface ReportDao {
     JasperPrint jasperReportStockCard (Map<String, Object> param, Connection connection) throws JRException, IOException;
     Page<Map<String, Object>> getTestPagination(Pageable pageable);
     JasperPrint jasperReportTransaksiKasir (Map<String, Object> param, Connection connection) throws JRException, IOException;
+    JasperPrint jasperReportReceiptMaintenance(Map<String, Object> param, Connection connection) throws JRException, IOException, ParseException;
 
 }
