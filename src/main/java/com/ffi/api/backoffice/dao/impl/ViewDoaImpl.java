@@ -126,18 +126,18 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listDataItemSupplier(Map<String, String> balance) {
-        String qry = "SELECT  a.CD_TEMPLATE, a.ITEM_CODE,b.item_description,a.STATUS, a.USER_UPD, a.DATE_UPD,a.TIME_UPD FROM M_ITEM_TEMPLATE A  "
+        String qry = "SELECT  a.CD_SUPPLIER, a.ITEM_CODE,b.item_description,a.STATUS, a.USER_UPD, a.DATE_UPD,a.TIME_UPD FROM M_ITEM_SUPPLIER A  "
                 + "left join m_item B  "
                 + "on a.item_code=b.item_code WHERE CD_TEMPLATE=:cdTemplate";
         Map prm = new HashMap();
-        prm.put("cdTemplate", balance.get("cdTemplate"));
+        prm.put("cdSupplier", balance.get("cdSupplier"));
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
                 rt.put("itemCode", rs.getString("ITEM_CODE"));
-                rt.put("cdTemplate", rs.getString("CD_TEMPLATE"));
+                rt.put("cdSupplier", rs.getString("CD_SUPPLIER"));
                 rt.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
                 rt.put("status", rs.getString("STATUS"));
                 rt.put("userUpd", rs.getString("USER_UPD"));
@@ -174,18 +174,18 @@ public class ViewDoaImpl implements ViewDao {
     public List<Map<String, Object>> listItemSupplier(Map<String, String> balance) {
 
         String qry = "select  a.CD_TEMPLATE,a.item_code,b.item_description,"
-                + "a.STATUS, a.USER_UPD, a.DATE_UPD, a.TIME_UPD from M_ITEM_TEMPLATE a left join "
+                + "a.STATUS, a.USER_UPD, a.DATE_UPD, a.TIME_UPD from M_ITEM_SUPPLIER a left join "
                 + "m_item b "
                 + "on a.item_code=B.ITEM_CODE "
-                + "WHERE a.CD_TEMPLATE=:cdTemplate ";
+                + "WHERE a.CD_SUPPLIER=:cdSupplier ";
         Map prm = new HashMap();
-        prm.put("cdTemplate", balance.get("cdTemplate"));
+        prm.put("cdSupplier", balance.get("cdSupplier"));
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("cdTemplate", rs.getString("CD_TEMPLATE"));
+                rt.put("cdSupplier", rs.getString("CD_SUPPLIER"));
                 rt.put("itemCode", rs.getString("ITEM_CODE"));
                 rt.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
                 rt.put("status", rs.getString("STATUS"));
@@ -1373,7 +1373,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("orderNo", rs.getString("ORDER_NO"));
                 rt.put("orderDate", rs.getString("ORDER_DATE"));
                 rt.put("orderTo", rs.getString("ORDER_TO"));
-                rt.put("cdTemplate", rs.getString("CD_TEMPLATE"));
+                rt.put("cdSupplier", rs.getString("CD_SUPPLIER"));
                 rt.put("dtDue", rs.getString("DT_DUE"));
                 rt.put("dtExpired", rs.getString("DT_EXPIRED"));
                 rt.put("remark", rs.getString("REMARK"));
@@ -1929,11 +1929,11 @@ public class ViewDoaImpl implements ViewDao {
                 + "           0 TOTAL_JUMLAH, "
                 + "           UOM_PURCHASE AS TOTAL "
                 + "        FROM M_ITEM)) A "
-                + "                   LEFT JOIN M_ITEM_TEMPLATE S "
+                + "                   LEFT JOIN M_ITEM_SUPPLIER S "
                 + "                   ON A.ITEM_CODE=S.ITEM_CODE "
-                + "                   WHERE S.CD_TEMPLATE=:cdTemplate";
+                + "                   WHERE S.CD_SUPPLIER=:cdSupplier";
         Map prm = new HashMap();
-        prm.put("cdTemplate", balance.get("cdTemplate"));
+        prm.put("cdSupplier", balance.get("cdSupplier"));
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
