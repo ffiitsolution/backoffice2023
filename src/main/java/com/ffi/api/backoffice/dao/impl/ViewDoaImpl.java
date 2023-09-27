@@ -128,7 +128,7 @@ public class ViewDoaImpl implements ViewDao {
     public List<Map<String, Object>> listDataItemSupplier(Map<String, String> balance) {
         String qry = "SELECT  a.CD_SUPPLIER, a.ITEM_CODE,b.item_description,a.STATUS, a.USER_UPD, a.DATE_UPD,a.TIME_UPD FROM M_ITEM_SUPPLIER A  "
                 + "left join m_item B  "
-                + "on a.item_code=b.item_code WHERE CD_TEMPLATE=:cdTemplate";
+                + "on a.item_code=b.item_code WHERE CD_SUPPLIER=:cdSupplier";
         Map prm = new HashMap();
         prm.put("cdSupplier", balance.get("cdSupplier"));
         System.err.println("q :" + qry);
