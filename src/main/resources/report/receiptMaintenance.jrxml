@@ -113,7 +113,7 @@
             </staticText>
             <image>
                 <reportElement x="14" y="2" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="f0f5fabf-f459-465e-8893-a277b84b7ff4"/>
-                <imageExpression><![CDATA["C:\\Users\\LENOVO\\Pictures\\logoKfc.png"]]></imageExpression>
+                <imageExpression><![CDATA["logo/logoKfc.png"]]></imageExpression>
             </image>
             <staticText>
                 <reportElement x="2" y="25" width="552" height="19" uuid="5d69faee-18dc-438d-92db-d0b6246f78b1"/>
