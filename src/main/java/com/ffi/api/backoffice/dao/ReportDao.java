@@ -68,5 +68,5 @@ public interface ReportDao {
     Page<Map<String, Object>> getTestPagination(Pageable pageable);
     JasperPrint jasperReportTransaksiKasir (Map<String, Object> param, Connection connection) throws JRException, IOException;
     JasperPrint jasperReportReceiptMaintenance(Map<String, Object> param, Connection connection) throws JRException, IOException, ParseException;
-
+    JasperPrint jasperReportSalesMixDepartment(Map<String, Object> param, Connection connection) throws JRException, IOException, ParseException;
 }

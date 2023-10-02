@@ -2150,7 +2150,7 @@ public class ViewDoaImpl implements ViewDao {
             prm.put("toDate", param.get("toDate"));
 
             List<Map<String, Object>> listCashier = (List<Map<String, Object>>) param.get("cashier");
-            StringBuilder cashierCode = new StringBuilder();
+
             if (listCashier.size() == 1) {
                 prm.put("cashierCode1", "000");
                 prm.put("cashierCode2", "zzz");
@@ -2165,7 +2165,7 @@ public class ViewDoaImpl implements ViewDao {
             }
 
             List<Map<String, Object>> listShift = (List<Map<String, Object>>) param.get("shift");
-            StringBuilder shiftCode = new StringBuilder();
+
             if (listShift.size() == 1) {
                 prm.put("shiftCode1", "000");
                 prm.put("shiftCode2", "zzz");
@@ -2182,6 +2182,59 @@ public class ViewDoaImpl implements ViewDao {
             query = "SELECT COUNT(*) FROM T_POS_BILL WHERE TRANS_DATE = :date AND OUTLET_CODE = :outletCode";
             prm.put("date", param.get("periode"));
             prm.put("outletCode", param.get("outletCode"));
+        } else if (name.equals("salesMixDepartment")) {
+            query = "SELECT COUNT(*) FROM TMP_SALES_BY_ITEM WHERE OUTLET_CODE =:outletCode AND TRANS_DATE BETWEEN " +
+                    ":fromDate AND :toDate AND POS_CODE BETWEEN :posCode1 AND :posCode2 AND CASHIER_CODE BETWEEN " +
+                    ":cashierCode1 AND :cashierCode2 AND SHIFT_CODE BETWEEN :shiftCode1 AND :shiftCode2";
+
+            prm.put("fromDate", param.get("fromDate"));
+            prm.put("toDate", param.get("toDate"));
+            prm.put("outletCode", param.get("outletCode"));
+
+            List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
+
+            if (listPos.size() == 1){
+                prm.put("posCode1", "000");
+                prm.put("posCode2", "zzz");
+            } else {
+                for (Map<String, Object> object : listPos){
+                    if (object.containsKey("posCode1")) {
+                        prm.put("posCode1", object.get("posCode1"));
+                    } else {
+                        prm.put("posCode2", object.get("posCode2"));
+                    }
+                }
+            }
+
+            List<Map<String, Object>> listCashier = (List<Map<String, Object>>) param.get("cashier");
+
+            if (listCashier.size() == 1) {
+                prm.put("cashierCode1", "000");
+                prm.put("cashierCode2", "zzz");
+            } else {
+                for (Map<String, Object> object : listCashier) {
+                    if (object.containsKey("cashierCode1")) {
+                        prm.put("cashierCode1", object.get("cashierCode1"));
+                    } else {
+                        prm.put("cashierCode2", object.get("cashierCode2"));
+                    }
+                }
+            }
+
+            List<Map<String, Object>> listShift = (List<Map<String, Object>>) param.get("shift");
+
+            if (listShift.size() == 1) {
+                prm.put("shiftCode1", "000");
+                prm.put("shiftCode2", "zzz");
+            } else {
+                for (Map<String, Object> object : listShift) {
+                    if (object.containsKey("shiftCode1")) {
+                        prm.put("shiftCode1", object.get("shiftCode1"));
+                    } else {
+                        prm.put("shiftCode2", object.get("shiftCode2"));
+                    }
+                }
+            }
         }
         assert query != null;
         return Integer.valueOf(Objects.requireNonNull(jdbcTemplate.queryForObject(query, prm, new RowMapper<String>() {

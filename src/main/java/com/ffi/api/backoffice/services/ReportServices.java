@@ -134,4 +134,8 @@ public class ReportServices {
     public JasperPrint jasperReportReceiptMaintenance(Map<String, Object> param, Connection connection) throws JRException, IOException, ParseException {
         return dao.jasperReportReceiptMaintenance(param, connection);
     }
+
+    public JasperPrint jasperReportSalesMixDepartment(Map<String, Object> param, Connection connection) throws JRException, IOException, ParseException {
+        return dao.jasperReportSalesMixDepartment(param, connection);
+    }
 }
