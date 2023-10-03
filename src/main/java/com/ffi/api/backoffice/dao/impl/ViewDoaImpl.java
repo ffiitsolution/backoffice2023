@@ -45,7 +45,7 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> loginJson(ParameterLogin ref) {
-        String qry = "select S.REGION_CODE,G.DESCRIPTION REG_NAME,S.OUTLET_CODE,O.OUTLET_NAME,S.STAFF_CODE,S.STAFF_NAME,S.STAFF_FULL_NAME,S.ID_CARD,S.POSITION,S.GROUP_ID,O.CITY  "
+        String qry = "select S.REGION_CODE,O.TRANS_DATE,O.address_1,O.phone,G.DESCRIPTION REG_NAME,S.OUTLET_CODE,O.OUTLET_NAME,S.STAFF_CODE,S.STAFF_NAME,S.STAFF_FULL_NAME,S.ID_CARD,S.POSITION,S.GROUP_ID,O.CITY  "
                 + "from M_STAFF S "
                 + "JOIN M_OUTLET O ON O.OUTLET_CODE = S.OUTLET_CODE "
                 + "JOIN M_GLOBAL G ON G.CODE = S.REGION_CODE AND G.COND = 'REG_OUTLET'  "
@@ -70,6 +70,9 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("position", rs.getString("POSITION"));
                 rt.put("groupId", rs.getString("GROUP_ID"));
                 rt.put("cityCode", rs.getString("CITY"));
+                rt.put("transDate", rs.getString("TRANS_DATE"));
+                rt.put("address1", rs.getString("ADDRESS_1"));
+                rt.put("phone", rs.getString("PHONE"));
                 return rt;
             }
         });
