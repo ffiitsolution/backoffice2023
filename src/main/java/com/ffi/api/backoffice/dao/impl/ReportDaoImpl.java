@@ -1607,8 +1607,6 @@ public class ReportDaoImpl implements ReportDao {
         }
 
         assert query != null;
-        System.out.println(query);
-        System.out.println(hashMap);
         List<Map<String, Object>> list = jdbcTemplate.query(query, hashMap, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
