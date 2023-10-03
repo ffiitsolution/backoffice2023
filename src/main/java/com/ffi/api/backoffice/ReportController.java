@@ -178,6 +178,7 @@ public class ReportController {
         } else
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
     }
+
     @RequestMapping(value = "/report-order-entry-jesper-html", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report order entry", response = Object.class)
     @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
@@ -254,7 +255,7 @@ public class ReportController {
         }.getType());
 
         Integer cekDataReport = viewServices.cekDataReport(prm, "wastage");
-        if (cekDataReport > 0){
+        if (cekDataReport > 0) {
             JasperPrint jasperPrint = reportServices.jesperReportWastage(prm, conn);
             conn.close();
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
@@ -305,8 +306,7 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=item.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        }
-        else
+        } else
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
     }
 
@@ -328,10 +328,10 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=stock.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        }
-        else
+        } else
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
     }
+
     /////////////////////////////////DONE///////////////////////////////////////
     ///////////////NEW METHOD REPORT BY PASCA 26 July 2023////
     @CrossOrigin
@@ -352,10 +352,10 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=recipe.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        }
-        else
+        } else
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
     }
+
     /////////////////////////////////DONE///////////////////////////////////////
     ///////////////NEW METHOD REPORT BY PASCA 01 August 2023////
     @CrossOrigin
@@ -376,10 +376,10 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=freeMeal.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        }
-        else
+        } else
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
     }
+
     /////////////////////////////////DONE///////////////////////////////////////
     ///////////////NEW METHOD REPORT BY PASCA 23 August 2023////
     @CrossOrigin
@@ -424,6 +424,7 @@ public class ReportController {
         }
         return rm;
     }
+
     /////////////////////////////////DONE///////////////////////////////////////
     ///////////////NEW METHOD REPORT BY PASCA 25 August 2023////
     @CrossOrigin
@@ -444,6 +445,7 @@ public class ReportController {
 
         return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
     }
+
     /////////////////////////////////DONE///////////////////////////////////////
     ///////////////NEW METHOD REPORT BY PASCA 26 August 2023////
     @CrossOrigin
@@ -464,6 +466,7 @@ public class ReportController {
 
         return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
     }
+
     @CrossOrigin
     @RequestMapping(value = "/report-menu-vs-detail-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan report menu vs detail", response = Object.class)
@@ -482,6 +485,7 @@ public class ReportController {
 
         return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
     }
+
     /////////////////////////////////DONE///////////////////////////////////////
     ///////////////NEW METHOD REPORT BY PASCA 29 August 2023////
     @CrossOrigin
@@ -502,6 +506,7 @@ public class ReportController {
 
         return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
     }
+
     /////////////////////////////////DONE///////////////////////////////////////
     ///////////////NEW METHOD REPORT BY PASCA 07 September 2023////
     @CrossOrigin
@@ -525,7 +530,7 @@ public class ReportController {
 
     @PostMapping("/test/{size}/{page}")
     public Page<Map<String, Object>> getTestPagination(@PathVariable(value = "size") int size,
-                                                      @PathVariable(value = "page") int page) {
+                                                       @PathVariable(value = "page") int page) {
 
         PageRequest pageable = PageRequest.of(page, size);
         Page<Map<String, Object>> result = reportServices.getTestPagination(pageable);
@@ -545,7 +550,7 @@ public class ReportController {
         }.getType());
 
         Integer cekDataReport = viewServices.cekDataReport(prm, "transaksiKasir");
-        if (cekDataReport > 0){
+        if (cekDataReport > 0) {
             JasperPrint jasperPrint = reportServices.jasperReportTransaksiKasir(prm, conn);
             conn.close();
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
@@ -567,7 +572,7 @@ public class ReportController {
         }.getType());
 
         Integer cekDataReport = viewServices.cekDataReport(prm, "ReceiptMaintenance");
-        if (cekDataReport > 0){
+        if (cekDataReport > 0) {
             JasperPrint jasperPrint = reportServices.jasperReportReceiptMaintenance(prm, conn);
             conn.close();
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
@@ -589,7 +594,7 @@ public class ReportController {
         }.getType());
 
         Integer cekDataReport = viewServices.cekDataReport(prm, "salesMixDepartment");
-        if (cekDataReport > 0){
+        if (cekDataReport > 0) {
             JasperPrint jasperPrint = reportServices.jasperReportSalesMixDepartment(prm, conn);
             conn.close();
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
@@ -598,5 +603,47 @@ public class ReportController {
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
         } else
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/report-query-bill-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Menampilkan report sales mix by department", response = Object.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    public ResponseEntity<byte[]> jasperReportQueryBill(@RequestBody String param) throws SQLException, JRException, IOException, ParseException {
+        Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
+        Gson gsn = new Gson();
+        Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        JasperPrint jasperPrint = reportServices.jasperReportQueryBill(prm, conn);
+        conn.close();
+        byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=QueryBill.pdf");
+        return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+    }
+
+    @RequestMapping(value = "/list-query-bill", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk mengambil list query bill", response = Object.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 404, message = "The resource not found")
+    }
+    )
+    public @ResponseBody
+    Response viewListQueryBill(@RequestBody String param) throws JRException, IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, Object> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response rm = new Response();
+        try {
+            list = reportServices.listQueryBill(balance);
+            rm.setData(list);
+            rm.setRecordsTotal(list.size());
+        } catch (Exception e) {
+            rm.setRecordsTotal(0);
+        }
+        return rm;
     }
 }

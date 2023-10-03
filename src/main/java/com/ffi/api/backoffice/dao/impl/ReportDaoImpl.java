@@ -1483,7 +1483,7 @@ public class ReportDaoImpl implements ReportDao {
                     hashMap.put("posCode1", object.get("posCode1"));
                     posCode.append(object.get("posName1")).append(" s/d ");
                 } else {
-                    hashMap.put("posCode1", object.get("posCode2"));
+                    hashMap.put("posCode2", object.get("posCode2"));
                     posCode.append(object.get("posName2"));
                 }
                 hashMap.put("posCode", posCode.toString());
@@ -1531,5 +1531,122 @@ public class ReportDaoImpl implements ReportDao {
         ClassPathResource classPathResource = new ClassPathResource("report/salesMixByDepartmentReport.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
+
+    @Override
+    public JasperPrint jasperReportQueryBill(Map<String, Object> param, Connection connection) throws JRException, IOException, ParseException {
+        Map<String, Object> hashMap = new HashMap<>();
+        hashMap.put("billNo", param.get("billNo"));
+        hashMap.put("transDate", param.get("billDate"));
+        hashMap.put("outletCode", param.get("outletCode"));
+
+        ClassPathResource classPathResource = new ClassPathResource("report/querybill.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
+
+    @Override
+    public List<Map<String, Object>> listQueryBill(Map<String, Object> param) {
+        String query = null;
+        Map<String, Object> hashMap = new HashMap<>();
+
+        if (param.containsKey("pos") && param.containsKey("cashier")) {
+            query = "SELECT BILL_NO, BILL_DATE, BILL_TIME, POS_CODE, SHIFT_CODE, ORDER_TYPE, TRANS_TYPE, CASHIER_CODE, " +
+                    "DELIVERY_STATUS, TOTAL_AMOUNT, TOTAL_SALES FROM T_POS_BILL WHERE OUTLET_CODE =:outletCode AND " +
+                    "TRANS_DATE BETWEEN :fromDate AND :toDate AND BILL_TIME BETWEEN :fromTime AND :toTime AND " +
+                    "POS_CODE BETWEEN :posCode1 AND :posCode2 AND CASHIER_CODE BETWEEN :cashierCode1 AND :cashierCode2";
+
+            hashMap.put("outletCode", param.get("outletCode"));
+            hashMap.put("fromDate", param.get("fromDate"));
+            hashMap.put("toDate", param.get("toDate"));
+            hashMap.put("fromTime", param.get("fromTime"));
+            hashMap.put("toTime", param.get("toTime"));
+
+            List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
+            if (listPos.size() == 1){
+                hashMap.put("posCode1", "000");
+                hashMap.put("posCode2", "zzz");
+            } else {
+                for (Map<String, Object> object : listPos){
+                    if (object.containsKey("posCode1")) {
+                        hashMap.put("posCode1", object.get("posCode1"));
+                    } else {
+                        hashMap.put("posCode2", object.get("posCode2"));
+                    }
+                }
+            }
+
+            List<Map<String, Object>> listCashier = (List<Map<String, Object>>) param.get("cashier");
+            if (listCashier.size() == 1) {
+                hashMap.put("cashierCode1", "000");
+                hashMap.put("cashierCode2", "zzz");
+            } else {
+                for (Map<String, Object> object : listCashier) {
+                    if (object.containsKey("cashierCode1")) {
+                        hashMap.put("cashierCode1", object.get("cashierCode1"));
+                    } else {
+                        hashMap.put("cashierCode2", object.get("cashierCode2"));
+                    }
+                }
+            }
+
+        } else if (param.containsKey("billNo")){
+            if (param.get("detail").equals(0.0)) {
+                query = "SELECT a.MENU_ITEM_CODE, b.ITEM_DESCRIPTION, a.ITEM_QTY, a.AMOUNT FROM T_POS_BILL_ITEM a LEFT JOIN" +
+                        " M_ITEM b ON a.MENU_ITEM_CODE = b.ITEM_CODE WHERE a.OUTLET_CODE = :outletCode AND a.TRANS_DATE = " +
+                        ":date AND a.BILL_NO = :billNo";
+            } else {
+                query = "SELECT a.MENU_ITEM_CODE, b.ITEM_DESCRIPTION, a.ITEM_QTY FROM T_POS_BILL_ITEM_DETAIL a LEFT " +
+                        "JOIN M_ITEM b ON a.MENU_ITEM_CODE = b.ITEM_CODE WHERE a.OUTLET_CODE = :outletCode AND a.TRANS_DATE = " +
+                        ":date AND a.BILL_NO = :billNo";
+            }
+            hashMap.put("outletCode", param.get("outletCode"));
+            hashMap.put("date", param.get("date"));
+            hashMap.put("billNo", param.get("billNo"));
+
+        }
+
+        assert query != null;
+        System.out.println(query);
+        System.out.println(hashMap);
+        List<Map<String, Object>> list = jdbcTemplate.query(query, hashMap, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                if (param.containsKey("pos") && param.containsKey("cashier")) {
+                    try {
+                        Date time = new SimpleDateFormat("HHmmss").parse(rs.getString("BILL_TIME"));
+                        Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(rs.getString("BILL_DATE"));
+                        rt.put("billNo", rs.getString("BILL_NO"));
+                        rt.put("billDate", new SimpleDateFormat("dd/MM/yyyy").format(date));
+                        rt.put("billTime", new SimpleDateFormat("HH:mm:ss").format(time));
+                        rt.put("posCode", rs.getString("POS_CODE"));
+                        rt.put("shiftCode", rs.getString("SHIFT_CODE"));
+                        rt.put("orderType", rs.getString("ORDER_TYPE"));
+                        rt.put("transType", rs.getString("TRANS_TYPE"));
+                        rt.put("cashierCode", rs.getString("CASHIER_CODE"));
+                        rt.put("deliveryStatus", rs.getString("DELIVERY_STATUS"));
+                        rt.put("totalAmount", rs.getString("TOTAL_AMOUNT"));
+                        rt.put("totalSales", rs.getString("TOTAL_SALES"));
+                    } catch (ParseException e) {
+                        System.out.println(e);
+                        throw new RuntimeException(e);
+                    }
+                } else if (param.containsKey("billNo")) {
+                    if (param.get("detail").equals(0.0)) {
+                        rt.put("itemCode", rs.getString("MENU_ITEM_CODE"));
+                        rt.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
+                        rt.put("itemQty", rs.getString("ITEM_QTY"));
+                        rt.put("amount", rs.getString("AMOUNT"));
+                    } else {
+                        rt.put("itemCode", rs.getString("MENU_ITEM_CODE"));
+                        rt.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
+                        rt.put("itemQty", rs.getString("ITEM_QTY"));
+                    }
+                }
+                return rt;
+            }
+        });
+        return list;
     }
 }

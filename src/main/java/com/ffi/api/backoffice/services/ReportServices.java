@@ -138,4 +138,12 @@ public class ReportServices {
     public JasperPrint jasperReportSalesMixDepartment(Map<String, Object> param, Connection connection) throws JRException, IOException, ParseException {
         return dao.jasperReportSalesMixDepartment(param, connection);
     }
+
+    public JasperPrint jasperReportQueryBill(Map<String, Object> param, Connection connection) throws JRException, IOException, ParseException {
+        return dao.jasperReportQueryBill(param, connection);
+    }
+
+    public List<Map<String, Object>> listQueryBill(Map<String, Object> param) {
+        return dao.listQueryBill(param);
+    }
 }
