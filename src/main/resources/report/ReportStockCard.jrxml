@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ReportStockCard" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="bc2569fc-c73d-4766-969a-fad451531a1c">
-    <property name="ireport.zoom" value="1.1000000000000039"/>
+    <property name="ireport.zoom" value="1.2100000000000046"/>
     <property name="ireport.x" value="0"/>
-    <property name="ireport.y" value="0"/>
+    <property name="ireport.y" value="16"/>
     <parameter name="outletCode" class="java.lang.String">
         <defaultValueExpression><![CDATA[]]></defaultValueExpression>
     </parameter>
@@ -45,7 +45,8 @@
   WSTIN,
   WSTOUT,
   RTRIN,
-  RTROUT,PRDIN,PRDOUT,SOPIN,SOPOUT
+  RTROUT,PRDIN,PRDOUT,SOPIN,SOPOUT,
+  CASE WHEN cd_trans = 'SAL' THEN QTY_IN ELSE 0 END AS SAL
 FROM
   (
     SELECT
@@ -238,6 +239,7 @@ FROM
     <field name="PRDOUT" class="java.math.BigDecimal"/>
     <field name="SOPIN" class="java.math.BigDecimal"/>
     <field name="SOPOUT" class="java.math.BigDecimal"/>
+    <field name="SAL" class="java.math.BigDecimal"/>
     <variable name="TOTALIN" class="java.lang.Double" calculation="Sum">
         <variableExpression><![CDATA[$F{QTY_IN}]]></variableExpression>
     </variable>
@@ -312,6 +314,9 @@ FROM
     </variable>
     <variable name="sumSaldoAwal" class="java.math.BigDecimal" calculation="Sum">
         <variableExpression><![CDATA[$F{SALDO_AWAL}]]></variableExpression>
+    </variable>
+    <variable name="sumSal" class="java.lang.Integer" resetType="Group" resetGroup="itemCode" calculation="Sum">
+        <variableExpression><![CDATA[$F{SAL}]]></variableExpression>
     </variable>
     <group name="itemCode" isStartNewPage="true">
         <groupExpression><![CDATA[$F{ITEM_CODE}]]></groupExpression>
@@ -652,7 +657,7 @@ FROM
                     <textFieldExpression><![CDATA[$V{PRODIN}]]></textFieldExpression>
                 </textField>
                 <textField pattern="#,##0.00">
-                    <reportElement x="411" y="60" width="50" height="15" uuid="6da91e0a-5807-4c07-a516-6993642e3134"/>
+                    <reportElement x="402" y="60" width="70" height="15" uuid="6da91e0a-5807-4c07-a516-6993642e3134"/>
                     <textElement textAlignment="Right"/>
                     <textFieldExpression><![CDATA[$V{PRODOUT}]]></textFieldExpression>
                 </textField>
@@ -662,7 +667,7 @@ FROM
                     <textFieldExpression><![CDATA[$V{DELIN}]]></textFieldExpression>
                 </textField>
                 <textField pattern="#,##0.00">
-                    <reportElement x="411" y="75" width="50" height="15" uuid="7bd80c95-07a4-404a-b950-860132f20fef"/>
+                    <reportElement x="402" y="75" width="70" height="15" uuid="7bd80c95-07a4-404a-b950-860132f20fef"/>
                     <textElement textAlignment="Right"/>
                     <textFieldExpression><![CDATA[$V{DELOUT}]]></textFieldExpression>
                 </textField>
@@ -672,7 +677,7 @@ FROM
                     <textFieldExpression><![CDATA[$V{DLVIN}]]></textFieldExpression>
                 </textField>
                 <textField pattern="#,##0.00">
-                    <reportElement x="411" y="90" width="50" height="15" uuid="d6b264d4-7a2c-4c2b-a4a8-fb2c7316f08e"/>
+                    <reportElement x="402" y="90" width="70" height="15" uuid="d6b264d4-7a2c-4c2b-a4a8-fb2c7316f08e"/>
                     <textElement textAlignment="Right"/>
                     <textFieldExpression><![CDATA[$V{DLVOUT}]]></textFieldExpression>
                 </textField>
@@ -682,12 +687,12 @@ FROM
                     <textFieldExpression><![CDATA[$V{FMLIN}]]></textFieldExpression>
                 </textField>
                 <textField pattern="#,##0.00">
-                    <reportElement x="411" y="120" width="50" height="15" uuid="17e088dd-dd5d-4648-97c4-268e2852fcc0"/>
+                    <reportElement x="402" y="120" width="70" height="15" uuid="17e088dd-dd5d-4648-97c4-268e2852fcc0"/>
                     <textElement textAlignment="Right"/>
                     <textFieldExpression><![CDATA[$V{FMLOUT}]]></textFieldExpression>
                 </textField>
                 <textField pattern="#,##0.00">
-                    <reportElement x="411" y="135" width="50" height="15" uuid="26a97e9b-b34a-4d68-b7eb-fc3c3334b5da"/>
+                    <reportElement x="402" y="135" width="70" height="15" uuid="26a97e9b-b34a-4d68-b7eb-fc3c3334b5da"/>
                     <textElement textAlignment="Right"/>
                     <textFieldExpression><![CDATA[$V{WSTOUT}]]></textFieldExpression>
                 </textField>
@@ -702,12 +707,12 @@ FROM
                     <textFieldExpression><![CDATA[$V{LOVIN}]]></textFieldExpression>
                 </textField>
                 <textField pattern="#,##0.00">
-                    <reportElement x="411" y="151" width="50" height="15" uuid="5d6bc389-10ad-49f9-8bd9-c2990ee441fa"/>
+                    <reportElement x="402" y="151" width="70" height="15" uuid="5d6bc389-10ad-49f9-8bd9-c2990ee441fa"/>
                     <textElement textAlignment="Right"/>
                     <textFieldExpression><![CDATA[$V{LOVOUT}]]></textFieldExpression>
                 </textField>
                 <textField pattern="#,##0.00">
-                    <reportElement x="411" y="166" width="50" height="15" uuid="b3f9887c-fc0b-4be6-9d24-536a7c981186"/>
+                    <reportElement x="402" y="166" width="70" height="15" uuid="b3f9887c-fc0b-4be6-9d24-536a7c981186"/>
                     <textElement textAlignment="Right"/>
                     <textFieldExpression><![CDATA[$V{RTROUT}]]></textFieldExpression>
                 </textField>
@@ -722,7 +727,7 @@ FROM
                     <textFieldExpression><![CDATA[$V{SOPIN}]]></textFieldExpression>
                 </textField>
                 <textField pattern="#,##0.00">
-                    <reportElement x="411" y="181" width="50" height="15" uuid="5506301b-8948-4abc-8d34-d7c06549e29b"/>
+                    <reportElement x="402" y="181" width="70" height="15" uuid="5506301b-8948-4abc-8d34-d7c06549e29b"/>
                     <textElement textAlignment="Right"/>
                     <textFieldExpression><![CDATA[$V{SOPOUT}]]></textFieldExpression>
                 </textField>
@@ -732,7 +737,7 @@ FROM
                     <textFieldExpression><![CDATA[$V{LOCIN}]]></textFieldExpression>
                 </textField>
                 <textField pattern="#,##0.00">
-                    <reportElement x="411" y="105" width="50" height="15" uuid="5958796f-940c-4d0c-8cf6-10e773f9be42"/>
+                    <reportElement x="402" y="105" width="70" height="15" uuid="5958796f-940c-4d0c-8cf6-10e773f9be42"/>
                     <textElement textAlignment="Right"/>
                     <textFieldExpression><![CDATA[$V{LOCOUT}]]></textFieldExpression>
                 </textField>
@@ -740,11 +745,6 @@ FROM
                     <reportElement x="211" y="0" width="110" height="15" uuid="7666b6c1-e914-4772-a6e6-7e296960c476"/>
                     <text><![CDATA[KETERANGAN TOTAL]]></text>
                 </staticText>
-                <textField pattern="#,##0.00">
-                    <reportElement x="476" y="15" width="72" height="15" uuid="e0a99dac-2639-41fc-a9de-4e435da60f9d"/>
-                    <textElement textAlignment="Right"/>
-                    <textFieldExpression><![CDATA[$V{sumSaldoAwal}]]></textFieldExpression>
-                </textField>
                 <textField pattern="#,##0.00">
                     <reportElement x="477" y="45" width="72" height="15" uuid="1ab4543a-213e-4d2e-8eb3-61b86e6541fe"/>
                     <textElement textAlignment="Right"/>
@@ -805,6 +805,11 @@ FROM
                     <textElement textAlignment="Right"/>
                     <textFieldExpression><![CDATA[$V{SOPIN} - $V{SOPOUT}]]></textFieldExpression>
                 </textField>
+                <textField>
+                    <reportElement x="475" y="15" width="72" height="15" uuid="1967bcab-ec15-4b46-bf7c-6b55abba80cd"/>
+                    <textElement textAlignment="Right"/>
+                    <textFieldExpression><![CDATA[$V{sumSal}]]></textFieldExpression>
+                </textField>
             </band>
         </groupFooter>
     </group>
@@ -823,10 +828,6 @@ FROM
                 </textElement>
                 <text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
             </staticText>
-            <image>
-                <reportElement x="8" y="0" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="f929146f-1d10-4c68-9123-a34a405ad51f"/>
-                <imageExpression><![CDATA["logo/logoKfc.png"]]></imageExpression>
-            </image>
             <textField>
                 <reportElement x="64" y="11" width="134" height="11" uuid="c0588884-ec16-479b-b91a-27ed34f6c0d8"/>
                 <textElement>
@@ -883,6 +884,10 @@ FROM
                 </textElement>
                 <text><![CDATA[Tanggal dan Jan Cetak ]]></text>
             </staticText>
+            <image>
+                <reportElement x="9" y="3" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="42818538-a6e7-4c5f-817b-8d4d695ebb1e"/>
+                <imageExpression><![CDATA["logo/logoKfc.png"]]></imageExpression>
+            </image>
         </band>
     </pageHeader>
     <columnHeader>
