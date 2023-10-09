@@ -926,7 +926,9 @@ public class ReportDaoImpl implements ReportDao {
             query = "SELECT ITEM_CODE, ITEM_DESCRIPTION FROM M_ITEM WHERE STATUS = 'A' AND FLAG_PAKET = 'N' " +
                     "AND FLAG_MATERIAL = 'Y' ORDER BY ITEM_CODE asc";
         } else if (param.get("typeParam").equals("paymentType")) {
-            query = "";
+            query = "SELECT CODE, DESCRIPTION FROM M_GLOBAL WHERE COND LIKE '%PAY_TYPE%'";
+        } else if (param.get("typeParam").equals("paymentMethod")) {
+            query = "SELECT CODE, DESCRIPTION FROM M_GLOBAL WHERE COND LIKE '%PAY_METHOD%'";
         }
 
         assert query != null;
@@ -946,6 +948,12 @@ public class ReportDaoImpl implements ReportDao {
                 } else if (param.get("typeParam").equals("itemCode")) {
                     rt.put("itemCode", rs.getString("ITEM_CODE"));
                     rt.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
+                } else if (param.get("typeParam").equals("paymentType")) {
+                    rt.put("code", rs.getString("CODE"));
+                    rt.put("description", rs.getString("DESCRIPTION"));
+                } else if (param.get("typeParam").equals("paymentMethod")) {
+                    rt.put("code", rs.getString("CODE"));
+                    rt.put("description", rs.getString("DESCRIPTION"));
                 }
                 return rt;
             }
