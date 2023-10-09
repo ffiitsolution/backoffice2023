@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reportTransactionPayment" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="2199a4a4-d84c-439c-a7b3-ef917db9409d">
-    <property name="ireport.zoom" value="1.3310000000000062"/>
+    <property name="ireport.zoom" value="1.464100000000007"/>
     <property name="ireport.x" value="0"/>
     <property name="ireport.y" value="0"/>
     <parameter name="outletCode" class="java.lang.String">
@@ -336,7 +336,7 @@ new SimpleDateFormat("dd MMMM yyyy").format($F{TRANS_DATE}) + " :"]]></textField
                 <text><![CDATA[Bill No.]]></text>
             </staticText>
             <staticText>
-                <reportElement x="422" y="102" width="43" height="20" uuid="42ca6ee4-d2c8-455b-a264-497de7f10e1e"/>
+                <reportElement x="422" y="102" width="56" height="20" uuid="42ca6ee4-d2c8-455b-a264-497de7f10e1e"/>
                 <textElement verticalAlignment="Middle">
                     <font size="8" isBold="true"/>
                 </textElement>
@@ -431,7 +431,7 @@ new SimpleDateFormat("dd MMMM yyyy").format($F{TRANS_DATE}) + " :"]]></textField
                 </textElement>
                 <textFieldExpression><![CDATA[" : " + $P{paymentType}]]></textFieldExpression>
             </textField>
-            <textField textAdjust="StretchHeight">
+            <textField isStretchWithOverflow="true">
                 <reportElement x="418" y="14" width="213" height="13" uuid="c7f541ce-460a-4fd3-bfe6-d07f6dbb3ae3"/>
                 <textElement>
                     <font size="9" isUnderline="false"/>
@@ -508,7 +508,7 @@ new SimpleDateFormat("dd MMMM yyyy").format($F{TRANS_DATE}) + " :"]]></textField
                 <textElement textAlignment="Center" verticalAlignment="Top"/>
                 <textFieldExpression><![CDATA[$F{SHIFT_CODE}]]></textFieldExpression>
             </textField>
-            <textField textAdjust="StretchHeight">
+            <textField isStretchWithOverflow="true">
                 <reportElement x="220" y="5" width="108" height="17" uuid="2e6ae3e5-ab19-4090-b2f8-fcedf654e40e"/>
                 <textFieldExpression><![CDATA[$F{STAFF_NAME}]]></textFieldExpression>
             </textField>
@@ -517,7 +517,7 @@ new SimpleDateFormat("dd MMMM yyyy").format($F{TRANS_DATE}) + " :"]]></textField
                 <textFieldExpression><![CDATA[$F{BILL_NO}]]></textFieldExpression>
             </textField>
             <textField pattern="HH:mm:ss">
-                <reportElement x="422" y="5" width="43" height="17" uuid="4a44ef4a-780c-400d-89df-d4692e78f4df"/>
+                <reportElement x="422" y="5" width="56" height="17" uuid="4a44ef4a-780c-400d-89df-d4692e78f4df"/>
                 <textFieldExpression><![CDATA[$F{BILL_TIME}]]></textFieldExpression>
             </textField>
             <textField pattern="#,##0.00">
