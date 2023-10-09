@@ -925,6 +925,8 @@ public class ReportDaoImpl implements ReportDao {
         } else if (param.get("typeParam").equals("itemCode")) {
             query = "SELECT ITEM_CODE, ITEM_DESCRIPTION FROM M_ITEM WHERE STATUS = 'A' AND FLAG_PAKET = 'N' " +
                     "AND FLAG_MATERIAL = 'Y' ORDER BY ITEM_CODE asc";
+        } else if (param.get("typeParam").equals("paymentType")) {
+            query = "";
         }
 
         assert query != null;
@@ -1614,9 +1616,8 @@ public class ReportDaoImpl implements ReportDao {
                 if (param.containsKey("pos") && param.containsKey("cashier")) {
                     try {
                         Date time = new SimpleDateFormat("HHmmss").parse(rs.getString("BILL_TIME"));
-                        Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(rs.getString("BILL_DATE"));
                         rt.put("billNo", rs.getString("BILL_NO"));
-                        rt.put("billDate", new SimpleDateFormat("dd/MM/yyyy").format(date));
+                        rt.put("billDate", rs.getString("BILL_DATE"));
                         rt.put("billTime", new SimpleDateFormat("HH:mm:ss").format(time));
                         rt.put("posCode", rs.getString("POS_CODE"));
                         rt.put("shiftCode", rs.getString("SHIFT_CODE"));
