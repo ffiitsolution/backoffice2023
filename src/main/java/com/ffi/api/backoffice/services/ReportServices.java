@@ -146,4 +146,8 @@ public class ReportServices {
     public List<Map<String, Object>> listQueryBill(Map<String, Object> param) {
         return dao.listQueryBill(param);
     }
+
+    public JasperPrint jasperReportTransactionByPaymentType(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        return dao.jasperReportTransactionByPaymentType(param, connection);
+    }
 }

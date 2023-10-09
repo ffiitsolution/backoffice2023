@@ -2238,6 +2238,96 @@ public class ViewDoaImpl implements ViewDao {
                     }
                 }
             }
+        } else if (name.equals("TransactionByPaymentType")) {
+            query = "SELECT COUNT(*) FROM M_PAYMENT_METHOD A, T_POS_BILL B, T_POS_BILL_PAYMENT C WHERE B.OUTLET_CODE = " +
+                    ":outletCode AND B.TRANS_DATE BETWEEN :transDate1 AND :transDate2 AND B.POS_CODE BETWEEN :posCode1 " +
+                    "AND :posCode2 AND B.CASHIER_CODE BETWEEN :cashierCode1 AND :cashierCode2 AND B.BILL_TIME BETWEEN" +
+                    " :billTime1 AND :billTime2 AND A.PAYMENT_TYPE_CODE BETWEEN :paymentType1 AND :paymentType2 AND " +
+                    "A.PAYMENT_METHOD_CODE BETWEEN :paymentMethod1 AND :paymentMethod2 AND B.SHIFT_CODE BETWEEN " +
+                    ":shiftCode1 AND :shiftCode2 AND A.OUTLET_CODE = B.OUTLET_CODE AND B.OUTLET_CODE = C.OUTLET_CODE" +
+                    " AND B.TRANS_DATE = C.TRANS_DATE AND A.PAYMENT_METHOD_CODE = C.PAYMENT_METHOD_CODE AND B.POS_CODE" +
+                    " = C.POS_CODE AND B.BILL_NO = C.BILL_NO";
+
+            prm.put("transDate1", param.get("fromDate"));
+            prm.put("transDate2", param.get("toDate"));
+            prm.put("outletCode", param.get("outletCode"));
+            prm.put("billTime1", param.get("fromTime"));
+            prm.put("billTime2", param.get("toTime"));
+
+            List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
+
+            if (listPos.size() == 1){
+                prm.put("posCode1", "000");
+                prm.put("posCode2", "zzz");
+            } else {
+                for (Map<String, Object> object : listPos){
+                    if (object.containsKey("posCode1")) {
+                        prm.put("posCode1", object.get("posCode1"));
+                    } else {
+                        prm.put("posCode2", object.get("posCode2"));
+                    }
+                }
+            }
+
+            List<Map<String, Object>> listCashier = (List<Map<String, Object>>) param.get("cashier");
+
+            if (listCashier.size() == 1) {
+                prm.put("cashierCode1", "000");
+                prm.put("cashierCode2", "zzz");
+            } else {
+                for (Map<String, Object> object : listCashier) {
+                    if (object.containsKey("cashierCode1")) {
+                        prm.put("cashierCode1", object.get("cashierCode1"));
+                    } else {
+                        prm.put("cashierCode2", object.get("cashierCode2"));
+                    }
+                }
+            }
+
+            List<Map<String, Object>> listShift = (List<Map<String, Object>>) param.get("shift");
+
+            if (listShift.size() == 1) {
+                prm.put("shiftCode1", "000");
+                prm.put("shiftCode2", "zzz");
+            } else {
+                for (Map<String, Object> object : listShift) {
+                    if (object.containsKey("shiftCode1")) {
+                        prm.put("shiftCode1", object.get("shiftCode1"));
+                    } else {
+                        prm.put("shiftCode2", object.get("shiftCode2"));
+                    }
+                }
+            }
+
+            List<Map<String, Object>> listPaymentType = (List<Map<String, Object>>) param.get("PaymentType");
+
+            if (listPos.size() == 1){
+                prm.put("paymentType1", "000");
+                prm.put("paymentType2", "zzz");
+            } else {
+                for (Map<String, Object> object : listPaymentType){
+                    if (object.containsKey("paymentType1")) {
+                        prm.put("paymentType1", object.get("paymentType1"));
+                    } else {
+                        prm.put("paymentType2", object.get("paymentType2"));
+                    }
+                }
+            }
+
+            List<Map<String, Object>> listPaymentMethod = (List<Map<String, Object>>) param.get("paymentMethod");
+
+            if (listPos.size() == 1){
+                prm.put("paymentMethod1", "000");
+                prm.put("paymentMethod2", "zzz");
+            } else {
+                for (Map<String, Object> object : listPaymentMethod){
+                    if (object.containsKey("paymentMethod1")) {
+                        prm.put("paymentMethod1", object.get("paymentMethod1"));
+                    } else {
+                        prm.put("paymentMethod2", object.get("paymentMethod2"));
+                    }
+                }
+            }
         }
         assert query != null;
         return Integer.valueOf(Objects.requireNonNull(jdbcTemplate.queryForObject(query, prm, new RowMapper<String>() {

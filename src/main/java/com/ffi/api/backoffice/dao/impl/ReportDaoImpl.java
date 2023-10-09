@@ -1647,4 +1647,114 @@ public class ReportDaoImpl implements ReportDao {
         });
         return list;
     }
+
+    @Override
+    public JasperPrint jasperReportTransactionByPaymentType(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        Map<String, Object> hashMap = new HashMap<>();
+
+        hashMap.put("transDate1", param.get("fromDate"));
+        hashMap.put("transDate2", param.get("toDate"));
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("billTime1", param.get("fromTime"));
+        hashMap.put("billTime2", param.get("toTime"));
+
+        List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
+        StringBuilder posCode = new StringBuilder();
+        if (listPos.size() == 1){
+            hashMap.put("posCode", "Semua");
+            hashMap.put("posCode1", "000");
+            hashMap.put("posCode2", "zzz");
+        } else {
+            for (Map<String, Object> object : listPos){
+                if (object.containsKey("posCode1")) {
+                    hashMap.put("posCode1", object.get("posCode1"));
+                    posCode.append(object.get("posName1")).append(" s/d ");
+                } else {
+                    hashMap.put("posCode2", object.get("posCode2"));
+                    posCode.append(object.get("posName2"));
+                }
+                hashMap.put("posCode", posCode.toString());
+            }
+        }
+
+        List<Map<String, Object>> listCashier = (List<Map<String, Object>>) param.get("cashier");
+        StringBuilder cashierCode = new StringBuilder();
+        if (listCashier.size() == 1) {
+            hashMap.put("cashierCode", "Semua");
+            hashMap.put("cashierCode1", "000");
+            hashMap.put("cashierCode2", "zzz");
+        } else {
+            for (Map<String, Object> object : listCashier) {
+                if (object.containsKey("cashierCode1")) {
+                    hashMap.put("cashierCode1", object.get("cashierCode1"));
+                    cashierCode.append(object.get("cashierName1")).append(" s/d ");
+                } else {
+                    hashMap.put("cashierCode2", object.get("cashierCode2"));
+                    cashierCode.append(object.get("cashierName2"));
+                }
+                hashMap.put("cashierCode", cashierCode.toString());
+            }
+        }
+
+        List<Map<String, Object>> listShift = (List<Map<String, Object>>) param.get("shift");
+        StringBuilder shiftCode = new StringBuilder();
+        if (listShift.size() == 1) {
+            hashMap.put("shiftCode", "Semua");
+            hashMap.put("shiftCode1", "000");
+            hashMap.put("shiftCode2", "zzz");
+        } else {
+            for (Map<String, Object> object : listShift) {
+                if (object.containsKey("shiftCode1")) {
+                    hashMap.put("shiftCode1", object.get("shiftCode1"));
+                    shiftCode.append(object.get("shiftName1")).append(" s/d ");
+                } else {
+                    hashMap.put("shiftCode2", object.get("shiftCode2"));
+                    shiftCode.append(object.get("shiftName2"));
+                }
+                hashMap.put("shiftCode", shiftCode.toString());
+            }
+        }
+
+        List<Map<String, Object>> listPaymentType = (List<Map<String, Object>>) param.get("PaymentType");
+        StringBuilder paymentType = new StringBuilder();
+        if (listPos.size() == 1){
+            hashMap.put("paymentType", "Semua");
+            hashMap.put("paymentType1", "000");
+            hashMap.put("paymentType2", "zzz");
+        } else {
+            for (Map<String, Object> object : listPaymentType){
+                if (object.containsKey("paymentType1")) {
+                    hashMap.put("paymentType1", object.get("paymentType1"));
+                    paymentType.append(object.get("paymentTypeName1")).append(" s/d ");
+                } else {
+                    hashMap.put("paymentType2", object.get("paymentType2"));
+                    shiftCode.append(object.get("paymentTypeName2"));
+                }
+                hashMap.put("paymentType", shiftCode.toString());
+            }
+        }
+
+        List<Map<String, Object>> listPaymentMethod = (List<Map<String, Object>>) param.get("paymentMethod");
+        StringBuilder paymentMethod = new StringBuilder();
+        if (listPos.size() == 1){
+            hashMap.put("paymentMethod", "Semua");
+            hashMap.put("paymentMethod1", "000");
+            hashMap.put("paymentMethod2", "zzz");
+        } else {
+            for (Map<String, Object> object : listPaymentMethod){
+                if (object.containsKey("paymentMethod1")) {
+                    hashMap.put("paymentMethod1", object.get("paymentMethod1"));
+                    paymentType.append(object.get("paymentMethodName1")).append(" s/d ");
+                } else {
+                    hashMap.put("paymentMethod2", object.get("paymentMethod2"));
+                    shiftCode.append(object.get("paymentMethodName1"));
+                }
+                hashMap.put("paymentMethod", shiftCode.toString());
+            }
+        }
+
+        ClassPathResource classPathResource = new ClassPathResource("report/reportTransactionPayment.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
 }

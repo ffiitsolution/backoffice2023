@@ -1,0 +1,533 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reportTransactionPayment" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="2199a4a4-d84c-439c-a7b3-ef917db9409d">
+    <property name="ireport.zoom" value="1.3310000000000062"/>
+    <property name="ireport.x" value="0"/>
+    <property name="ireport.y" value="0"/>
+    <parameter name="outletCode" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="transDate1" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="transDate2" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="posCode1" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="posCode2" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="cashierCode1" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="cashierCode2" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="billTime1" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="billTime2" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="paymentType1" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="paymentType2" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="paymentMethod1" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="paymentMethod2" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="shiftCode1" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="shiftCode2" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="posCode" class="java.lang.String"/>
+    <parameter name="cashierCode" class="java.lang.String"/>
+    <parameter name="paymentType" class="java.lang.String"/>
+    <parameter name="paymentMethod" class="java.lang.String"/>
+    <parameter name="shiftCode" class="java.lang.String"/>
+    <queryString>
+        <![CDATA[SELECT   A.OUTLET_CODE,
+           A.TRANS_DATE,
+           TO_DATE (A.BILL_TIME, 'hh24:mi:ss') AS BILL_TIME,
+           A.POS_CODE,
+           B.STAFF_NAME,
+           A.SHIFT_CODE,
+           A.BILL_NO,
+           A.PAYMENT_AMOUNT,
+           A.PAYMENT_USED,
+           C.OUTLET_NAME,
+           C.ADDRESS_1,
+           C.ADDRESS_2,
+           C.CITY,
+           C.PHONE,
+           D.DESCRIPTION AS PAYMENT_TYPE,
+           E.DESCRIPTION AS PAYMENT_METHOD,
+           F.PAYMENT_USED_TOTAL
+    FROM               (SELECT   B.OUTLET_CODE,
+                                 B.TRANS_DATE,
+                                 A.PAYMENT_TYPE_CODE,
+                                 A.PAYMENT_METHOD_CODE,
+                                 B.POS_CODE,
+                                 B.SHIFT_CODE,
+                                 B.CASHIER_CODE,
+                                 B.BILL_NO,
+                                 B.BILL_TIME,
+                                 C.PAYMENT_AMOUNT,
+                                 C.PAYMENT_USED
+                          FROM   M_PAYMENT_METHOD A,
+                                 T_POS_BILL B,
+                                 T_POS_BILL_PAYMENT C
+                         WHERE   B.OUTLET_CODE = $P{outletCode}
+                                 AND B.TRANS_DATE BETWEEN $P{transDate1}
+                                                      AND  $P{transDate2}
+                                 AND B.POS_CODE BETWEEN $P{posCode1} AND $P{posCode2}
+                                 AND B.CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+                                 AND B.BILL_TIME BETWEEN $P{billTime1} AND $P{billTime2}
+                                 AND A.PAYMENT_TYPE_CODE BETWEEN $P{paymentType1}
+                                                             AND $P{paymentType2}
+                                 AND A.PAYMENT_METHOD_CODE BETWEEN $P{paymentMethod1}
+                                                               AND  $P{paymentMethod2}
+                                 AND B.SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
+                                 AND A.OUTLET_CODE = B.OUTLET_CODE
+                                 AND B.OUTLET_CODE = C.OUTLET_CODE
+                                 AND B.TRANS_DATE = C.TRANS_DATE
+                                 AND A.PAYMENT_METHOD_CODE =
+                                       C.PAYMENT_METHOD_CODE
+                                 AND B.POS_CODE = C.POS_CODE
+                                 AND B.BILL_NO = C.BILL_NO) A
+                    LEFT JOIN
+                       (SELECT   OUTLET_CODE, STAFF_POS_CODE, STAFF_NAME
+                          FROM   M_POS_STAFF
+                         WHERE   STATUS = 'A' AND ACCESS_LEVEL = 'KSR') B
+                    ON A.OUTLET_CODE = B.OUTLET_CODE
+                       AND A.CASHIER_CODE = B.STAFF_POS_CODE
+                 LEFT JOIN
+                    (SELECT   OUTLET_CODE,
+                              OUTLET_NAME,
+                              ADDRESS_1,
+                              ADDRESS_2,
+                              PHONE,
+                              CITY
+                       FROM   M_OUTLET) C
+                 ON A.OUTLET_CODE = C.OUTLET_CODE
+              LEFT JOIN
+                 (SELECT   COND, CODE, DESCRIPTION
+                    FROM   M_GLOBAL
+                   WHERE   COND LIKE '%PAY_TYPE%') D
+              ON A.PAYMENT_TYPE_CODE = D.CODE
+           LEFT JOIN
+              (SELECT   COND, CODE, DESCRIPTION
+                 FROM   M_GLOBAL
+                WHERE   COND LIKE '%PAY_METHOD%') E
+           ON A.PAYMENT_METHOD_CODE = E.CODE
+           LEFT JOIN (
+                      SELECT OUTLET_CODE,PAYMENT_TYPE_CODE,SUM(PAYMENT_USED)AS PAYMENT_USED_TOTAL          FROM( SELECT   B.OUTLET_CODE,
+                                 B.TRANS_DATE,
+                                 A.PAYMENT_TYPE_CODE,
+                                 C.PAYMENT_USED
+                          FROM   M_PAYMENT_METHOD A,
+                                 T_POS_BILL B,
+                                 T_POS_BILL_PAYMENT C
+                         WHERE  B.OUTLET_CODE = $P{outletCode}
+                                 AND B.TRANS_DATE BETWEEN $P{transDate1}
+                                                      AND  $P{transDate2}
+                                 AND B.POS_CODE BETWEEN $P{posCode1} AND $P{posCode2}
+                                 AND B.CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+                                 AND B.BILL_TIME BETWEEN $P{billTime1} AND $P{billTime2}
+                                 AND A.PAYMENT_TYPE_CODE BETWEEN $P{paymentType1}
+                                                             AND $P{paymentType2}
+                                 AND A.PAYMENT_METHOD_CODE BETWEEN $P{paymentMethod1}
+                                                               AND  $P{paymentMethod2}
+                                 AND B.SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
+                                 AND A.OUTLET_CODE = B.OUTLET_CODE
+                                 AND B.OUTLET_CODE = C.OUTLET_CODE
+                                 AND B.TRANS_DATE = C.TRANS_DATE
+                                 AND A.PAYMENT_METHOD_CODE =
+                                       C.PAYMENT_METHOD_CODE
+                                 AND B.POS_CODE = C.POS_CODE
+                                 AND B.BILL_NO = C.BILL_NO) GROUP BY OUTLET_CODE,PAYMENT_TYPE_CODE)F
+                                 ON A.PAYMENT_TYPE_CODE=F.PAYMENT_TYPE_CODE
+ORDER BY   A.TRANS_DATE,
+           A.PAYMENT_TYPE_CODE,
+           A.PAYMENT_METHOD_CODE,
+           A.POS_CODE,
+           A.SHIFT_CODE,
+           A.BILL_NO,
+           A.BILL_TIME]]>
+    </queryString>
+    <field name="OUTLET_CODE" class="java.lang.String"/>
+    <field name="TRANS_DATE" class="java.sql.Timestamp"/>
+    <field name="BILL_TIME" class="java.sql.Timestamp"/>
+    <field name="POS_CODE" class="java.lang.String"/>
+    <field name="STAFF_NAME" class="java.lang.String"/>
+    <field name="SHIFT_CODE" class="java.lang.String"/>
+    <field name="BILL_NO" class="java.lang.String"/>
+    <field name="PAYMENT_AMOUNT" class="java.math.BigDecimal"/>
+    <field name="PAYMENT_USED" class="java.math.BigDecimal"/>
+    <field name="OUTLET_NAME" class="java.lang.String"/>
+    <field name="ADDRESS_1" class="java.lang.String"/>
+    <field name="ADDRESS_2" class="java.lang.String"/>
+    <field name="CITY" class="java.lang.String"/>
+    <field name="PHONE" class="java.lang.String"/>
+    <field name="PAYMENT_TYPE" class="java.lang.String"/>
+    <field name="PAYMENT_METHOD" class="java.lang.String"/>
+    <field name="PAYMENT_USED_TOTAL" class="java.math.BigDecimal"/>
+    <variable name="PAYMENT_USED_TOTAL_1" class="java.lang.Integer" resetType="Group" resetGroup="Group by Payment Type" calculation="Count">
+        <variableExpression><![CDATA[$F{PAYMENT_USED_TOTAL}]]></variableExpression>
+    </variable>
+    <variable name="PAYMENT_USED_TOTAL_2" class="java.math.BigDecimal" resetType="Group" resetGroup="Group by Payment Type" calculation="Sum">
+        <variableExpression><![CDATA[$F{PAYMENT_USED_TOTAL}]]></variableExpression>
+    </variable>
+    <variable name="TOTAL_PAYMENT" class="java.math.BigDecimal" resetType="Group" resetGroup="Group by Payment Type" calculation="Sum">
+        <variableExpression><![CDATA[$F{PAYMENT_USED}]]></variableExpression>
+    </variable>
+    <variable name="GRAND_TOTAL_PAYMENT" class="java.math.BigDecimal" calculation="Sum">
+        <variableExpression><![CDATA[$F{PAYMENT_USED}]]></variableExpression>
+    </variable>
+    <variable name="COUNT_TOTAL_PAYMENT_TYPE" class="java.math.BigDecimal" calculation="Count">
+        <variableExpression><![CDATA[$V{Group by Payment Type_COUNT}]]></variableExpression>
+    </variable>
+    <variable name="grandTotalPayment" class="java.math.BigDecimal" resetType="Group" resetGroup="Group By TransDate" calculation="Sum">
+        <variableExpression><![CDATA[$F{PAYMENT_USED}]]></variableExpression>
+    </variable>
+    <group name="Group By TransDate">
+        <groupExpression><![CDATA[$F{TRANS_DATE}]]></groupExpression>
+        <groupHeader>
+            <band height="22">
+                <textField pattern="dd MMMMM yyyy">
+                    <reportElement x="5" y="1" width="133" height="20" uuid="d450cb7e-a43f-486a-aee1-af6df61fb7b2"/>
+                    <textElement verticalAlignment="Middle">
+                        <font isBold="true"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[$F{TRANS_DATE}]]></textFieldExpression>
+                </textField>
+                <line>
+                    <reportElement x="0" y="21" width="555" height="1" uuid="798262a5-8c05-429a-a479-a5ce10c96666"/>
+                </line>
+            </band>
+        </groupHeader>
+        <groupFooter>
+            <band height="21">
+                <textField>
+                    <reportElement x="93" y="0" width="293" height="20" uuid="f522c5e3-083d-462b-b364-ce86e3923355"/>
+                    <textElement textAlignment="Right" verticalAlignment="Middle">
+                        <font isBold="true"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA["TOTAL TANGGAL  " +
+new SimpleDateFormat("dd MMMM yyyy").format($F{TRANS_DATE}) + " :"]]></textFieldExpression>
+                </textField>
+                <line>
+                    <reportElement x="0" y="20" width="555" height="1" uuid="12f492ca-2532-4c5c-99ab-c048fc1a62b1"/>
+                </line>
+                <textField>
+                    <reportElement x="386" y="0" width="47" height="20" uuid="004493d9-5e9c-4c5f-89bd-c6cfd0e29c98"/>
+                    <textElement textAlignment="Right">
+                        <font isBold="true"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[$V{Group By TransDate_COUNT}]]></textFieldExpression>
+                </textField>
+                <textField pattern="#,##0.00">
+                    <reportElement x="450" y="1" width="100" height="20" uuid="0a000dbb-2b5c-48eb-84e0-4d12c1db7ae6"/>
+                    <textElement textAlignment="Right">
+                        <font isBold="true" isItalic="false"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[$V{grandTotalPayment}]]></textFieldExpression>
+                </textField>
+            </band>
+        </groupFooter>
+    </group>
+    <group name="Group by Payment Type">
+        <groupExpression><![CDATA[$F{PAYMENT_TYPE}]]></groupExpression>
+        <groupFooter>
+            <band height="25">
+                <line>
+                    <reportElement x="0" y="0" width="555" height="1" uuid="587ca2ce-534a-4fdf-ae79-44de9b792872"/>
+                </line>
+                <line>
+                    <reportElement x="0" y="24" width="555" height="1" uuid="2e01fc71-debf-41ff-a64e-2b4bb3902498"/>
+                </line>
+                <textField>
+                    <reportElement x="146" y="1" width="240" height="23" uuid="8a0b0b36-2f23-48f3-9adc-299b4416e7f0"/>
+                    <textElement textAlignment="Right" verticalAlignment="Middle">
+                        <font isBold="true"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA["TOTAL " + $F{PAYMENT_TYPE} + "  TANGGAL  " +
+new SimpleDateFormat("dd MMMM yyyy").format($F{TRANS_DATE}) + " :"]]></textFieldExpression>
+                </textField>
+                <textField pattern="#,##0.00">
+                    <reportElement x="450" y="1" width="100" height="24" uuid="9c02b867-961e-45c1-b76e-746638b2b39a"/>
+                    <textElement textAlignment="Right" verticalAlignment="Middle">
+                        <font isBold="true"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[$V{TOTAL_PAYMENT}]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="386" y="1" width="47" height="23" uuid="b5aa5bb9-d39f-4686-a392-abfd8d27bfa3"/>
+                    <textElement textAlignment="Right" verticalAlignment="Middle">
+                        <font isBold="true"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[$V{Group by Payment Type_COUNT}]]></textFieldExpression>
+                </textField>
+                <line>
+                    <reportElement x="0" y="24" width="555" height="1" uuid="2542bb7e-5446-4e5e-b2c3-494e45653fde"/>
+                </line>
+            </band>
+        </groupFooter>
+    </group>
+    <background>
+        <band splitType="Stretch"/>
+    </background>
+    <pageHeader>
+        <band height="125" splitType="Stretch">
+            <line>
+                <reportElement x="0" y="101" width="555" height="1" uuid="8069ffe9-95bb-4159-bd2f-5b2177779927"/>
+            </line>
+            <line>
+                <reportElement x="0" y="122" width="555" height="1" uuid="b6afa7a5-0616-436a-9efc-33bb3c89dfd8"/>
+            </line>
+            <staticText>
+                <reportElement x="5" y="102" width="70" height="20" uuid="7a57291c-eb49-4f2b-8c67-e208a6ea9918"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="8" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Payment Type]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="75" y="102" width="75" height="20" uuid="51d3de3a-7612-40ec-980f-3e3e612134aa"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="8" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Payment Method]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="149" y="102" width="29" height="20" uuid="5da9091d-6dbf-43a4-86a1-2d692ed4c397"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="8" isBold="true"/>
+                </textElement>
+                <text><![CDATA[POS#]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="177" y="102" width="33" height="20" uuid="46e43c21-2cc2-4a54-9a0f-04c1b0f674dc"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="8" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Shift]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="220" y="102" width="108" height="20" uuid="d3409f23-70b3-4a38-97d0-e27a81c2baa3"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="8" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Cashier]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="328" y="102" width="90" height="20" uuid="9610b9f3-f6b1-4ee5-a399-76cd631abcce"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="8" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Bill No.]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="422" y="102" width="43" height="20" uuid="42ca6ee4-d2c8-455b-a264-497de7f10e1e"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="8" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Time]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="464" y="102" width="86" height="20" uuid="1bec8df2-2a64-481b-8b69-2a2ce3304595"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font size="8" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Payment]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="69" y="2" width="141" height="18" uuid="e1288589-0225-46c7-ad82-c7d2c05de994"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="10" isBold="true"/>
+                </textElement>
+                <text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="344" y="14" width="75" height="13" uuid="7a0c191e-0ff6-417d-a572-d8ce6f7df770"/>
+                <textElement>
+                    <font size="9" isUnderline="false"/>
+                </textElement>
+                <text><![CDATA[Periode]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="344" y="48" width="75" height="13" uuid="599b4577-db20-404e-b959-cb1ba3b59c52"/>
+                <textElement>
+                    <font size="9" isUnderline="false"/>
+                </textElement>
+                <text><![CDATA[Jam]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="418" y="82" width="283" height="13" uuid="2381115e-f62b-4959-ae98-d11c3e3ea2f2"/>
+                <textElement>
+                    <font size="9" isUnderline="false"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + $P{shiftCode}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="69" y="21" width="141" height="15" uuid="f63342d6-3c03-43ca-943e-42c17769cb4d"/>
+                <textFieldExpression><![CDATA[$F{OUTLET_NAME}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="418" y="71" width="283" height="13" uuid="c413500b-fd8d-402b-9f76-8b7371bce008"/>
+                <textElement>
+                    <font size="9" isUnderline="false"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + $P{paymentMethod}]]></textFieldExpression>
+            </textField>
+            <image>
+                <reportElement x="14" y="5" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="2f0a3b06-5340-42f0-bf00-6635b72ffcd8"/>
+                <imageExpression><![CDATA["logo/logoKfc.png"]]></imageExpression>
+            </image>
+            <textField>
+                <reportElement x="69" y="33" width="100" height="15" uuid="35999fac-0563-48fa-86f2-62f995a9027a"/>
+                <textFieldExpression><![CDATA[$F{ADDRESS_1}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="344" y="60" width="75" height="13" uuid="e22f6683-f885-47e5-bd58-7c6019581cc9"/>
+                <textElement>
+                    <font size="9" isUnderline="false"/>
+                </textElement>
+                <text><![CDATA[Payment Type]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="344" y="71" width="75" height="13" uuid="838014ec-8f7d-4177-8451-d8d8fb69013c"/>
+                <textElement>
+                    <font size="9" isUnderline="false"/>
+                </textElement>
+                <text><![CDATA[Payment Method]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="344" y="82" width="75" height="13" uuid="0d35d5b3-9ce1-4cbe-af60-a8dcd00601a3"/>
+                <textElement>
+                    <font size="9" isUnderline="false"/>
+                </textElement>
+                <text><![CDATA[Shift]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="418" y="48" width="283" height="13" uuid="030bfa62-7016-4085-8759-4368c5e6835b"/>
+                <textElement>
+                    <font size="9" isUnderline="false"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + new SimpleDateFormat("HH:mm:ss").format(new SimpleDateFormat("HHmmss").parse($P{billTime1})) + " s/d " + new SimpleDateFormat("HH:mm:ss").format(new SimpleDateFormat("HHmmss").parse($P{billTime2}))]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="418" y="60" width="283" height="13" uuid="4ae25fd6-704f-4eec-8f9d-9b29450e00b2"/>
+                <textElement>
+                    <font size="9" isUnderline="false"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + $P{paymentType}]]></textFieldExpression>
+            </textField>
+            <textField textAdjust="StretchHeight">
+                <reportElement x="418" y="14" width="213" height="13" uuid="c7f541ce-460a-4fd3-bfe6-d07f6dbb3ae3"/>
+                <textElement>
+                    <font size="9" isUnderline="false"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{transDate1})) + " s/d " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{transDate2}))]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="-35" y="53" width="527" height="15" uuid="22c566b1-a23e-4dfc-8d68-81f21cdd7acd"/>
+                <textElement textAlignment="Center">
+                    <font size="11" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Transaction by Payment Type Report]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="344" y="37" width="75" height="13" uuid="9af18eab-eca0-410e-989c-70755743cedc"/>
+                <textElement>
+                    <font size="9" isUnderline="false"/>
+                </textElement>
+                <text><![CDATA[Cashier]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="344" y="25" width="75" height="13" uuid="9bfb1ae3-b7b1-4001-bdfa-1407fd0c7802"/>
+                <textElement>
+                    <font size="9" isUnderline="false"/>
+                </textElement>
+                <text><![CDATA[POS#]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="418" y="37" width="283" height="13" uuid="01abb803-4ba9-4355-86ce-0957937a577b"/>
+                <textElement>
+                    <font size="9" isUnderline="false"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + $P{cashierCode}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="344" y="2" width="75" height="13" uuid="ffb9f0e7-71d8-42b2-8244-f2af2027b110"/>
+                <textElement>
+                    <font size="9" isUnderline="false"/>
+                </textElement>
+                <text><![CDATA[Halaman]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="418" y="2" width="95" height="13" uuid="9bad7a76-4994-479f-9b13-f55c91ee2591"/>
+                <textElement>
+                    <font size="9" isUnderline="false"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + $V{PAGE_NUMBER}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="418" y="26" width="283" height="13" uuid="3299890b-1cf0-4dd1-a311-fc800fccbcd4"/>
+                <textElement>
+                    <font size="9"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : "  +  $P{posCode}]]></textFieldExpression>
+            </textField>
+        </band>
+    </pageHeader>
+    <detail>
+        <band height="24" splitType="Stretch">
+            <textField>
+                <reportElement x="5" y="5" width="70" height="17" uuid="2ba325e3-8e81-4694-93a4-a5d7d77683c5"/>
+                <textFieldExpression><![CDATA[$F{PAYMENT_TYPE}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="75" y="5" width="75" height="17" uuid="4a83f402-8f2d-44c9-8a7a-7832352c9898"/>
+                <textFieldExpression><![CDATA[$F{PAYMENT_METHOD}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="149" y="5" width="29" height="17" uuid="db821f50-875c-436f-814d-974f55819866"/>
+                <textFieldExpression><![CDATA[$F{POS_CODE}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="177" y="5" width="33" height="17" uuid="421acf25-66f2-4a4d-98cc-236c04f0f893"/>
+                <textElement textAlignment="Center" verticalAlignment="Top"/>
+                <textFieldExpression><![CDATA[$F{SHIFT_CODE}]]></textFieldExpression>
+            </textField>
+            <textField textAdjust="StretchHeight">
+                <reportElement x="220" y="5" width="108" height="17" uuid="2e6ae3e5-ab19-4090-b2f8-fcedf654e40e"/>
+                <textFieldExpression><![CDATA[$F{STAFF_NAME}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="328" y="5" width="90" height="17" uuid="9c3f6e96-1744-4842-b1cb-492496ff09d3"/>
+                <textFieldExpression><![CDATA[$F{BILL_NO}]]></textFieldExpression>
+            </textField>
+            <textField pattern="HH:mm:ss">
+                <reportElement x="422" y="5" width="43" height="17" uuid="4a44ef4a-780c-400d-89df-d4692e78f4df"/>
+                <textFieldExpression><![CDATA[$F{BILL_TIME}]]></textFieldExpression>
+            </textField>
+            <textField pattern="#,##0.00">
+                <reportElement x="465" y="4" width="85" height="20" uuid="c9531fca-f8c5-4792-9d35-77621d60dda9"/>
+                <textElement textAlignment="Right"/>
+                <textFieldExpression><![CDATA[$F{PAYMENT_USED}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+    <summary>
+        <band height="21" splitType="Stretch"/>
+    </summary>
+</jasperReport>
