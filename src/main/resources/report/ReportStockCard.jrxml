@@ -17,195 +17,437 @@
         <defaultValueExpression><![CDATA[" "]]></defaultValueExpression>
     </parameter>
     <queryString>
-        <![CDATA[SELECT
-  OUTLET_CODE,
-  outlet_name,
-  item_code,
-  item_description,
-  CASE WHEN CD_TRANS = 'DEL' THEN 'DELETE PRODUCTION' WHEN CD_TRANS = 'LOV' THEN 'LEFT OVER' WHEN CD_TRANS = 'PRD' THEN 'PRODUCTION' WHEN CD_TRANS = 'SLS' THEN 'SALES' WHEN CD_TRANS = 'FML' THEN 'FREEMEAL' WHEN CD_TRANS = 'DLV' THEN 'DELIVERY' WHEN CD_TRANS = 'RCV' THEN 'RECEIVE' WHEN CD_TRANS = 'WST' THEN 'WASTAGE ' WHEN CD_TRANS = 'RET' THEN 'RETUR' WHEN CD_TRANS = 'SOP' THEN 'STOCK OPNAME' ELSE 'SALDO AWAL' END AS CD_TRANS,
-  trans_date,
-  SALDO_AWAL,
-  CASE WHEN cd_trans = 'SAL' THEN 0 ELSE QTY_IN END AS QTY_IN,
-  QTY_OUT,
-  SALDO_AKHIR,
-  RCVIN,
-  RCVOUT,
-  SLSIN,
-  SLSOUT,
-  DELIN,
-  DELOUT,
-  LOCIN,
-  LOCOUT,
-  LOVIN,
-  LOVOUT,
-  FMLIN,
-  FMLOUT,
-  DLVIN,
-  DLVOUT,
-  WSTIN,
-  WSTOUT,
-  RTRIN,
-  RTROUT,PRDIN,PRDOUT,SOPIN,SOPOUT,
-  CASE WHEN cd_trans = 'SAL' THEN QTY_IN ELSE 0 END AS SAL
-FROM
-  (
-    SELECT
-      OUTLET_CODE,
-      outlet_name,
-      ITEM_CODE,
-      item_description,
-      CD_TRANS,
-      TRANS_DATE,
-      SUM (QTY_IN - QTY_OUT) OVER (
-        ORDER BY
-          item_code,
-          numb
-      ) - QTY_IN + QTY_OUT AS SALDO_AWAL,
-      QTY_IN,
-      QTY_OUT,
-      SUM (QTY_IN - QTY_OUT) OVER (
-        ORDER BY
-          item_code,
-          numb
-      ) AS SALDO_AKHIR,
-      RCVIN,
-      RCVOUT,
-      SLSIN,
-      SLSOUT,
-      DELIN,
-      DELOUT,
-      LOCIN,
-      LOCOUT,
-      LOVIN,
-      LOVOUT,
-      FMLIN,
-      FMLOUT,
-      DLVIN,
-      DLVOUT,
-      WSTIN,
-      WSTOUT,
-      RTRIN,
-      RTROUT,
-      PRDIN,PRDOUT,SOPIN,SOPOUT
-    FROM
-      (
-        SELECT
-          0 numb,
-          a.outlet_code,
-          b.outlet_name,
-          a.trans_date,
-          a.item_code,
-          m.item_description,
-          'SAL' AS CD_TRANS,
-          a.qty_beginning AS QTY_IN,
-          0 AS QTY_OUT,
-          0 AS RCVIN,
-          0 AS RCVOUT,
-          0 AS SLSIN,
-          0 AS SLSOUT,
-          0 AS DELIN,
-          0 AS DELOUT,
-          0 AS LOCIN,
-          0 AS LOCOUT,
-          0 AS LOVIN,
-          0 AS LOVOUT,
-          0 AS FMLIN,
-          0 AS FMLOUT,
-          0 AS DLVIN,
-          0 AS DLVOUT,
-          0 AS WSTIN,
-          0 AS WSTOUT,
-          0 AS RTRIN,
-          0 AS RTROUT,
-          0 AS PRDIN,
-          0 AS PRDOUT,
-          0 AS SOPIN,
-          0 AS SOPOUT,
-          a.TIME_UPD
-        FROM
-          T_STOCK_CARD a
-          join (
-            select
-              outlet_code,
-              outlet_name
-            from
-              m_outlet
-            where
-              outlet_code = $P{outletCode}
-          ) b on a.outlet_code = b.outlet_code
-          join (
-            select
-              *
-            from
-              m_item
-          ) m on a.item_code = m.item_code
-        WHERE
-          a.ITEM_CODE IN ($P!{itemCode})
-          AND a.trans_date = $P{fromDate}
-        UNION ALL
-        SELECT
-          ROWNUM numb,
-          A.OUTLET_CODE,
-          c.outlet_name,
-          A.TRANS_DATE,
-          A.ITEM_CODE,
-          m.item_description,
-          B.CD_TRANS,
-          QUANTITY_IN,
-          QUANTITY,
-          CASE WHEN CD_TRANS='RCV' THEN QUANTITY_IN ELSE 0 END  AS RCVIN,
-          CASE WHEN CD_TRANS='RCV' THEN QUANTITY ELSE 0 END AS RCVOUT,
-          CASE WHEN CD_TRANS='SLS' THEN QUANTITY_IN ELSE 0 END AS SLSIN,
-          CASE WHEN CD_TRANS='SLS' THEN QUANTITY ELSE 0 END AS SLSOUT,
-          CASE WHEN CD_TRANS='DEL' THEN QUANTITY_IN ELSE 0 END AS DELIN,
-          CASE WHEN CD_TRANS='DEL' THEN QUANTITY ELSE 0 END AS DELOUT,
-          CASE WHEN CD_TRANS='LOC' THEN QUANTITY_IN ELSE 0 END AS LOCIN,
-          CASE WHEN CD_TRANS='LOC' THEN QUANTITY ELSE 0 END AS LOCOUT,
-          CASE WHEN CD_TRANS='LOV' THEN QUANTITY_IN ELSE 0 END AS LOVIN,
-          CASE WHEN CD_TRANS='LOV' THEN QUANTITY ELSE 0 END AS LOVOUT,
-          CASE WHEN CD_TRANS='FML' THEN QUANTITY_IN ELSE 0 END AS FMLIN,
-          CASE WHEN CD_TRANS='RCV' THEN QUANTITY ELSE 0 END AS FMLOUT,
-          CASE WHEN CD_TRANS='DLV' THEN QUANTITY_IN ELSE 0 END AS DLVIN,
-          CASE WHEN CD_TRANS='DLV' THEN QUANTITY ELSE 0 END AS DLVOUT,
-          CASE WHEN CD_TRANS='WST' THEN QUANTITY_IN ELSE 0 END AS WSTIN,
-          CASE WHEN CD_TRANS='WST' THEN QUANTITY ELSE 0 END AS WSTOUT,
-          CASE WHEN CD_TRANS='RTR' THEN QUANTITY_IN ELSE 0 END AS RTRIN,
-          CASE WHEN CD_TRANS='RTR' THEN QUANTITY ELSE 0 END AS RTROUT,
-          CASE WHEN CD_TRANS='PRD' THEN QUANTITY_IN ELSE 0 END AS PRDIN,
-          CASE WHEN CD_TRANS='PRD' THEN QUANTITY ELSE 0 END AS PRDIN,
-          CASE WHEN CD_TRANS='SOP' THEN QUANTITY_IN ELSE 0 END AS SOPIN,
-          CASE WHEN CD_TRANS='SOP' THEN QUANTITY ELSE 0 END AS SOPOUT,
-          B.TIME_UPD
-        FROM
-          T_STOCK_CARD A
-          LEFT JOIN T_STOCK_CARD_DETAIL B ON A.OUTLET_CODE = B.OUTLET_CODE
-          AND A.ITEM_CODE = B.ITEM_CODE
-          AND A.trans_date = B.trans_date
-          join (
-            select
-              outlet_code,
-              outlet_name
-            from
-              m_outlet
-            where
-              outlet_code = $P{outletCode}
-          ) c on a.outlet_code = c.outlet_code
-          join (
-            select
-              *
-            from
-              m_item
-          ) m on a.item_code = m.item_code
-        WHERE
-          A.ITEM_CODE IN ($P!{itemCode})
-          AND A.trans_date BETWEEN $P{fromDate}
-          AND $P{toDate}
-      )
-    WHERE
-      ITEM_CODE IN ($P!{itemCode})
-      AND trans_date BETWEEN $P{fromDate}
-      AND $P{toDate}
-  )]]>
+        <![CDATA[/* Formatted on 10/9/2023 4:27:48 PM (QP5 v5.114.809.3010) */
+SELECT   OUTLET_CODE,
+         outlet_name,
+         item_code,
+         item_description,
+         CASE
+            WHEN CD_TRANS = 'DEL' THEN 'DELETE PRODUCTION'
+            WHEN CD_TRANS = 'LOV' THEN 'LEFT OVER'
+            WHEN CD_TRANS = 'PRD' THEN 'PRODUCTION'
+            WHEN CD_TRANS = 'SLS' THEN 'SALES'
+            WHEN CD_TRANS = 'FML' THEN 'FREEMEAL'
+            WHEN CD_TRANS = 'DLV' THEN 'DELIVERY'
+            WHEN CD_TRANS = 'RCV' THEN 'RECEIVE'
+            WHEN CD_TRANS = 'WST' THEN 'WASTAGE '
+            WHEN CD_TRANS = 'RET' THEN 'RETUR'
+            WHEN CD_TRANS = 'SOP' THEN 'STOCK OPNAME'
+            ELSE 'SALDO AWAL'
+         END
+            AS CD_TRANS,
+         trans_date,
+         SALDO_AWAL,
+         CASE WHEN cd_trans = 'SAL' THEN 0 ELSE QTY_IN END AS QTY_IN,
+         QTY_OUT,
+         SALDO_AKHIR,
+         RCVIN,
+         RCVOUT,
+         SLSIN,
+         SLSOUT,
+         DELIN,
+         DELOUT,
+         LOCIN,
+         LOCOUT,
+         LOVIN,
+         LOVOUT,
+         FMLIN,
+         FMLOUT,
+         DLVIN,
+         DLVOUT,
+         WSTIN,
+         WSTOUT,
+         RTRIN,
+         RTROUT,
+         PRDIN,
+         PRDOUT,
+         SOPIN,
+         SOPOUT,
+         CASE WHEN cd_trans = 'SAL' THEN QTY_IN ELSE 0 END AS SAL
+  FROM   (SELECT   urutan,
+                   OUTLET_CODE,
+                   outlet_name,
+                   ITEM_CODE,
+                   item_description,
+                   CD_TRANS,
+                   TRANS_DATE,
+                   SALDO_AWAL,
+                   QTY_IN,
+                   QTY_OUT,
+                   SALDO_AWAL + QTY_IN - QTY_OUT AS saldo_akhir,
+                   RCVIN,
+                   RCVOUT,
+                   SLSIN,
+                   SLSOUT,
+                   DELIN,
+                   DELOUT,
+                   LOCIN,
+                   LOCOUT,
+                   LOVIN,
+                   LOVOUT,
+                   FMLIN,
+                   FMLOUT,
+                   DLVIN,
+                   DLVOUT,
+                   WSTIN,
+                   WSTOUT,
+                   RTRIN,
+                   RTROUT,
+                   PRDIN,
+                   PRDOUT,
+                   SOPIN,
+                   SOPOUT,
+                   TIME_UPD
+            FROM   (SELECT   urutan,
+                             OUTLET_CODE,
+                             outlet_name,
+                             ITEM_CODE,
+                             item_description,
+                             CD_TRANS,
+                             TRANS_DATE,
+                             SUM(QTY_IN - QTY_OUT)
+                                OVER (PARTITION BY item_code
+                                      ORDER BY item_code, urutan)
+                             - QTY_IN
+                             + QTY_OUT
+                                AS SALDO_AWAL,
+                             QTY_IN,
+                             QTY_OUT,
+                             SUM(QTY_IN - QTY_OUT)
+                                OVER (PARTITION BY item_code, urutan
+                                      ORDER BY item_code, urutan)
+                                AS SALDO_AKHIR,
+                             RCVIN,
+                             RCVOUT,
+                             SLSIN,
+                             SLSOUT,
+                             DELIN,
+                             DELOUT,
+                             LOCIN,
+                             LOCOUT,
+                             LOVIN,
+                             LOVOUT,
+                             FMLIN,
+                             FMLOUT,
+                             DLVIN,
+                             DLVOUT,
+                             WSTIN,
+                             WSTOUT,
+                             RTRIN,
+                             RTROUT,
+                             PRDIN,
+                             PRDOUT,
+                             SOPIN,
+                             SOPOUT,
+                             TIME_UPD
+                      FROM   (  SELECT   OUTLET_CODE,
+                                         OUTLET_NAME,
+                                         TRANS_DATE,
+                                         ITEM_CODE,
+                                         ITEM_DESCRIPTION,
+                                         CD_TRANS,
+                                         QTY_IN,
+                                         QTY_OUT,
+                                         RCVIN,
+                                         RCVOUT,
+                                         SLSIN,
+                                         SLSOUT,
+                                         DELIN,
+                                         DELOUT,
+                                         LOCIN,
+                                         LOCOUT,
+                                         LOVIN,
+                                         LOVOUT,
+                                         FMLIN,
+                                         FMLOUT,
+                                         DLVIN,
+                                         DLVOUT,
+                                         WSTIN,
+                                         WSTOUT,
+                                         RTRIN,
+                                         RTROUT,
+                                         PRDIN,
+                                         PRDOUT,
+                                         SOPIN,
+                                         SOPOUT,
+                                         TIME_UPD,
+                                         ROW_NUMBER ()
+                                            OVER (PARTITION BY item_code
+                                                  ORDER BY item_code)
+                                            AS urutan
+                                  FROM   (SELECT   0 numb,
+                                                   a.outlet_code,
+                                                   b.outlet_name,
+                                                   a.trans_date,
+                                                   a.item_code,
+                                                   m.item_description,
+                                                   'SAL' AS CD_TRANS,
+                                                   a.qty_beginning AS QTY_IN,
+                                                   0 AS QTY_OUT,
+                                                   0 AS RCVIN,
+                                                   0 AS RCVOUT,
+                                                   0 AS SLSIN,
+                                                   0 AS SLSOUT,
+                                                   0 AS DELIN,
+                                                   0 AS DELOUT,
+                                                   0 AS LOCIN,
+                                                   0 AS LOCOUT,
+                                                   0 AS LOVIN,
+                                                   0 AS LOVOUT,
+                                                   0 AS FMLIN,
+                                                   0 AS FMLOUT,
+                                                   0 AS DLVIN,
+                                                   0 AS DLVOUT,
+                                                   0 AS WSTIN,
+                                                   0 AS WSTOUT,
+                                                   0 AS RTRIN,
+                                                   0 AS RTROUT,
+                                                   0 AS PRDIN,
+                                                   0 AS PRDOUT,
+                                                   0 AS SOPIN,
+                                                   0 AS SOPOUT,
+                                                   a.TIME_UPD,
+                                                   0 AS nomor
+                                            FROM         T_STOCK_CARD a
+                                                      JOIN
+                                                         (SELECT   outlet_code,
+                                                                   outlet_name
+                                                            FROM   m_outlet
+                                                           WHERE   outlet_code =
+                                                                      $P{outletCode}) b
+                                                      ON a.outlet_code =
+                                                            b.outlet_code
+                                                   JOIN
+                                                      (SELECT   * FROM m_item)
+                                                      m
+                                                   ON a.item_code = m.item_code
+                                           WHERE   a.ITEM_CODE IN
+                                                         ('A1-0001', '01-1002')
+                                                   AND a.trans_date =
+                                                         $P{fromDate}
+                                          UNION ALL
+                                          SELECT   ROWNUM numb,
+                                                   A.OUTLET_CODE,
+                                                   c.outlet_name,
+                                                   A.TRANS_DATE,
+                                                   A.ITEM_CODE,
+                                                   m.item_description,
+                                                   B.CD_TRANS,
+                                                   QUANTITY_IN,
+                                                   QUANTITY,
+                                                   CASE
+                                                      WHEN CD_TRANS = 'RCV'
+                                                      THEN
+                                                         QUANTITY_IN
+                                                      ELSE
+                                                         0
+                                                   END
+                                                      AS RCVIN,
+                                                   CASE
+                                                      WHEN CD_TRANS = 'RCV'
+                                                      THEN
+                                                         QUANTITY
+                                                      ELSE
+                                                         0
+                                                   END
+                                                      AS RCVOUT,
+                                                   CASE
+                                                      WHEN CD_TRANS = 'SLS'
+                                                      THEN
+                                                         QUANTITY_IN
+                                                      ELSE
+                                                         0
+                                                   END
+                                                      AS SLSIN,
+                                                   CASE
+                                                      WHEN CD_TRANS = 'SLS'
+                                                      THEN
+                                                         QUANTITY
+                                                      ELSE
+                                                         0
+                                                   END
+                                                      AS SLSOUT,
+                                                   CASE
+                                                      WHEN CD_TRANS = 'DEL'
+                                                      THEN
+                                                         QUANTITY_IN
+                                                      ELSE
+                                                         0
+                                                   END
+                                                      AS DELIN,
+                                                   CASE
+                                                      WHEN CD_TRANS = 'DEL'
+                                                      THEN
+                                                         QUANTITY
+                                                      ELSE
+                                                         0
+                                                   END
+                                                      AS DELOUT,
+                                                   CASE
+                                                      WHEN CD_TRANS = 'LOC'
+                                                      THEN
+                                                         QUANTITY_IN
+                                                      ELSE
+                                                         0
+                                                   END
+                                                      AS LOCIN,
+                                                   CASE
+                                                      WHEN CD_TRANS = 'LOC'
+                                                      THEN
+                                                         QUANTITY
+                                                      ELSE
+                                                         0
+                                                   END
+                                                      AS LOCOUT,
+                                                   CASE
+                                                      WHEN CD_TRANS = 'LOV'
+                                                      THEN
+                                                         QUANTITY_IN
+                                                      ELSE
+                                                         0
+                                                   END
+                                                      AS LOVIN,
+                                                   CASE
+                                                      WHEN CD_TRANS = 'LOV'
+                                                      THEN
+                                                         QUANTITY
+                                                      ELSE
+                                                         0
+                                                   END
+                                                      AS LOVOUT,
+                                                   CASE
+                                                      WHEN CD_TRANS = 'FML'
+                                                      THEN
+                                                         QUANTITY_IN
+                                                      ELSE
+                                                         0
+                                                   END
+                                                      AS FMLIN,
+                                                   CASE
+                                                      WHEN CD_TRANS = 'RCV'
+                                                      THEN
+                                                         QUANTITY
+                                                      ELSE
+                                                         0
+                                                   END
+                                                      AS FMLOUT,
+                                                   CASE
+                                                      WHEN CD_TRANS = 'DLV'
+                                                      THEN
+                                                         QUANTITY_IN
+                                                      ELSE
+                                                         0
+                                                   END
+                                                      AS DLVIN,
+                                                   CASE
+                                                      WHEN CD_TRANS = 'DLV'
+                                                      THEN
+                                                         QUANTITY
+                                                      ELSE
+                                                         0
+                                                   END
+                                                      AS DLVOUT,
+                                                   CASE
+                                                      WHEN CD_TRANS = 'WST'
+                                                      THEN
+                                                         QUANTITY_IN
+                                                      ELSE
+                                                         0
+                                                   END
+                                                      AS WSTIN,
+                                                   CASE
+                                                      WHEN CD_TRANS = 'WST'
+                                                      THEN
+                                                         QUANTITY
+                                                      ELSE
+                                                         0
+                                                   END
+                                                      AS WSTOUT,
+                                                   CASE
+                                                      WHEN CD_TRANS = 'RTR'
+                                                      THEN
+                                                         QUANTITY_IN
+                                                      ELSE
+                                                         0
+                                                   END
+                                                      AS RTRIN,
+                                                   CASE
+                                                      WHEN CD_TRANS = 'RTR'
+                                                      THEN
+                                                         QUANTITY
+                                                      ELSE
+                                                         0
+                                                   END
+                                                      AS RTROUT,
+                                                   CASE
+                                                      WHEN CD_TRANS = 'PRD'
+                                                      THEN
+                                                         QUANTITY_IN
+                                                      ELSE
+                                                         0
+                                                   END
+                                                      AS PRDIN,
+                                                   CASE
+                                                      WHEN CD_TRANS = 'PRD'
+                                                      THEN
+                                                         QUANTITY
+                                                      ELSE
+                                                         0
+                                                   END
+                                                      AS PRDIN,
+                                                   CASE
+                                                      WHEN CD_TRANS = 'SOP'
+                                                      THEN
+                                                         QUANTITY_IN
+                                                      ELSE
+                                                         0
+                                                   END
+                                                      AS SOPIN,
+                                                   CASE
+                                                      WHEN CD_TRANS = 'SOP'
+                                                      THEN
+                                                         QUANTITY
+                                                      ELSE
+                                                         0
+                                                   END
+                                                      AS SOPOUT,
+                                                   B.TIME_UPD,
+                                                   ROW_NUMBER ()
+                                                      OVER (
+                                                         PARTITION BY A.item_code
+                                                         ORDER BY
+                                                            M.item_description
+                                                      )
+                                                      AS nomor
+                                            FROM            T_STOCK_CARD A
+                                                         LEFT JOIN
+                                                            T_STOCK_CARD_DETAIL B
+                                                         ON A.OUTLET_CODE =
+                                                               B.OUTLET_CODE
+                                                            AND A.ITEM_CODE =
+                                                                  B.ITEM_CODE
+                                                            AND A.trans_date =
+                                                                  B.trans_date
+                                                      JOIN
+                                                         (SELECT   outlet_code,
+                                                                   outlet_name
+                                                            FROM   m_outlet
+                                                           WHERE   outlet_code =
+                                                                      $P{outletCode}) c
+                                                      ON a.outlet_code =
+                                                            c.outlet_code
+                                                   JOIN
+                                                      (SELECT   * FROM m_item)
+                                                      m
+                                                   ON a.item_code = m.item_code
+                                           WHERE   A.ITEM_CODE IN
+                                                         ('A1-0001', '01-1002')
+                                                   AND A.trans_date BETWEEN $P{fromDate}
+                                                                        AND  $P{toDate})
+                              ORDER BY   item_code ASC, trans_date ASC)
+                     WHERE   ITEM_CODE IN ('A1-0001', '01-1002')
+                             AND trans_date BETWEEN $P{fromDate}
+                                                AND  $P{toDate}))]]>
     </queryString>
     <field name="OUTLET_CODE" class="java.lang.String"/>
     <field name="OUTLET_NAME" class="java.lang.String"/>
@@ -805,7 +1047,7 @@ FROM
                     <textElement textAlignment="Right"/>
                     <textFieldExpression><![CDATA[$V{SOPIN} - $V{SOPOUT}]]></textFieldExpression>
                 </textField>
-                <textField>
+                <textField pattern="#,##0.00">
                     <reportElement x="475" y="15" width="72" height="15" uuid="1967bcab-ec15-4b46-bf7c-6b55abba80cd"/>
                     <textElement textAlignment="Right"/>
                     <textFieldExpression><![CDATA[$V{sumSal}]]></textFieldExpression>

@@ -2328,6 +2328,12 @@ public class ViewDoaImpl implements ViewDao {
                     }
                 }
             }
+        } else if (name.equals("pemakaianBySales")) {
+            query = "SELECT COUNT(*) FROM t_pos_bill_item WHERE OUTLET_CODE = :outletCode AND TRANS_DATE BETWEEN :fromDate" +
+                    " AND :toDate";
+            prm.put("fromDate", param.get("fromDate"));
+            prm.put("outletCode", param.get("outletCode"));
+            prm.put("toDate", param.get("toDate"));
         }
         assert query != null;
         return Integer.valueOf(Objects.requireNonNull(jdbcTemplate.queryForObject(query, prm, new RowMapper<String>() {

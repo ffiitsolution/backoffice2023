@@ -150,4 +150,8 @@ public class ReportServices {
     public JasperPrint jasperReportTransactionByPaymentType(Map<String, Object> param, Connection connection) throws JRException, IOException {
         return dao.jasperReportTransactionByPaymentType(param, connection);
     }
+
+    public JasperPrint jasperReportPemakaianBySales(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        return dao.jasperReportPemakaianBySales(param, connection);
+    }
 }
