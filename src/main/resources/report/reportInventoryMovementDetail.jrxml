@@ -484,8 +484,7 @@ ORDER BY
                 <textElement>
                     <font size="8"/>
                 </textElement>
-                <textFieldExpression><![CDATA["(" + new DecimalFormat("#,##0.00").format($F{CONV_STOCK}) + " " + $F{UOM_STOCK} + "/" + $F{UOM_PURCHASE}
-+ ")"]]></textFieldExpression>
+                <textFieldExpression><![CDATA["(" + $F{CONV_STOCK} + " " + $F{UOM_STOCK} + "/" + $F{UOM_PURCHASE} + ")"]]></textFieldExpression>
             </textField>
             <textField pattern="#,##0">
                 <reportElement x="242" y="0" width="53" height="15" uuid="f60a1a42-dcbc-406d-babb-ebb4a7024a98"/>
