@@ -745,6 +745,7 @@ public class ReportDaoImpl implements ReportDao {
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }
+
     /////////////////////////////////DONE///////////////////////////////////////
     ///////////////NEW METHOD REPORT BY PASCA 24 July 2023////
     @Override
@@ -752,9 +753,9 @@ public class ReportDaoImpl implements ReportDao {
         Map<String, Object> hashMap = new HashMap<String, Object>();
 
         hashMap.put("outletCode", param.get("outletCode"));
-        hashMap.put("fromDate",param.get("fromDate"));
+        hashMap.put("fromDate", param.get("fromDate"));
         hashMap.put("toDate", param.get("toDate"));
-        hashMap. put("gudang", param.get("gudang"));
+        hashMap.put("gudang", param.get("gudang"));
         hashMap.put("item", param.get("item"));
         hashMap.put("user", param.get("user"));
 
@@ -766,7 +767,7 @@ public class ReportDaoImpl implements ReportDao {
             query.append(" AND c.DESCRIPTION = $P{gudang}");
         if (!param.get("item").equals("Semua"))
             query.append(" AND a.ITEM_CODE = $P{item}");
-        if (param.get("stockMinus").equals(1.0)){
+        if (param.get("stockMinus").equals(1.0)) {
             query.append(" AND SIGN(a.QTY_BEGINNING + a.QTY_IN - a.QTY_OUT) = -1");
             hashMap.put("title", "(Minus)");
         } else {
@@ -848,12 +849,12 @@ public class ReportDaoImpl implements ReportDao {
 
         List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
         StringBuilder posCode = new StringBuilder();
-        if (listPos.size() == 1){
+        if (listPos.size() == 1) {
             hashMap.put("posCode", "Semua");
             hashMap.put("posCode1", "000");
             hashMap.put("posCode2", "zzz");
         } else {
-            for (Map<String, Object> object : listPos){
+            for (Map<String, Object> object : listPos) {
                 if (object.containsKey("posCode1")) {
                     hashMap.put("posCode1", object.get("posCode1"));
                     posCode.append(object.get("posName1")).append(" s/d ");
@@ -912,7 +913,7 @@ public class ReportDaoImpl implements ReportDao {
     public List<Map<String, Object>> listParamReport(Map<String, String> param) {
         String query = null;
         Map<String, Object> hashMap = new HashMap<>();
-        if (param.get("typeParam").equals("Pos")){
+        if (param.get("typeParam").equals("Pos")) {
             query = "SELECT POS_CODE, POS_DESCRIPTION FROM M_POS mp WHERE STATUS = 'A' AND POS_CODE != ' ' " +
                     "AND OUTLET_CODE =:outletCode ORDER BY POS_CODE ASC";
             hashMap.put("outletCode", param.get("outletCode"));
@@ -973,12 +974,12 @@ public class ReportDaoImpl implements ReportDao {
 
         List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
         StringBuilder posCode = new StringBuilder();
-        if (listPos.size() == 1){
+        if (listPos.size() == 1) {
             hashMap.put("posCode", "Semua");
             hashMap.put("posCode1", "000");
             hashMap.put("posCode2", "zzz");
         } else {
-            for (Map<String, Object> object : listPos){
+            for (Map<String, Object> object : listPos) {
                 if (object.containsKey("posCode1")) {
                     hashMap.put("posCode1", object.get("posCode1"));
                     posCode.append(object.get("posName1")).append(" s/d ");
@@ -1056,12 +1057,12 @@ public class ReportDaoImpl implements ReportDao {
 
         List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
         StringBuilder posCode = new StringBuilder();
-        if (listPos.size() == 1){
+        if (listPos.size() == 1) {
             hashMap.put("posCode", "Semua");
             hashMap.put("posCode1", "000");
             hashMap.put("posCode2", "zzz");
         } else {
-            for (Map<String, Object> object : listPos){
+            for (Map<String, Object> object : listPos) {
                 if (object.containsKey("posCode1")) {
                     hashMap.put("posCode1", object.get("posCode1"));
                     posCode.append(object.get("posName1")).append(" s/d ");
@@ -1139,12 +1140,12 @@ public class ReportDaoImpl implements ReportDao {
 
         List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
         StringBuilder posCode = new StringBuilder();
-        if (listPos.size() == 1){
+        if (listPos.size() == 1) {
             hashMap.put("posCode", "Semua");
             hashMap.put("posCode1", "000");
             hashMap.put("posCode2", "zzz");
         } else {
-            for (Map<String, Object> object : listPos){
+            for (Map<String, Object> object : listPos) {
                 if (object.containsKey("posCode1")) {
                     hashMap.put("posCode1", object.get("posCode1"));
                     posCode.append(object.get("posName1")).append(" s/d ");
@@ -1222,12 +1223,12 @@ public class ReportDaoImpl implements ReportDao {
 
         List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
         StringBuilder posCode = new StringBuilder();
-        if (listPos.size() == 1){
+        if (listPos.size() == 1) {
             hashMap.put("pos", "Semua");
             hashMap.put("pos1", "000");
             hashMap.put("pos2", "zzz");
         } else {
-            for (Map<String, Object> object : listPos){
+            for (Map<String, Object> object : listPos) {
                 if (object.containsKey("posCode1")) {
                     hashMap.put("pos1", object.get("posCode1"));
                     posCode.append(object.get("posName1")).append(" s/d ");
@@ -1276,7 +1277,7 @@ public class ReportDaoImpl implements ReportDao {
                 hashMap.put("shift", shiftCode.toString());
             }
         }
-        if (param.get("detail").equals(0.0)){
+        if (param.get("detail").equals(0.0)) {
             ClassPathResource classPathResource = new ClassPathResource("report/ReportSummarySalesbyItemCode.jrxml");
             JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
             return JasperFillManager.fillReport(jasperReport, hashMap, connection);
@@ -1316,7 +1317,7 @@ public class ReportDaoImpl implements ReportDao {
         String queryCount = "SELECT COUNT(ITEM_CODE) FROM (SELECT DISTINCT (a.ITEM_CODE)  FROM T_STOCK_CARD a " +
                 "LEFT JOIN M_ITEM b ON a.ITEM_CODE = b.ITEM_CODE)";
         Map<String, Object> prm = new HashMap<>();
-        int count = Integer.parseInt(Objects.requireNonNull(jdbcTemplate.queryForObject(queryCount,prm, new RowMapper<String>() {
+        int count = Integer.parseInt(Objects.requireNonNull(jdbcTemplate.queryForObject(queryCount, prm, new RowMapper<String>() {
             @Override
             public String mapRow(ResultSet rs, int rowNum) throws SQLException {
                 return rs.getString(1) == null ? "0" : rs.getString(1);
@@ -1416,8 +1417,8 @@ public class ReportDaoImpl implements ReportDao {
         queryDataReceipt.append("SELECT UTM.POS_CODE_NOW, JON.POS_DESCRIPTION, UTM.MIN_NOW, UTM.MAX_NOW, UTM.MIN_AGO, " +
                 "UTM.MAX_AGO FROM (");
         queryDataReceipt.append("SELECT * FROM ( SELECT '").append(listPos.get(0).get("posCode")).append("'" +
-                "AS POS_CODE_NOW , MIN(BILL_NO) AS MIN_NOW, MAX(BILL_NO) AS MAX_NOW FROM T_POS_BILL WHERE TRANS_DATE " +
-                "= '").append(param.get("periode")).append("' AND POS_CODE = '").append(listPos.get(0).get("posCode"))
+                        "AS POS_CODE_NOW , MIN(BILL_NO) AS MIN_NOW, MAX(BILL_NO) AS MAX_NOW FROM T_POS_BILL WHERE TRANS_DATE " +
+                        "= '").append(param.get("periode")).append("' AND POS_CODE = '").append(listPos.get(0).get("posCode"))
                 .append("' AND OUTLET_CODE = '").append(param.get("outletCode")).append("' " +
                         ")A JOIN ( SELECT '").append(listPos.get(0).get("posCode")).append("' AS " +
                         "POS_CODE_AGO, MIN(BILL_NO) AS MIN_AGO, MAX(BILL_NO) AS MAX_AGO FROM T_POS_BILL WHERE " +
@@ -1441,7 +1442,7 @@ public class ReportDaoImpl implements ReportDao {
                 .append(param.get("outletCode")).append("' WHERE UTM.POS_CODE_NOW BETWEEN $P{posCode1} AND $P{posCode2}" +
                         "ORDER BY UTM.POS_CODE_NOW ASC");
 
-            Map<String, Object> hashMap = new HashMap<>();
+        Map<String, Object> hashMap = new HashMap<>();
         hashMap.put("query", queryDataReceipt.toString());
         hashMap.put("dateNow", param.get("periode"));
         hashMap.put("dateAgo", yesterdayDateString);
@@ -1450,12 +1451,12 @@ public class ReportDaoImpl implements ReportDao {
 
         List<Map<String, Object>> listParamPos = (List<Map<String, Object>>) param.get("pos");
         StringBuilder posCode = new StringBuilder();
-        if (listParamPos.size() == 1){
+        if (listParamPos.size() == 1) {
             hashMap.put("posCode", "Semua");
             hashMap.put("posCode1", "000");
             hashMap.put("posCode2", "zzz");
         } else {
-            for (Map<String, Object> object : listParamPos){
+            for (Map<String, Object> object : listParamPos) {
                 if (object.containsKey("posCode1")) {
                     hashMap.put("posCode1", object.get("posCode1"));
                     posCode.append(object.get("posName1")).append(" s/d ");
@@ -1483,12 +1484,12 @@ public class ReportDaoImpl implements ReportDao {
 
         List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
         StringBuilder posCode = new StringBuilder();
-        if (listPos.size() == 1){
+        if (listPos.size() == 1) {
             hashMap.put("posCode", "Semua");
             hashMap.put("posCode1", "000");
             hashMap.put("posCode2", "zzz");
         } else {
-            for (Map<String, Object> object : listPos){
+            for (Map<String, Object> object : listPos) {
                 if (object.containsKey("posCode1")) {
                     hashMap.put("posCode1", object.get("posCode1"));
                     posCode.append(object.get("posName1")).append(" s/d ");
@@ -1573,11 +1574,11 @@ public class ReportDaoImpl implements ReportDao {
             hashMap.put("toTime", param.get("toTime"));
 
             List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
-            if (listPos.size() == 1){
+            if (listPos.size() == 1) {
                 hashMap.put("posCode1", "000");
                 hashMap.put("posCode2", "zzz");
             } else {
-                for (Map<String, Object> object : listPos){
+                for (Map<String, Object> object : listPos) {
                     if (object.containsKey("posCode1")) {
                         hashMap.put("posCode1", object.get("posCode1"));
                     } else {
@@ -1600,7 +1601,7 @@ public class ReportDaoImpl implements ReportDao {
                 }
             }
 
-        } else if (param.containsKey("billNo")){
+        } else if (param.containsKey("billNo")) {
             if (param.get("detail").equals(0.0)) {
                 query = "SELECT a.MENU_ITEM_CODE, b.ITEM_DESCRIPTION, a.ITEM_QTY, a.AMOUNT FROM T_POS_BILL_ITEM a LEFT JOIN" +
                         " M_ITEM b ON a.MENU_ITEM_CODE = b.ITEM_CODE WHERE a.OUTLET_CODE = :outletCode AND a.TRANS_DATE = " +
@@ -1669,12 +1670,12 @@ public class ReportDaoImpl implements ReportDao {
 
         List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
         StringBuilder posCode = new StringBuilder();
-        if (listPos.size() == 1){
+        if (listPos.size() == 1) {
             hashMap.put("posCode", "Semua");
             hashMap.put("posCode1", "000");
             hashMap.put("posCode2", "zzz");
         } else {
-            for (Map<String, Object> object : listPos){
+            for (Map<String, Object> object : listPos) {
                 if (object.containsKey("posCode1")) {
                     hashMap.put("posCode1", object.get("posCode1"));
                     posCode.append(object.get("posName1")).append(" s/d ");
@@ -1726,39 +1727,39 @@ public class ReportDaoImpl implements ReportDao {
 
         List<Map<String, Object>> listPaymentType = (List<Map<String, Object>>) param.get("PaymentType");
         StringBuilder paymentType = new StringBuilder();
-        if (listPos.size() == 1){
+        if (listPos.size() == 1) {
             hashMap.put("paymentType", "Semua");
             hashMap.put("paymentType1", "000");
             hashMap.put("paymentType2", "zzz");
         } else {
-            for (Map<String, Object> object : listPaymentType){
+            for (Map<String, Object> object : listPaymentType) {
                 if (object.containsKey("paymentType1")) {
                     hashMap.put("paymentType1", object.get("paymentType1"));
                     paymentType.append(object.get("paymentTypeName1")).append(" s/d ");
                 } else {
                     hashMap.put("paymentType2", object.get("paymentType2"));
-                    shiftCode.append(object.get("paymentTypeName2"));
+                    paymentType.append(object.get("paymentTypeName2"));
                 }
-                hashMap.put("paymentType", shiftCode.toString());
+                hashMap.put("paymentType", paymentType.toString());
             }
         }
 
         List<Map<String, Object>> listPaymentMethod = (List<Map<String, Object>>) param.get("paymentMethod");
         StringBuilder paymentMethod = new StringBuilder();
-        if (listPos.size() == 1){
+        if (listPos.size() == 1) {
             hashMap.put("paymentMethod", "Semua");
             hashMap.put("paymentMethod1", "000");
             hashMap.put("paymentMethod2", "zzz");
         } else {
-            for (Map<String, Object> object : listPaymentMethod){
+            for (Map<String, Object> object : listPaymentMethod) {
                 if (object.containsKey("paymentMethod1")) {
                     hashMap.put("paymentMethod1", object.get("paymentMethod1"));
-                    paymentType.append(object.get("paymentMethodName1")).append(" s/d ");
+                    paymentMethod.append(object.get("paymentMethodName1")).append(" s/d ");
                 } else {
                     hashMap.put("paymentMethod2", object.get("paymentMethod2"));
-                    shiftCode.append(object.get("paymentMethodName1"));
+                    paymentMethod.append(object.get("paymentMethodName1"));
                 }
-                hashMap.put("paymentMethod", shiftCode.toString());
+                hashMap.put("paymentMethod", paymentMethod.toString());
             }
         }
 
@@ -1778,5 +1779,44 @@ public class ReportDaoImpl implements ReportDao {
         ClassPathResource classPathResource = new ClassPathResource("report/PemakaianBySalesReport.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
+
+    @Override
+    public JasperPrint jasperReportProduksiAktual(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        Map<String, Object> hashMap = new HashMap<>();
+
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("date", param.get("date"));
+        hashMap.put("time1", param.get("startTime"));
+        hashMap.put("time2", param.get("endTime"));
+        hashMap.put("userId", param.get("user"));
+
+        ClassPathResource classPathResource = new ClassPathResource("report/laporanActualReport.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
+
+    @Override
+    public JasperPrint jasperReportInventoryMovement(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        Map<String, Object> hashMap = new HashMap<>();
+
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("fromDate", param.get("fromDate"));
+        hashMap.put("toDate", param.get("toDate"));
+        hashMap.put("user", param.get("user"));
+
+        if (param.get("rangeData").equals(1.0)) {
+            hashMap.put("query1", "QTY_BEGINNING <> 0");
+            hashMap.put("query2", "(quantity_in <> 0 OR quantity <> 0)");
+        }
+        if (param.get("typeReport").equals(1.0)) {
+            ClassPathResource classPathResource = new ClassPathResource("report/reportInventoryMovement.jrxml");
+            JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+            return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+        } else {
+            ClassPathResource classPathResource = new ClassPathResource("report/reportInventoryMovementDetail.jrxml");
+            JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+            return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+        }
     }
 }

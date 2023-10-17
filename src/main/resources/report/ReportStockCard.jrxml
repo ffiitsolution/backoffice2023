@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ReportStockCard" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="bc2569fc-c73d-4766-969a-fad451531a1c">
-    <property name="ireport.zoom" value="1.2100000000000046"/>
+    <property name="ireport.zoom" value="1.6105100000000068"/>
     <property name="ireport.x" value="0"/>
-    <property name="ireport.y" value="16"/>
+    <property name="ireport.y" value="251"/>
     <parameter name="outletCode" class="java.lang.String">
         <defaultValueExpression><![CDATA[]]></defaultValueExpression>
     </parameter>
@@ -222,7 +222,7 @@ SELECT   OUTLET_CODE,
                                                       m
                                                    ON a.item_code = m.item_code
                                            WHERE   a.ITEM_CODE IN
-                                                         ('A1-0001', '01-1002')
+                                                         ($P!{itemCode})
                                                    AND a.trans_date =
                                                          $P{fromDate}
                                           UNION ALL
@@ -441,11 +441,11 @@ SELECT   OUTLET_CODE,
                                                       m
                                                    ON a.item_code = m.item_code
                                            WHERE   A.ITEM_CODE IN
-                                                         ('A1-0001', '01-1002')
+                                                         ($P!{itemCode})
                                                    AND A.trans_date BETWEEN $P{fromDate}
                                                                         AND  $P{toDate})
-                              ORDER BY   item_code ASC, trans_date ASC)
-                     WHERE   ITEM_CODE IN ('A1-0001', '01-1002')
+                              ORDER BY   item_code ASC, trans_date ASC, NUMB ASC)
+                     WHERE   ITEM_CODE IN ($P!{itemCode})
                              AND trans_date BETWEEN $P{fromDate}
                                                 AND  $P{toDate}))]]>
     </queryString>
@@ -874,7 +874,7 @@ SELECT   OUTLET_CODE,
                     <textFieldExpression><![CDATA[$V{TOTALIN}]]></textFieldExpression>
                 </textField>
                 <textField pattern="#,##0.00">
-                    <reportElement x="334" y="30" width="50" height="15" uuid="e31ad7b9-92d1-4157-bff1-8e52d682fb83"/>
+                    <reportElement x="331" y="30" width="60" height="15" uuid="e31ad7b9-92d1-4157-bff1-8e52d682fb83"/>
                     <textElement textAlignment="Right"/>
                     <textFieldExpression><![CDATA[$V{RCVIN}]]></textFieldExpression>
                 </textField>
@@ -884,7 +884,7 @@ SELECT   OUTLET_CODE,
                     <textFieldExpression><![CDATA[$V{RCVOUT}]]></textFieldExpression>
                 </textField>
                 <textField pattern="#,##0.00">
-                    <reportElement x="334" y="45" width="50" height="15" uuid="1285de3a-5ba9-4696-aee8-e9c5cbe9e09f"/>
+                    <reportElement x="331" y="45" width="60" height="15" uuid="1285de3a-5ba9-4696-aee8-e9c5cbe9e09f"/>
                     <textElement textAlignment="Right"/>
                     <textFieldExpression><![CDATA[$V{SALESIN}]]></textFieldExpression>
                 </textField>
@@ -894,7 +894,7 @@ SELECT   OUTLET_CODE,
                     <textFieldExpression><![CDATA[$V{SALESOUT}]]></textFieldExpression>
                 </textField>
                 <textField pattern="#,##0.00">
-                    <reportElement x="334" y="60" width="50" height="15" uuid="04ab8aa4-e51d-4c68-b302-f3fc73ec6789"/>
+                    <reportElement x="331" y="60" width="60" height="15" uuid="04ab8aa4-e51d-4c68-b302-f3fc73ec6789"/>
                     <textElement textAlignment="Right"/>
                     <textFieldExpression><![CDATA[$V{PRODIN}]]></textFieldExpression>
                 </textField>
@@ -904,7 +904,7 @@ SELECT   OUTLET_CODE,
                     <textFieldExpression><![CDATA[$V{PRODOUT}]]></textFieldExpression>
                 </textField>
                 <textField pattern="#,##0.00">
-                    <reportElement x="334" y="75" width="50" height="15" uuid="5e9310e0-3c54-488d-b653-57f70b14e75c"/>
+                    <reportElement x="331" y="75" width="60" height="15" uuid="5e9310e0-3c54-488d-b653-57f70b14e75c"/>
                     <textElement textAlignment="Right"/>
                     <textFieldExpression><![CDATA[$V{DELIN}]]></textFieldExpression>
                 </textField>
@@ -914,7 +914,7 @@ SELECT   OUTLET_CODE,
                     <textFieldExpression><![CDATA[$V{DELOUT}]]></textFieldExpression>
                 </textField>
                 <textField pattern="#,##0.00">
-                    <reportElement x="334" y="90" width="50" height="15" uuid="a8536eba-977c-43fa-a086-e19a564b1dbf"/>
+                    <reportElement x="331" y="90" width="60" height="15" uuid="a8536eba-977c-43fa-a086-e19a564b1dbf"/>
                     <textElement textAlignment="Right"/>
                     <textFieldExpression><![CDATA[$V{DLVIN}]]></textFieldExpression>
                 </textField>
@@ -924,7 +924,7 @@ SELECT   OUTLET_CODE,
                     <textFieldExpression><![CDATA[$V{DLVOUT}]]></textFieldExpression>
                 </textField>
                 <textField pattern="#,##0.00">
-                    <reportElement x="334" y="120" width="50" height="15" uuid="450a7910-efda-41c5-9892-b14f8f7572be"/>
+                    <reportElement x="331" y="120" width="60" height="15" uuid="450a7910-efda-41c5-9892-b14f8f7572be"/>
                     <textElement textAlignment="Right"/>
                     <textFieldExpression><![CDATA[$V{FMLIN}]]></textFieldExpression>
                 </textField>
@@ -939,12 +939,12 @@ SELECT   OUTLET_CODE,
                     <textFieldExpression><![CDATA[$V{WSTOUT}]]></textFieldExpression>
                 </textField>
                 <textField pattern="#,##0.00">
-                    <reportElement x="334" y="135" width="50" height="15" uuid="9c1240c2-c560-4fc1-94e4-a7cadda3b4a5"/>
+                    <reportElement x="331" y="135" width="60" height="15" uuid="9c1240c2-c560-4fc1-94e4-a7cadda3b4a5"/>
                     <textElement textAlignment="Right"/>
                     <textFieldExpression><![CDATA[$V{WSTIN}]]></textFieldExpression>
                 </textField>
                 <textField pattern="#,##0.00">
-                    <reportElement x="334" y="150" width="50" height="15" uuid="cd96773c-f8c0-41a8-bcd7-9e13e3961770"/>
+                    <reportElement x="331" y="150" width="60" height="15" uuid="cd96773c-f8c0-41a8-bcd7-9e13e3961770"/>
                     <textElement textAlignment="Right"/>
                     <textFieldExpression><![CDATA[$V{LOVIN}]]></textFieldExpression>
                 </textField>
@@ -959,12 +959,12 @@ SELECT   OUTLET_CODE,
                     <textFieldExpression><![CDATA[$V{RTROUT}]]></textFieldExpression>
                 </textField>
                 <textField pattern="#,##0.00">
-                    <reportElement x="334" y="165" width="50" height="15" uuid="36372464-d3c4-47ee-baac-7d6a652085d2"/>
+                    <reportElement x="331" y="165" width="60" height="15" uuid="36372464-d3c4-47ee-baac-7d6a652085d2"/>
                     <textElement textAlignment="Right"/>
                     <textFieldExpression><![CDATA[$V{RTRIN}]]></textFieldExpression>
                 </textField>
                 <textField pattern="#,##0.00">
-                    <reportElement x="334" y="179" width="50" height="15" uuid="ae18e91b-8e71-4f53-873b-fb6d9f157023"/>
+                    <reportElement x="331" y="179" width="60" height="15" uuid="ae18e91b-8e71-4f53-873b-fb6d9f157023"/>
                     <textElement textAlignment="Right"/>
                     <textFieldExpression><![CDATA[$V{SOPIN}]]></textFieldExpression>
                 </textField>
@@ -974,7 +974,7 @@ SELECT   OUTLET_CODE,
                     <textFieldExpression><![CDATA[$V{SOPOUT}]]></textFieldExpression>
                 </textField>
                 <textField pattern="#,##0.00">
-                    <reportElement x="339" y="105" width="50" height="15" uuid="aa5ef528-bf8d-4f20-88a5-a7e22b6ad20d"/>
+                    <reportElement x="331" y="105" width="60" height="15" uuid="aa5ef528-bf8d-4f20-88a5-a7e22b6ad20d"/>
                     <textElement textAlignment="Right"/>
                     <textFieldExpression><![CDATA[$V{LOCIN}]]></textFieldExpression>
                 </textField>
@@ -995,7 +995,7 @@ SELECT   OUTLET_CODE,
                 <textField pattern="#,##0.00">
                     <reportElement x="477" y="194" width="72" height="15" uuid="bd46d0b7-ae22-4107-9225-55806c381247"/>
                     <textElement textAlignment="Right"/>
-                    <textFieldExpression><![CDATA[$V{TOTALIN} - $V{TOTALOUT}]]></textFieldExpression>
+                    <textFieldExpression><![CDATA[$V{TOTALIN} - $V{TOTALOUT} + $V{sumSal}]]></textFieldExpression>
                 </textField>
                 <textField pattern="#,##0.00">
                     <reportElement x="477" y="30" width="72" height="15" uuid="050b9d1e-5682-4645-b429-9442497217bb"/>

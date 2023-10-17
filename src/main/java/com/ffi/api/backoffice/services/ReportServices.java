@@ -154,4 +154,12 @@ public class ReportServices {
     public JasperPrint jasperReportPemakaianBySales(Map<String, Object> param, Connection connection) throws JRException, IOException {
         return dao.jasperReportPemakaianBySales(param, connection);
     }
+
+    public JasperPrint jasperReportProduksiAktual(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        return dao.jasperReportProduksiAktual(param, connection);
+    }
+
+    public JasperPrint jasperReportInventoryMovement(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        return dao.jasperReportInventoryMovement(param, connection);
+    }
 }

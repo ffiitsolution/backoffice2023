@@ -2334,6 +2334,19 @@ public class ViewDoaImpl implements ViewDao {
             prm.put("fromDate", param.get("fromDate"));
             prm.put("outletCode", param.get("outletCode"));
             prm.put("toDate", param.get("toDate"));
+        } else if (name.equals("produksiAktual")) {
+            query = "SELECT COUNT(*) FROM T_MPCS_HIST WHERE MPCS_DATE = :mpcsDate AND OUTLET_CODE = :outletCode AND " +
+                    "TIME_UPD BETWEEN :startTime AND :endTime";
+
+            prm.put("mpcsDate", param.get("date"));
+            prm.put("outletCode", param.get("outletCode"));
+            prm.put("startTime", param.get("startTime"));
+            prm.put("endTime", param.get("endTime"));
+        } else if (name.equals("inventoryMovement")) {
+            query = "SELECT COUNT(*) FROM T_STOCK_CARD WHERE TRANS_DATE = :transDate AND OUTLET_CODE = :outletCode";
+
+            prm.put("transDate", param.get("fromDate"));
+            prm.put("outletCode", param.get("outletCode"));
         }
         assert query != null;
         return Integer.valueOf(Objects.requireNonNull(jdbcTemplate.queryForObject(query, prm, new RowMapper<String>() {

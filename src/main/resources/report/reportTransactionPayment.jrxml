@@ -431,7 +431,7 @@ new SimpleDateFormat("dd MMMM yyyy").format($F{TRANS_DATE}) + " :"]]></textField
                 </textElement>
                 <textFieldExpression><![CDATA[" : " + $P{paymentType}]]></textFieldExpression>
             </textField>
-            <textField isStretchWithOverflow="true">
+            <textField textAdjust="StretchHeight">
                 <reportElement x="418" y="14" width="213" height="13" uuid="c7f541ce-460a-4fd3-bfe6-d07f6dbb3ae3"/>
                 <textElement>
                     <font size="9" isUnderline="false"/>
@@ -508,7 +508,7 @@ new SimpleDateFormat("dd MMMM yyyy").format($F{TRANS_DATE}) + " :"]]></textField
                 <textElement textAlignment="Center" verticalAlignment="Top"/>
                 <textFieldExpression><![CDATA[$F{SHIFT_CODE}]]></textFieldExpression>
             </textField>
-            <textField isStretchWithOverflow="true">
+            <textField textAdjust="StretchHeight">
                 <reportElement x="220" y="5" width="108" height="17" uuid="2e6ae3e5-ab19-4090-b2f8-fcedf654e40e"/>
                 <textFieldExpression><![CDATA[$F{STAFF_NAME}]]></textFieldExpression>
             </textField>
