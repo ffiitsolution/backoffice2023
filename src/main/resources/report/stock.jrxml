@@ -71,7 +71,7 @@ WHERE a.OUTLET_CODE = $P{outletCode} AND a.TRANS_DATE BETWEEN $P{fromDate} AND $
                 <textElement textAlignment="Center">
                     <font size="8" isBold="true"/>
                 </textElement>
-                <text><![CDATA[Status]]></text>
+                <text><![CDATA[Satuan]]></text>
             </staticText>
             <staticText>
                 <reportElement x="469" y="83" width="50" height="15" uuid="48fede20-17cd-442e-a3e4-804fa90b909b"/>

@@ -452,7 +452,7 @@ public class ReportDaoImpl implements ReportDao {
             prm.put("typeTrans2", "L");
         } else if (param.get("typeTrans").equals("W")) {
             prm.put("typeTrans1", "W");
-            prm.put("typeTrans2", "L");
+            prm.put("typeTrans2", "W");
         } else if (param.get("typeTrans").equals("L")) {
             prm.put("typeTrans1", "L");
             prm.put("typeTrans2", "L");
