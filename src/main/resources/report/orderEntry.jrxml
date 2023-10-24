@@ -288,7 +288,7 @@ ORDER BY a.order_no, e.item_code, a.ORDER_DATE asc]]>
                 <textElement textAlignment="Center">
                     <font size="8" isBold="true"/>
                 </textElement>
-                <text><![CDATA[Type]]></text>
+                <text><![CDATA[Tipe]]></text>
             </staticText>
             <staticText>
                 <reportElement x="201" y="83" width="147" height="15" uuid="963645e2-aacb-4c67-8edd-8240b2675d2d"/>

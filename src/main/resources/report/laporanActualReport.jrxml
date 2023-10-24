@@ -45,7 +45,7 @@ LEFT JOIN (SELECT OUTLET_CODE,OUTLET_NAME,ADDRESS_1,ADDRESS_2,PHONE,CITY FROM M_
 ON A.OUTLET_CODE=B.OUTLET_CODE
 LEFT JOIN M_RECIPE_HEADER C
 ON A.RECIPE_CODE = C.RECIPE_CODE
-ORDER BY a.RECIPE_CODE, a.TIME_UPD ASC ]]>
+ORDER BY a.RECIPE_CODE, a.TIME_UPD ASC]]>
     </queryString>
     <field name="OUTLET_CODE" class="java.lang.String"/>
     <field name="URUTAN" class="java.math.BigDecimal"/>
@@ -148,7 +148,7 @@ ORDER BY a.RECIPE_CODE, a.TIME_UPD ASC ]]>
                 <text><![CDATA[Keterangan Recipe]]></text>
             </staticText>
             <staticText>
-                <reportElement x="267" y="113" width="64" height="25" uuid="77d66aa9-dfd5-453c-baf6-6c0d076e175d"/>
+                <reportElement x="267" y="113" width="67" height="25" uuid="77d66aa9-dfd5-453c-baf6-6c0d076e175d"/>
                 <textElement verticalAlignment="Middle"/>
                 <text><![CDATA[Jam Produksi]]></text>
             </staticText>
@@ -204,7 +204,7 @@ ORDER BY a.RECIPE_CODE, a.TIME_UPD ASC ]]>
                 <textFieldExpression><![CDATA[$F{RECIPE_REMARK}]]></textFieldExpression>
             </textField>
             <textField pattern="HH.mm.ss">
-                <reportElement x="267" y="1" width="64" height="18" uuid="bea2e844-a4e3-4c6b-9af3-7762c919e79d"/>
+                <reportElement x="267" y="1" width="67" height="18" uuid="bea2e844-a4e3-4c6b-9af3-7762c919e79d"/>
                 <textFieldExpression><![CDATA[$F{TIME_UPD}]]></textFieldExpression>
             </textField>
         </band>

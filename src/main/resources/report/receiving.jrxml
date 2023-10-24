@@ -17,6 +17,10 @@
     </parameter>
     <parameter name="user" class="java.lang.String"/>
     <parameter name="detail" class="java.lang.Integer"/>
+    <parameter name="query" class="java.lang.String" isForPrompting="false">
+        <defaultValueExpression><![CDATA[" AND 1 = 1"]]></defaultValueExpression>
+    </parameter>
+
     <queryString>
         <![CDATA[SELECT DENSE_RANK() over(ORDER BY a.RECV_NO) AS num, a.RECV_NO, a.ORDER_NO, a.REMARK, CONCAT(c.OUTLET_NAME, CONCAT(d.SUPPLIER_NAME, e.DESCRIPTION)) AS penerimaan_dari ,
 CASE WHEN a.STATUS = '0' THEN 'Open' WHEN a.STATUS = '1' THEN 'Close' ELSE 'Cancel' END AS STATUS,
@@ -29,7 +33,7 @@ LEFT JOIN M_GLOBAL e ON b.CD_SUPPLIER = e.CODE AND e.COND =$P{city}
 LEFT JOIN T_RECV_DETAIL f ON a.RECV_NO = f.RECV_NO
 LEFT JOIN M_ITEM g ON f.ITEM_CODE = g.ITEM_CODE
 JOIN M_OUTLET h ON a.OUTLET_CODE = h.OUTLET_CODE
-WHERE a.OUTLET_CODE =$P{outletCode} AND a.RECV_DATE BETWEEN $P{fromDate} AND $P{toDate} ORDER BY a.RECV_DATE, a.RECV_NO ASC]]>
+WHERE a.OUTLET_CODE =$P{outletCode} AND a.RECV_DATE BETWEEN $P{fromDate} AND $P{toDate} $P!{query} ORDER BY a.RECV_DATE, a.RECV_NO ASC]]>
     </queryString>
     <field name="NUM" class="java.math.BigDecimal"/>
     <field name="RECV_NO" class="java.lang.String"/>

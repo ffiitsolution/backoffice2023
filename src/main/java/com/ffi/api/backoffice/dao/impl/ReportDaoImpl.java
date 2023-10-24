@@ -584,6 +584,9 @@ public class ReportDaoImpl implements ReportDao {
         } else {
             hashMap.put("detail", 0);
         }
+        if (!param.get("filterBy").equals("All")) {
+            hashMap.put("query", " AND b.CD_SUPPLIER = '" + param.get("filterDesc") + "'");
+        }
 
         ClassPathResource classPathResource = new ClassPathResource("report/receiving.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
@@ -930,6 +933,14 @@ public class ReportDaoImpl implements ReportDao {
             query = "SELECT CODE, DESCRIPTION FROM M_GLOBAL WHERE COND LIKE '%PAY_TYPE%'";
         } else if (param.get("typeParam").equals("paymentMethod")) {
             query = "SELECT CODE, DESCRIPTION FROM M_GLOBAL WHERE COND LIKE '%PAY_METHOD%'";
+        } else if (param.get("typeParam").equals("Gudang")) {
+            query = "SELECT CODE, DESCRIPTION FROM M_GLOBAL WHERE COND =:cond";
+            hashMap.put("cond", "X_" + param.get("city"));
+        } else if (param.get("typeParam").equals("Outlet")) {
+            query = "SELECT OUTLET_CODE AS CODE, OUTLET_NAME AS DESCRIPTION FROM M_OUTLET WHERE CITY =:city";
+            hashMap.put("city", param.get("city"));
+        } else if (param.get("typeParam").equals("Supplier")) {
+            query = "SELECT CD_SUPPLIER AS CODE, SUPPLIER_NAME AS DESCRIPTION FROM M_SUPPLIER";
         }
 
         assert query != null;
@@ -953,6 +964,15 @@ public class ReportDaoImpl implements ReportDao {
                     rt.put("code", rs.getString("CODE"));
                     rt.put("description", rs.getString("DESCRIPTION"));
                 } else if (param.get("typeParam").equals("paymentMethod")) {
+                    rt.put("code", rs.getString("CODE"));
+                    rt.put("description", rs.getString("DESCRIPTION"));
+                } else if (param.get("typeParam").equals("Gudang")) {
+                    rt.put("code", rs.getString("CODE"));
+                    rt.put("description", rs.getString("DESCRIPTION"));
+                } else if (param.get("typeParam").equals("Outlet")) {
+                    rt.put("code", rs.getString("CODE"));
+                    rt.put("description", rs.getString("DESCRIPTION"));
+                } else if (param.get("typeParam").equals("Supplier")) {
                     rt.put("code", rs.getString("CODE"));
                     rt.put("description", rs.getString("DESCRIPTION"));
                 }
