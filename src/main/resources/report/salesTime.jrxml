@@ -508,7 +508,8 @@ LEFT JOIN (SELECT   $P{outletCode} AS outlet_code, COUNT(0)  as total_persentasi
             AND time_upd between $P{fromTime} AND $P{toTime}
             AND (delivery_status IN (' ', 'CLS') OR delivery_status IS NULL)) d
 ON z.outlet_code = d.outlet_code)
-WHERE JAM BETWEEN $P{fromJam} AND $P{toJam}]]>
+WHERE JAM BETWEEN $P{fromJam} AND $P{toJam}
+ORDER BY JAM ASC]]>
     </queryString>
     <field name="JAM" class="java.lang.String"/>
     <field name="TRANSAKSI" class="java.math.BigDecimal"/>
@@ -597,28 +598,28 @@ WHERE JAM BETWEEN $P{fromJam} AND $P{toJam}]]>
                 <textFieldExpression><![CDATA[" : " + $P{cashierCode}]]></textFieldExpression>
             </textField>
             <staticText>
-                <reportElement x="350" y="66" width="55" height="11" uuid="fa7076db-4b2f-4272-82ab-728bb1ffb380"/>
+                <reportElement x="391" y="56" width="55" height="11" uuid="fa7076db-4b2f-4272-82ab-728bb1ffb380"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
                 <text><![CDATA[Shift]]></text>
             </staticText>
             <textField>
-                <reportElement x="404" y="66" width="150" height="11" uuid="6ca057b2-3428-4744-8197-2ae720b21e36"/>
+                <reportElement x="445" y="56" width="150" height="11" uuid="6ca057b2-3428-4744-8197-2ae720b21e36"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[" : " + $P{shiftCode}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="404" y="56" width="150" height="11" uuid="43dcdbd8-76b6-457d-840b-cedb0de63444"/>
+                <reportElement x="445" y="46" width="150" height="11" uuid="43dcdbd8-76b6-457d-840b-cedb0de63444"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[" : " + $P{user}]]></textFieldExpression>
             </textField>
             <staticText>
-                <reportElement x="350" y="56" width="55" height="11" uuid="404aa493-64d2-4423-947a-f2a585cc7631"/>
+                <reportElement x="391" y="46" width="55" height="11" uuid="404aa493-64d2-4423-947a-f2a585cc7631"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
@@ -645,14 +646,14 @@ WHERE JAM BETWEEN $P{fromJam} AND $P{toJam}]]>
                 <text><![CDATA[%]]></text>
             </staticText>
             <textField>
-                <reportElement x="404" y="45" width="150" height="11" uuid="8de420ea-c28c-405b-96fa-a979ec14a48a"/>
+                <reportElement x="445" y="35" width="150" height="11" uuid="8de420ea-c28c-405b-96fa-a979ec14a48a"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[" : " + $V{PAGE_NUMBER}]]></textFieldExpression>
             </textField>
             <staticText>
-                <reportElement x="350" y="45" width="55" height="11" uuid="4daa863c-a886-4ce7-a60b-a5e3e84da14b"/>
+                <reportElement x="391" y="35" width="55" height="11" uuid="4daa863c-a886-4ce7-a60b-a5e3e84da14b"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
@@ -667,6 +668,20 @@ WHERE JAM BETWEEN $P{fromJam} AND $P{toJam}]]>
                 <textElement textAlignment="Center" verticalAlignment="Middle"/>
                 <text><![CDATA[%]]></text>
             </staticText>
+            <staticText>
+                <reportElement x="391" y="66" width="55" height="11" uuid="154fe22e-be57-433e-8dcc-2b41b9882951"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Jam]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="445" y="66" width="150" height="11" uuid="072d3860-1f75-46bf-985e-4b94dd75d108"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + $P{fromJam} + " s/d " + $P{toJam}]]></textFieldExpression>
+            </textField>
         </band>
     </columnHeader>
     <detail>

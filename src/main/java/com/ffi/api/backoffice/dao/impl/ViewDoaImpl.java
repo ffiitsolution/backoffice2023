@@ -1964,389 +1964,403 @@ public class ViewDoaImpl implements ViewDao {
     public Integer cekDataReport(Map<String, Object> param, String name) {
         String query = null;
         Map<String, Object> prm = new HashMap<>();
-        if (name.equals("receiving")) {
-            query = "SELECT COUNT(*) FROM T_RECV_HEADER a WHERE a.OUTLET_CODE = :outletCode AND a.RECV_DATE BETWEEN "
-                    + ":fromDate AND :toDate";
-
-            prm.put("outletCode", param.get("outletCode"));
-            prm.put("fromDate", param.get("fromDate"));
-            prm.put("toDate", param.get("toDate"));
-
-        } else if (name.equals("orderEntry")) {
-            query = "SELECT COUNT(*) FROM T_ORDER_HEADER a WHERE a.ORDER_TYPE IN (:orderType1, :orderType2) "
-                    + "AND a.ORDER_DATE BETWEEN :fromDate AND :toDate AND a.OUTLET_CODE = :outletCode";
-
-            if (param.get("typeOrder").equals("Semua")) {
-                prm.put("orderType1", "0");
-                prm.put("orderType2", "1");
-            } else if (param.get("typeOrder").equals("Permintaan")) {
-                prm.put("orderType1", "0");
-                prm.put("orderType2", "0");
-            } else if (param.get("typeOrder").equals("Pembelian")) {
-                prm.put("orderType1", "1");
-                prm.put("orderType2", "1");
+        switch (name) {
+            case "receiving" -> {
+                if (param.get("filterBy").equals("All")) {
+                    query = "SELECT COUNT(*) FROM T_RECV_HEADER a WHERE a.OUTLET_CODE = :outletCode AND a.RECV_DATE BETWEEN "
+                            + ":fromDate AND :toDate";
+                    prm.put("outletCode", param.get("outletCode"));
+                    prm.put("fromDate", param.get("fromDate"));
+                    prm.put("toDate", param.get("toDate"));
+                } else {
+                    query = "SELECT COUNT(*) FROM T_RECV_HEADER a LEFT JOIN T_ORDER_HEADER b ON a.ORDER_NO = b.ORDER_NO" +
+                            " WHERE a.OUTLET_CODE = :outletCode AND a.RECV_DATE BETWEEN :fromDate AND :toDate AND " +
+                            "b.CD_SUPPLIER =:cdSupplier";
+                    prm.put("outletCode", param.get("outletCode"));
+                    prm.put("fromDate", param.get("fromDate"));
+                    prm.put("toDate", param.get("toDate"));
+                    prm.put("cdSupplier", param.get("filterDesc"));
+                }
             }
-            prm.put("fromDate", param.get("fromDate"));
-            prm.put("toDate", param.get("toDate"));
-            prm.put("outletCode", param.get("outletCode"));
-
-        } else if (name.equals("returnOrder")) {
-            query = "SELECT COUNT(*) FROM T_RETURN_HEADER a WHERE a.OUTLET_CODE =:outletCode AND a.TYPE_RETURN IN "
-                    + "(:typeReturn1, :typeReturn2) AND a.RETURN_DATE BETWEEN :fromDate AND :toDate";
-
-            if (param.get("typeReturn").equals("ALL")) {
-                prm.put("typeReturn1", "0");
-                prm.put("typeReturn2", "1");
-            } else if (param.get("typeReturn").equals("Supplier")) {
-                prm.put("typeReturn1", "0");
-                prm.put("typeReturn2", "0");
-            } else if (param.get("typeReturn").equals("Gudang")) {
-                prm.put("typeReturn1", "1");
-                prm.put("typeReturn2", "1");
+            case "orderEntry" -> {
+                query = "SELECT COUNT(*) FROM T_ORDER_HEADER a WHERE a.ORDER_TYPE IN (:orderType1, :orderType2) "
+                        + "AND a.ORDER_DATE BETWEEN :fromDate AND :toDate AND a.OUTLET_CODE = :outletCode";
+                if (param.get("typeOrder").equals("Semua")) {
+                    prm.put("orderType1", "0");
+                    prm.put("orderType2", "1");
+                } else if (param.get("typeOrder").equals("Permintaan")) {
+                    prm.put("orderType1", "0");
+                    prm.put("orderType2", "0");
+                } else if (param.get("typeOrder").equals("Pembelian")) {
+                    prm.put("orderType1", "1");
+                    prm.put("orderType2", "1");
+                }
+                prm.put("fromDate", param.get("fromDate"));
+                prm.put("toDate", param.get("toDate"));
+                prm.put("outletCode", param.get("outletCode"));
             }
-            prm.put("outletCode", param.get("outletCode"));
-            prm.put("fromDate", param.get("fromDate"));
-            prm.put("toDate", param.get("toDate"));
-
-        } else if (name.equals("wastage")) {
-            query = "SELECT COUNT(*) FROM T_WASTAGE_HEADER a WHERE a.OUTLET_CODE =:outletCode AND a.TYPE_TRANS IN "
-                    + "(:typeTrans1, :typeTrans2) AND a.WASTAGE_DATE BETWEEN :fromDate AND :toDate";
-
-            if (param.get("typeTransaksi").equals("ALL")) {
-                prm.put("typeTrans1", "W");
-                prm.put("typeTrans2", "L");
-            } else if (param.get("typeTransaksi").equals("Wastage")) {
-                prm.put("typeTrans1", "W");
-                prm.put("typeTrans2", "W");
-            } else if (param.get("typeTransaksi").equals("Left Offer")) {
-                prm.put("typeTrans1", "L");
-                prm.put("typeTrans2", "L");
+            case "returnOrder" -> {
+                query = "SELECT COUNT(*) FROM T_RETURN_HEADER a WHERE a.OUTLET_CODE =:outletCode AND a.TYPE_RETURN IN "
+                        + "(:typeReturn1, :typeReturn2) AND a.RETURN_DATE BETWEEN :fromDate AND :toDate";
+                if (param.get("typeReturn").equals("ALL")) {
+                    prm.put("typeReturn1", "0");
+                    prm.put("typeReturn2", "1");
+                } else if (param.get("typeReturn").equals("Supplier")) {
+                    prm.put("typeReturn1", "0");
+                    prm.put("typeReturn2", "0");
+                } else if (param.get("typeReturn").equals("Gudang")) {
+                    prm.put("typeReturn1", "1");
+                    prm.put("typeReturn2", "1");
+                }
+                prm.put("outletCode", param.get("outletCode"));
+                prm.put("fromDate", param.get("fromDate"));
+                prm.put("toDate", param.get("toDate"));
             }
+            case "wastage" -> {
+                query = "SELECT COUNT(*) FROM T_WASTAGE_HEADER a WHERE a.OUTLET_CODE =:outletCode AND a.TYPE_TRANS IN "
+                        + "(:typeTrans1, :typeTrans2) AND a.WASTAGE_DATE BETWEEN :fromDate AND :toDate";
+                if (param.get("typeTransaksi").equals("ALL")) {
+                    prm.put("typeTrans1", "W");
+                    prm.put("typeTrans2", "L");
+                } else if (param.get("typeTransaksi").equals("Wastage")) {
+                    prm.put("typeTrans1", "W");
+                    prm.put("typeTrans2", "W");
+                } else if (param.get("typeTransaksi").equals("Left Offer")) {
+                    prm.put("typeTrans1", "L");
+                    prm.put("typeTrans2", "L");
+                }
+                prm.put("outletCode", param.get("outletCode"));
+                prm.put("fromDate", param.get("fromDate"));
+                prm.put("toDate", param.get("toDate"));
+            }
+            case "deliveryOrder" -> {
+                query = "SELECT COUNT(*) FROM T_DEV_HEADER a WHERE a.OUTLET_CODE =:outletCode AND a.DELIVERY_DATE BETWEEN "
+                        + ":fromDate AND :toDate";
+                prm.put("outletCode", param.get("outletCode"));
+                prm.put("fromDate", param.get("fromDate"));
+                prm.put("toDate", param.get("toDate"));
+            }
+            case "item" -> {
+                StringBuilder queryBuilder = new StringBuilder();
 
-            prm.put("outletCode", param.get("outletCode"));
-            prm.put("fromDate", param.get("fromDate"));
-            prm.put("toDate", param.get("toDate"));
+                if (param.get("status").equals("Semua")) {
+                    prm.put("status1", "I");
+                    prm.put("status2", "A");
+                } else if (param.get("status").equals("Active")) {
+                    prm.put("status1", "A");
+                    prm.put("status2", "A");
+                } else if (param.get("status").equals("Non Active")) {
+                    prm.put("status1", "I");
+                    prm.put("status2", "I");
+                }
 
-        } else if (name.equals("deliveryOrder")) {
-            query = "SELECT COUNT(*) FROM T_DEV_HEADER a WHERE a.OUTLET_CODE =:outletCode AND a.DELIVERY_DATE BETWEEN "
-                    + ":fromDate AND :toDate";
+                if (param.get("type").equals("Semua")) {
+                    prm.put("flagStock1", " ");
+                    prm.put("flagStock2", "N");
+                    prm.put("flagStock3", "Y");
+                } else if (param.get("type").equals("Stock")) {
+                    prm.put("flagStock1", "Y");
+                    prm.put("flagStock2", "Y");
+                    prm.put("flagStock3", "Y");
+                } else if (param.get("type").equals("Non Stock")) {
+                    prm.put("flagStock1", " ");
+                    prm.put("flagStock2", "N");
+                    prm.put("flagStock3", "N");
+                }
 
-            prm.put("outletCode", param.get("outletCode"));
-            prm.put("fromDate", param.get("fromDate"));
-            prm.put("toDate", param.get("toDate"));
+                queryBuilder.append("SELECT COUNT(*) FROM M_ITEM a LEFT JOIN M_GLOBAL b ON a.CD_WAREHOUSE = "
+                        + "b.CODE AND b.COND ='WAREHOUSE' JOIN M_OUTLET c ON c.OUTLET_CODE = :outletCode WHERE a.STATUS IN"
+                        + " (:status1, :status2) AND a.FLAG_STOCK IN (:flagStock1, :flagStock2, :flagStock3)");
 
-        } else if (name.equals("item")) {
-            StringBuilder queryBuilder = new StringBuilder();
+                if (!param.get("jenisGudang").equals("Semua")) {
+                    queryBuilder.append(" AND b.DESCRIPTION = '").append(param.get("jenisGudang")).append("'");
+                }
+                if (param.containsKey("bahanBaku")) {
+                    queryBuilder.append(" AND a.FLAG_MATERIAL = 'Y'");
+                }
+                if (param.containsKey("itemJual")) {
+                    queryBuilder.append(" AND a.FLAG_FINISHED_GOOD = 'Y'");
+                }
+                if (param.containsKey("pembelian")) {
+                    queryBuilder.append(" AND a.FLAG_OTHERS = 'Y'");
+                }
+                if (param.containsKey("produksi")) {
+                    queryBuilder.append(" AND a.FLAG_HALF_FINISH = 'Y'");
+                }
+                if (param.containsKey("openMarket")) {
+                    queryBuilder.append(" AND a.FLAG_OPEN_MARKET = 'Y'");
+                }
+                if (param.containsKey("canvasing")) {
+                    queryBuilder.append(" AND a.FLAG_CANVASING = 'Y'");
+                }
+                if (param.containsKey("transferDo")) {
+                    queryBuilder.append(" AND a.FLAG_TRANSFER_LOC = 'Y'");
+                }
+                if (param.containsKey("paket")) {
+                    queryBuilder.append(" AND a.FLAG_PAKET = 'Y'");
+                }
 
-            if (param.get("status").equals("Semua")) {
-                prm.put("status1", "I");
-                prm.put("status2", "A");
-            } else if (param.get("status").equals("Active")) {
-                prm.put("status1", "A");
-                prm.put("status2", "A");
-            } else if (param.get("status").equals("Non Active")) {
-                prm.put("status1", "I");
-                prm.put("status2", "I");
+                query = queryBuilder.toString();
+                prm.put("outletCode", param.get("outletCode"));
             }
+            case "stock" -> {
+                StringBuilder queryBuilder = new StringBuilder();
+                queryBuilder.append("SELECT COUNT(*) FROM T_STOCK_CARD a LEFT JOIN M_ITEM  b ON a.ITEM_CODE = b.ITEM_CODE "
+                        + "LEFT JOIN M_GLOBAL c ON b.CD_WAREHOUSE = c.CODE AND c.COND = 'WAREHOUSE' WHERE a.OUTLET_CODE = "
+                        + ":outletCode AND TRANS_DATE BETWEEN :fromDate AND :toDate");
 
-            if (param.get("type").equals("Semua")) {
-                prm.put("flagStock1", " ");
-                prm.put("flagStock2", "N");
-                prm.put("flagStock3", "Y");
-            } else if (param.get("type").equals("Stock")) {
-                prm.put("flagStock1", "Y");
-                prm.put("flagStock2", "Y");
-                prm.put("flagStock3", "Y");
-            } else if (param.get("type").equals("Non Stock")) {
-                prm.put("flagStock1", " ");
-                prm.put("flagStock2", "N");
-                prm.put("flagStock3", "N");
-            }
+                prm.put("outletCode", param.get("outletCode"));
+                prm.put("fromDate", param.get("fromDate"));
+                prm.put("toDate", param.get("toDate"));
 
-            queryBuilder.append("SELECT COUNT(*) FROM M_ITEM a LEFT JOIN M_GLOBAL b ON a.CD_WAREHOUSE = "
-                    + "b.CODE AND b.COND ='WAREHOUSE' JOIN M_OUTLET c ON c.OUTLET_CODE = :outletCode WHERE a.STATUS IN"
-                    + " (:status1, :status2) AND a.FLAG_STOCK IN (:flagStock1, :flagStock2, :flagStock3)");
+                if (param.get("typePrint").equals(1.0)) {
+                    queryBuilder.append(" AND (a.QTY_IN  != 0 OR a.QTY_OUT != 0 OR a.QTY_BEGINNING != 0)");
+                }
+                if (param.get("stockMinus").equals(1.0)) {
+                    queryBuilder.append(" AND SIGN(a.QTY_BEGINNING + a.QTY_IN - a.QTY_OUT) = -1");
+                }
+                if (!param.get("gudang").equals("Semua")) {
+                    queryBuilder.append(" AND c.DESCRIPTION = :gudang");
+                    prm.put("gudang", param.get("gudang"));
+                }
+                if (!param.get("item").equals("Semua")) {
+                    queryBuilder.append(" AND a.ITEM_CODE = :item");
+                    prm.put("item", param.get("item"));
+                }
+                query = queryBuilder.toString();
+            }
+            case "recipe" -> {
+                query = "SELECT COUNT(*) FROM M_RECIPE_HEADER a WHERE a.STATUS = :status";
+                if (param.get("status").equals("Active")) {
+                    prm.put("status", "A");
+                } else {
+                    prm.put("status", "I");
+                }
+            }
+            case "freeMeal" -> {
+                StringBuilder queryBuilder = new StringBuilder();
+                queryBuilder.append("SELECT COUNT(*) FROM T_DEV_HEADER a WHERE a.REMARK LIKE '%FREEMEAL%' AND a.OUTLET_CODE"
+                        + " = :outletCode AND a.DELIVERY_DATE BETWEEN :fromDate AND :toDate");
 
-            if (!param.get("jenisGudang").equals("Semua")) {
-                queryBuilder.append(" AND b.DESCRIPTION = '").append(param.get("jenisGudang")).append("'");
-            }
-            if (param.containsKey("bahanBaku")) {
-                queryBuilder.append(" AND a.FLAG_MATERIAL = 'Y'");
-            }
-            if (param.containsKey("itemJual")) {
-                queryBuilder.append(" AND a.FLAG_FINISHED_GOOD = 'Y'");
-            }
-            if (param.containsKey("pembelian")) {
-                queryBuilder.append(" AND a.FLAG_OTHERS = 'Y'");
-            }
-            if (param.containsKey("produksi")) {
-                queryBuilder.append(" AND a.FLAG_HALF_FINISH = 'Y'");
-            }
-            if (param.containsKey("openMarket")) {
-                queryBuilder.append(" AND a.FLAG_OPEN_MARKET = 'Y'");
-            }
-            if (param.containsKey("canvasing")) {
-                queryBuilder.append(" AND a.FLAG_CANVASING = 'Y'");
-            }
-            if (param.containsKey("transferDo")) {
-                queryBuilder.append(" AND a.FLAG_TRANSFER_LOC = 'Y'");
-            }
-            if (param.containsKey("paket")) {
-                queryBuilder.append(" AND a.FLAG_PAKET = 'Y'");
-            }
+                prm.put("outletCode", param.get("outletCode"));
+                prm.put("fromDate", param.get("fromDate"));
+                prm.put("toDate", param.get("toDate"));
 
-            query = queryBuilder.toString();
-            prm.put("outletCode", param.get("outletCode"));
-        } else if (name.equals("stock")) {
-            StringBuilder queryBuilder = new StringBuilder();
-            queryBuilder.append("SELECT COUNT(*) FROM T_STOCK_CARD a LEFT JOIN M_ITEM  b ON a.ITEM_CODE = b.ITEM_CODE "
-                    + "LEFT JOIN M_GLOBAL c ON b.CD_WAREHOUSE = c.CODE AND c.COND = 'WAREHOUSE' WHERE a.OUTLET_CODE = "
-                    + ":outletCode AND TRANS_DATE BETWEEN :fromDate AND :toDate");
-
-            prm.put("outletCode", param.get("outletCode"));
-            prm.put("fromDate", param.get("fromDate"));
-            prm.put("toDate", param.get("toDate"));
-
-            if (param.get("typePrint").equals(1.0)) {
-                queryBuilder.append(" AND (a.QTY_IN  != 0 OR a.QTY_OUT != 0 OR a.QTY_BEGINNING != 0)");
+                if (!param.get("department").equals("ALL")) {
+                    queryBuilder.append(" AND a.OUTLET_TO = :outletTo");
+                    prm.put("outletTo", param.get("department"));
+                }
+                query = queryBuilder.toString();
             }
-            if (param.get("stockMinus").equals(1.0)) {
-                queryBuilder.append(" AND SIGN(a.QTY_BEGINNING + a.QTY_IN - a.QTY_OUT) = -1");
-            }
-            if (!param.get("gudang").equals("Semua")) {
-                queryBuilder.append(" AND c.DESCRIPTION = :gudang");
-                prm.put("gudang", param.get("gudang"));
-            }
-            if (!param.get("item").equals("Semua")) {
-                queryBuilder.append(" AND a.ITEM_CODE = :item");
-                prm.put("item", param.get("item"));
-            }
-            query = queryBuilder.toString();
-        } else if (name.equals("recipe")) {
-            query = "SELECT COUNT(*) FROM M_RECIPE_HEADER a WHERE a.STATUS = :status";
-            if (param.get("status").equals("Active")) {
-                prm.put("status", "A");
-            } else {
-                prm.put("status", "I");
-            }
-        } else if (name.equals("freeMeal")) {
-            StringBuilder queryBuilder = new StringBuilder();
-            queryBuilder.append("SELECT COUNT(*) FROM T_DEV_HEADER a WHERE a.REMARK LIKE '%FREEMEAL%' AND a.OUTLET_CODE"
-                    + " = :outletCode AND a.DELIVERY_DATE BETWEEN :fromDate AND :toDate");
+            case "transaksiKasir" -> {
+                query = "SELECT COUNT(*) FROM T_POS_DAY_TRANS WHERE TRANS_DATE BETWEEN :fromDate AND :toDate " +
+                        "AND CASHIER_CODE BETWEEN :cashierCode1 AND :cashierCode2 AND SHIFT_CODE BETWEEN :shiftCode1 AND " +
+                        ":shiftCode2 AND TRANS_CODE != 'DNT' AND OUTLET_CODE = :outletCode";
 
-            prm.put("outletCode", param.get("outletCode"));
-            prm.put("fromDate", param.get("fromDate"));
-            prm.put("toDate", param.get("toDate"));
+                prm.put("outletCode", param.get("outletCode"));
+                prm.put("fromDate", param.get("fromDate"));
+                prm.put("toDate", param.get("toDate"));
 
-            if (!param.get("department").equals("ALL")) {
-                queryBuilder.append(" AND a.OUTLET_TO = :outletTo");
-                prm.put("outletTo", param.get("department"));
-            }
-            query = queryBuilder.toString();
-        } else if (name.equals("transaksiKasir")) {
-            query = "SELECT COUNT(*) FROM T_POS_DAY_TRANS WHERE TRANS_DATE BETWEEN :fromDate AND :toDate " +
-                    "AND CASHIER_CODE BETWEEN :cashierCode1 AND :cashierCode2 AND SHIFT_CODE BETWEEN :shiftCode1 AND " +
-                    ":shiftCode2 AND TRANS_CODE != 'DNT' AND OUTLET_CODE = :outletCode";
+                List<Map<String, Object>> listCashier = (List<Map<String, Object>>) param.get("cashier");
 
-            prm.put("outletCode", param.get("outletCode"));
-            prm.put("fromDate", param.get("fromDate"));
-            prm.put("toDate", param.get("toDate"));
+                if (listCashier.size() == 1) {
+                    prm.put("cashierCode1", "000");
+                    prm.put("cashierCode2", "zzz");
+                } else {
+                    for (Map<String, Object> object : listCashier) {
+                        if (object.containsKey("cashierCode1")) {
+                            prm.put("cashierCode1", object.get("cashierCode1"));
+                        } else {
+                            prm.put("cashierCode2", object.get("cashierCode2"));
+                        }
+                    }
+                }
 
-            List<Map<String, Object>> listCashier = (List<Map<String, Object>>) param.get("cashier");
+                List<Map<String, Object>> listShift = (List<Map<String, Object>>) param.get("shift");
 
-            if (listCashier.size() == 1) {
-                prm.put("cashierCode1", "000");
-                prm.put("cashierCode2", "zzz");
-            } else {
-                for (Map<String, Object> object : listCashier) {
-                    if (object.containsKey("cashierCode1")) {
-                        prm.put("cashierCode1", object.get("cashierCode1"));
-                    } else {
-                        prm.put("cashierCode2", object.get("cashierCode2"));
+                if (listShift.size() == 1) {
+                    prm.put("shiftCode1", "000");
+                    prm.put("shiftCode2", "zzz");
+                } else {
+                    for (Map<String, Object> object : listShift) {
+                        if (object.containsKey("shiftCode1")) {
+                            prm.put("shiftCode1", object.get("shiftCode1"));
+                        } else {
+                            prm.put("shiftCode2", object.get("shiftCode2"));
+                        }
                     }
                 }
             }
+            case "ReceiptMaintenance" -> {
+                query = "SELECT COUNT(*) FROM T_POS_BILL WHERE TRANS_DATE = :date AND OUTLET_CODE = :outletCode";
+                prm.put("date", param.get("periode"));
+                prm.put("outletCode", param.get("outletCode"));
+            }
+            case "salesMixDepartment" -> {
+                query = "SELECT COUNT(*) FROM TMP_SALES_BY_ITEM WHERE OUTLET_CODE =:outletCode AND TRANS_DATE BETWEEN " +
+                        ":fromDate AND :toDate AND POS_CODE BETWEEN :posCode1 AND :posCode2 AND CASHIER_CODE BETWEEN " +
+                        ":cashierCode1 AND :cashierCode2 AND SHIFT_CODE BETWEEN :shiftCode1 AND :shiftCode2";
 
-            List<Map<String, Object>> listShift = (List<Map<String, Object>>) param.get("shift");
+                prm.put("fromDate", param.get("fromDate"));
+                prm.put("toDate", param.get("toDate"));
+                prm.put("outletCode", param.get("outletCode"));
 
-            if (listShift.size() == 1) {
-                prm.put("shiftCode1", "000");
-                prm.put("shiftCode2", "zzz");
-            } else {
-                for (Map<String, Object> object : listShift) {
-                    if (object.containsKey("shiftCode1")) {
-                        prm.put("shiftCode1", object.get("shiftCode1"));
-                    } else {
-                        prm.put("shiftCode2", object.get("shiftCode2"));
+                List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
+
+                if (listPos.size() == 1) {
+                    prm.put("posCode1", "000");
+                    prm.put("posCode2", "zzz");
+                } else {
+                    for (Map<String, Object> object : listPos) {
+                        if (object.containsKey("posCode1")) {
+                            prm.put("posCode1", object.get("posCode1"));
+                        } else {
+                            prm.put("posCode2", object.get("posCode2"));
+                        }
+                    }
+                }
+
+                List<Map<String, Object>> listCashier = (List<Map<String, Object>>) param.get("cashier");
+
+                if (listCashier.size() == 1) {
+                    prm.put("cashierCode1", "000");
+                    prm.put("cashierCode2", "zzz");
+                } else {
+                    for (Map<String, Object> object : listCashier) {
+                        if (object.containsKey("cashierCode1")) {
+                            prm.put("cashierCode1", object.get("cashierCode1"));
+                        } else {
+                            prm.put("cashierCode2", object.get("cashierCode2"));
+                        }
+                    }
+                }
+
+                List<Map<String, Object>> listShift = (List<Map<String, Object>>) param.get("shift");
+
+                if (listShift.size() == 1) {
+                    prm.put("shiftCode1", "000");
+                    prm.put("shiftCode2", "zzz");
+                } else {
+                    for (Map<String, Object> object : listShift) {
+                        if (object.containsKey("shiftCode1")) {
+                            prm.put("shiftCode1", object.get("shiftCode1"));
+                        } else {
+                            prm.put("shiftCode2", object.get("shiftCode2"));
+                        }
                     }
                 }
             }
-        } else if (name.equals("ReceiptMaintenance")) {
-            query = "SELECT COUNT(*) FROM T_POS_BILL WHERE TRANS_DATE = :date AND OUTLET_CODE = :outletCode";
-            prm.put("date", param.get("periode"));
-            prm.put("outletCode", param.get("outletCode"));
-        } else if (name.equals("salesMixDepartment")) {
-            query = "SELECT COUNT(*) FROM TMP_SALES_BY_ITEM WHERE OUTLET_CODE =:outletCode AND TRANS_DATE BETWEEN " +
-                    ":fromDate AND :toDate AND POS_CODE BETWEEN :posCode1 AND :posCode2 AND CASHIER_CODE BETWEEN " +
-                    ":cashierCode1 AND :cashierCode2 AND SHIFT_CODE BETWEEN :shiftCode1 AND :shiftCode2";
+            case "TransactionByPaymentType" -> {
+                query = "SELECT COUNT(*) FROM M_PAYMENT_METHOD A, T_POS_BILL B, T_POS_BILL_PAYMENT C WHERE B.OUTLET_CODE = " +
+                        ":outletCode AND B.TRANS_DATE BETWEEN :transDate1 AND :transDate2 AND B.POS_CODE BETWEEN :posCode1 " +
+                        "AND :posCode2 AND B.CASHIER_CODE BETWEEN :cashierCode1 AND :cashierCode2 AND B.BILL_TIME BETWEEN" +
+                        " :billTime1 AND :billTime2 AND A.PAYMENT_TYPE_CODE BETWEEN :paymentType1 AND :paymentType2 AND " +
+                        "A.PAYMENT_METHOD_CODE BETWEEN :paymentMethod1 AND :paymentMethod2 AND B.SHIFT_CODE BETWEEN " +
+                        ":shiftCode1 AND :shiftCode2 AND A.OUTLET_CODE = B.OUTLET_CODE AND B.OUTLET_CODE = C.OUTLET_CODE" +
+                        " AND B.TRANS_DATE = C.TRANS_DATE AND A.PAYMENT_METHOD_CODE = C.PAYMENT_METHOD_CODE AND B.POS_CODE" +
+                        " = C.POS_CODE AND B.BILL_NO = C.BILL_NO";
 
-            prm.put("fromDate", param.get("fromDate"));
-            prm.put("toDate", param.get("toDate"));
-            prm.put("outletCode", param.get("outletCode"));
+                prm.put("transDate1", param.get("fromDate"));
+                prm.put("transDate2", param.get("toDate"));
+                prm.put("outletCode", param.get("outletCode"));
+                prm.put("billTime1", param.get("fromTime"));
+                prm.put("billTime2", param.get("toTime"));
 
-            List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
+                List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
 
-            if (listPos.size() == 1){
-                prm.put("posCode1", "000");
-                prm.put("posCode2", "zzz");
-            } else {
-                for (Map<String, Object> object : listPos){
-                    if (object.containsKey("posCode1")) {
-                        prm.put("posCode1", object.get("posCode1"));
-                    } else {
-                        prm.put("posCode2", object.get("posCode2"));
+                if (listPos.size() == 1) {
+                    prm.put("posCode1", "000");
+                    prm.put("posCode2", "zzz");
+                } else {
+                    for (Map<String, Object> object : listPos) {
+                        if (object.containsKey("posCode1")) {
+                            prm.put("posCode1", object.get("posCode1"));
+                        } else {
+                            prm.put("posCode2", object.get("posCode2"));
+                        }
+                    }
+                }
+
+                List<Map<String, Object>> listCashier = (List<Map<String, Object>>) param.get("cashier");
+
+                if (listCashier.size() == 1) {
+                    prm.put("cashierCode1", "000");
+                    prm.put("cashierCode2", "zzz");
+                } else {
+                    for (Map<String, Object> object : listCashier) {
+                        if (object.containsKey("cashierCode1")) {
+                            prm.put("cashierCode1", object.get("cashierCode1"));
+                        } else {
+                            prm.put("cashierCode2", object.get("cashierCode2"));
+                        }
+                    }
+                }
+
+                List<Map<String, Object>> listShift = (List<Map<String, Object>>) param.get("shift");
+
+                if (listShift.size() == 1) {
+                    prm.put("shiftCode1", "000");
+                    prm.put("shiftCode2", "zzz");
+                } else {
+                    for (Map<String, Object> object : listShift) {
+                        if (object.containsKey("shiftCode1")) {
+                            prm.put("shiftCode1", object.get("shiftCode1"));
+                        } else {
+                            prm.put("shiftCode2", object.get("shiftCode2"));
+                        }
+                    }
+                }
+
+                List<Map<String, Object>> listPaymentType = (List<Map<String, Object>>) param.get("PaymentType");
+
+                if (listPos.size() == 1) {
+                    prm.put("paymentType1", "000");
+                    prm.put("paymentType2", "zzz");
+                } else {
+                    for (Map<String, Object> object : listPaymentType) {
+                        if (object.containsKey("paymentType1")) {
+                            prm.put("paymentType1", object.get("paymentType1"));
+                        } else {
+                            prm.put("paymentType2", object.get("paymentType2"));
+                        }
+                    }
+                }
+
+                List<Map<String, Object>> listPaymentMethod = (List<Map<String, Object>>) param.get("paymentMethod");
+
+                if (listPos.size() == 1) {
+                    prm.put("paymentMethod1", "000");
+                    prm.put("paymentMethod2", "zzz");
+                } else {
+                    for (Map<String, Object> object : listPaymentMethod) {
+                        if (object.containsKey("paymentMethod1")) {
+                            prm.put("paymentMethod1", object.get("paymentMethod1"));
+                        } else {
+                            prm.put("paymentMethod2", object.get("paymentMethod2"));
+                        }
                     }
                 }
             }
-
-            List<Map<String, Object>> listCashier = (List<Map<String, Object>>) param.get("cashier");
-
-            if (listCashier.size() == 1) {
-                prm.put("cashierCode1", "000");
-                prm.put("cashierCode2", "zzz");
-            } else {
-                for (Map<String, Object> object : listCashier) {
-                    if (object.containsKey("cashierCode1")) {
-                        prm.put("cashierCode1", object.get("cashierCode1"));
-                    } else {
-                        prm.put("cashierCode2", object.get("cashierCode2"));
-                    }
-                }
+            case "pemakaianBySales" -> {
+                query = "SELECT COUNT(*) FROM t_pos_bill_item WHERE OUTLET_CODE = :outletCode AND TRANS_DATE BETWEEN :fromDate" +
+                        " AND :toDate";
+                prm.put("fromDate", param.get("fromDate"));
+                prm.put("outletCode", param.get("outletCode"));
+                prm.put("toDate", param.get("toDate"));
             }
-
-            List<Map<String, Object>> listShift = (List<Map<String, Object>>) param.get("shift");
-
-            if (listShift.size() == 1) {
-                prm.put("shiftCode1", "000");
-                prm.put("shiftCode2", "zzz");
-            } else {
-                for (Map<String, Object> object : listShift) {
-                    if (object.containsKey("shiftCode1")) {
-                        prm.put("shiftCode1", object.get("shiftCode1"));
-                    } else {
-                        prm.put("shiftCode2", object.get("shiftCode2"));
-                    }
-                }
+            case "produksiAktual" -> {
+                query = "SELECT COUNT(*) FROM T_MPCS_HIST WHERE MPCS_DATE = :mpcsDate AND OUTLET_CODE = :outletCode AND " +
+                        "TIME_UPD BETWEEN :startTime AND :endTime";
+                prm.put("mpcsDate", param.get("date"));
+                prm.put("outletCode", param.get("outletCode"));
+                prm.put("startTime", param.get("startTime"));
+                prm.put("endTime", param.get("endTime"));
             }
-        } else if (name.equals("TransactionByPaymentType")) {
-            query = "SELECT COUNT(*) FROM M_PAYMENT_METHOD A, T_POS_BILL B, T_POS_BILL_PAYMENT C WHERE B.OUTLET_CODE = " +
-                    ":outletCode AND B.TRANS_DATE BETWEEN :transDate1 AND :transDate2 AND B.POS_CODE BETWEEN :posCode1 " +
-                    "AND :posCode2 AND B.CASHIER_CODE BETWEEN :cashierCode1 AND :cashierCode2 AND B.BILL_TIME BETWEEN" +
-                    " :billTime1 AND :billTime2 AND A.PAYMENT_TYPE_CODE BETWEEN :paymentType1 AND :paymentType2 AND " +
-                    "A.PAYMENT_METHOD_CODE BETWEEN :paymentMethod1 AND :paymentMethod2 AND B.SHIFT_CODE BETWEEN " +
-                    ":shiftCode1 AND :shiftCode2 AND A.OUTLET_CODE = B.OUTLET_CODE AND B.OUTLET_CODE = C.OUTLET_CODE" +
-                    " AND B.TRANS_DATE = C.TRANS_DATE AND A.PAYMENT_METHOD_CODE = C.PAYMENT_METHOD_CODE AND B.POS_CODE" +
-                    " = C.POS_CODE AND B.BILL_NO = C.BILL_NO";
-
-            prm.put("transDate1", param.get("fromDate"));
-            prm.put("transDate2", param.get("toDate"));
-            prm.put("outletCode", param.get("outletCode"));
-            prm.put("billTime1", param.get("fromTime"));
-            prm.put("billTime2", param.get("toTime"));
-
-            List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
-
-            if (listPos.size() == 1){
-                prm.put("posCode1", "000");
-                prm.put("posCode2", "zzz");
-            } else {
-                for (Map<String, Object> object : listPos){
-                    if (object.containsKey("posCode1")) {
-                        prm.put("posCode1", object.get("posCode1"));
-                    } else {
-                        prm.put("posCode2", object.get("posCode2"));
-                    }
-                }
+            case "inventoryMovement" -> {
+                query = "SELECT COUNT(*) FROM T_STOCK_CARD WHERE TRANS_DATE = :transDate AND OUTLET_CODE = :outletCode";
+                prm.put("transDate", param.get("fromDate"));
+                prm.put("outletCode", param.get("outletCode"));
             }
-
-            List<Map<String, Object>> listCashier = (List<Map<String, Object>>) param.get("cashier");
-
-            if (listCashier.size() == 1) {
-                prm.put("cashierCode1", "000");
-                prm.put("cashierCode2", "zzz");
-            } else {
-                for (Map<String, Object> object : listCashier) {
-                    if (object.containsKey("cashierCode1")) {
-                        prm.put("cashierCode1", object.get("cashierCode1"));
-                    } else {
-                        prm.put("cashierCode2", object.get("cashierCode2"));
-                    }
-                }
-            }
-
-            List<Map<String, Object>> listShift = (List<Map<String, Object>>) param.get("shift");
-
-            if (listShift.size() == 1) {
-                prm.put("shiftCode1", "000");
-                prm.put("shiftCode2", "zzz");
-            } else {
-                for (Map<String, Object> object : listShift) {
-                    if (object.containsKey("shiftCode1")) {
-                        prm.put("shiftCode1", object.get("shiftCode1"));
-                    } else {
-                        prm.put("shiftCode2", object.get("shiftCode2"));
-                    }
-                }
-            }
-
-            List<Map<String, Object>> listPaymentType = (List<Map<String, Object>>) param.get("PaymentType");
-
-            if (listPos.size() == 1){
-                prm.put("paymentType1", "000");
-                prm.put("paymentType2", "zzz");
-            } else {
-                for (Map<String, Object> object : listPaymentType){
-                    if (object.containsKey("paymentType1")) {
-                        prm.put("paymentType1", object.get("paymentType1"));
-                    } else {
-                        prm.put("paymentType2", object.get("paymentType2"));
-                    }
-                }
-            }
-
-            List<Map<String, Object>> listPaymentMethod = (List<Map<String, Object>>) param.get("paymentMethod");
-
-            if (listPos.size() == 1){
-                prm.put("paymentMethod1", "000");
-                prm.put("paymentMethod2", "zzz");
-            } else {
-                for (Map<String, Object> object : listPaymentMethod){
-                    if (object.containsKey("paymentMethod1")) {
-                        prm.put("paymentMethod1", object.get("paymentMethod1"));
-                    } else {
-                        prm.put("paymentMethod2", object.get("paymentMethod2"));
-                    }
-                }
-            }
-        } else if (name.equals("pemakaianBySales")) {
-            query = "SELECT COUNT(*) FROM t_pos_bill_item WHERE OUTLET_CODE = :outletCode AND TRANS_DATE BETWEEN :fromDate" +
-                    " AND :toDate";
-            prm.put("fromDate", param.get("fromDate"));
-            prm.put("outletCode", param.get("outletCode"));
-            prm.put("toDate", param.get("toDate"));
-        } else if (name.equals("produksiAktual")) {
-            query = "SELECT COUNT(*) FROM T_MPCS_HIST WHERE MPCS_DATE = :mpcsDate AND OUTLET_CODE = :outletCode AND " +
-                    "TIME_UPD BETWEEN :startTime AND :endTime";
-
-            prm.put("mpcsDate", param.get("date"));
-            prm.put("outletCode", param.get("outletCode"));
-            prm.put("startTime", param.get("startTime"));
-            prm.put("endTime", param.get("endTime"));
-        } else if (name.equals("inventoryMovement")) {
-            query = "SELECT COUNT(*) FROM T_STOCK_CARD WHERE TRANS_DATE = :transDate AND OUTLET_CODE = :outletCode";
-
-            prm.put("transDate", param.get("fromDate"));
-            prm.put("outletCode", param.get("outletCode"));
         }
         assert query != null;
         return Integer.valueOf(Objects.requireNonNull(jdbcTemplate.queryForObject(query, prm, new RowMapper<String>() {
