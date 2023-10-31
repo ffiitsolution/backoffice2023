@@ -418,22 +418,22 @@ public class ViewDoaImpl implements ViewDao {
                 + "AND MOP.OUTLET_CODE LIKE :Outlet_Code  "
                 + "ORDER BY MMI.MENU_ITEM_CODE";
         Map prm = new HashMap();
-        prm.put("Outlet_Code", "%" + ref.get("outlet_code") + "%");
-        prm.put("Menu_Group_Code", "%" + ref.get("menu_group_code") + "%");
-        prm.put("Menu_Item_Code", ref.get("menu_item_code"));
+        prm.put("outletCode", "%" + ref.get("outlet_code") + "%");
+        prm.put("menuGroupCode", "%" + ref.get("menu_group_code") + "%");
+        prm.put("menuItemCode", ref.get("menu_item_code"));
 
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("menuitemcode", rs.getString("menu_item_code"));
-                rt.put("itemdescription", rs.getString("item_description"));
-                rt.put("menugroupname", rs.getString("menu_group_name"));
+                rt.put("menuItemcode", rs.getString("menu_item_code"));
+                rt.put("itemDescription", rs.getString("item_description"));
+                rt.put("menuGroupName", rs.getString("menu_group_name"));
                 rt.put("price", rs.getString("price"));
-                rt.put("pricetypecode", rs.getString("price_type_code"));
-                rt.put("orderdescription", rs.getString("order_description"));
-                rt.put("modifierstatus", rs.getString("modifier_status"));
+                rt.put("priceTypeCode", rs.getString("price_type_code"));
+                rt.put("orderDescription", rs.getString("order_description"));
+                rt.put("modifierStatus", rs.getString("modifier_status"));
                 return rt;
             }
         });
