@@ -2435,10 +2435,16 @@ public class ViewDoaImpl implements ViewDao {
     }
 
     @Override
-    public List<Map<String, Object>> listOutletReport() {
-        String query = "SELECT a.OUTLET_CODE, a.OUTLET_NAME FROM M_OUTLET a WHERE \"TYPE\" = 'HO' ORDER BY OUTLET_CODE ASC";
+    public List<Map<String, Object>> listOutletReport(Map<String, String> ref) {
+        String query = "SELECT b.OUTLET_CODE, b.OUTLET_NAME FROM T_DEV_HEADER a LEFT JOIN M_OUTLET b ON a.OUTLET_TO = " +
+                "b.OUTLET_CODE WHERE a.REMARK LIKE '%FREEMEAL%' AND a.OUTLET_CODE =:outletCode AND a.DELIVERY_DATE " +
+                "BETWEEN :fromDate AND :toDate AND b.\"TYPE\" = 'HO' GROUP BY b.OUTLET_CODE, b.OUTLET_NAME";
 
-        List<Map<String, Object>> list = jdbcTemplate.query(query, new RowMapper<Map<String, Object>>() {
+        Map prm = new HashMap();
+        prm.put("outletCode", ref.get("outletCode"));
+        prm.put("fromDate", ref.get("fromDate"));
+        prm.put("toDate", ref.get("toDate"));
+        List<Map<String, Object>> list = jdbcTemplate.query(query, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();

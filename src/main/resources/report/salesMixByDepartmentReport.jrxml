@@ -141,7 +141,7 @@ ORDER BY
         <groupHeader>
             <band height="20">
                 <textField>
-                    <reportElement x="54" y="1" width="100" height="15" uuid="2355382c-2735-48f7-aa1a-fe6a71f4d4ff"/>
+                    <reportElement x="54" y="1" width="400" height="15" uuid="2355382c-2735-48f7-aa1a-fe6a71f4d4ff"/>
                     <textElement>
                         <font size="8" isBold="true"/>
                     </textElement>
@@ -188,13 +188,13 @@ ORDER BY
                 <line>
                     <reportElement x="107" y="18" width="448" height="1" uuid="65cf9381-3744-484c-97a5-459bc09afe76"/>
                 </line>
-                <staticText>
-                    <reportElement x="106" y="4" width="100" height="15" uuid="a551b685-3764-4a6b-ad8e-a155f98b4207"/>
+                <textField>
+                    <reportElement x="107" y="4" width="240" height="15" uuid="d7a34bd7-967a-4071-a35a-7f3a382b7d67"/>
                     <textElement>
                         <font size="8" isBold="true"/>
                     </textElement>
-                    <text><![CDATA[Total Alacarte]]></text>
-                </staticText>
+                    <textFieldExpression><![CDATA["Total " +  $F{DESCRIPTION}]]></textFieldExpression>
+                </textField>
             </band>
         </groupFooter>
     </group>

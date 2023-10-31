@@ -331,8 +331,8 @@ public class ViewServices {
         return viewDao.listWastageDetail(ref);
     }
 
-    public List<Map<String, Object>> listOutletReport() {
-        return viewDao.listOutletReport();
+    public List<Map<String, Object>> listOutletReport(Map<String, String> ref) {
+        return viewDao.listOutletReport(ref);
     }
     ///////////////////////////////List Stock Opname 7 AUG 2023///////////////////////////////
 

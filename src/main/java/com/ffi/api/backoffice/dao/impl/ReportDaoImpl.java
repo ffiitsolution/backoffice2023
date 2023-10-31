@@ -1132,7 +1132,7 @@ public class ReportDaoImpl implements ReportDao {
             }
         }
 
-        ClassPathResource classPathResource = new ClassPathResource("report/salesMenu.jrxml");
+        ClassPathResource classPathResource = new ClassPathResource("report/salesByMenuNew.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }

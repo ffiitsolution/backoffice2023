@@ -607,7 +607,7 @@ SELECT   OUTLET_CODE,
                     <text><![CDATA[QTY OUT]]></text>
                 </staticText>
                 <textField>
-                    <reportElement x="58" y="18" width="100" height="15" uuid="0ea9ada0-57ea-40ae-900f-448eca8e5c7c"/>
+                    <reportElement x="58" y="18" width="436" height="15" uuid="0ea9ada0-57ea-40ae-900f-448eca8e5c7c"/>
                     <textElement>
                         <font size="10" isBold="true"/>
                     </textElement>

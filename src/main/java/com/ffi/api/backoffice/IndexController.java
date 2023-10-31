@@ -1950,11 +1950,14 @@ public class IndexController {
         @ApiResponse(code = 200, message = "ok"),
         @ApiResponse(code = 400, message = "The resource not found")})
     public @ResponseBody
-    Response reportOrderEntry() throws IOException {
+    Response reportOrderEntry(@RequestBody String param) throws IOException {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, String>>() {
+        }.getType());
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         Response rm = new Response();
         try {
-            list = viewServices.listOutletReport();
+            list = viewServices.listOutletReport(balance);
             rm.setData(list);
             rm.setRecordsTotal(list.size());
         } catch (Exception e) {

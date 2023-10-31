@@ -176,7 +176,7 @@ public interface ViewDao {
     
     List<Map<String, Object>> listWastageDetail(Map<String, String> ref);
 
-    List<Map<String, Object>> listOutletReport();
+    List<Map<String, Object>> listOutletReport(Map<String, String> ref);
         //////////////////////////////List Stock Opname 8 AGUSTUS 2023///////////////////////////////
     List<Map<String, Object>> listStockOpname(Map<String, String> ref);
     
