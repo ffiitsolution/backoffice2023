@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="salesByMenuNew" pageWidth="700" pageHeight="842" columnWidth="660" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="67e157f5-ca26-4f6b-97cf-548fe1f74b39">
-    <property name="ireport.zoom" value="1.3310000000000146"/>
+    <property name="ireport.zoom" value="1.4641000000000228"/>
     <property name="ireport.x" value="0"/>
-    <property name="ireport.y" value="0"/>
+    <property name="ireport.y" value="73"/>
     <parameter name="brand" class="java.lang.String"/>
     <parameter name="user" class="java.lang.String"/>
     <parameter name="shiftCode" class="java.lang.String"/>
@@ -45,7 +45,7 @@
         <defaultValueExpression><![CDATA[]]></defaultValueExpression>
     </parameter>
     <queryString>
-        <![CDATA[SELECT  menu_item_code,item_description,ei_qty,ei_amt,ta_qty,ta_amt,totqty,totamt,ROUND(TOTQTY/GRANDTOTALQTY*100, 2) AS menu_mix,ROUND(TOTAMT/GRANDTOTALAMOUNT*100, 2) AS sales_mix FROM (
+        <![CDATA[SELECT a.menu_item_code,a.item_description,a.ei_qty,a.ei_amt,a.ta_qty,a.ta_amt,a.totqty,a.totamt,ROUND(a.TOTQTY/a.GRANDTOTALQTY*100, 2) AS menu_mix,ROUND(a.TOTAMT/a.GRANDTOTALAMOUNT*100, 2) AS sales_mix, b.TOTCUSTOMERTA, b.TOTCUSTOMEREI, b.TOTTRANSTA, b.TOTTRANSEI FROM (
 SELECT X.menu_item_code,X.item_description,X.ei_qty,X.ei_amt,X.ta_qty,X.ta_amt,X.totqty,X.totamt,Z.GRANDTOTALQTY,Z.GRANDTOTALAMOUNT  FROM (
 select $P{outletCode} AS OUTLET_CODE,menu_item_code,item_description,ei_qty,ei_amt,ta_qty,ta_amt,totqty,totamt from (
 SELECT   menu_item_code ,item_description, ei_qty, ei_amt, ta_qty, ta_amt,
@@ -486,7 +486,51 @@ LEFT JOIN (
 
 
 )) Z
-ON X.OUTLET_CODE=Z.OUTLET_CODE) ORDER BY menu_item_code ASC]]>
+ON X.OUTLET_CODE=Z.OUTLET_CODE) a
+LEFT JOIN
+(SELECT
+	$P{outletCode} AS outlet_code,
+	SUM (TOTTA)AS TOTCUSTOMERTA,
+	SUM(TOTEI)AS TOTCUSTOMEREI,
+	SUM(COUNTTA)AS TOTTRANSTA,
+	SUM(COUNTEI) AS TOTTRANSEI
+FROM
+	(
+	SELECT
+		CASE
+			WHEN
+ TRANS_TYPE = 'TA' THEN SUM(TOTAL_CUSTOMER)
+			ELSE 0
+		END AS TOTTA,
+		CASE
+			WHEN
+ TRANS_TYPE = 'EI' THEN SUM(TOTAL_CUSTOMER)
+			ELSE 0
+		END AS TOTEI,
+		CASE
+			WHEN
+ TRANS_TYPE = 'TA' THEN COUNT(0)
+			ELSE 0
+		END AS COUNTTA,
+		CASE
+			WHEN
+ TRANS_TYPE = 'EI' THEN COUNT(0)
+			ELSE 0
+		END AS COUNTEI
+	FROM
+		T_POS_BILL
+	WHERE
+		outlet_code = $P{outletCode}
+		AND trans_date BETWEEN $P{fromDate} AND $P{toDate}
+		AND pos_code BETWEEN $P{posCode1} AND $P{posCode2}
+		AND cashier_code BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+		AND shift_code BETWEEN $P{shiftCode1} AND $P{shiftCode2}
+		AND bill_time BETWEEN $P{fromTime} AND $P{toTime}
+		AND (delivery_status IN (' ', 'CLS')
+			OR delivery_status IS NULL)
+	GROUP BY
+		TRANS_TYPE)) b ON $P{outletCode} = b.outlet_code
+ORDER BY menu_item_code ASC]]>
     </queryString>
     <field name="MENU_ITEM_CODE" class="java.lang.String"/>
     <field name="ITEM_DESCRIPTION" class="java.lang.String"/>
@@ -498,6 +542,10 @@ ON X.OUTLET_CODE=Z.OUTLET_CODE) ORDER BY menu_item_code ASC]]>
     <field name="TOTAMT" class="java.math.BigDecimal"/>
     <field name="MENU_MIX" class="java.math.BigDecimal"/>
     <field name="SALES_MIX" class="java.math.BigDecimal"/>
+    <field name="TOTCUSTOMERTA" class="java.lang.Integer"/>
+    <field name="TOTCUSTOMEREI" class="java.lang.Integer"/>
+    <field name="TOTTRANSTA" class="java.lang.Integer"/>
+    <field name="TOTTRANSEI" class="java.lang.Integer"/>
     <variable name="etaQty" class="java.lang.Double" calculation="Sum">
         <variableExpression><![CDATA[$F{EI_QTY}]]></variableExpression>
     </variable>
@@ -818,7 +866,7 @@ ON X.OUTLET_CODE=Z.OUTLET_CODE) ORDER BY menu_item_code ASC]]>
         </band>
     </detail>
     <summary>
-        <band height="150" splitType="Stretch">
+        <band height="250" splitType="Stretch">
             <textField pattern="###0">
                 <reportElement x="201" y="2" width="59" height="20" uuid="cf3602f7-0989-440e-89fe-4c8e49e148c8"/>
                 <textElement textAlignment="Right">
@@ -889,50 +937,142 @@ ON X.OUTLET_CODE=Z.OUTLET_CODE) ORDER BY menu_item_code ASC]]>
                 <text><![CDATA[GRAND TOTAL]]></text>
             </staticText>
             <rectangle>
-                <reportElement x="55" y="58" width="204" height="70" uuid="d3ef346f-8c7a-47c6-9a63-a2a16a6a5550"/>
+                <reportElement x="55" y="173" width="204" height="70" uuid="d3ef346f-8c7a-47c6-9a63-a2a16a6a5550"/>
             </rectangle>
             <rectangle>
-                <reportElement x="397" y="58" width="204" height="70" uuid="03b86c0d-e63d-4d87-99a8-b076ba6c8807"/>
+                <reportElement x="397" y="173" width="204" height="70" uuid="03b86c0d-e63d-4d87-99a8-b076ba6c8807"/>
             </rectangle>
             <staticText>
-                <reportElement x="56" y="58" width="110" height="20" uuid="7f97e895-ebaf-4e40-9cb5-92fafb7dd8a7"/>
+                <reportElement x="56" y="173" width="110" height="20" uuid="7f97e895-ebaf-4e40-9cb5-92fafb7dd8a7"/>
                 <text><![CDATA[MENU MIX]]></text>
             </staticText>
             <staticText>
-                <reportElement x="56" y="82" width="110" height="20" uuid="a273d524-7ee7-4a81-935c-24b86e4c3af2"/>
+                <reportElement x="56" y="197" width="110" height="20" uuid="a273d524-7ee7-4a81-935c-24b86e4c3af2"/>
                 <text><![CDATA[TOTAL EAT IN]]></text>
             </staticText>
             <staticText>
-                <reportElement x="56" y="106" width="110" height="20" uuid="fb81d122-b283-4016-a902-99eb4e2ac094"/>
+                <reportElement x="56" y="221" width="110" height="20" uuid="fb81d122-b283-4016-a902-99eb4e2ac094"/>
                 <text><![CDATA[TOTAL TAKE AWAY]]></text>
             </staticText>
             <textField>
-                <reportElement x="166" y="82" width="93" height="20" uuid="8a8cdbf7-c7bb-4c25-a7ea-781dd4cc4eb1"/>
+                <reportElement x="166" y="197" width="93" height="20" uuid="8a8cdbf7-c7bb-4c25-a7ea-781dd4cc4eb1"/>
                 <textFieldExpression><![CDATA[" : " + new DecimalFormat("#,##0.00").format($V{etaQty}/$V{totalQty}*100) + " %"]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="167" y="106" width="93" height="20" uuid="c504fe68-002a-479d-8677-c4c5bc8c6ab3"/>
+                <reportElement x="167" y="221" width="93" height="20" uuid="c504fe68-002a-479d-8677-c4c5bc8c6ab3"/>
                 <textFieldExpression><![CDATA[" : " + new DecimalFormat("#,##0.00").format($V{takeQty}/$V{totalQty}*100) + " %"]]></textFieldExpression>
             </textField>
             <staticText>
-                <reportElement x="397" y="58" width="110" height="20" uuid="ca367a63-51e3-40b5-97cb-1ad812e459a9"/>
+                <reportElement x="397" y="173" width="110" height="20" uuid="ca367a63-51e3-40b5-97cb-1ad812e459a9"/>
                 <text><![CDATA[SALES MIX]]></text>
             </staticText>
             <staticText>
-                <reportElement x="397" y="82" width="110" height="20" uuid="69842df3-146c-4da2-a011-ce9998fff1cb"/>
+                <reportElement x="397" y="197" width="110" height="20" uuid="69842df3-146c-4da2-a011-ce9998fff1cb"/>
                 <text><![CDATA[TOTAL EAT IN]]></text>
             </staticText>
             <staticText>
-                <reportElement x="397" y="106" width="110" height="20" uuid="1181d01a-022a-41e4-998d-152d9e8ac6ba"/>
+                <reportElement x="397" y="221" width="110" height="20" uuid="1181d01a-022a-41e4-998d-152d9e8ac6ba"/>
                 <text><![CDATA[TOTAL TAKE AWAY]]></text>
             </staticText>
             <textField>
-                <reportElement x="508" y="82" width="93" height="20" uuid="e6022292-1f3e-4fb3-a733-d88c60082900"/>
+                <reportElement x="508" y="197" width="93" height="20" uuid="e6022292-1f3e-4fb3-a733-d88c60082900"/>
                 <textFieldExpression><![CDATA[" : " + new DecimalFormat("#,##0.00").format($V{etaNilai}/$V{totalNilai}*100) + " %"]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="508" y="106" width="93" height="20" uuid="3046ff0f-b600-4576-a5a0-306b8651125d"/>
+                <reportElement x="508" y="221" width="93" height="20" uuid="3046ff0f-b600-4576-a5a0-306b8651125d"/>
                 <textFieldExpression><![CDATA[" : " + new DecimalFormat("#,##0.00").format($V{takeNilai}/$V{totalNilai}*100) + " %"]]></textFieldExpression>
+            </textField>
+            <rectangle>
+                <reportElement x="55" y="39" width="204" height="108" uuid="94a91016-60fd-4ce4-a4bc-07c5cdab615d"/>
+            </rectangle>
+            <rectangle>
+                <reportElement x="397" y="39" width="204" height="108" uuid="5bc34730-c7b5-4e0a-b46b-7c1569f47a6c"/>
+            </rectangle>
+            <staticText>
+                <reportElement x="56" y="39" width="203" height="20" uuid="395ad968-7b20-4acd-9c7d-02cd94f5f547"/>
+                <textElement textAlignment="Center"/>
+                <text><![CDATA[TOTAL CUSTOMER]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="56" y="70" width="110" height="20" uuid="8f2365fc-2791-4ce9-b047-6a3f38f1cd79"/>
+                <text><![CDATA[TOTAL TA]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="56" y="89" width="110" height="20" uuid="051a546a-fa52-4907-9307-adb27d2882a9"/>
+                <text><![CDATA[TOTAL EI]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="56" y="108" width="110" height="20" uuid="7bc26606-aeb4-4dcf-a1dc-1732ec40e96d"/>
+                <text><![CDATA[MIX]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="56" y="127" width="110" height="20" uuid="cfbd28f6-51de-42e6-bf8e-90a97f392f88"/>
+                <text><![CDATA[GRAND TOTAL]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="398" y="39" width="203" height="20" uuid="24d3f7f6-f304-4890-a413-952af4d233c3"/>
+                <textElement textAlignment="Center"/>
+                <text><![CDATA[TOTAL TRANSAKSI]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="398" y="70" width="110" height="20" uuid="2433bab8-1fe9-44db-ac22-87d6711283fd"/>
+                <text><![CDATA[TOTAL TA]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="398" y="89" width="110" height="20" uuid="0efbd49f-4878-47c8-894e-bd4d798f6f70"/>
+                <text><![CDATA[TOTAL EI]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="398" y="108" width="110" height="20" uuid="5596956c-78b5-413f-8837-9e9e394669c9"/>
+                <text><![CDATA[MIX]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="398" y="127" width="110" height="20" uuid="b8c91ac0-11b9-451f-a250-a89c08722c15"/>
+                <text><![CDATA[GRAND TOTAL]]></text>
+            </staticText>
+            <line>
+                <reportElement x="397" y="59" width="204" height="1" uuid="782ded2b-77fe-4d0e-959a-f8ead4c87192"/>
+            </line>
+            <line>
+                <reportElement x="55" y="58" width="204" height="1" uuid="aadd530c-ac1f-49e5-b21e-7e762ed3af5e"/>
+            </line>
+            <line>
+                <reportElement x="396" y="193" width="204" height="1" uuid="bc4de32f-8750-4ef8-9e48-492f2c452b62"/>
+            </line>
+            <line>
+                <reportElement x="55" y="192" width="204" height="1" uuid="4e49ac71-8397-417f-8b1a-20818f5b4dd5"/>
+            </line>
+            <staticText>
+                <reportElement x="508" y="108" width="93" height="20" uuid="5cb843be-d4cd-4439-a64c-d8e49ff209ee"/>
+                <text><![CDATA[ : 0]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="166" y="108" width="93" height="20" uuid="fe95d6a2-48fb-4e88-9abd-b2a5be947cb0"/>
+                <text><![CDATA[ : 0]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="166" y="127" width="93" height="20" uuid="d919e91a-9b02-4f06-92ce-0855d46d217a"/>
+                <textFieldExpression><![CDATA[" : " + ($F{TOTCUSTOMERTA}+$F{TOTCUSTOMEREI})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="166" y="89" width="93" height="20" uuid="ec2ca157-b396-46bf-bb68-8c482b99a388"/>
+                <textFieldExpression><![CDATA[" : " + $F{TOTCUSTOMEREI}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="166" y="70" width="93" height="20" uuid="28c45f0a-4042-43b1-8b95-120eda49d15e"/>
+                <textFieldExpression><![CDATA[" : " + $F{TOTCUSTOMERTA}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="508" y="70" width="93" height="20" uuid="0daa2e14-d25e-4844-9007-5543df28fc57"/>
+                <textFieldExpression><![CDATA[" : " + $F{TOTTRANSTA}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="508" y="89" width="93" height="20" uuid="09c89e49-31c3-40e4-b2c7-c103cd2626eb"/>
+                <textFieldExpression><![CDATA[" : " + $F{TOTTRANSEI}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="508" y="127" width="93" height="20" uuid="3725efc1-2e4c-4e51-9b62-d0c868ca31d0"/>
+                <textFieldExpression><![CDATA[" : " + ($F{TOTTRANSTA}+$F{TOTTRANSEI})]]></textFieldExpression>
             </textField>
         </band>
     </summary>
