@@ -464,8 +464,6 @@ public class ViewDoaImpl implements ViewDao {
         String qry = "SELECT  "
                 + "    MMI.MENU_ITEM_CODE,  "
                 + "    MI.ITEM_DESCRIPTION,  "
-                + "    --- MMI.MENU_GROUP_CODE,  "
-                + "    --- MMI.MODIFIER_GROUP1_CODE AS MODIFIER_GROUP_CODE,  "
                 + "    MOD.MODIFIER_ITEM_CODE,  "
                 + "    MI2.ITEM_DESCRIPTION AS MODIFIER_ITEM_NAME  "
                 + "FROM M_MENU_ITEM MMI  "
