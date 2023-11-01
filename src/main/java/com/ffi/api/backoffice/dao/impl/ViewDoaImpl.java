@@ -387,36 +387,54 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listItemDetail(Map<String, String> ref) {
-        String qry = "SELECT  "
-                + "    MMI.MENU_ITEM_CODE,  "
-                + "    MI.ITEM_DESCRIPTION,  "
-                + "    -- MMI.MENU_GROUP_CODE,  "
-                + "    MG2.DESCRIPTION AS MENU_GROUP_NAME,  "
-                + "    MP.PRICE,  "
-                + "    MP.PRICE_TYPE_CODE AS PRICE_TYPE_CODE,  "
-                + "    MG.DESCRIPTION AS ORDER_DESCRIPTION,  "
-                + "    CASE WHEN MENU_SET = 'N' AND MODIFIER_GROUP1_CODE = ' ' AND MODIFIER_GROUP2_CODE = ' ' AND MODIFIER_GROUP3_CODE = ' ' AND MODIFIER_GROUP4_CODE = ' ' THEN 'N'  "
-                + "     WHEN MENU_SET = 'Y' AND MODIFIER_GROUP1_CODE = ' ' AND MODIFIER_GROUP2_CODE = ' ' AND MODIFIER_GROUP3_CODE = ' ' AND MODIFIER_GROUP4_CODE = ' '  THEN 'N'  "
-                + "     ELSE 'Y'  "
-                + "    END AS MODIFIER_STATUS  "
-                + "FROM M_MENU_ITEM MMI  "
-                + "LEFT JOIN M_ITEM MI  "
-                + "ON MMI.MENU_ITEM_CODE = MI.ITEM_CODE  "
-                + "LEFT JOIN M_PRICE MP  "
-                + "ON MMI.MENU_ITEM_CODE = MP.MENU_ITEM_CODE  "
-                + "LEFT JOIN M_OUTLET_PRICE MOP  "
-                + "ON MOP.PRICE_TYPE_CODE = MP.PRICE_TYPE_CODE  "
-                + "LEFT JOIN M_GLOBAL MG  "
-                + "ON MOP.ORDER_TYPE = MG.CODE AND MG.COND = 'ORDER_TYPE'  "
-                + "LEFT JOIN M_GLOBAL MG2  "
-                + "ON MMI.MENU_GROUP_CODE = MG2.CODE AND MG2.COND = 'GROUP'  "
-                + "WHERE MMI.MENU_GROUP_CODE LIKE :Menu_Group_Code  "
-                + "AND MMI.MENU_ITEM_CODE = :Menu_Item_Code  "
-                + "AND MMI.STATUS = 'A'  "
-                + "AND MI.STATUS = 'A'  "
-                + "AND MMI.OUTLET_CODE LIKE :Outlet_Code  "
-                + "AND MOP.OUTLET_CODE LIKE :Outlet_Code  "
-                + "ORDER BY MMI.MENU_ITEM_CODE";
+        String qry = "  SELECT   MMI.MENU_ITEM_CODE,\n"
+                + "           MI.ITEM_DESCRIPTION,\n"
+                + "           MG2.DESCRIPTION AS MENU_GROUP_NAME,\n"
+                + "           MP.PRICE,\n"
+                + "           MP.PRICE_TYPE_CODE AS PRICE_TYPE_CODE,\n"
+                + "           MG.DESCRIPTION AS ORDER_DESCRIPTION,\n"
+                + "           CASE\n"
+                + "              WHEN     MENU_SET = 'N'\n"
+                + "                   AND MODIFIER_GROUP1_CODE = ' '\n"
+                + "                   AND MODIFIER_GROUP2_CODE = ' '\n"
+                + "                   AND MODIFIER_GROUP3_CODE = ' '\n"
+                + "                   AND MODIFIER_GROUP4_CODE = ' '\n"
+                + "              THEN\n"
+                + "                 'N'\n"
+                + "              WHEN     MENU_SET = 'Y'\n"
+                + "                   AND MODIFIER_GROUP1_CODE = ' '\n"
+                + "                   AND MODIFIER_GROUP2_CODE = ' '\n"
+                + "                   AND MODIFIER_GROUP3_CODE = ' '\n"
+                + "                   AND MODIFIER_GROUP4_CODE = ' '\n"
+                + "              THEN\n"
+                + "                 'N'\n"
+                + "              ELSE\n"
+                + "                 'Y'\n"
+                + "           END\n"
+                + "              AS MODIFIER_STATUS\n"
+                + "    FROM                  M_MENU_ITEM MMI\n"
+                + "                       LEFT JOIN\n"
+                + "                          M_ITEM MI\n"
+                + "                       ON MMI.MENU_ITEM_CODE = MI.ITEM_CODE\n"
+                + "                    LEFT JOIN\n"
+                + "                       M_PRICE MP\n"
+                + "                    ON MMI.MENU_ITEM_CODE = MP.MENU_ITEM_CODE\n"
+                + "                 LEFT JOIN\n"
+                + "                    M_OUTLET_PRICE MOP\n"
+                + "                 ON MOP.PRICE_TYPE_CODE = MP.PRICE_TYPE_CODE\n"
+                + "              LEFT JOIN\n"
+                + "                 M_GLOBAL MG\n"
+                + "              ON MOP.ORDER_TYPE = MG.CODE AND MG.COND = 'ORDER_TYPE'\n"
+                + "           LEFT JOIN\n"
+                + "              M_GLOBAL MG2\n"
+                + "           ON MMI.MENU_GROUP_CODE = MG2.CODE AND MG2.COND = 'GROUP'\n"
+                + "   WHERE       MMI.MENU_GROUP_CODE LIKE :Menu_Group_Code\n"
+                + "           AND MMI.MENU_ITEM_CODE = :Menu_Item_Code\n"
+                + "           AND MMI.STATUS = 'A'\n"
+                + "           AND MI.STATUS = 'A'\n"
+                + "           AND MMI.OUTLET_CODE LIKE :Outlet_Code\n"
+                + "           AND MOP.OUTLET_CODE LIKE :Outlet_Code\n"
+                + "ORDER BY   MMI.MENU_ITEM_CODE";
         Map prm = new HashMap();
         prm.put("outletCode", "%" + ref.get("outlet_code") + "%");
         prm.put("menuGroupCode", "%" + ref.get("menu_group_code") + "%");
@@ -1244,8 +1262,8 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listGlobal(Map<String, String> balance) {
-        String qry = "select DESCRIPTION, TYPE_MENU AS CODE from m_menudtl where type_menu=:cond and status=:status AND APLIKASI" +
-                " =:aplikasi";
+        String qry = "select DESCRIPTION, TYPE_MENU AS CODE from m_menudtl where type_menu=:cond and status=:status AND APLIKASI"
+                + " =:aplikasi";
         Map prm = new HashMap();
         prm.put("cond", balance.get("cond"));
         prm.put("status", balance.get("status"));
@@ -1976,9 +1994,9 @@ public class ViewDoaImpl implements ViewDao {
                     prm.put("fromDate", param.get("fromDate"));
                     prm.put("toDate", param.get("toDate"));
                 } else {
-                    query = "SELECT COUNT(*) FROM T_RECV_HEADER a LEFT JOIN T_ORDER_HEADER b ON a.ORDER_NO = b.ORDER_NO" +
-                            " WHERE a.OUTLET_CODE = :outletCode AND a.RECV_DATE BETWEEN :fromDate AND :toDate AND " +
-                            "b.CD_SUPPLIER =:cdSupplier";
+                    query = "SELECT COUNT(*) FROM T_RECV_HEADER a LEFT JOIN T_ORDER_HEADER b ON a.ORDER_NO = b.ORDER_NO"
+                            + " WHERE a.OUTLET_CODE = :outletCode AND a.RECV_DATE BETWEEN :fromDate AND :toDate AND "
+                            + "b.CD_SUPPLIER =:cdSupplier";
                     prm.put("outletCode", param.get("outletCode"));
                     prm.put("fromDate", param.get("fromDate"));
                     prm.put("toDate", param.get("toDate"));
@@ -2156,9 +2174,9 @@ public class ViewDoaImpl implements ViewDao {
                 query = queryBuilder.toString();
             }
             case "transaksiKasir" -> {
-                query = "SELECT COUNT(*) FROM T_POS_DAY_TRANS WHERE TRANS_DATE BETWEEN :fromDate AND :toDate " +
-                        "AND CASHIER_CODE BETWEEN :cashierCode1 AND :cashierCode2 AND SHIFT_CODE BETWEEN :shiftCode1 AND " +
-                        ":shiftCode2 AND TRANS_CODE != 'DNT' AND OUTLET_CODE = :outletCode";
+                query = "SELECT COUNT(*) FROM T_POS_DAY_TRANS WHERE TRANS_DATE BETWEEN :fromDate AND :toDate "
+                        + "AND CASHIER_CODE BETWEEN :cashierCode1 AND :cashierCode2 AND SHIFT_CODE BETWEEN :shiftCode1 AND "
+                        + ":shiftCode2 AND TRANS_CODE != 'DNT' AND OUTLET_CODE = :outletCode";
 
                 prm.put("outletCode", param.get("outletCode"));
                 prm.put("fromDate", param.get("fromDate"));
@@ -2200,9 +2218,9 @@ public class ViewDoaImpl implements ViewDao {
                 prm.put("outletCode", param.get("outletCode"));
             }
             case "salesMixDepartment" -> {
-                query = "SELECT COUNT(*) FROM TMP_SALES_BY_ITEM WHERE OUTLET_CODE =:outletCode AND TRANS_DATE BETWEEN " +
-                        ":fromDate AND :toDate AND POS_CODE BETWEEN :posCode1 AND :posCode2 AND CASHIER_CODE BETWEEN " +
-                        ":cashierCode1 AND :cashierCode2 AND SHIFT_CODE BETWEEN :shiftCode1 AND :shiftCode2";
+                query = "SELECT COUNT(*) FROM TMP_SALES_BY_ITEM WHERE OUTLET_CODE =:outletCode AND TRANS_DATE BETWEEN "
+                        + ":fromDate AND :toDate AND POS_CODE BETWEEN :posCode1 AND :posCode2 AND CASHIER_CODE BETWEEN "
+                        + ":cashierCode1 AND :cashierCode2 AND SHIFT_CODE BETWEEN :shiftCode1 AND :shiftCode2";
 
                 prm.put("fromDate", param.get("fromDate"));
                 prm.put("toDate", param.get("toDate"));
@@ -2254,14 +2272,14 @@ public class ViewDoaImpl implements ViewDao {
                 }
             }
             case "TransactionByPaymentType" -> {
-                query = "SELECT COUNT(*) FROM M_PAYMENT_METHOD A, T_POS_BILL B, T_POS_BILL_PAYMENT C WHERE B.OUTLET_CODE = " +
-                        ":outletCode AND B.TRANS_DATE BETWEEN :transDate1 AND :transDate2 AND B.POS_CODE BETWEEN :posCode1 " +
-                        "AND :posCode2 AND B.CASHIER_CODE BETWEEN :cashierCode1 AND :cashierCode2 AND B.BILL_TIME BETWEEN" +
-                        " :billTime1 AND :billTime2 AND A.PAYMENT_TYPE_CODE BETWEEN :paymentType1 AND :paymentType2 AND " +
-                        "A.PAYMENT_METHOD_CODE BETWEEN :paymentMethod1 AND :paymentMethod2 AND B.SHIFT_CODE BETWEEN " +
-                        ":shiftCode1 AND :shiftCode2 AND A.OUTLET_CODE = B.OUTLET_CODE AND B.OUTLET_CODE = C.OUTLET_CODE" +
-                        " AND B.TRANS_DATE = C.TRANS_DATE AND A.PAYMENT_METHOD_CODE = C.PAYMENT_METHOD_CODE AND B.POS_CODE" +
-                        " = C.POS_CODE AND B.BILL_NO = C.BILL_NO";
+                query = "SELECT COUNT(*) FROM M_PAYMENT_METHOD A, T_POS_BILL B, T_POS_BILL_PAYMENT C WHERE B.OUTLET_CODE = "
+                        + ":outletCode AND B.TRANS_DATE BETWEEN :transDate1 AND :transDate2 AND B.POS_CODE BETWEEN :posCode1 "
+                        + "AND :posCode2 AND B.CASHIER_CODE BETWEEN :cashierCode1 AND :cashierCode2 AND B.BILL_TIME BETWEEN"
+                        + " :billTime1 AND :billTime2 AND A.PAYMENT_TYPE_CODE BETWEEN :paymentType1 AND :paymentType2 AND "
+                        + "A.PAYMENT_METHOD_CODE BETWEEN :paymentMethod1 AND :paymentMethod2 AND B.SHIFT_CODE BETWEEN "
+                        + ":shiftCode1 AND :shiftCode2 AND A.OUTLET_CODE = B.OUTLET_CODE AND B.OUTLET_CODE = C.OUTLET_CODE"
+                        + " AND B.TRANS_DATE = C.TRANS_DATE AND A.PAYMENT_METHOD_CODE = C.PAYMENT_METHOD_CODE AND B.POS_CODE"
+                        + " = C.POS_CODE AND B.BILL_NO = C.BILL_NO";
 
                 prm.put("transDate1", param.get("fromDate"));
                 prm.put("transDate2", param.get("toDate"));
@@ -2345,15 +2363,15 @@ public class ViewDoaImpl implements ViewDao {
                 }
             }
             case "pemakaianBySales" -> {
-                query = "SELECT COUNT(*) FROM t_pos_bill_item WHERE OUTLET_CODE = :outletCode AND TRANS_DATE BETWEEN :fromDate" +
-                        " AND :toDate";
+                query = "SELECT COUNT(*) FROM t_pos_bill_item WHERE OUTLET_CODE = :outletCode AND TRANS_DATE BETWEEN :fromDate"
+                        + " AND :toDate";
                 prm.put("fromDate", param.get("fromDate"));
                 prm.put("outletCode", param.get("outletCode"));
                 prm.put("toDate", param.get("toDate"));
             }
             case "produksiAktual" -> {
-                query = "SELECT COUNT(*) FROM T_MPCS_HIST WHERE MPCS_DATE = :mpcsDate AND OUTLET_CODE = :outletCode AND " +
-                        "TIME_UPD BETWEEN :startTime AND :endTime";
+                query = "SELECT COUNT(*) FROM T_MPCS_HIST WHERE MPCS_DATE = :mpcsDate AND OUTLET_CODE = :outletCode AND "
+                        + "TIME_UPD BETWEEN :startTime AND :endTime";
                 prm.put("mpcsDate", param.get("date"));
                 prm.put("outletCode", param.get("outletCode"));
                 prm.put("startTime", param.get("startTime"));
@@ -2436,9 +2454,9 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listOutletReport(Map<String, String> ref) {
-        String query = "SELECT b.OUTLET_CODE, b.OUTLET_NAME FROM T_DEV_HEADER a LEFT JOIN M_OUTLET b ON a.OUTLET_TO = " +
-                "b.OUTLET_CODE WHERE a.REMARK LIKE '%FREEMEAL%' AND a.OUTLET_CODE =:outletCode AND a.DELIVERY_DATE " +
-                "BETWEEN :fromDate AND :toDate AND b.\"TYPE\" = 'HO' GROUP BY b.OUTLET_CODE, b.OUTLET_NAME";
+        String query = "SELECT b.OUTLET_CODE, b.OUTLET_NAME FROM T_DEV_HEADER a LEFT JOIN M_OUTLET b ON a.OUTLET_TO = "
+                + "b.OUTLET_CODE WHERE a.REMARK LIKE '%FREEMEAL%' AND a.OUTLET_CODE =:outletCode AND a.DELIVERY_DATE "
+                + "BETWEEN :fromDate AND :toDate AND b.\"TYPE\" = 'HO' GROUP BY b.OUTLET_CODE, b.OUTLET_NAME";
 
         Map prm = new HashMap();
         prm.put("outletCode", ref.get("outletCode"));
