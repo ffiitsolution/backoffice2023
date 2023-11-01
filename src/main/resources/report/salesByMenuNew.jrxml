@@ -819,7 +819,7 @@ ON X.OUTLET_CODE=Z.OUTLET_CODE) ORDER BY menu_item_code ASC]]>
     </detail>
     <summary>
         <band height="150" splitType="Stretch">
-            <textField pattern="">
+            <textField pattern="###0">
                 <reportElement x="201" y="2" width="59" height="20" uuid="cf3602f7-0989-440e-89fe-4c8e49e148c8"/>
                 <textElement textAlignment="Right">
                     <font size="8" isBold="true"/>
@@ -833,7 +833,7 @@ ON X.OUTLET_CODE=Z.OUTLET_CODE) ORDER BY menu_item_code ASC]]>
                 </textElement>
                 <textFieldExpression><![CDATA[$V{etaNilai}]]></textFieldExpression>
             </textField>
-            <textField pattern="">
+            <textField pattern="###0">
                 <reportElement x="319" y="2" width="60" height="20" uuid="1fe6f525-880c-4a43-8573-8711437d9724"/>
                 <textElement textAlignment="Right">
                     <font size="8" isBold="true"/>
@@ -847,7 +847,7 @@ ON X.OUTLET_CODE=Z.OUTLET_CODE) ORDER BY menu_item_code ASC]]>
                 </textElement>
                 <textFieldExpression><![CDATA[$V{takeNilai}]]></textFieldExpression>
             </textField>
-            <textField pattern="">
+            <textField pattern="###0">
                 <reportElement x="438" y="2" width="45" height="20" uuid="fa6ff8e3-25cc-4b43-a01b-7fce893736ee"/>
                 <textElement textAlignment="Right">
                     <font size="8" isBold="true"/>
