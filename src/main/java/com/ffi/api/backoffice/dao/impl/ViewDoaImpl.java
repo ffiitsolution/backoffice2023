@@ -432,11 +432,11 @@ public class ViewDoaImpl implements ViewDao {
                 + "           AND MMI.MENU_ITEM_CODE = :menuItemCode "
                 + "           AND MMI.STATUS = 'A' "
                 + "           AND MI.STATUS = 'A' "
-                + "           AND MMI.OUTLET_CODE LIKE :outletCode "
-                + "           AND MOP.OUTLET_CODE LIKE :outletCode "
+                + "           AND MMI.OUTLET_CODE = :outletCode "
+                + "           AND MOP.OUTLET_CODE = :outletCode "
                 + "ORDER BY   MMI.MENU_ITEM_CODE";
         Map prm = new HashMap();
-        prm.put("outletCode", "%" + ref.get("outlet_code") + "%");
+        prm.put("outletCode", ref.get("outlet_code"));
         prm.put("menuGroupCode", "%" + ref.get("menu_group_code") + "%");
         prm.put("menuItemCode", ref.get("menu_item_code"));
 
@@ -445,7 +445,7 @@ public class ViewDoaImpl implements ViewDao {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("menuItemcode", rs.getString("menu_item_code"));
+                rt.put("menuItemCode", rs.getString("menu_item_code"));
                 rt.put("itemDescription", rs.getString("item_description"));
                 rt.put("menuGroupName", rs.getString("menu_group_name"));
                 rt.put("price", rs.getString("price"));
