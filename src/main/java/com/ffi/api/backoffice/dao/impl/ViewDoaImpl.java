@@ -282,17 +282,17 @@ public class ViewDoaImpl implements ViewDao {
                 + "FROM M_MENU_GROUP M  "
                 + "JOIN M_GLOBAL G  "
                 + "ON M.MENU_GROUP_CODE = G.CODE  "
-                + "WHERE G.COND = 'GROUP' AND M.OUTLET_CODE LIKE :outlet_code  "
+                + "WHERE G.COND = 'GROUP' AND M.OUTLET_CODE LIKE :outletCode AND M.STATUS='A'  "
                 + "ORDER BY MENU_GROUP_CODE";
         Map prm = new HashMap();
-        prm.put("outlet_code", "%" + ref.get("outlet_code") + "%");
+        prm.put("outletCode", "%" + ref.get("outletCode") + "%");
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("menugroupcode", rs.getString("menu_group_code"));
-                rt.put("menugroup", rs.getString("menu_group"));
+                rt.put("menuGroupCode", rs.getString("menu_group_code"));
+                rt.put("menuGroup", rs.getString("menu_group"));
                 return rt;
             }
         });
