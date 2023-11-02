@@ -1711,6 +1711,14 @@ public class ViewDoaImpl implements ViewDao {
                 + "rc.recv_date, "
                 + "rc.order_no, "
                 + "sp.supplier_name, "
+                + "CASE "
+                + "WHEN rc.order_no LIKE '%P%' AND sp.supplier_name IS NOT NULL THEN 'Pembelian' || ' ' || 'Supplier' || ' ' || sp.SUPPLIER_NAME "
+                + "WHEN rc.order_no LIKE '%P%' AND MG.DESCRIPTION IS NOT NULL THEN 'Pembelian' || ' ' || mg.DESCRIPTION "
+                + "WHEN rc.order_no LIKE '%P%' AND mo.OUTLET_NAME IS NOT NULL THEN 'Pembelian' || ' ' || 'Outlet' || ' ' || mo.OUTLET_NAME "
+                + "WHEN rc.order_no LIKE '%R%' AND sp.supplier_name IS NOT NULL THEN 'Permintaan' || ' ' || 'Supplier' || ' ' || sp.SUPPLIER_NAME "
+                + "WHEN rc.order_no LIKE '%R%' AND MG.DESCRIPTION IS NOT NULL THEN 'Permintaan' || ' ' || mg.DESCRIPTION "
+                + "WHEN rc.order_no LIKE '%R%' AND mo.OUTLET_NAME IS NOT NULL THEN 'Permintaan' || ' ' || 'Outlet' || ' ' || mo.OUTLET_NAME "
+                + "END AS tipeOrder, "
                 //                + "'Pembelian ' || ("
                 //                + "    case when length(ord.cd_supplier) = 4 then 'Outlet ' || mo.outlet_name"
                 //                + "    when length(ord.cd_supplier) = 5 then mg.description"
@@ -1726,7 +1734,8 @@ public class ViewDoaImpl implements ViewDao {
                 + "left join m_global mg on mg.cond = 'X_JKT' and mg.code = ord.cd_supplier "
                 + "left join m_outlet mo on mo.outlet_code = ord.cd_supplier "
                 + "left join hist_kirim hk on hk.no_order = ord.order_no "
-                + "where rc.recv_date between to_date(:dateStart, 'dd-mm-yyyy') and to_date(:dateEnd, 'dd-mm-yyyy') ";
+                + "where rc.recv_date between to_date(:dateStart, 'dd-mm-yyyy') and to_date(:dateEnd, 'dd-mm-yyyy') "
+                + "AND (sp.supplier_name IS NOT NULL OR MG.DESCRIPTION IS NOT NULL OR mo.OUTLET_NAME IS NOT NULL) ";
         //"and length(ord.cd_supplier) = 5 " +
         //"order by rc.recv_date ";
         Map prm = new HashMap();
@@ -1740,7 +1749,7 @@ public class ViewDoaImpl implements ViewDao {
         } else if (filter.equalsIgnoreCase("3")) { //Supplier
             qry += "and length(ord.cd_supplier) = 10 ";
         }
-        qry += "order by rc.recv_date ";
+        qry += "order by rc.ORDER_NO ";
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
@@ -1751,7 +1760,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("noOrder", rs.getString("order_no"));
                 rt.put("suppName", rs.getString("supplier_name"));
                 rt.put("remark", rs.getString("remark"));
-                rt.put("tipeOrder", rs.getString("remark"));
+                rt.put("tipeOrder", rs.getString("tipeOrder"));
                 rt.put("updOnline", rs.getString("upd_online"));
                 rt.put("print", rs.getString("no_of_print"));
                 rt.put("status", rs.getString("status"));
