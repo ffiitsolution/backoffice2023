@@ -386,60 +386,12 @@ public class ViewDoaImpl implements ViewDao {
     }
 
     @Override
-    public List<Map<String, Object>> listItemDetail(Map<String, String> ref) {
-        String qry = "  SELECT   MMI.MENU_ITEM_CODE, "
-                + "           MI.ITEM_DESCRIPTION, "
-                + "           MG2.DESCRIPTION AS MENU_GROUP_NAME, "
-                + "           MP.PRICE, "
-                + "           MP.PRICE_TYPE_CODE AS PRICE_TYPE_CODE, "
-                + "           MG.DESCRIPTION AS ORDER_DESCRIPTION, "
-                + "           CASE "
-                + "              WHEN     MENU_SET = 'N' "
-                + "                   AND MODIFIER_GROUP1_CODE = ' ' "
-                + "                   AND MODIFIER_GROUP2_CODE = ' ' "
-                + "                   AND MODIFIER_GROUP3_CODE = ' ' "
-                + "                   AND MODIFIER_GROUP4_CODE = ' ' "
-                + "              THEN "
-                + "                 'N' "
-                + "              WHEN     MENU_SET = 'Y' "
-                + "                   AND MODIFIER_GROUP1_CODE = ' ' "
-                + "                   AND MODIFIER_GROUP2_CODE = ' ' "
-                + "                   AND MODIFIER_GROUP3_CODE = ' ' "
-                + "                   AND MODIFIER_GROUP4_CODE = ' ' "
-                + "              THEN "
-                + "                 'N' "
-                + "              ELSE "
-                + "                 'Y' "
-                + "           END "
-                + "              AS MODIFIER_STATUS "
-                + "    FROM                  M_MENU_ITEM MMI "
-                + "                       LEFT JOIN "
-                + "                          M_ITEM MI "
-                + "                       ON MMI.MENU_ITEM_CODE = MI.ITEM_CODE "
-                + "                    LEFT JOIN "
-                + "                       M_PRICE MP "
-                + "                    ON MMI.MENU_ITEM_CODE = MP.MENU_ITEM_CODE "
-                + "                 LEFT JOIN "
-                + "                    M_OUTLET_PRICE MOP "
-                + "                 ON MOP.PRICE_TYPE_CODE = MP.PRICE_TYPE_CODE "
-                + "              LEFT JOIN "
-                + "                 M_GLOBAL MG "
-                + "              ON MOP.ORDER_TYPE = MG.CODE AND MG.COND = 'ORDER_TYPE' "
-                + "           LEFT JOIN "
-                + "              M_GLOBAL MG2 "
-                + "           ON MMI.MENU_GROUP_CODE = MG2.CODE AND MG2.COND = 'GROUP' "
-                + "   WHERE       MMI.MENU_GROUP_CODE LIKE :menuGroupCode "
-                + "           AND MMI.MENU_ITEM_CODE = :menuItemCode "
-                + "           AND MMI.STATUS = 'A' "
-                + "           AND MI.STATUS = 'A' "
-                + "           AND MMI.OUTLET_CODE = :outletCode "
-                + "           AND MOP.OUTLET_CODE = :outletCode "
-                + "ORDER BY   MMI.MENU_ITEM_CODE";
+    public List<Map<String, Object>> listItemDetail(Map<String, String> balance) {
+       String qry="select * from m_outlet";
         Map prm = new HashMap();
-        prm.put("outletCode", ref.get("outlet_code"));
-        prm.put("menuGroupCode", "%" + ref.get("menu_group_code") + "%");
-        prm.put("menuItemCode", ref.get("menu_item_code"));
+        prm.put("outletCode", balance.get("outlet_code"));
 
+ 
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
