@@ -387,23 +387,70 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listItemDetail(Map<String, String> balance) {
-       String qry="select * from m_outlet";
+        String qry = "  SELECT   MMI.MENU_ITEM_CODE,\n"
+                + "           MI.ITEM_DESCRIPTION,\n"
+                + "           MG2.DESCRIPTION AS MENU_GROUP_NAME,\n"
+                + "           MP.PRICE,\n"
+                + "           MP.PRICE_TYPE_CODE AS PRICE_TYPE_CODE,\n"
+                + "           MG.DESCRIPTION AS ORDER_DESCRIPTION,\n"
+                + "           CASE\n"
+                + "              WHEN     MENU_SET = 'N'\n"
+                + "                   AND MODIFIER_GROUP1_CODE = ' '\n"
+                + "                   AND MODIFIER_GROUP2_CODE = ' '\n"
+                + "                   AND MODIFIER_GROUP3_CODE = ' '\n"
+                + "                   AND MODIFIER_GROUP4_CODE = ' '\n"
+                + "              THEN\n"
+                + "                 'N'\n"
+                + "              WHEN     MENU_SET = 'Y'\n"
+                + "                   AND MODIFIER_GROUP1_CODE = ' '\n"
+                + "                   AND MODIFIER_GROUP2_CODE = ' '\n"
+                + "                   AND MODIFIER_GROUP3_CODE = ' '\n"
+                + "                   AND MODIFIER_GROUP4_CODE = ' '\n"
+                + "              THEN\n"
+                + "                 'N'\n"
+                + "              ELSE\n"
+                + "                 'Y'\n"
+                + "           END\n"
+                + "              AS MODIFIER_STATUS\n"
+                + "    FROM                  M_MENU_ITEM MMI\n"
+                + "                       LEFT JOIN\n"
+                + "                          M_ITEM MI\n"
+                + "                       ON MMI.MENU_ITEM_CODE = MI.ITEM_CODE\n"
+                + "                    LEFT JOIN\n"
+                + "                       M_PRICE MP\n"
+                + "                    ON MMI.MENU_ITEM_CODE = MP.MENU_ITEM_CODE\n"
+                + "                 LEFT JOIN\n"
+                + "                    M_OUTLET_PRICE MOP\n"
+                + "                 ON MOP.PRICE_TYPE_CODE = MP.PRICE_TYPE_CODE\n"
+                + "              LEFT JOIN\n"
+                + "                 M_GLOBAL MG\n"
+                + "              ON MOP.ORDER_TYPE = MG.CODE AND MG.COND = 'ORDER_TYPE'\n"
+                + "           LEFT JOIN\n"
+                + "              M_GLOBAL MG2\n"
+                + "           ON MMI.MENU_GROUP_CODE = MG2.CODE AND MG2.COND = 'GROUP'\n"
+                + "   WHERE       MMI.MENU_GROUP_CODE = :menuGroupCode "
+                + "           AND MMI.MENU_ITEM_CODE = :menuItemCode "
+                + "   AND MMI.STATUS = 'A'\n"
+                + "           AND MI.STATUS = 'A'\n"
+                + "           AND MMI.OUTLET_CODE = :outletCode\n"
+                + "           AND MOP.OUTLET_CODE = :outletCode\n"
+                + "ORDER BY   MMI.MENU_ITEM_CODE";
         Map prm = new HashMap();
-        prm.put("outletCode", balance.get("outlet_code"));
-
- 
+        prm.put("outletCode", balance.get("outletCode"));
+        prm.put("menuGroupCode", balance.get("menuGroupCode"));
+        prm.put("menuItemCode", balance.get("menuItemCode"));
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("menuItemCode", rs.getString("menu_item_code"));
-                rt.put("itemDescription", rs.getString("item_description"));
-                rt.put("menuGroupName", rs.getString("menu_group_name"));
-                rt.put("price", rs.getString("price"));
-                rt.put("priceTypeCode", rs.getString("price_type_code"));
-                rt.put("orderDescription", rs.getString("order_description"));
-                rt.put("modifierStatus", rs.getString("modifier_status"));
+                rt.put("menuItemCode", rs.getString("MENU_ITEM_CODE"));
+                rt.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
+                rt.put("menuGroupName", rs.getString("MENU_GROUP_NAME"));
+                rt.put("price", rs.getString("PRICE"));
+                rt.put("priceTypeCode", rs.getString("PRICE_TYPE_CODE"));
+                rt.put("orderDescription", rs.getString("ORDER_DESCRIPTION"));
+                rt.put("modifierStatus", rs.getString("MODIFIER_STATUS"));
                 return rt;
             }
         });
