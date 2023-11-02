@@ -389,7 +389,7 @@ public class ViewDoaImpl implements ViewDao {
     public List<Map<String, Object>> listItemDetail(Map<String, String> balance) {
         String qry = "  SELECT   MMI.MENU_ITEM_CODE,\n"
                 + "           MI.ITEM_DESCRIPTION,\n"
-                + "           MG2.DESCRIPTION AS MENU_GROUP_NAME,\n"
+                + "           MMI.MENU_GROUP_CODE,MG2.DESCRIPTION AS MENU_GROUP_NAME,\n"
                 + "           MP.PRICE,\n"
                 + "           MP.PRICE_TYPE_CODE AS PRICE_TYPE_CODE,\n"
                 + "           MG.DESCRIPTION AS ORDER_DESCRIPTION,\n"
@@ -446,6 +446,7 @@ public class ViewDoaImpl implements ViewDao {
                 Map<String, Object> rt = new HashMap<String, Object>();
                 rt.put("menuItemCode", rs.getString("MENU_ITEM_CODE"));
                 rt.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
+                rt.put("menuGroupCode", rs.getString("MENU_GROUP_CODE"));
                 rt.put("menuGroupName", rs.getString("MENU_GROUP_NAME"));
                 rt.put("price", rs.getString("PRICE"));
                 rt.put("priceTypeCode", rs.getString("PRICE_TYPE_CODE"));
@@ -472,25 +473,25 @@ public class ViewDoaImpl implements ViewDao {
                 + "ON MMI.MODIFIER_GROUP1_CODE = MOD.MODIFIER_GROUP_CODE  "
                 + "LEFT JOIN M_ITEM MI2  "
                 + "ON MOD.MODIFIER_ITEM_CODE = MI2.ITEM_CODE  "
-                + "WHERE MMI.MENU_GROUP_CODE LIKE :Menu_Group_Code  "
-                + "AND MMI.MENU_ITEM_CODE = :Menu_Item_Code  "
+                + "WHERE MMI.MENU_GROUP_CODE LIKE :menuGroupCode  "
+                + "AND MMI.MENU_ITEM_CODE = :menuItemCode  "
                 + "AND MMI.STATUS = 'A'  "
                 + "AND MI.STATUS = 'A'  "
-                + "AND MMI.OUTLET_CODE LIKE :Outlet_Code  "
+                + "AND MMI.OUTLET_CODE LIKE :outletCode  "
                 + "ORDER BY MMI.MENU_ITEM_CODE";
         Map prm = new HashMap();
-        prm.put("Outlet_Code", "%" + ref.get("outlet_code") + "%");
-        prm.put("Menu_Group_Code", "%" + ref.get("menu_group_code") + "%");
-        prm.put("Menu_Item_Code", ref.get("menu_item_code"));
+        prm.put("outletCode", "%" + ref.get("outletCode") + "%");
+        prm.put("menuGroupCode", "%" + ref.get("menuGroupCode") + "%");
+        prm.put("menuItemCode", ref.get("menuItemCode"));
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("menuitemcode", rs.getString("menu_item_code"));
-                rt.put("itemdescription", rs.getString("item_description"));
-                rt.put("modifieritemcode", rs.getString("modifier_item_code"));
-                rt.put("modifieritemname", rs.getString("modifier_item_name"));
+                rt.put("menuItemCode", rs.getString("menu_item_code"));
+                rt.put("itemDescription", rs.getString("item_description"));
+                rt.put("modifierItemCode", rs.getString("modifier_item_code"));
+                rt.put("modifierItemName", rs.getString("modifier_item_name"));
 
                 return rt;
             }
