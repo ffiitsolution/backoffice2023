@@ -276,8 +276,8 @@ public class ViewServices {
         return viewDao.listHeaderOpname(ref);
     }
 
-    public String cekOpname(String outletCode, String month) {
-        return viewDao.cekOpname(outletCode, month);
+    public String cekOpname(String outletCode, String month, String year) {
+        return viewDao.cekOpname(outletCode, month,year);
     }
 
     public String getCity(String outletCode) {

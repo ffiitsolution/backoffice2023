@@ -1672,11 +1672,12 @@ public class ViewDoaImpl implements ViewDao {
     }
 
     @Override
-    public String cekOpname(String outletCode, String month) {
-        String qry = "SELECT COUNT(*) count FROM T_OPNAME_HEADER WHERE TO_CHAR(OPNAME_DATE,'MON') = :month AND OUTLET_CODE = :outletCode";
+    public String cekOpname(String outletCode, String month, String year) {
+        String qry = "SELECT COUNT(*) count FROM T_OPNAME_HEADER WHERE TO_CHAR(OPNAME_DATE,'MON') = :month AND OUTLET_CODE = :outletCode AND TO_CHAR(OPNAME_DATE,'YYYY') = :year ";
         Map prm = new HashMap();
         prm.put("outletCode", outletCode);
         prm.put("month", month);
+        prm.put("year", year);
         return jdbcTemplate.queryForObject(qry, prm, new RowMapper() {
             @Override
             public Object mapRow(ResultSet rs, int i) throws SQLException {

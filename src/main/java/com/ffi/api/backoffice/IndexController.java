@@ -1613,11 +1613,13 @@ public class IndexController {
         ResponseMessage rm = new ResponseMessage();
 
         DateFormat dateFormat = new SimpleDateFormat("MMM");
+        DateFormat year = new SimpleDateFormat("YYYY");
         String sDate1 = balance.getOpnameDate();
         Date date1 = new SimpleDateFormat("dd-MMM-yy").parse(sDate1);
         String toMonth = dateFormat.format(date1);
+        String toYear=year.format(date1);
 
-        String cekOpnameHdr = viewServices.cekOpname(balance.getOutletCode(), toMonth.toUpperCase());
+        String cekOpnameHdr = viewServices.cekOpname(balance.getOutletCode(), toMonth.toUpperCase(),toYear);
         try {
             if (cekOpnameHdr.equals("0")) {
                 processServices.inserOpnameHeader(balance);

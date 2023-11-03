@@ -146,7 +146,7 @@ public interface ViewDao {
 
     List<Map<String, Object>> listHeaderOpname(Map<String, String> ref);
 
-    public String cekOpname(String outletCode, String month);
+    public String cekOpname(String outletCode, String month, String year);
 
     public String cekItem();
 
