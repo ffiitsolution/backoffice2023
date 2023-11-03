@@ -1636,6 +1636,7 @@ public class IndexController {
         }
         if (rm.getMessage().equals("Insert Success Successfuly")) {
             processServices.updateMCounterSop(balance.getTransType(), balance.getOutletCode());
+            processServices.updateOpnameStatus(balance.getOutletCode(), balance.getOpnameNo());
         }
         list.add(map);
         rm.setItem(list);

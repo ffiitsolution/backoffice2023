@@ -78,6 +78,8 @@ public interface ProcessDao {
 
     public void updateMCounterSop(String transType, String outletCode);
 
+    public void updateOpnameStatus(String opnameNomor, String outletCodes);
+
     public void inserOpnameDetail(DetailOpname opnameDtls);
 
     public void insertSoToScDtl(Map<String, String> mapping);

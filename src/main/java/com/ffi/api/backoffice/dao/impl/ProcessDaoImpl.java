@@ -625,6 +625,17 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("outletCode", outletCode);
         jdbcTemplate.update(qy, param);
     }
+    
+        @Override
+    public void updateOpnameStatus(String opnameNomor,String outletCodes) {
+        String qy = "update t_opname_header set  "
+                + "status ='1' "
+                + "WHERE  OPNAME_NO= :opnameNo and OUTLET_CODE= :outletCode";
+        Map param = new HashMap();
+        param.put("opnameNo", opnameNomor);
+        param.put("outletCode", outletCodes);
+        jdbcTemplate.update(qy, param);
+    }
 
     @Override
     public void inserOpnameDetail(DetailOpname opnameDtls) {
@@ -682,6 +693,7 @@ public class ProcessDaoImpl implements ProcessDao {
                 param.put("timeUpd", timeStamp);
                 jdbcTemplate.update(qy, param);
             }
+            
         }
     }
 
