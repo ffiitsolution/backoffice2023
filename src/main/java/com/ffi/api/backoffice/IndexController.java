@@ -1636,7 +1636,7 @@ public class IndexController {
         }
         if (rm.getMessage().equals("Insert Success Successfuly")) {
             processServices.updateMCounterSop(balance.getTransType(), balance.getOutletCode());
-            processServices.updateOpnameStatus(balance.getOutletCode(), balance.getOpnameNo());
+            
         }
         list.add(map);
         rm.setItem(list);
@@ -1686,10 +1686,12 @@ public class IndexController {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         String status = "";
         ResponseMessage rm = new ResponseMessage();
+        
+       
         try {
             processServices.insertSoToScDtl(balance);
             rm.setSuccess(true);
-            rm.setMessage("Insert Stock Card  Successfuly");
+
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Insert Stock Card Failed: " + e.getMessage());

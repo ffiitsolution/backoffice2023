@@ -277,7 +277,7 @@ public class ViewServices {
     }
 
     public String cekOpname(String outletCode, String month, String year) {
-        return viewDao.cekOpname(outletCode, month,year);
+        return viewDao.cekOpname(outletCode, month, year);
     }
 
     public String getCity(String outletCode) {
@@ -341,15 +341,16 @@ public class ViewServices {
 
     }
     /////////////////////Done
-    
+
     ///////////////////////////////Add MPCS by KP (09-08-2023)///////////////////////////////
     public List<Map<String, Object>> listTemplateMpcs(Map<String, String> ref) {
         return viewDao.listTemplateMpcs(ref);
     }
-    
+
     public List<Map<String, Object>> listProjectMpcs(Map<String, String> ref) {
         return viewDao.listProjectMpcs(ref);
     }
+
     ///////////////done
     ///////////////////////////////Add Return Order by Pasca (10-08-2023)///////////////////////////////
     public List<Map<String, Object>> listReturnOrderHeader(Map<String, String> param) {
@@ -367,4 +368,5 @@ public class ViewServices {
     public List<Map<String, Object>> listItemSupplierGudangReturnOrder(Map<String, Object> param) {
         return viewDao.listItemSupplierGudangReturnOrder(param);
     }
+
 }
