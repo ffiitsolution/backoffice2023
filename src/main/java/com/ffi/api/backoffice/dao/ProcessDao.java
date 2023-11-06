@@ -78,8 +78,6 @@ public interface ProcessDao {
 
     public void updateMCounterSop(String transType, String outletCode);
 
-    public void updateOpnameStatus(String opnameNomor, String outletCodes);
-
     public void inserOpnameDetail(DetailOpname opnameDtls);
 
     public void insertSoToScDtl(Map<String, String> mapping);
@@ -112,6 +110,10 @@ public interface ProcessDao {
     public void insertMasterItem(JsonObject mapping);
 
     public void processTransferMasters(JsonObject mapping);
+    /////////////done
+    ///////////////new method updateStatusOpname 6-11-2023////////////////////////////
+
+    public void updateOpnameStatus(Map<String, String> mapping);
 
     /////////////done
 }

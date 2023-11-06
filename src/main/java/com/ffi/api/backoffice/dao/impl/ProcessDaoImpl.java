@@ -625,18 +625,19 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("outletCode", outletCode);
         jdbcTemplate.update(qy, param);
     }
-    
-        @Override
-    public void updateOpnameStatus(String opnameNomor,String outletCodes) {
+    ///////////////new method updateStatusOpname 6-11-2023////////////////////////////
+    @Override
+    public void updateOpnameStatus(Map<String, String> balance) {
         String qy = "update t_opname_header set  "
                 + "status ='1' "
                 + "WHERE  OPNAME_NO= :opnameNo and OUTLET_CODE= :outletCode";
         Map param = new HashMap();
-        param.put("opnameNo", opnameNomor);
-        param.put("outletCode", outletCodes);
+        param.put("outletCode", balance.get("outletCode"));
+        param.put("opnameNo", balance.get("opnameNo"));
+
         jdbcTemplate.update(qy, param);
     }
-
+///////////////done///////////////
     @Override
     public void inserOpnameDetail(DetailOpname opnameDtls) {
 
@@ -693,7 +694,7 @@ public class ProcessDaoImpl implements ProcessDao {
                 param.put("timeUpd", timeStamp);
                 jdbcTemplate.update(qy, param);
             }
-            
+
         }
     }
 
@@ -1595,8 +1596,7 @@ public class ProcessDaoImpl implements ProcessDao {
             detailParam.clear();
         }
     }
-    
- 
+
     public void inserUpdateMaster(Map<String, String> balance) {
         //Delete existing Detail
 
@@ -1740,8 +1740,8 @@ public class ProcessDaoImpl implements ProcessDao {
             System.out.println("query update item: " + qy);
         }
     }
-    
- public String colorExist(Map<String, String> ref) {
+
+    public String colorExist(Map<String, String> ref) {
         String qry = "select count(1) as existRow from m_item "
                 + "where ITEM_CODE = :ItemCode "
                 + "and status = :status ";
@@ -1776,6 +1776,7 @@ public class ProcessDaoImpl implements ProcessDao {
             detailParam.clear();
         }
     }
+
     public void processTransferMasters(Map<String, String> balance) {
         //Delete existing Detail
 

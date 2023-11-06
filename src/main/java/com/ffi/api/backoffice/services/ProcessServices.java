@@ -133,10 +133,11 @@ public class ProcessServices {
     public void updateMCounterSop(String transType, String outletCode) {
         dao.updateMCounterSop(transType, outletCode);
     }
-
-        public void updateOpnameStatus(String opnameNomor, String outletCodes) {
-        dao.updateOpnameStatus(opnameNomor, outletCodes);
+    ///////////////new method updateStatusOpname 6-11-2023////////////////////////////
+    public void updateOpnameStatus(Map<String, String> balance) {
+        dao.updateOpnameStatus(balance);
     }
+    ///////////////done///////////////
     @Transactional
     public void inserOpnameDetail(DetailOpname opnameDtls) {
         dao.inserOpnameDetail(opnameDtls);

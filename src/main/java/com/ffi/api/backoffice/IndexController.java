@@ -1617,9 +1617,9 @@ public class IndexController {
         String sDate1 = balance.getOpnameDate();
         Date date1 = new SimpleDateFormat("dd-MMM-yy").parse(sDate1);
         String toMonth = dateFormat.format(date1);
-        String toYear=year.format(date1);
+        String toYear = year.format(date1);
 
-        String cekOpnameHdr = viewServices.cekOpname(balance.getOutletCode(), toMonth.toUpperCase(),toYear);
+        String cekOpnameHdr = viewServices.cekOpname(balance.getOutletCode(), toMonth.toUpperCase(), toYear);
         try {
             if (cekOpnameHdr.equals("0")) {
                 processServices.inserOpnameHeader(balance);
@@ -1636,7 +1636,7 @@ public class IndexController {
         }
         if (rm.getMessage().equals("Insert Success Successfuly")) {
             processServices.updateMCounterSop(balance.getTransType(), balance.getOutletCode());
-            
+
         }
         list.add(map);
         rm.setItem(list);
@@ -1686,8 +1686,7 @@ public class IndexController {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         String status = "";
         ResponseMessage rm = new ResponseMessage();
-        
-       
+
         try {
             processServices.insertSoToScDtl(balance);
             rm.setSuccess(true);
@@ -2384,5 +2383,34 @@ public class IndexController {
 
     }
 
+    ///////////////done 
+    ///////////////new method updateStatusOpname 6-11-2023////////////////////////////
+    @RequestMapping(value = "/update-opname-status", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk update status opname", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage updateOpnameStatus(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        ResponseMessage rm = new ResponseMessage();
+        try {
+            processServices.updateOpnameStatus(balance);
+            rm.setSuccess(true);
+            rm.setMessage("Update Success Successfuly");
+
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Update Failed Successfuly: " + e.getMessage());
+        }
+
+        rm.setItem(list);
+
+        return rm;
+    }
     ///////////////done 
 }
