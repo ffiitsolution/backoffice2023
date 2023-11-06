@@ -135,7 +135,7 @@ public class ProcessServices {
     }
 
         public void updateOpnameStatus(String opnameNomor, String outletCodes) {
-        dao.updateMCounterSop(opnameNomor, outletCodes);
+        dao.updateOpnameStatus(opnameNomor, outletCodes);
     }
     @Transactional
     public void inserOpnameDetail(DetailOpname opnameDtls) {
