@@ -322,7 +322,7 @@ public class IndexController {
         return res;
     }
 
-    @RequestMapping(value = "/update-fryer", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/update-frayer", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk update mpcs", response = Object.class)
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
