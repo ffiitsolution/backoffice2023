@@ -108,8 +108,8 @@ public class ReportServices {
     }
     ///////////////////////END//////////////////////////////
     ///////////////NEW METHOD REPORT BY PASCA 28 August 2023////
-    public JasperPrint jasperReportSalesByMenu(Map<String, Object> param, Connection connection) throws JRException, IOException {
-        return dao.jasperReportSalesByMenu(param, connection);
+    public JasperPrint jasperReportSalesByItem(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        return dao.jasperReportSalesByItem(param, connection);
     }
     public JasperPrint jasperReportMenuVsDetail(Map<String, Object> param, Connection connection) throws JRException, IOException {
         return dao.jasperReportMenuVsDetail(param, connection);

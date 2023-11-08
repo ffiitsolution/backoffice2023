@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="salesMenu" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="d7057390-4672-4728-80bd-a55ad6bca27c">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="salesItem" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="d7057390-4672-4728-80bd-a55ad6bca27c">
     <property name="ireport.zoom" value="1.771561000000003"/>
     <property name="ireport.x" value="0"/>
     <property name="ireport.y" value="0"/>
@@ -343,7 +343,7 @@ WHERE g.description IN ($P{brand1}, $P{brand2})]]>
                 <textElement textAlignment="Center">
                     <font size="12" isBold="true"/>
                 </textElement>
-                <text><![CDATA[Sales by Menu]]></text>
+                <text><![CDATA[Sales by Item]]></text>
             </staticText>
             <line>
                 <reportElement x="2" y="96" width="552" height="1" uuid="d8146f8b-39f6-4b81-adc3-57ddc3f727de"/>

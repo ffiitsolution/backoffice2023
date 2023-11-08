@@ -7,11 +7,8 @@ package com.ffi.api.backoffice.dao.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ffi.api.backoffice.dao.ReportDao;
-import com.google.gson.Gson;
-import com.google.gson.internal.LinkedTreeMap;
 import net.sf.jasperreports.engine.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -916,31 +913,194 @@ public class ReportDaoImpl implements ReportDao {
     public List<Map<String, Object>> listParamReport(Map<String, String> param) {
         String query = null;
         Map<String, Object> hashMap = new HashMap<>();
-        if (param.get("typeParam").equals("Pos")) {
-            query = "SELECT POS_CODE, POS_DESCRIPTION FROM M_POS mp WHERE STATUS = 'A' AND POS_CODE != ' ' " +
-                    "AND OUTLET_CODE =:outletCode ORDER BY POS_CODE ASC";
+        if (param.get("typeReport").equals("Query Bill") && param.get("typeParam").equals("Pos")) {
+            query = "SELECT a.POS_CODE, b.POS_DESCRIPTION FROM T_POS_BILL a LEFT JOIN M_POS b ON a.POS_CODE = " +
+                    "b.POS_CODE WHERE a.OUTLET_CODE =:outletCode AND a.TRANS_DATE BETWEEN :fromDate AND :toDate AND " +
+                    "a.BILL_TIME BETWEEN :fromTime AND :toTime GROUP BY  a.POS_CODE, b.POS_DESCRIPTION ORDER BY a.POS_CODE ASC";
             hashMap.put("outletCode", param.get("outletCode"));
-        } else if (param.get("typeParam").equals("Kasir")) {
-            query = "SELECT STAFF_POS_CODE, STAFF_NAME FROM M_POS_STAFF WHERE ACCESS_level = 'KSR' AND STATUS = " +
-                    "'A' AND OUTLET_CODE =:outletCode ORDER BY STAFF_POS_CODE ASC";
+            hashMap.put("fromDate", param.get("fromDate"));
+            hashMap.put("toDate", param.get("toDate"));
+            hashMap.put("fromTime", param.get("fromTime"));
+            hashMap.put("toTime", param.get("toTime"));
+        } else if (param.get("typeReport").equals("Query Bill") && param.get("typeParam").equals("Cashier")) {
+            query = "SELECT a.CASHIER_CODE, b.STAFF_NAME FROM T_POS_BILL a LEFT JOIN M_POS_STAFF b ON a.CASHIER_CODE =" +
+                    " b.STAFF_POS_CODE WHERE a.OUTLET_CODE =:outletCode AND b.OUTLET_CODE =:outletCode AND a.TRANS_DATE" +
+                    " BETWEEN :fromDate AND :toDate AND a.BILL_TIME BETWEEN :fromTime AND :toTime AND b.ACCESS_level =" +
+                    " 'KSR' GROUP BY a.CASHIER_CODE, b.STAFF_NAME ORDER BY a.CASHIER_CODE ASC";
             hashMap.put("outletCode", param.get("outletCode"));
-        } else if (param.get("typeParam").equals("OrderType")) {
-            query = "SELECT CODE, DESCRIPTION FROM M_GLOBAL WHERE COND LIKE '%ORDER_TYPE%' AND CODE BETWEEN '000' AND 'zzz'";
-        } else if (param.get("typeParam").equals("itemCode")) {
-            query = "SELECT ITEM_CODE, ITEM_DESCRIPTION FROM M_ITEM WHERE STATUS = 'A' AND FLAG_PAKET = 'N' " +
-                    "AND FLAG_MATERIAL = 'Y' ORDER BY ITEM_CODE asc";
-        } else if (param.get("typeParam").equals("paymentType")) {
-            query = "SELECT CODE, DESCRIPTION FROM M_GLOBAL WHERE COND LIKE '%PAY_TYPE%'";
-        } else if (param.get("typeParam").equals("paymentMethod")) {
-            query = "SELECT CODE, DESCRIPTION FROM M_GLOBAL WHERE COND LIKE '%PAY_METHOD%'";
-        } else if (param.get("typeParam").equals("Gudang")) {
-            query = "SELECT CODE, DESCRIPTION FROM M_GLOBAL WHERE COND =:cond";
-            hashMap.put("cond", "X_" + param.get("city"));
-        } else if (param.get("typeParam").equals("Outlet")) {
-            query = "SELECT OUTLET_CODE AS CODE, OUTLET_NAME AS DESCRIPTION FROM M_OUTLET WHERE CITY =:city";
-            hashMap.put("city", param.get("city"));
-        } else if (param.get("typeParam").equals("Supplier")) {
-            query = "SELECT CD_SUPPLIER AS CODE, SUPPLIER_NAME AS DESCRIPTION FROM M_SUPPLIER";
+            hashMap.put("fromDate", param.get("fromDate"));
+            hashMap.put("toDate", param.get("toDate"));
+            hashMap.put("fromTime", param.get("fromTime"));
+            hashMap.put("toTime", param.get("toTime"));
+        } else if (param.get("typeReport").equals("Receiving")) {
+            query = "SELECT b.CD_SUPPLIER, c.DESCRIPTION, d.OUTLET_NAME, e.SUPPLIER_NAME FROM T_RECV_HEADER a LEFT JOIN" +
+                    " T_ORDER_HEADER b ON a.ORDER_NO = b.ORDER_NO LEFT JOIN M_GLOBAL c ON b.CD_SUPPLIER = c.CODE AND" +
+                    " c.COND = :city LEFT JOIN M_OUTLET d ON  b.CD_SUPPLIER = d.OUTLET_CODE LEFT JOIN M_SUPPLIER e ON" +
+                    " b.CD_SUPPLIER = e.CD_SUPPLIER WHERE b.CD_SUPPLIER IS NOT NULL AND a.OUTLET_CODE = :outletCode AND " +
+                    "a.RECV_DATE BETWEEN :fromDate AND :toDate GROUP BY b.CD_SUPPLIER, c.DESCRIPTION, d.OUTLET_NAME, " +
+                    "e.SUPPLIER_NAME ORDER BY b.CD_SUPPLIER ASC";
+            hashMap.put("city", "X_" + param.get("city"));
+            hashMap.put("outletCode", param.get("outletCode"));
+            hashMap.put("fromDate", param.get("fromDate"));
+            hashMap.put("toDate", param.get("toDate"));
+        } else if (param.get("typeReport").equals("Cashier By Date") && param.get("typeParam").equals("Cashier")) {
+            query = "SELECT a.CASHIER_CODE, b.STAFF_NAME FROM T_POS_DAY_TRANS a LEFT JOIN M_POS_STAFF b ON " +
+                    "a.CASHIER_CODE = b.STAFF_POS_CODE WHERE a.OUTLET_CODE =:outletCode AND a.TRANS_DATE BETWEEN " +
+                    ":fromDate AND :toDate AND b.ACCESS_LEVEL = 'KSR' AND b.STATUS = 'A' GROUP BY a.CASHIER_CODE, " +
+                    "b.STAFF_NAME ORDER BY a.CASHIER_CODE ASC";
+            hashMap.put("outletCode", param.get("outletCode"));
+            hashMap.put("fromDate", param.get("fromDate"));
+            hashMap.put("toDate", param.get("toDate"));
+        } else if (param.get("typeReport").equals("Cashier By Date") && param.get("typeParam").equals("Shift")) {
+            query = "SELECT a.SHIFT_CODE, CASE WHEN a.SHIFT_CODE = 'S1' THEN 'Shift 1' WHEN SHIFT_CODE = 'S2' THEN " +
+                    "'Shift 2' ELSE 'Shift 3' END AS SHIFT_NAME FROM T_POS_DAY_TRANS a WHERE a.OUTLET_CODE " +
+                    "=:outletCode AND a.TRANS_DATE BETWEEN :fromDate AND :toDate GROUP BY a.SHIFT_CODE ORDER BY " +
+                    "a.SHIFT_CODE  ASC";
+            hashMap.put("outletCode", param.get("outletCode"));
+            hashMap.put("fromDate", param.get("fromDate"));
+            hashMap.put("toDate", param.get("toDate"));
+        } else if ((param.get("typeReport").equals("Menu and Detail") || param.get("typeReport").equals("Sales by Date") || param.get("typeReport").equals("Sales by Item") || param.get("typeReport").equals("Sales by Time") || param.get("typeReport").equals("Summary Sales by Item Code")) && param.get("typeParam").equals("Pos")) {
+            query = "SELECT a.POS_CODE, b.POS_DESCRIPTION FROM t_pos_bill a LEFT JOIN M_POS b ON a.POS_CODE = " +
+                    "b.POS_CODE WHERE a.OUTLET_CODE =:outletCode AND a.TRANS_DATE BETWEEN :fromDate AND :toDate AND " +
+                    "a.delivery_status = 'CLS' GROUP BY a.POS_CODE, b.POS_DESCRIPTION ORDER BY a.POS_CODE ASC";
+            hashMap.put("outletCode", param.get("outletCode"));
+            hashMap.put("fromDate", param.get("fromDate"));
+            hashMap.put("toDate", param.get("toDate"));
+        } else if ((param.get("typeReport").equals("Menu and Detail") || param.get("typeReport").equals("Sales by Date") || param.get("typeReport").equals("Sales by Item") || param.get("typeReport").equals("Sales by Time") || param.get("typeReport").equals("Summary Sales by Item Code")) && param.get("typeParam").equals("Cashier")) {
+            query = "SELECT a.CASHIER_CODE, b.STAFF_NAME FROM t_pos_bill a LEFT JOIN M_POS_STAFF b ON a.CASHIER_CODE =" +
+                    " b.STAFF_POS_CODE WHERE a.OUTLET_CODE =:outletCode AND a.TRANS_DATE BETWEEN :fromDate AND :toDate " +
+                    "AND a.delivery_status = 'CLS' AND b.ACCESS_level = 'KSR' AND b.STATUS = 'A' GROUP BY " +
+                    "a.CASHIER_CODE, b.STAFF_NAME ORDER BY a.CASHIER_CODE ASC";
+            hashMap.put("outletCode", param.get("outletCode"));
+            hashMap.put("fromDate", param.get("fromDate"));
+            hashMap.put("toDate", param.get("toDate"));
+        } else if ((param.get("typeReport").equals("Menu and Detail") || param.get("typeReport").equals("Sales by Date") || param.get("typeReport").equals("Sales by Item") || param.get("typeReport").equals("Sales by Time") || param.get("typeReport").equals("Summary Sales by Item Code")) && param.get("typeParam").equals("Shift")) {
+            query = "SELECT a.SHIFT_CODE, CASE WHEN a.SHIFT_CODE = 'S1' THEN 'Shift 1' WHEN SHIFT_CODE = 'S2' THEN " +
+                    "'Shift 2' ELSE 'Shift 3' END AS SHIFT_NAME FROM t_pos_bill a WHERE a.OUTLET_CODE =:outletCode" +
+                    " AND a.TRANS_DATE BETWEEN :fromDate AND :toDate AND a.delivery_status = 'CLS' GROUP BY " +
+                    "a.SHIFT_CODE ORDER BY a.SHIFT_CODE ASC";
+            hashMap.put("outletCode", param.get("outletCode"));
+            hashMap.put("fromDate", param.get("fromDate"));
+            hashMap.put("toDate", param.get("toDate"));
+        } else if (param.get("typeReport").equals("Receipt Maintenance") && param.get("typeParam").equals("Pos")) {
+            query = "SELECT a.POS_CODE, b.POS_DESCRIPTION FROM T_POS_BILL a LEFT JOIN M_POS b ON a.POS_CODE =" +
+                    " b.POS_CODE WHERE a.OUTLET_CODE =:outletCode AND a.TRANS_DATE = :date AND a.OUTLET_CODE = " +
+                    ":outletCode GROUP BY a.POS_CODE, b.POS_DESCRIPTION ORDER BY a.POS_CODE ASC";
+            hashMap.put("outletCode", param.get("outletCode"));
+            hashMap.put("date", param.get("date"));
+        } else if (param.get("typeReport").equals("Sales Mix by Department") && param.get("typeParam").equals("Pos")) {
+            query = "SELECT a.POS_CODE, b.POS_DESCRIPTION FROM TMP_SALES_BY_ITEM a LEFT JOIN M_POS b ON a.POS_CODE =" +
+                    " b.POS_CODE WHERE a.OUTLET_CODE =:outletCode AND TRANS_DATE BETWEEN :fromDate AND :toDate GROUP" +
+                    " BY a.POS_CODE, b.POS_DESCRIPTION ORDER BY a.POS_CODE ASC";
+            hashMap.put("outletCode", param.get("outletCode"));
+            hashMap.put("fromDate", param.get("fromDate"));
+            hashMap.put("toDate", param.get("toDate"));
+        } else if (param.get("typeReport").equals("Sales Mix by Department") && param.get("typeParam").equals("Cashier")) {
+            query = "SELECT a.CASHIER_CODE, b.STAFF_NAME FROM TMP_SALES_BY_ITEM a LEFT JOIN M_POS_STAFF b ON " +
+                    "a.CASHIER_CODE = b.STAFF_POS_CODE WHERE a.OUTLET_CODE =:outletCode AND TRANS_DATE BETWEEN " +
+                    ":fromDate AND :toDate GROUP BY a.CASHIER_CODE, b.STAFF_NAME ORDER BY a.CASHIER_CODE ASC";
+            hashMap.put("outletCode", param.get("outletCode"));
+            hashMap.put("fromDate", param.get("fromDate"));
+            hashMap.put("toDate", param.get("toDate"));
+        } else if (param.get("typeReport").equals("Sales Mix by Department") && param.get("typeParam").equals("Shift")) {
+            query = "SELECT a.SHIFT_CODE , CASE WHEN a.SHIFT_CODE = 'S1' THEN 'Shift 1' WHEN SHIFT_CODE = 'S2' THEN " +
+                    "'Shift 2' ELSE 'Shift 3' END AS SHIFT_NAME FROM TMP_SALES_BY_ITEM a WHERE a.OUTLET_CODE " +
+                    "=:outletCode AND a.TRANS_DATE BETWEEN :fromDate AND :toDate GROUP BY a.SHIFT_CODE ORDER BY " +
+                    "a.SHIFT_CODE ASC";
+            hashMap.put("outletCode", param.get("outletCode"));
+            hashMap.put("fromDate", param.get("fromDate"));
+            hashMap.put("toDate", param.get("toDate"));
+        } else if (param.get("typeReport").equals("Transaction by Payment Type") && param.get("typeParam").equals("Payment Type")) {
+            query = "SELECT a.PAYMENT_TYPE_CODE, b.DESCRIPTION FROM (SELECT A.PAYMENT_TYPE_CODE,A.PAYMENT_METHOD_CODE," +
+                    "B.POS_CODE,B.SHIFT_CODE,B.CASHIER_CODE FROM M_PAYMENT_METHOD A, T_POS_BILL B, T_POS_BILL_PAYMENT" +
+                    " C WHERE B.OUTLET_CODE = :outletCode AND B.TRANS_DATE BETWEEN :fromDate AND :toDate AND" +
+                    " B.BILL_TIME BETWEEN :fromTime AND :toTime AND A.OUTLET_CODE = B.OUTLET_CODE AND B.OUTLET_CODE" +
+                    " = C.OUTLET_CODE AND B.TRANS_DATE = C.TRANS_DATE AND A.PAYMENT_METHOD_CODE = " +
+                    "C.PAYMENT_METHOD_CODE AND B.POS_CODE = C.POS_CODE AND B.BILL_NO = C.BILL_NO) a " +
+                    "LEFT JOIN (SELECT   COND, CODE, DESCRIPTION FROM  M_GLOBAL WHERE COND LIKE '%PAY_TYPE%')" +
+                    " b ON a.PAYMENT_TYPE_CODE = b.CODE GROUP BY a.PAYMENT_TYPE_CODE, b.DESCRIPTION";
+            hashMap.put("outletCode", param.get("outletCode"));
+            hashMap.put("fromDate", param.get("fromDate"));
+            hashMap.put("toDate", param.get("toDate"));
+            hashMap.put("fromTime", param.get("fromTime"));
+            hashMap.put("toTime", param.get("toTime"));
+        } else if (param.get("typeReport").equals("Transaction by Payment Type") && param.get("typeParam").equals("Payment Method")) {
+            query = "SELECT a.PAYMENT_METHOD_CODE, b.DESCRIPTION FROM (SELECT A.PAYMENT_TYPE_CODE,A.PAYMENT_METHOD_CODE," +
+                    "B.POS_CODE,B.SHIFT_CODE,B.CASHIER_CODE FROM M_PAYMENT_METHOD A, T_POS_BILL B, T_POS_BILL_PAYMENT" +
+                    " C WHERE B.OUTLET_CODE = :outletCode AND B.TRANS_DATE BETWEEN :fromDate AND :toDate AND " +
+                    "B.BILL_TIME BETWEEN :fromTime AND :toTime AND A.OUTLET_CODE = B.OUTLET_CODE AND B.OUTLET_CODE =" +
+                    " C.OUTLET_CODE AND B.TRANS_DATE = C.TRANS_DATE AND A.PAYMENT_METHOD_CODE = C.PAYMENT_METHOD_CODE" +
+                    " AND B.POS_CODE = C.POS_CODE AND B.BILL_NO = C.BILL_NO) a LEFT JOIN (SELECT   COND, CODE," +
+                    " DESCRIPTION FROM  M_GLOBAL WHERE COND LIKE '%PAY_METHOD%') b ON a.PAYMENT_METHOD_CODE =" +
+                    " b.CODE GROUP BY a.PAYMENT_METHOD_CODE, b.DESCRIPTION";
+            hashMap.put("outletCode", param.get("outletCode"));
+            hashMap.put("fromDate", param.get("fromDate"));
+            hashMap.put("toDate", param.get("toDate"));
+            hashMap.put("fromTime", param.get("fromTime"));
+            hashMap.put("toTime", param.get("toTime"));
+        } else if (param.get("typeReport").equals("Transaction by Payment Type") && param.get("typeParam").equals("Pos")) {
+            query = "SELECT a.POS_CODE, b.POS_DESCRIPTION FROM (SELECT A.PAYMENT_TYPE_CODE,A.PAYMENT_METHOD_CODE," +
+                    "B.POS_CODE,B.SHIFT_CODE,B.CASHIER_CODE FROM M_PAYMENT_METHOD A, T_POS_BILL B, " +
+                    "T_POS_BILL_PAYMENT C WHERE B.OUTLET_CODE = :outletCode AND B.TRANS_DATE BETWEEN :fromDate AND " +
+                    ":toDate AND B.BILL_TIME BETWEEN :fromTime AND :toTime AND A.OUTLET_CODE = B.OUTLET_CODE AND " +
+                    "B.OUTLET_CODE = C.OUTLET_CODE AND B.TRANS_DATE = C.TRANS_DATE AND A.PAYMENT_METHOD_CODE = " +
+                    "C.PAYMENT_METHOD_CODE AND B.POS_CODE = C.POS_CODE AND B.BILL_NO = C.BILL_NO) a LEFT JOIN M_POS " +
+                    "b ON a.POS_CODE = b.POS_CODE GROUP BY a.POS_CODE, b.POS_DESCRIPTION";
+            hashMap.put("outletCode", param.get("outletCode"));
+            hashMap.put("fromDate", param.get("fromDate"));
+            hashMap.put("toDate", param.get("toDate"));
+            hashMap.put("fromTime", param.get("fromTime"));
+            hashMap.put("toTime", param.get("toTime"));
+        } else if (param.get("typeReport").equals("Transaction by Payment Type") && param.get("typeParam").equals("Cashier")) {
+            query = "SELECT a.CASHIER_CODE, b.STAFF_NAME FROM (SELECT A.PAYMENT_TYPE_CODE,A.PAYMENT_METHOD_CODE," +
+                    "B.POS_CODE,B.SHIFT_CODE,B.CASHIER_CODE FROM M_PAYMENT_METHOD A, T_POS_BILL B, T_POS_BILL_PAYMENT" +
+                    " C WHERE B.OUTLET_CODE = :outletCode AND B.TRANS_DATE BETWEEN :fromDate AND :toDate AND" +
+                    " B.BILL_TIME BETWEEN :fromTime AND :toTime AND A.OUTLET_CODE = B.OUTLET_CODE AND B.OUTLET_CODE =" +
+                    " C.OUTLET_CODE AND B.TRANS_DATE = C.TRANS_DATE AND A.PAYMENT_METHOD_CODE = C.PAYMENT_METHOD_CODE " +
+                    "AND B.POS_CODE = C.POS_CODE AND B.BILL_NO = C.BILL_NO) a LEFT JOIN M_POS_STAFF b ON " +
+                    "a.CASHIER_CODE = b.STAFF_POS_CODE GROUP BY a.CASHIER_CODE, b.STAFF_NAME";
+            hashMap.put("outletCode", param.get("outletCode"));
+            hashMap.put("fromDate", param.get("fromDate"));
+            hashMap.put("toDate", param.get("toDate"));
+            hashMap.put("fromTime", param.get("fromTime"));
+            hashMap.put("toTime", param.get("toTime"));
+        } else if (param.get("typeReport").equals("Transaction by Payment Type") && param.get("typeParam").equals("Shift")) {
+            query = "SELECT a.SHIFT_CODE, CASE WHEN a.SHIFT_CODE = 'S1' THEN 'Shift 1' WHEN SHIFT_CODE = 'S2' THEN " +
+                    "'Shift 2' ELSE 'Shift 3' END AS SHIFT_NAME FROM (SELECT A.PAYMENT_TYPE_CODE,A.PAYMENT_METHOD_CODE," +
+                    "B.POS_CODE,B.SHIFT_CODE,B.CASHIER_CODE FROM M_PAYMENT_METHOD A, T_POS_BILL B, T_POS_BILL_PAYMENT" +
+                    " C WHERE B.OUTLET_CODE = :outletCode AND B.TRANS_DATE BETWEEN :fromDate AND :toDate AND" +
+                    " B.BILL_TIME BETWEEN :fromTime AND :toTime AND A.OUTLET_CODE = B.OUTLET_CODE AND B.OUTLET_CODE =" +
+                    " C.OUTLET_CODE AND B.TRANS_DATE = C.TRANS_DATE AND A.PAYMENT_METHOD_CODE = C.PAYMENT_METHOD_CODE" +
+                    " AND B.POS_CODE = C.POS_CODE AND B.BILL_NO = C.BILL_NO) a GROUP BY a.SHIFT_CODE";
+            hashMap.put("outletCode", param.get("outletCode"));
+            hashMap.put("fromDate", param.get("fromDate"));
+            hashMap.put("toDate", param.get("toDate"));
+            hashMap.put("fromTime", param.get("fromTime"));
+            hashMap.put("toTime", param.get("toTime"));
+        } else if (param.get("typeReport").equals("Sales by Date") && param.get("typeParam").equals("Order Type")) {
+            query = "SELECT a.ORDER_TYPE, b.DESCRIPTION FROM T_POS_BILL a LEFT JOIN (SELECT CODE, DESCRIPTION FROM " +
+                    "M_GLOBAL WHERE COND = 'ORDER_TYPE') b ON a.ORDER_TYPE = b.CODE WHERE (a.DELIVERY_STATUS IN " +
+                    "(' ', 'CLS') OR a.DELIVERY_STATUS IS NULL) AND a.OUTLET_CODE IN (:outletCode) AND a.TRANS_DATE " +
+                    "BETWEEN :fromDate AND :toDate AND a.order_type IN (SELECT CODE FROM M_GLOBAL WHERE DESCRIPTION = " +
+                    "'GRPTP' AND COND BETWEEN '000' AND 'zzz') GROUP BY a.ORDER_TYPE,  b.DESCRIPTION";
+            hashMap.put("outletCode", param.get("outletCode"));
+            hashMap.put("fromDate", param.get("fromDate"));
+            hashMap.put("toDate", param.get("toDate"));
+        } else if ((param.get("typeReport").equals("Report Stock Card") || param.get("typeReport").equals("Report Stock")) && param.get("typeParam").equals("Item Code")) {
+            query = " SELECT a.ITEM_CODE, b.ITEM_DESCRIPTION  FROM T_STOCK_CARD a LEFT JOIN M_ITEM b ON a.ITEM_CODE " +
+                    "= b.ITEM_CODE WHERE a.OUTLET_CODE = :outletCode AND a.TRANS_DATE BETWEEN :fromDate AND :toDate" +
+                    " AND b.FLAG_STOCK = 'Y' GROUP BY a.ITEM_CODE, b.ITEM_DESCRIPTION ORDER BY a.ITEM_CODE ASC";
+            hashMap.put("outletCode", param.get("outletCode"));
+            hashMap.put("fromDate", param.get("fromDate"));
+            hashMap.put("toDate", param.get("toDate"));
+        } else if (param.get("typeReport").equals("Report Stock") && param.get("typeParam").equals("Jenis Gudang")) {
+            query = "SELECT b.CD_WAREHOUSE, c.DESCRIPTION FROM T_STOCK_CARD a LEFT JOIN M_ITEM  b ON a.ITEM_CODE =" +
+                    " b.ITEM_CODE LEFT JOIN M_GLOBAL c ON b.CD_WAREHOUSE = c.CODE  AND c.COND = 'WAREHOUSE' WHERE " +
+                    "a.TRANS_DATE BETWEEN :fromDate AND :toDate AND a.OUTLET_CODE =:outletCode AND c.DESCRIPTION " +
+                    "IS NOT NULL GROUP BY b.CD_WAREHOUSE, c.DESCRIPTION";
+            hashMap.put("outletCode", param.get("outletCode"));
+            hashMap.put("fromDate", param.get("fromDate"));
+            hashMap.put("toDate", param.get("toDate"));
         }
 
         assert query != null;
@@ -948,37 +1108,77 @@ public class ReportDaoImpl implements ReportDao {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
-                if (param.get("typeParam").equals("Pos")) {
+                if (param.get("typeReport").equals("Query Bill") && param.get("typeParam").equals("Pos")) {
                     rt.put("posCode", rs.getString("POS_CODE"));
                     rt.put("posDescription", rs.getString("POS_DESCRIPTION"));
-                } else if (param.get("typeParam").equals("Kasir")) {
-                    rt.put("userId", rs.getString("STAFF_POS_CODE"));
-                    rt.put("name", rs.getString("STAFF_NAME"));
-                } else if (param.get("typeParam").equals("OrderType")) {
-                    rt.put("code", rs.getString("CODE"));
+                } else if (param.get("typeReport").equals("Query Bill") && param.get("typeParam").equals("Cashier")) {
+                    rt.put("cashierCode", rs.getString("CASHIER_CODE"));
+                    rt.put("staffName", rs.getString("STAFF_NAME"));
+                } else if (param.get("typeReport").equals("Receiving") && param.get("typeParam").equals("Gudang") && rs.getString("DESCRIPTION") != null) {
+                    rt.put("code", rs.getString("CD_SUPPLIER"));
                     rt.put("description", rs.getString("DESCRIPTION"));
-                } else if (param.get("typeParam").equals("itemCode")) {
+                } else if (param.get("typeReport").equals("Receiving") && param.get("typeParam").equals("Outlet") && rs.getString("OUTLET_NAME") != null) {
+                    rt.put("code", rs.getString("CD_SUPPLIER"));
+                    rt.put("outletName", rs.getString("OUTLET_NAME"));
+                } else if (param.get("typeReport").equals("Receiving") && param.get("typeParam").equals("Supplier") && rs.getString("SUPPLIER_NAME") != null) {
+                    rt.put("code", rs.getString("CD_SUPPLIER"));
+                    rt.put("supplierName", rs.getString("SUPPLIER_NAME"));
+                } else if (param.get("typeReport").equals("Cashier By Date") && param.get("typeParam").equals("Cashier")) {
+                    rt.put("cashierCode", rs.getString("CASHIER_CODE"));
+                    rt.put("staffName", rs.getString("STAFF_NAME"));
+                } else if (param.get("typeReport").equals("Cashier By Date") && param.get("typeParam").equals("Shift")) {
+                    rt.put("shiftCode", rs.getString("SHIFT_CODE"));
+                    rt.put("shiftName", rs.getString("SHIFT_NAME"));
+                } else if ((param.get("typeReport").equals("Menu and Detail") || param.get("typeReport").equals("Sales by Date") || param.get("typeReport").equals("Sales by Item") || param.get("typeReport").equals("Sales by Time") || param.get("typeReport").equals("Summary Sales by Item Code")) && param.get("typeParam").equals("Pos")) {
+                    rt.put("posCode", rs.getString("POS_CODE"));
+                    rt.put("posDescription", rs.getString("POS_DESCRIPTION"));
+                } else if ((param.get("typeReport").equals("Menu and Detail") || param.get("typeReport").equals("Sales by Date") || param.get("typeReport").equals("Sales by Item") || param.get("typeReport").equals("Sales by Time") || param.get("typeReport").equals("Summary Sales by Item Code")) && param.get("typeParam").equals("Cashier")) {
+                    rt.put("cashierCode", rs.getString("CASHIER_CODE"));
+                    rt.put("staffName", rs.getString("STAFF_NAME"));
+                } else if ((param.get("typeReport").equals("Menu and Detail") || param.get("typeReport").equals("Sales by Date") || param.get("typeReport").equals("Sales by Item") || param.get("typeReport").equals("Sales by Time") || param.get("typeReport").equals("Summary Sales by Item Code")) && param.get("typeParam").equals("Shift")) {
+                    rt.put("shiftCode", rs.getString("SHIFT_CODE"));
+                    rt.put("shiftName", rs.getString("SHIFT_NAME"));
+                } else if (param.get("typeReport").equals("Receipt Maintenance") && param.get("typeParam").equals("Pos")) {
+                    rt.put("posCode", rs.getString("POS_CODE"));
+                    rt.put("posDescription", rs.getString("POS_DESCRIPTION"));
+                } else if (param.get("typeReport").equals("Sales Mix by Department") && param.get("typeParam").equals("Pos")) {
+                    rt.put("posCode", rs.getString("POS_CODE"));
+                    rt.put("posDescription", rs.getString("POS_DESCRIPTION"));
+                } else if (param.get("typeReport").equals("Sales Mix by Department") && param.get("typeParam").equals("Cashier")) {
+                    rt.put("cashierCode", rs.getString("CASHIER_CODE"));
+                    rt.put("staffName", rs.getString("STAFF_NAME"));
+                } else if (param.get("typeReport").equals("Sales Mix by Department") && param.get("typeParam").equals("Shift")) {
+                    rt.put("shiftCode", rs.getString("SHIFT_CODE"));
+                    rt.put("shiftName", rs.getString("SHIFT_NAME"));
+                } else if (param.get("typeReport").equals("Transaction by Payment Type") && param.get("typeParam").equals("Payment Type")) {
+                    rt.put("paymentTypeCode", rs.getString("PAYMENT_TYPE_CODE"));
+                    rt.put("description", rs.getString("DESCRIPTION"));
+                } else if (param.get("typeReport").equals("Transaction by Payment Type") && param.get("typeParam").equals("Payment Method")) {
+                    rt.put("paymentMethodCode", rs.getString("PAYMENT_METHOD_CODE"));
+                    rt.put("description", rs.getString("DESCRIPTION"));
+                } else if (param.get("typeReport").equals("Transaction by Payment Type") && param.get("typeParam").equals("Pos")) {
+                    rt.put("posCode", rs.getString("POS_CODE"));
+                    rt.put("posDescription", rs.getString("POS_DESCRIPTION"));
+                } else if (param.get("typeReport").equals("Transaction by Payment Type") && param.get("typeParam").equals("Cashier")) {
+                    rt.put("cashierCode", rs.getString("CASHIER_CODE"));
+                    rt.put("staffName", rs.getString("STAFF_NAME"));
+                } else if (param.get("typeReport").equals("Transaction by Payment Type") && param.get("typeParam").equals("Shift")) {
+                    rt.put("shiftCode", rs.getString("SHIFT_CODE"));
+                    rt.put("shiftName", rs.getString("SHIFT_NAME"));
+                } else if (param.get("typeReport").equals("Sales by Date") && param.get("typeParam").equals("Order Type")) {
+                    rt.put("orderType", rs.getString("ORDER_TYPE"));
+                    rt.put("description", rs.getString("DESCRIPTION"));
+                } else if ((param.get("typeReport").equals("Report Stock Card") || param.get("typeReport").equals("Report Stock")) && param.get("typeParam").equals("Item Code")) {
                     rt.put("itemCode", rs.getString("ITEM_CODE"));
                     rt.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
-                } else if (param.get("typeParam").equals("paymentType")) {
-                    rt.put("code", rs.getString("CODE"));
-                    rt.put("description", rs.getString("DESCRIPTION"));
-                } else if (param.get("typeParam").equals("paymentMethod")) {
-                    rt.put("code", rs.getString("CODE"));
-                    rt.put("description", rs.getString("DESCRIPTION"));
-                } else if (param.get("typeParam").equals("Gudang")) {
-                    rt.put("code", rs.getString("CODE"));
-                    rt.put("description", rs.getString("DESCRIPTION"));
-                } else if (param.get("typeParam").equals("Outlet")) {
-                    rt.put("code", rs.getString("CODE"));
-                    rt.put("description", rs.getString("DESCRIPTION"));
-                } else if (param.get("typeParam").equals("Supplier")) {
-                    rt.put("code", rs.getString("CODE"));
+                } else if (param.get("typeReport").equals("Report Stock") && param.get("typeParam").equals("Jenis Gudang")) {
+                    rt.put("cdWarehouse", rs.getString("CD_WAREHOUSE"));
                     rt.put("description", rs.getString("DESCRIPTION"));
                 }
                 return rt;
             }
         });
+        list.removeIf(Map::isEmpty);
         return list;
     }
 
@@ -1049,13 +1249,23 @@ public class ReportDaoImpl implements ReportDao {
             }
         }
 
+        if (param.get("orderTypeName").equals("Semua")) {
+            hashMap.put("orderType", "Semua");
+            hashMap.put("orderType1", "000");
+            hashMap.put("orderType2", "zzz");
+        } else {
+            hashMap.put("orderType", param.get("orderTypeCode") + "-" + param.get("orderTypeName"));
+            hashMap.put("orderType1", param.get("orderTypeCode"));
+            hashMap.put("orderType2", param.get("orderType2"));
+        }
+
         ClassPathResource classPathResource = new ClassPathResource("report/salesDate.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }
 
     @Override
-    public JasperPrint jasperReportSalesByMenu(Map<String, Object> param, Connection connection) throws JRException, IOException {
+    public JasperPrint jasperReportSalesByItem(Map<String, Object> param, Connection connection) throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
         hashMap.put("user", param.get("user"));
         hashMap.put("fromDate", param.get("fromDate"));
@@ -1132,7 +1342,7 @@ public class ReportDaoImpl implements ReportDao {
             }
         }
 
-        ClassPathResource classPathResource = new ClassPathResource("report/salesByMenuNew.jrxml");
+        ClassPathResource classPathResource = new ClassPathResource("report/salesByItemNew.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }

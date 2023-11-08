@@ -14,7 +14,7 @@
     </parameter>
     <queryString>
         <![CDATA[SELECT   END.*,M.OUTLET_NAME,M.ADDRESS_1
-    FROM   (SELECT  '0208' AS OUTLET_CODE, item,
+    FROM   (SELECT  $P{outletCode} AS OUTLET_CODE, item,
                      ei + ta AS ITEM_QTY,
                      nvl(ITEM_COST,0)as ITEM_COST,
                      ITEM_DESCRIPTION,
@@ -375,35 +375,35 @@ ORDER BY   ITEM ASC]]>
                 <text><![CDATA[Description]]></text>
             </staticText>
             <staticText>
-                <reportElement x="233" y="83" width="64" height="18" uuid="a1d7f151-0761-47c1-83da-1f9dff65c070"/>
+                <reportElement x="229" y="83" width="83" height="18" uuid="a1d7f151-0761-47c1-83da-1f9dff65c070"/>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
                     <font size="9" isBold="true"/>
                 </textElement>
                 <text><![CDATA[Total Quantity]]></text>
             </staticText>
             <staticText>
-                <reportElement x="299" y="83" width="32" height="18" uuid="10e8d854-2e49-4cb8-924a-6416547dc2bc"/>
+                <reportElement x="312" y="83" width="32" height="18" uuid="10e8d854-2e49-4cb8-924a-6416547dc2bc"/>
                 <textElement textAlignment="Right" verticalAlignment="Middle">
                     <font size="9" isBold="true"/>
                 </textElement>
-                <text><![CDATA[OUM]]></text>
+                <text><![CDATA[UOM]]></text>
             </staticText>
             <staticText>
-                <reportElement x="331" y="83" width="58" height="18" uuid="e8126b50-83b9-4fd0-97a3-c108991637e2"/>
+                <reportElement x="344" y="83" width="58" height="18" uuid="e8126b50-83b9-4fd0-97a3-c108991637e2"/>
                 <textElement textAlignment="Right" verticalAlignment="Middle">
                     <font size="9" isBold="true"/>
                 </textElement>
                 <text><![CDATA[Unit Cost]]></text>
             </staticText>
             <staticText>
-                <reportElement x="393" y="83" width="92" height="18" uuid="2652d4b8-9ef8-4b2d-934d-eeaeafa5cb35"/>
+                <reportElement x="402" y="83" width="92" height="18" uuid="2652d4b8-9ef8-4b2d-934d-eeaeafa5cb35"/>
                 <textElement textAlignment="Right" verticalAlignment="Middle">
                     <font size="9" isBold="true"/>
                 </textElement>
                 <text><![CDATA[Total Unit Cost]]></text>
             </staticText>
             <staticText>
-                <reportElement x="489" y="83" width="61" height="18" uuid="d6099b12-d73e-44e1-8f6b-975e37918901"/>
+                <reportElement x="494" y="83" width="61" height="18" uuid="d6099b12-d73e-44e1-8f6b-975e37918901"/>
                 <textElement textAlignment="Right" verticalAlignment="Middle">
                     <font size="9" isBold="true"/>
                 </textElement>
@@ -481,21 +481,21 @@ ORDER BY   ITEM ASC]]>
                 <textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
             </textField>
             <textField pattern="#,##0.00">
-                <reportElement x="233" y="1" width="64" height="13" uuid="b079ea5a-01c1-45a6-af18-5282bd5d60c0"/>
+                <reportElement x="229" y="1" width="83" height="13" uuid="b079ea5a-01c1-45a6-af18-5282bd5d60c0"/>
                 <textElement textAlignment="Right">
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$F{ITEM_QTY}]]></textFieldExpression>
             </textField>
             <textField pattern="#,##0.00">
-                <reportElement x="331" y="1" width="58" height="13" uuid="f4709026-762f-41d8-b3d7-c6e246399495"/>
+                <reportElement x="344" y="1" width="58" height="13" uuid="f4709026-762f-41d8-b3d7-c6e246399495"/>
                 <textElement textAlignment="Right">
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$F{ITEM_COST}]]></textFieldExpression>
             </textField>
             <textField pattern="#,##0.00">
-                <reportElement x="393" y="1" width="92" height="13" uuid="1bcc76fa-4950-4a9c-8917-2ab0350a3875"/>
+                <reportElement x="402" y="1" width="92" height="13" uuid="1bcc76fa-4950-4a9c-8917-2ab0350a3875"/>
                 <textElement textAlignment="Right">
                     <font size="8"/>
                 </textElement>
@@ -509,7 +509,7 @@ ORDER BY   ITEM ASC]]>
                 <textFieldExpression><![CDATA[$F{ITEM}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="299" y="1" width="32" height="13" uuid="9d984a25-39cd-43bc-abc8-f25f9537c4ff"/>
+                <reportElement x="312" y="1" width="32" height="13" uuid="9d984a25-39cd-43bc-abc8-f25f9537c4ff"/>
                 <textElement textAlignment="Right">
                     <font size="8"/>
                 </textElement>

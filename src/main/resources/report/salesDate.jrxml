@@ -41,6 +41,15 @@
     </parameter>
     <parameter name="outletName" class="java.lang.String"/>
     <parameter name="user" class="java.lang.String"/>
+    <parameter name="orderType" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="orderType1" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="orderType2" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
     <queryString>
         <![CDATA[SELECT * FROM(
 SELECT TOTAL_PENDAPATAN,
@@ -243,7 +252,7 @@ AND a.POS_CODE BETWEEN $P{posCode1} AND $P{posCode2} AND a.POS_CODE=b.POS_CODE A
 a.BILL_NO=b.BILL_NO AND a.DAY_SEQ=b.DAY_SEQ
 AND a.CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2} AND a.CASHIER_CODE=b.CASHIER_CODE
 AND b.SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2} AND B.order_type IN (SELECT CODE FROM M_GLOBAL WHERE DESCRIPTION = 'GRPTP' AND COND
-BETWEEN '000' AND 'zzz')
+BETWEEN $P{orderType1} AND $P{orderType2})
 AND VOID_TYPE='OFS'
 GROUP BY VOID_TYPE
 ) B
@@ -259,7 +268,7 @@ AND a.POS_CODE BETWEEN $P{posCode1} AND $P{posCode2} AND a.POS_CODE=b.POS_CODE A
 a.BILL_NO=b.BILL_NO AND a.DAY_SEQ=b.DAY_SEQ
 AND a.CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2} AND a.CASHIER_CODE=b.CASHIER_CODE
 AND b.SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2} AND B.order_type IN (SELECT CODE FROM M_GLOBAL WHERE DESCRIPTION = 'GRPTP' AND COND
-BETWEEN '000' AND 'zzz')
+BETWEEN $P{orderType1} AND $P{orderType2})
 AND VOID_TYPE='CAN'
 GROUP BY VOID_TYPE) C
 ON A.PID=C.PID
@@ -276,7 +285,7 @@ LEFT JOIN (
                     (SELECT   CODE
                        FROM   M_GLOBAL
                       WHERE   DESCRIPTION = 'GRPTP'
-                              AND COND BETWEEN '000' AND 'zzz'
+                              AND COND BETWEEN $P{orderType1} AND $P{orderType2}
                      )
 )D
 ON A.PID=D.PID
@@ -293,7 +302,7 @@ LEFT JOIN(
                     (SELECT   CODE
                        FROM   M_GLOBAL
                       WHERE   DESCRIPTION = 'GRPTP'
-                              AND COND BETWEEN '000' AND 'zzz'
+                              AND COND BETWEEN $P{orderType1} AND $P{orderType2}
                               AND TRANS_TYPE='EI'
                      )
  )E
@@ -311,7 +320,7 @@ LEFT JOIN(
                     (SELECT   CODE
                        FROM   M_GLOBAL
                       WHERE   DESCRIPTION = 'GRPTP'
-                              AND COND BETWEEN '000' AND 'zzz'
+                              AND COND BETWEEN $P{orderType1} AND $P{orderType2}
                               AND TRANS_TYPE='TA'
                      )
 )F
@@ -333,7 +342,7 @@ LEFT JOIN
                     (SELECT   CODE
                        FROM   M_GLOBAL
                       WHERE   DESCRIPTION = 'GRPTP'
-                              AND COND BETWEEN '000' AND 'zzz'
+                              AND COND BETWEEN $P{orderType1} AND $P{orderType2}
 
                      )) G
 ON A.PID=G.PID
@@ -350,7 +359,7 @@ LEFT JOIN
                     (SELECT   CODE
                        FROM   M_GLOBAL
                       WHERE   DESCRIPTION = 'GRPTP'
-                              AND COND BETWEEN '000' AND 'zzz'
+                              AND COND BETWEEN $P{orderType1} AND $P{orderType2}
                              AND TRANS_TYPE='EI'
                      )) H
 ON A.PID=H.PID
@@ -367,7 +376,7 @@ LEFT JOIN
                     (SELECT   CODE
                        FROM   M_GLOBAL
                       WHERE   DESCRIPTION = 'GRPTP'
-                              AND COND BETWEEN '000' AND 'zzz'
+                              AND COND BETWEEN $P{orderType1} AND $P{orderType2}
                              AND TRANS_TYPE='TA'
                      )) I
 ON A.PID=I.PID
@@ -552,6 +561,20 @@ U]]>
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[" : " + $P{shiftCode}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="3" y="46" width="55" height="11" uuid="9536c5be-fde9-4096-ab13-72d2a110b1ec"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Order Type]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="57" y="46" width="211" height="11" uuid="e7a00b38-bc3b-4b06-9301-6eb55562e535"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + $P{orderType}]]></textFieldExpression>
             </textField>
         </band>
     </columnHeader>
