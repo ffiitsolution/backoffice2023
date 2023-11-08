@@ -46,8 +46,8 @@ public class ProcessServices {
 
     ///////////////////////done
     ///////////////new method from dona 06-03-2023////////////////////////////
-    public void updateMpcs(Map<String, String> balance) {
-        dao.updateMpcs(balance);
+    public void updateFrayer(Map<String, String> balance) {
+        dao.updateFrayer(balance);
     }
     ///////////////////////done
     ///////////////new method from asep 16-mar-2023 //////////////  

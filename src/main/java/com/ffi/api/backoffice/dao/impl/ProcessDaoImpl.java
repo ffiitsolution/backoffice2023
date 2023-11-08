@@ -169,7 +169,7 @@ public class ProcessDaoImpl implements ProcessDao {
     /////////////////////////////////done
 
     ///////////////new method from dona 06-03-2023////////////////////////////
-    public void updateMpcs(Map<String, String> balance) {
+    public void updateFrayer(Map<String, String> balance) {
         String qy = "UPDATE M_MPCS_DETAIL SET FRYER_TYPE_CNT= :fryerTypeCnt,FRYER_TYPE_RESET= :fryerTypeReset,"
                 + "STATUS= :status,USER_UPD= :userUpd,DATE_UPD= :dateUpd,TIME_UPD= :timeUpd,FRYER_TYPE_SEQ_CNT= :fryerTypeSeqCnt "
                 + "where fryer_type=:fryerType and OUTLET_CODE=:outletCode and FRYER_TYPE_SEQ=:fryerTypeSeq ";
