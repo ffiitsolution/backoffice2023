@@ -46,8 +46,8 @@ public class ProcessServices {
 
     ///////////////////////done
     ///////////////new method from dona 06-03-2023////////////////////////////
-    public void updateMpcs(Map<String, String> balance) {
-        dao.updateMpcs(balance);
+    public void updateFrayer(Map<String, String> balance) {
+        dao.updateFrayer(balance);
     }
     ///////////////////////done
     ///////////////new method from asep 16-mar-2023 //////////////  
@@ -133,7 +133,11 @@ public class ProcessServices {
     public void updateMCounterSop(String transType, String outletCode) {
         dao.updateMCounterSop(transType, outletCode);
     }
-
+    ///////////////new method updateStatusOpname 6-11-2023////////////////////////////
+    public void updateOpnameStatus(Map<String, String> balance) {
+        dao.updateOpnameStatus(balance);
+    }
+    ///////////////done///////////////
     @Transactional
     public void inserOpnameDetail(DetailOpname opnameDtls) {
         dao.inserOpnameDetail(opnameDtls);

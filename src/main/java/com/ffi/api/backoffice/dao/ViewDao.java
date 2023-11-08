@@ -146,14 +146,13 @@ public interface ViewDao {
 
     List<Map<String, Object>> listHeaderOpname(Map<String, String> ref);
 
-    public String cekOpname(String outletCode, String month);
+    public String cekOpname(String outletCode, String month, String year);
 
     public String cekItem();
 
     public String cekItemHq();
 
     public String getCity(String outletCode);
-
     ///////////////////////////////Add Receiving by KP (06-06-2023)///////////////////////////////
     List<Map<String, Object>> listReceivingHeader(Map<String, String> ref);
 
