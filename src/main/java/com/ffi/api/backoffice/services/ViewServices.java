@@ -368,5 +368,12 @@ public class ViewServices {
     public List<Map<String, Object>> listItemSupplierGudangReturnOrder(Map<String, Object> param) {
         return viewDao.listItemSupplierGudangReturnOrder(param);
     }
+    
+        ///////////////new method from dona 9-11-2023////////////////////////////
+
+    public List<Map<String, Object>> listDetailOderbyOrderno(Map<String, String> ref) {
+        return viewDao.listDetailOderbyOrderno(ref);
+    }
+    ///////////////done
 
 }
