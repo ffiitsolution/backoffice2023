@@ -2704,14 +2704,16 @@ public class ViewDoaImpl implements ViewDao {
     /////////////////////////////List Detail Order by No 9-11-2023///////////////////////////////////////////
     @Override
     public List<Map<String, Object>> listDetailOderbyOrderno(Map<String, String> ref) {
-        String qry = "SELECT   * "
-                + "  FROM T_ORDER_DETAIL "
-                + " WHERE ORDER_NO IN "
-                + " (SELECT ORDER_NO "
-                + " FROM T_ORDER_HEADER"
-                + " WHERE OUTLET_CODE =:outletCode "
-                + " AND ORDER_DATE=:orderDate "
-                + " AND ORDER_NO =:orderNo)";
+        String qry = "SELECT   A.*,B.item_description  "
+                + " FROM T_ORDER_DETAIL A  "
+                + " left join (select item_code,item_description from m_item ) B  "
+                + " on A.ITEM_CODE=b.item_code  "
+                + "WHERE ORDER_NO IN   "
+                + "(SELECT ORDER_NO   "
+                + "FROM T_ORDER_HEADER  "
+                + "WHERE OUTLET_CODE =:outletCode   "
+                + "AND ORDER_DATE=:orderDate   "
+                + "AND ORDER_NO =:orderNo)";
         Map prm = new HashMap();
         prm.put("outletCode", ref.get("outletCode"));
         prm.put("orderDate", ref.get("orderDate"));
@@ -2726,6 +2728,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("orderId", rs.getString("ORDER_ID"));
                 rt.put("orderNo", rs.getString("ORDER_NO"));
                 rt.put("itemCode", rs.getString("ITEM_CODE"));
+                rt.put("itemDescription", rs.getString("item_description"));
                 rt.put("qty1", rs.getString("QTY_1"));
                 rt.put("cdUom1", rs.getString("CD_UOM_1"));
                 rt.put("qty2", rs.getString("QTY_2"));
