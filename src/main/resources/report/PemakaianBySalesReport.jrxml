@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="PemakaianBySalesReport" pageWidth="595" pageHeight="840" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="341841ad-479a-4fd4-b008-afc4dd840486">
-    <property name="ireport.zoom" value="1.0000000000000082"/>
+    <property name="ireport.zoom" value="1.610510000000015"/>
     <property name="ireport.x" value="0"/>
     <property name="ireport.y" value="0"/>
     <parameter name="outletCode" class="java.lang.String">
@@ -13,7 +13,7 @@
         <defaultValueExpression><![CDATA[]]></defaultValueExpression>
     </parameter>
     <queryString>
-        <![CDATA[SELECT   END.*,M.OUTLET_NAME,M.ADDRESS_1
+        <![CDATA[SELECT   END.*,M.OUTLET_NAME,M.ADDRESS_1, v.grand_total_unit_cost
     FROM   (SELECT  $P{outletCode} AS OUTLET_CODE, item,
                      ei + ta AS ITEM_QTY,
                      nvl(ITEM_COST,0)as ITEM_COST,
@@ -107,14 +107,6 @@
 
                                                                                                                         AND a.trans_date BETWEEN
 $P{fromDate}                                                                                                                                             AND  $P{toDate}
-                                                                                                                        AND b.pos_code BETWEEN '000'
-                                                                                                                                           AND  'zzz'
-                                                                                                                        AND b.shift_code BETWEEN '000'
-                                                                                                                                             AND  'zzz'
-                                                                                                                        AND b.cashier_code BETWEEN '000'
-                                                                                                                                               AND 'zzz'
-                                                                                                                        AND b.BILL_time BETWEEN '000000'
-                                                                                                                                            AND '235959'
                                                                                                                         AND b.delivery_status =
                                                                                                                               'CLS'
                                                                                                              GROUP BY   A.MENU_ITEM_CODE
@@ -169,14 +161,7 @@ $P{fromDate}                                                                    
 
                                                                                                                         AND a.trans_date BETWEEN $P{fromDate}
                                                                                                                                              AND  $P{toDate}
-                                                                                                                        AND b.pos_code BETWEEN '000'
-                                                                                                                                           AND  'zzz'
-                                                                                                                        AND b.shift_code BETWEEN '000'
-                                                                                                                                             AND 'zzz'
-                                                                                                                        AND b.cashier_code BETWEEN '000'
-                                                                                                                                               AND 'zzz'
-                                                                                                                        AND b.BILL_time BETWEEN '000000'
-                                                                                                                                            AND '235959'
+
                                                                                                                         AND b.delivery_status =
                                                                                                                               'CLS'
                                                                                                              GROUP BY   A.MENU_ITEM_CODE
@@ -267,14 +252,6 @@ $P{fromDate}                                                                    
 
                                                                                                                         AND a.trans_date BETWEEN $P{fromDate}
                                                                                                                                              AND $P{toDate}
-                                                                                                                        AND b.pos_code BETWEEN '000'
-                                                                                                                                           AND 'zzz'
-                                                                                                                        AND b.shift_code BETWEEN '000'
-                                                                                                                                             AND 'zzz'
-                                                                                                                        AND b.cashier_code BETWEEN '000'
-                                                                                                                                               AND 'zzz'
-                                                                                                                        AND b.BILL_time BETWEEN '000000'
-                                                                                                                                            AND '235959'
                                                                                                                         AND b.delivery_status =
                                                                                                                               'CLS'
                                                                                                              GROUP BY   A.MENU_ITEM_CODE)) a
@@ -338,6 +315,302 @@ $P{fromDate}                                                                    
                      ON A.ITEM = B.ITEM_CODE) END
 left join (SELECT OUTLET_CODE,OUTLET_NAME,ADDRESS_1 FROM m_outlet) M
 on END.outlet_code=m.outlet_code
+LEFT JOIN (SELECT  $P{outletCode} AS OUTLET_CODE, SUM(nvl((EI + ta) * ITEM_COST,0)) AS grand_total_unit_cost
+              FROM      (SELECT   A.*
+                           FROM      (  SELECT   a.ITEM,
+                                                 SUM (a.TOTAL_EI) AS ei,
+                                                 SUM (a.TOTAL_TA) AS ta
+                                          FROM   (  SELECT   c.item_code AS ITEM,
+                                                             e.item_description,
+                                                             c.menu_item_code
+                                                                AS Menu,
+                                                             d.item_description
+                                                                AS keterangan,
+                                                             c.ei,
+                                                             c.resep_ei,
+                                                             c.total_ei,
+                                                             c.ta,
+                                                             c.resep_ta,
+                                                             c.total_ta,
+                                                             c.uom_stock
+                                                      FROM         (  SELECT   c.item_code,
+                                                                               b.menu_item_code,
+                                                                               EI,
+                                                                               qty_stock_e
+                                                                                  AS resep_EI,
+                                                                               (EI
+                                                                                * qty_stock_e)
+                                                                                  AS Total_EI,
+                                                                               TA,
+                                                                               qty_stock_t
+                                                                                  AS resep_TA,
+                                                                               (TA
+                                                                                * qty_stock_t)
+                                                                                  AS total_TA,
+                                                                               UOM_STOCK
+                                                                        FROM      (  SELECT   a.menu_item_code,
+                                                                                              SUM(a.EI)
+                                                                                                 EI,
+                                                                                              SUM(a.TA)
+                                                                                                 TA
+                                                                                       FROM   (SELECT   *
+                                                                                                 FROM      ((  SELECT   a.menu_item_code,
+                                                                                                                        SUM(a.item_qty)
+                                                                                                                           ei,
+                                                                                                                        0
+                                                                                                                           AS ta
+                                                                                                                 FROM         t_pos_bill_item_detail a
+                                                                                                                           JOIN
+                                                                                                                              t_pos_bill b
+                                                                                                                           ON a.bill_no =
+                                                                                                                                 b.bill_no
+                                                                                                                              AND a.trans_Date =
+                                                                                                                                    b.trans_date
+                                                                                                                              AND a.day_seq =
+                                                                                                                                    b.day_seq
+                                                                                                                              AND a.pos_code =
+                                                                                                                                    b.pos_code
+                                                                                                                              AND a.outlet_code =
+                                                                                                                                    b.outlet_code
+                                                                                                                              AND b.delivery_status =
+                                                                                                                                    'CLS'
+                                                                                                                        JOIN
+                                                                                                                           t_pos_bill_item c
+                                                                                                                        ON a.bill_no =
+                                                                                                                              c.bill_no
+                                                                                                                           AND a.trans_Date =
+                                                                                                                                 c.trans_date
+                                                                                                                           AND a.day_seq =
+                                                                                                                                 c.day_seq
+                                                                                                                           AND a.pos_code =
+                                                                                                                                 c.pos_code
+                                                                                                                           AND a.outlet_code =
+                                                                                                                                 c.outlet_code
+                                                                                                                           AND a.item_seq =
+                                                                                                                                 c.item_seq
+                                                                                                                           AND CASE
+                                                                                                                                 WHEN NVL (
+                                                                                                                                         c.trans_type,
+                                                                                                                                         'TA'
+                                                                                                                                      ) <>
+                                                                                                                                         'EI'
+                                                                                                                                 THEN
+                                                                                                                                    'TA'
+                                                                                                                                 ELSE
+                                                                                                                                    'EI'
+                                                                                                                              END =
+                                                                                                                                 'EI'
+                                                                                                                WHERE   a.outlet_code =$P{outletCode}
+
+                                                                                                                        AND a.trans_date BETWEEN
+$P{fromDate}                                                                                                                                             AND  $P{toDate}
+
+                                                                                                                        AND b.delivery_status =
+                                                                                                                              'CLS'
+                                                                                                             GROUP BY   A.MENU_ITEM_CODE
+                                                                                                             UNION ALL
+                                                                                                               SELECT   a.menu_item_code,
+                                                                                                                        0
+                                                                                                                           AS ei,
+                                                                                                                        SUM(a.item_qty)
+                                                                                                                           AS ta
+                                                                                                                 FROM         t_pos_bill_item_detail a
+                                                                                                                           JOIN
+                                                                                                                              t_pos_bill b
+                                                                                                                           ON a.bill_no =
+                                                                                                                                 b.bill_no
+                                                                                                                              AND a.trans_Date =
+                                                                                                                                    b.trans_date
+                                                                                                                              AND a.day_seq =
+                                                                                                                                    b.day_seq
+                                                                                                                              AND a.pos_code =
+                                                                                                                                    b.pos_code
+                                                                                                                              AND a.outlet_code =
+                                                                                                                                    b.outlet_code
+                                                                                                                              AND b.delivery_status =
+                                                                                                                                    'CLS'
+                                                                                                                        JOIN
+                                                                                                                           t_pos_bill_item c
+                                                                                                                        ON a.bill_no =
+                                                                                                                              c.bill_no
+                                                                                                                           AND a.trans_Date =
+                                                                                                                                 c.trans_date
+                                                                                                                           AND a.day_seq =
+                                                                                                                                 c.day_seq
+                                                                                                                           AND a.pos_code =
+                                                                                                                                 c.pos_code
+                                                                                                                           AND a.outlet_code =
+                                                                                                                                 c.outlet_code
+                                                                                                                           AND a.item_seq =
+                                                                                                                                 c.item_seq
+                                                                                                                           AND CASE
+                                                                                                                                 WHEN NVL (
+                                                                                                                                         c.trans_type,
+                                                                                                                                         'TA'
+                                                                                                                                      ) <>
+                                                                                                                                         'EI'
+                                                                                                                                 THEN
+                                                                                                                                    'TA'
+                                                                                                                                 ELSE
+                                                                                                                                    'EI'
+                                                                                                                              END <>
+                                                                                                                                 'EI'
+                                                                                                                WHERE   a.outlet_code =$P{outletCode}
+
+                                                                                                                        AND a.trans_date BETWEEN $P{fromDate}
+                                                                                                                                             AND  $P{toDate}
+
+                                                                                                                        AND b.delivery_status =
+                                                                                                                              'CLS'
+                                                                                                             GROUP BY   A.MENU_ITEM_CODE
+                                                                                                             UNION ALL
+                                                                                                               SELECT   a.menu_item_code,
+                                                                                                                        SUM(a.item_qty)
+                                                                                                                           ei,
+                                                                                                                        0
+                                                                                                                           AS ta
+                                                                                                                 FROM         t_pos_bill_item a
+                                                                                                                           JOIN
+                                                                                                                              t_pos_bill b
+                                                                                                                           ON a.trans_date =
+                                                                                                                                 b.trans_date
+                                                                                                                              AND a.pos_code =
+                                                                                                                                    b.pos_code
+                                                                                                                              AND a.outlet_code =
+                                                                                                                                    b.outlet_code
+                                                                                                                              AND a.day_seq =
+                                                                                                                                    b.day_seq
+                                                                                                                              AND a.bill_no =
+                                                                                                                                    b.bill_no
+                                                                                                                              AND b.delivery_status =
+                                                                                                                                    'CLS'
+                                                                                                                              AND CASE
+                                                                                                                                    WHEN NVL (
+                                                                                                                                            A.trans_type,
+                                                                                                                                            'TA'
+                                                                                                                                         ) <>
+                                                                                                                                            'EI'
+                                                                                                                                    THEN
+                                                                                                                                       'TA'
+                                                                                                                                    ELSE
+                                                                                                                                       'EI'
+                                                                                                                                 END =
+                                                                                                                                    'EI'
+                                                                                                                        JOIN
+                                                                                                                           m_menu_item c
+                                                                                                                        ON a.menu_item_code =
+                                                                                                                              c.menu_item_code
+                                                                                                                           AND c.menu_set =
+                                                                                                                                 'Y'
+                                                                                                                WHERE   a.trans_date BETWEEN $P{fromDate}
+                                                                                                                                         AND $P{toDate}
+                                                                                                                        AND a.outlet_code = $P{outletCode}
+
+                                                                                                             GROUP BY   A.MENU_ITEM_CODE
+                                                                                                             UNION ALL
+                                                                                                               SELECT   a.menu_item_code,
+                                                                                                                        0
+                                                                                                                           AS ei,
+                                                                                                                        SUM(a.item_qty)
+                                                                                                                           AS ta
+                                                                                                                 FROM         t_pos_bill_item a
+                                                                                                                           JOIN
+                                                                                                                              t_pos_bill b
+                                                                                                                           ON a.trans_date =
+                                                                                                                                 b.trans_date
+                                                                                                                              AND a.pos_code =
+                                                                                                                                    b.pos_code
+                                                                                                                              AND a.outlet_code =
+                                                                                                                                    b.outlet_code
+                                                                                                                              AND a.day_seq =
+                                                                                                                                    b.day_seq
+                                                                                                                              AND a.bill_no =
+                                                                                                                                    b.bill_no
+                                                                                                                              AND b.delivery_status =
+                                                                                                                                    'CLS'
+                                                                                                                              AND CASE
+                                                                                                                                    WHEN NVL (
+                                                                                                                                            A.trans_type,
+                                                                                                                                            'TA'
+                                                                                                                                         ) <>
+                                                                                                                                            'EI'
+                                                                                                                                    THEN
+                                                                                                                                       'TA'
+                                                                                                                                    ELSE
+                                                                                                                                       'EI'
+                                                                                                                                 END <>
+                                                                                                                                    'EI'
+                                                                                                                        JOIN
+                                                                                                                           m_menu_item c
+                                                                                                                        ON a.menu_item_code =
+                                                                                                                              c.menu_item_code
+                                                                                                                           AND c.menu_set =
+                                                                                                                                 'Y'
+                                                                                                                WHERE   a.outlet_code = $P{outletCode}
+
+                                                                                                                        AND a.trans_date BETWEEN $P{fromDate}
+                                                                                                                                             AND $P{toDate}
+
+                                                                                                                        AND b.delivery_status =
+                                                                                                                              'CLS'
+                                                                                                             GROUP BY   A.MENU_ITEM_CODE)) a
+                                                                                                        LEFT JOIN
+                                                                                                           (SELECT   CODE,
+                                                                                                                     DESCRIPTION
+                                                                                                              FROM   M_GLOBAL
+                                                                                                             WHERE   COND =
+                                                                                                                        'IS_BRAND'
+                                                                                                                     AND DESCRIPTION IN
+                                                                                                                              ('KFC',
+                                                                                                                               'BB'))
+                                                                                                           g
+                                                                                                        ON a.menu_item_code =
+                                                                                                              g.code
+                                                                                                WHERE   g.description IN
+                                                                                                              ('KFC',
+                                                                                                               'KFC'))
+                                                                                              a
+                                                                                   GROUP BY   a.menu_item_code)
+                                                                                  b
+                                                                               LEFT JOIN
+                                                                                  m_group_item c
+                                                                               ON b.menu_item_code =
+                                                                                     c.group_item_code
+                                                                       WHERE   c.status =
+                                                                                  'A'
+                                                                    GROUP BY   b.menu_item_code,
+                                                                               EI,
+                                                                               TA,
+                                                                               qty_stock_e,
+                                                                               qty_stock_t,
+                                                                               UOM_STOCK,
+                                                                               c.item_code)
+                                                                   C
+                                                                LEFT JOIN
+                                                                   m_item d
+                                                                ON d.item_code =
+                                                                      c.menu_item_code
+                                                             LEFT JOIN
+                                                                m_item e
+                                                             ON e.item_code =
+                                                                   c.item_code
+                                                  GROUP BY   c.item_code,
+                                                             e.item_description,
+                                                             c.menu_item_code,
+                                                             d.item_description,
+                                                             c.ei,
+                                                             c.resep_ei,
+                                                             c.total_ei,
+                                                             c.ta,
+                                                             c.resep_ta,
+                                                             c.total_ta,
+                                                             c.uom_stock) a
+                                      GROUP BY   a.item) A
+                                  ) A
+                     LEFT JOIN
+                        M_ITEM_COST B
+                     ON A.ITEM = B.ITEM_CODE) v
+                     ON END.OUTLET_CODE = v.OUTLET_CODE
 ORDER BY   ITEM ASC]]>
     </queryString>
     <field name="OUTLET_CODE" class="java.lang.String"/>
@@ -345,10 +618,11 @@ ORDER BY   ITEM ASC]]>
     <field name="ITEM_QTY" class="java.math.BigDecimal"/>
     <field name="ITEM_COST" class="java.math.BigDecimal"/>
     <field name="ITEM_DESCRIPTION" class="java.lang.String"/>
-    <field name="TOTAL" class="java.math.BigDecimal"/>
+    <field name="TOTAL" class="java.lang.Double"/>
     <field name="UOM_STOCK" class="java.lang.String"/>
     <field name="OUTLET_NAME" class="java.lang.String"/>
     <field name="ADDRESS_1" class="java.lang.String"/>
+    <field name="GRAND_TOTAL_UNIT_COST" class="java.lang.Double"/>
     <background>
         <band splitType="Stretch"/>
     </background>
@@ -455,7 +729,7 @@ ORDER BY   ITEM ASC]]>
                 </textElement>
                 <text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
             </staticText>
-            <textField textAdjust="StretchHeight">
+            <textField isStretchWithOverflow="true">
                 <reportElement x="426" y="18" width="213" height="13" uuid="2dd056d2-fcc5-4330-98c4-54bee8799ca3"/>
                 <textElement>
                     <font size="9" isUnderline="false"/>
@@ -515,6 +789,13 @@ ORDER BY   ITEM ASC]]>
                 </textElement>
                 <textFieldExpression><![CDATA[$F{UOM_STOCK}]]></textFieldExpression>
             </textField>
+            <textField>
+                <reportElement x="494" y="1" width="61" height="13" uuid="5f650b4a-35d9-4c9a-82c9-4d5b00837a98"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00000").format($F{TOTAL}/$F{GRAND_TOTAL_UNIT_COST}*100) + " %" ]]></textFieldExpression>
+            </textField>
         </band>
     </detail>
     <summary>
@@ -553,21 +834,14 @@ Tidak Termasuk :
                 <text><![CDATA[% :]]></text>
             </staticText>
             <staticText>
-                <reportElement x="393" y="12" width="92" height="15" uuid="d54348c3-3280-42a3-a1ef-cb9e02f2225a"/>
+                <reportElement x="393" y="27" width="100" height="15" uuid="66697d5e-e09d-4125-912d-aad25a3e1549"/>
                 <textElement textAlignment="Right">
                     <font size="9"/>
                 </textElement>
                 <text><![CDATA[0]]></text>
             </staticText>
             <staticText>
-                <reportElement x="393" y="27" width="92" height="15" uuid="66697d5e-e09d-4125-912d-aad25a3e1549"/>
-                <textElement textAlignment="Right">
-                    <font size="9"/>
-                </textElement>
-                <text><![CDATA[0]]></text>
-            </staticText>
-            <staticText>
-                <reportElement x="393" y="42" width="92" height="15" uuid="791b30ed-6a90-4ef8-8976-88a64537f069"/>
+                <reportElement x="393" y="42" width="100" height="15" uuid="791b30ed-6a90-4ef8-8976-88a64537f069"/>
                 <textElement textAlignment="Right">
                     <font size="9"/>
                 </textElement>
@@ -576,6 +850,21 @@ Tidak Termasuk :
             <line>
                 <reportElement x="0" y="5" width="555" height="1" uuid="85478894-6f62-452a-aa12-5d9347d31547"/>
             </line>
+            <textField>
+                <reportElement x="394" y="12" width="100" height="15" uuid="1feff223-1352-43d9-8d13-7bba601667e0"/>
+                <textElement textAlignment="Right">
+                    <font size="9"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{GRAND_TOTAL_UNIT_COST})
+]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="494" y="12" width="61" height="15" uuid="c406976d-f70d-4e09-8679-06635030e29f"/>
+                <textElement textAlignment="Right">
+                    <font size="9"/>
+                </textElement>
+                <text><![CDATA[100.00000 %]]></text>
+            </staticText>
         </band>
     </summary>
 </jasperReport>

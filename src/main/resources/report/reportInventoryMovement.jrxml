@@ -341,7 +341,7 @@ ORDER BY
                 <textElement>
                     <font size="8"/>
                 </textElement>
-                <text><![CDATA[Tanggal dan Jan Cetak ]]></text>
+                <text><![CDATA[Tanggal dan Jam Cetak ]]></text>
             </staticText>
             <staticText>
                 <reportElement x="450" y="71" width="65" height="11" uuid="75976a07-b099-41f9-9127-e1ee58536393"/>
