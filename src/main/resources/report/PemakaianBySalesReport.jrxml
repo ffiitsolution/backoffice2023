@@ -13,7 +13,7 @@
         <defaultValueExpression><![CDATA[]]></defaultValueExpression>
     </parameter>
     <queryString>
-        <![CDATA[SELECT   END.*,M.OUTLET_NAME,M.ADDRESS_1, v.grand_total_unit_cost
+        <![CDATA[SELECT   END.*,M.OUTLET_NAME,M.ADDRESS_1, v.grand_total_unit_cost, p.total_net_sales
     FROM   (SELECT  $P{outletCode} AS OUTLET_CODE, item,
                      ei + ta AS ITEM_QTY,
                      nvl(ITEM_COST,0)as ITEM_COST,
@@ -611,6 +611,10 @@ $P{fromDate}                                                                    
                         M_ITEM_COST B
                      ON A.ITEM = B.ITEM_CODE) v
                      ON END.OUTLET_CODE = v.OUTLET_CODE
+                     LEFT JOIN (select $P{outletCode} AS OUTLET_CODE, sum(total_amount) as total_net_sales from t_pos_bill
+where outlet_code=$P{outletCode} and
+trans_date between $P{fromDate} and $P{toDate} and delivery_status='CLS') p
+ON END.OUTLET_CODE = p.OUTLET_CODE
 ORDER BY   ITEM ASC]]>
     </queryString>
     <field name="OUTLET_CODE" class="java.lang.String"/>
@@ -623,6 +627,7 @@ ORDER BY   ITEM ASC]]>
     <field name="OUTLET_NAME" class="java.lang.String"/>
     <field name="ADDRESS_1" class="java.lang.String"/>
     <field name="GRAND_TOTAL_UNIT_COST" class="java.lang.Double"/>
+    <field name="TOTAL_NET_SALES" class="java.lang.Double"/>
     <background>
         <band splitType="Stretch"/>
     </background>
@@ -794,7 +799,7 @@ ORDER BY   ITEM ASC]]>
                 <textElement textAlignment="Right">
                     <font size="8"/>
                 </textElement>
-                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00000").format($F{TOTAL}/$F{GRAND_TOTAL_UNIT_COST}*100) + " %" ]]></textFieldExpression>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00000").format($F{TOTAL}/$F{GRAND_TOTAL_UNIT_COST}*100) + " %"]]></textFieldExpression>
             </textField>
         </band>
     </detail>
@@ -833,20 +838,6 @@ Tidak Termasuk :
                 </textElement>
                 <text><![CDATA[% :]]></text>
             </staticText>
-            <staticText>
-                <reportElement x="393" y="27" width="100" height="15" uuid="66697d5e-e09d-4125-912d-aad25a3e1549"/>
-                <textElement textAlignment="Right">
-                    <font size="9"/>
-                </textElement>
-                <text><![CDATA[0]]></text>
-            </staticText>
-            <staticText>
-                <reportElement x="393" y="42" width="100" height="15" uuid="791b30ed-6a90-4ef8-8976-88a64537f069"/>
-                <textElement textAlignment="Right">
-                    <font size="9"/>
-                </textElement>
-                <text><![CDATA[0]]></text>
-            </staticText>
             <line>
                 <reportElement x="0" y="5" width="555" height="1" uuid="85478894-6f62-452a-aa12-5d9347d31547"/>
             </line>
@@ -855,8 +846,7 @@ Tidak Termasuk :
                 <textElement textAlignment="Right">
                     <font size="9"/>
                 </textElement>
-                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{GRAND_TOTAL_UNIT_COST})
-]]></textFieldExpression>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{GRAND_TOTAL_UNIT_COST})]]></textFieldExpression>
             </textField>
             <staticText>
                 <reportElement x="494" y="12" width="61" height="15" uuid="c406976d-f70d-4e09-8679-06635030e29f"/>
@@ -865,6 +855,20 @@ Tidak Termasuk :
                 </textElement>
                 <text><![CDATA[100.00000 %]]></text>
             </staticText>
+            <textField>
+                <reportElement x="394" y="27" width="100" height="15" uuid="b15cf9e7-14db-4155-8a0a-cfbc1a02edab"/>
+                <textElement textAlignment="Right">
+                    <font size="9"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{TOTAL_NET_SALES})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="394" y="42" width="100" height="15" uuid="eb2d0740-f4b2-4fc7-926b-31fe913d9097"/>
+                <textElement textAlignment="Right">
+                    <font size="9"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{GRAND_TOTAL_UNIT_COST}/$F{TOTAL_NET_SALES}*100) + " %"]]></textFieldExpression>
+            </textField>
         </band>
     </summary>
 </jasperReport>
