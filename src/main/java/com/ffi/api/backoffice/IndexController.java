@@ -2413,4 +2413,30 @@ public class IndexController {
         return rm;
     }
     ///////////////done 
+    
+    
+    ///////////////NEW METHOD LIST ORDER DETAIL SPECIFIC ORDER ///////////////
+        @RequestMapping(value = "/list-order-by-orderno", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view data orderno", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+
+    Response listDetailOderbyOrderno(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+
+        Response res = new Response();
+        res.setData(viewServices.listDetailOderbyOrderno(balance));
+        return res;
+    }
+    
+    
+   ///////////////done  
+    
 }

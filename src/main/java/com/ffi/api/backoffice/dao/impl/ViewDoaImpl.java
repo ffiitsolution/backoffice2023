@@ -1300,7 +1300,7 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listMasterGlobal(Map<String, String> balance) {
-        String qry = "select COND,CODE,DESCRIPTION,VALUE,STATUS from m_global WHERE COND = :cond ";
+        String qry = "select COND,CODE,DESCRIPTION,VALUE,STATUS from m_global WHERE COND = :cond and status='A' ORDER BY VALUE ASC";
         Map prm = new HashMap();
         prm.put("cond", balance.get("cond"));
         System.err.println("q :" + qry);
@@ -2705,5 +2705,48 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
-    
+
+    /////////////////////////////List Detail Order by No 9-11-2023///////////////////////////////////////////
+    @Override
+    public List<Map<String, Object>> listDetailOderbyOrderno(Map<String, String> ref) {
+        String qry = "SELECT   A.*,B.item_description  "
+                + " FROM T_ORDER_DETAIL A  "
+                + " left join (select item_code,item_description from m_item ) B  "
+                + " on A.ITEM_CODE=b.item_code  "
+                + "WHERE ORDER_NO IN   "
+                + "(SELECT ORDER_NO   "
+                + "FROM T_ORDER_HEADER  "
+                + "WHERE OUTLET_CODE =:outletCode   "
+                + "AND ORDER_DATE=:orderDate   "
+                + "AND ORDER_NO =:orderNo)";
+        Map prm = new HashMap();
+        prm.put("outletCode", ref.get("outletCode"));
+        prm.put("orderDate", ref.get("orderDate"));
+        prm.put("orderNo", ref.get("orderNo"));
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("outletCode", rs.getString("OUTLET_CODE"));
+                rt.put("orderType", rs.getString("ORDER_TYPE"));
+                rt.put("orderId", rs.getString("ORDER_ID"));
+                rt.put("orderNo", rs.getString("ORDER_NO"));
+                rt.put("itemCode", rs.getString("ITEM_CODE"));
+                rt.put("itemDescription", rs.getString("item_description"));
+                rt.put("qty1", rs.getString("QTY_1"));
+                rt.put("cdUom1", rs.getString("CD_UOM_1"));
+                rt.put("qty2", rs.getString("QTY_2"));
+                rt.put("cdUom2", rs.getString("CD_UOM_2"));
+                rt.put("totalQtyStock", rs.getString("TOTAL_QTY_STOCK"));
+                rt.put("unitPrice", rs.getString("UNIT_PRICE"));
+                rt.put("userUpd", rs.getString("USER_UPD"));
+                rt.put("dateUpd", rs.getString("DATE_UPD"));
+                rt.put("timeUpd", rs.getString("TIME_UPD"));
+                return rt;
+            }
+        });
+        return list;
+    }
+
 }

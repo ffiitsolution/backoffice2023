@@ -130,9 +130,11 @@ public interface ViewDao {
 
     ///////////////NEW METHOD LIST ORDER HEADER BY DONA 18 APRIL 2023////
     List<Map<String, Object>> listOrderHeaderAll(Map<String, String> ref);
+
     //////////DONE
     ///////////////NEW METHOD LIST ORDER HEADER BY DONA 27 APRIL 2023////
     List<Map<String, Object>> listOrderDetail(Map<String, String> ref);
+
     //////////DONE
     ///////////////NEW METHOD LIST ORDER HEADER BY DONA 2 MEI 2023////
     List<Map<String, Object>> listCounter(Map<String, String> ref);
@@ -153,6 +155,7 @@ public interface ViewDao {
     public String cekItemHq();
 
     public String getCity(String outletCode);
+
     ///////////////////////////////Add Receiving by KP (06-06-2023)///////////////////////////////
     List<Map<String, Object>> listReceivingHeader(Map<String, String> ref);
 
@@ -163,25 +166,27 @@ public interface ViewDao {
     ///////////////NEW METHOD LIST ORDER HEADER BY DONA 12 JUL 2023////
     List<Map<String, Object>> listOrderDetailOutlet(Map<String, String> ref);
     //////////DONE
-    
-        ///////////////NEW METHOD LIST ORDER HEADER BY DONA 12 JUL 2023////
+
+    ///////////////NEW METHOD LIST ORDER HEADER BY DONA 12 JUL 2023////
     List<Map<String, Object>> listOrderDetailSupplier(Map<String, String> ref);
+
     //////////DONE
     ///////////////NEW METHOD CEK DATA REPORT BY PASCA 13 JUL 2023////
     Integer cekDataReport(Map<String, Object> param, String name);
-    
+
     ///////////////////////////////Add Wastage by KP (31-07-2023)///////////////////////////////
     List<Map<String, Object>> listWastageHeader(Map<String, String> ref);
-    
+
     List<Map<String, Object>> listWastageDetail(Map<String, String> ref);
 
     List<Map<String, Object>> listOutletReport(Map<String, String> ref);
-        //////////////////////////////List Stock Opname 8 AGUSTUS 2023///////////////////////////////
+    //////////////////////////////List Stock Opname 8 AGUSTUS 2023///////////////////////////////
+
     List<Map<String, Object>> listStockOpname(Map<String, String> ref);
-    
+
     ///////////////////////////////Add MPCS by KP (09-08-2023)///////////////////////////////
     List<Map<String, Object>> listTemplateMpcs(Map<String, String> ref);
-    
+
     List<Map<String, Object>> listProjectMpcs(Map<String, String> ref);
 
     ///////////////////////////////Add Return Order by Pasca (10-08-2023)///////////////////////////////
@@ -192,4 +197,9 @@ public interface ViewDao {
     List<Map<String, Object>> listSupplierGudangReturnOrder(Map<String, String> param);
 
     List<Map<String, Object>> listItemSupplierGudangReturnOrder(Map<String, Object> param);
+
+    ///////////////new method from dona 9-11-2023////////////////////////////
+    List<Map<String, Object>> listDetailOderbyOrderno(Map<String, String> ref);
+
+    /////////////////////////////done
 }
