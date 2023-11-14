@@ -2390,6 +2390,11 @@ public class ViewDoaImpl implements ViewDao {
                 prm.put("transDate", param.get("fromDate"));
                 prm.put("outletCode", param.get("outletCode"));
             }
+            case "stockOpname" -> {
+                query = "SELECT COUNT(*) FROM T_OPNAME_DETAIL WHERE OPNAME_NO = :opnameNo AND OUTLET_CODE = :outletCode";
+                prm.put("opnameNo", param.get("opnameNo"));
+                prm.put("outletCode", param.get("outletCode"));
+            }
         }
         assert query != null;
         return Integer.valueOf(Objects.requireNonNull(jdbcTemplate.queryForObject(query, prm, new RowMapper<String>() {

@@ -1,0 +1,467 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="stockOpname" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="2f9ba0bb-b878-42b5-bf5c-af89e4fc2ee3">
+    <property name="ireport.zoom" value="1.6105100000000099"/>
+    <property name="ireport.x" value="0"/>
+    <property name="ireport.y" value="0"/>
+    <parameter name="opnameNo" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="user" class="java.lang.String"/>
+    <parameter name="outletCode" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <queryString>
+        <![CDATA[SELECT
+	a.ITEM_CODE,
+	b.ITEM_DESCRIPTION,
+	b.CONV_STOCK,
+	b.UOM_PURCHASE,
+	b.UOM_STOCK,
+	a.QTY_PURCH,
+	a.UOM_PURCH,
+	a.QTY_STOCK,
+	a.UOM_STOCK AS satuan_stock,
+	a.TOTAL_QTY,
+	a.QTY_FREEZE,
+	a.TOTAL_QTY-a.QTY_FREEZE AS varians,
+	c.REMARK,
+	CASE
+		WHEN c.STATUS = '0' THEN 'Open'
+		WHEN c.STATUS = '1' THEN 'Close'
+		ELSE 'Cancel'
+	END AS status,
+	a.DATE_UPD AS tanggal_open,
+	a.TIME_UPD AS time_open,
+	c.DATE_UPD AS close_date,
+	c.TIME_UPD AS close_time,
+	d.OUTLET_NAME,
+	d.ADDRESS_1,
+	d.ADDRESS_2,
+	d.PHONE
+FROM
+	T_OPNAME_DETAIL a
+LEFT JOIN M_ITEM b ON
+	a.ITEM_CODE = b.ITEM_CODE
+LEFT JOIN T_OPNAME_HEADER c ON
+	a.OPNAME_NO = c.OPNAME_NO
+LEFT JOIN M_OUTLET d ON
+	a.OUTLET_CODE = d.OUTLET_CODE
+WHERE
+	a.OPNAME_NO = $P{opnameNo}
+	AND
+	a.OUTLET_CODE = $P{outletCode}
+ORDER BY
+	a.ITEM_CODE ASC]]>
+    </queryString>
+    <field name="ITEM_CODE" class="java.lang.String"/>
+    <field name="ITEM_DESCRIPTION" class="java.lang.String"/>
+    <field name="CONV_STOCK" class="java.math.BigDecimal"/>
+    <field name="UOM_PURCHASE" class="java.lang.String"/>
+    <field name="UOM_STOCK" class="java.lang.String"/>
+    <field name="QTY_PURCH" class="java.math.BigDecimal"/>
+    <field name="UOM_PURCH" class="java.lang.String"/>
+    <field name="QTY_STOCK" class="java.math.BigDecimal"/>
+    <field name="SATUAN_STOCK" class="java.lang.String"/>
+    <field name="TOTAL_QTY" class="java.math.BigDecimal"/>
+    <field name="QTY_FREEZE" class="java.math.BigDecimal"/>
+    <field name="VARIANS" class="java.math.BigDecimal"/>
+    <field name="REMARK" class="java.lang.String"/>
+    <field name="STATUS" class="java.lang.String"/>
+    <field name="TANGGAL_OPEN" class="java.sql.Timestamp"/>
+    <field name="TIME_OPEN" class="java.lang.String"/>
+    <field name="CLOSE_DATE" class="java.sql.Timestamp"/>
+    <field name="CLOSE_TIME" class="java.lang.String"/>
+    <field name="OUTLET_NAME" class="java.lang.String"/>
+    <field name="ADDRESS_1" class="java.lang.String"/>
+    <field name="ADDRESS_2" class="java.lang.String"/>
+    <field name="PHONE" class="java.lang.String"/>
+    <background>
+        <band splitType="Stretch"/>
+    </background>
+    <columnHeader>
+        <band height="152" splitType="Stretch">
+            <staticText>
+                <reportElement x="0" y="120" width="42" height="30" uuid="f95d6dbf-1f4f-4480-93cf-89ad660d5a9f"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Kode
+Barang]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="59" y="20" width="122" height="11" isPrintWhenDetailOverflows="true" uuid="f26e7a0d-a775-4acc-ac25-e3d91ccdbdc2"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{ADDRESS_1}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="59" y="10" width="122" height="11" uuid="35d448e5-07db-4b7c-a2ec-8027a22a1424"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{OUTLET_NAME}]]></textFieldExpression>
+            </textField>
+            <image>
+                <reportElement x="0" y="1" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="71eb630e-99f0-47ab-81f0-799578335071"/>
+                <imageExpression><![CDATA["logo/logoKfc.png"]]></imageExpression>
+            </image>
+            <textField>
+                <reportElement x="59" y="30" width="122" height="11" isPrintWhenDetailOverflows="true" uuid="21c10fca-dae6-4083-a3d3-7ed0337c26dd"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{ADDRESS_2}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="59" y="0" width="112" height="11" uuid="a3c778f7-7cba-4b26-9093-c1f6b8b3e582"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="59" y="40" width="122" height="11" isPrintWhenDetailOverflows="true" uuid="dfb37aa3-b21c-4068-b03e-33a02abc3aca"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Phone : " + $F{PHONE}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="0" y="63" width="555" height="20" uuid="c1066f4f-8a3e-4dfe-8c2c-ff686e8a787b"/>
+                <textElement textAlignment="Center">
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Laporan Stock Opname]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="6" y="83" width="80" height="11" uuid="3ff8b1bc-7091-4206-8f85-03b9ee391902"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[No Opname]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="6" y="93" width="80" height="11" uuid="fbcac01d-face-42e4-87ec-67ab45ed82ff"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Nama Template]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="6" y="103" width="80" height="11" uuid="f7918a6b-8802-48a0-98b5-7dfe93754f12"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Catatan]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="416" y="5" width="68" height="11" uuid="e3fd4661-1d7d-44c3-b0f6-7fb98f864d99"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Halaman]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="416" y="15" width="68" height="11" uuid="15545bed-fdf0-4190-91da-99e0fe75fcd6"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[User Cetak]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="416" y="25" width="68" height="11" uuid="74d78d68-89c8-4252-9921-b17a4bb646ed"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Tanggal Cetak]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="416" y="35" width="68" height="11" uuid="8769e076-971e-4498-917f-faf91ccf8037"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Jam Cetak]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="416" y="63" width="68" height="11" uuid="aec699f8-807d-4cd7-8991-1c74c73a191c"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Tanggal S.Opn]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="416" y="73" width="68" height="11" uuid="68910801-10e5-47c3-9153-8f3a3dff6fbe"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Time S.Opn]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="416" y="83" width="68" height="11" uuid="36908981-2348-46cc-8d49-651ae93c5c1c"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Status]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="416" y="93" width="68" height="11" uuid="cea78d43-2256-46e2-80d2-756d4524d722"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Close Date]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="416" y="103" width="68" height="11" uuid="c676230f-20b2-4fad-bf4d-1cf45470f70d"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Close Time]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="85" y="83" width="119" height="11" uuid="969e75f9-52c6-4392-ac14-92df283d2e3d"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[": " + $P{opnameNo}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="85" y="93" width="119" height="11" uuid="742fe16e-7515-4098-b390-e988c2de51b5"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[: STOCK OPNAME MONTHLY]]></text>
+            </staticText>
+            <textField isStretchWithOverflow="true">
+                <reportElement x="85" y="103" width="317" height="11" uuid="fb9573ea-10cb-48d9-b2b1-5606103679ee"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[": " + $F{REMARK}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="483" y="5" width="119" height="11" uuid="f8ab5b40-aea1-4362-87c9-f6ef4a66558a"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[": " + $V{PAGE_NUMBER}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="483" y="15" width="119" height="11" uuid="5078268c-f5ce-4bec-be8a-d30612c87396"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[": " + $P{user}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="483" y="25" width="119" height="11" uuid="7d8a6163-333f-408d-b964-ca51fd236a46"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[": " + new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="483" y="35" width="119" height="11" uuid="58e57475-4015-451b-a363-dad9e94daf68"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[": " + new SimpleDateFormat("hh:mm:ss a").format(new Date())]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="483" y="63" width="119" height="11" uuid="f2256244-4c23-44a3-9845-c80fd21fab0b"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[": " + new SimpleDateFormat("dd/MM/yyyy").format($F{TANGGAL_OPEN})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="483" y="73" width="119" height="11" uuid="3862d6f7-548b-4fc4-aa85-4dd40c514a47"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[": " + new SimpleDateFormat("HH:mm:ss").format(new SimpleDateFormat("HHmmss").parse($F{TIME_OPEN}))]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="483" y="83" width="119" height="11" uuid="cc9e74bc-ae32-4781-bf33-aa7c522f5801"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[": " + $F{STATUS}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="483" y="93" width="119" height="11" uuid="b44ea422-1459-4024-82b8-80b30ff676e1"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[": " + new SimpleDateFormat("dd/MM/yyyy").format($F{CLOSE_DATE})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="483" y="103" width="119" height="11" uuid="c631d284-58e2-48d2-ba1f-2c8b4670db2b"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[": " + new SimpleDateFormat("HH:mm:ss").format(new SimpleDateFormat("HHmmss").parse($F{CLOSE_TIME}))]]></textFieldExpression>
+            </textField>
+            <line>
+                <reportElement x="0" y="118" width="555" height="1" uuid="1bcc8a78-fb99-43ad-ba3c-8ae025f02e2d"/>
+            </line>
+            <line>
+                <reportElement x="0" y="151" width="555" height="1" uuid="938c5c98-d69e-4fe9-bb24-8e06391a6755"/>
+            </line>
+            <staticText>
+                <reportElement x="41" y="120" width="185" height="30" uuid="47074fdf-b8fb-4e4d-827d-4f15c60f4434"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Nama Barang]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="225" y="120" width="69" height="30" uuid="19ebdc9e-a551-4fdd-af37-a54e26937089"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Ukuran]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="293" y="120" width="70" height="15" uuid="3ab050da-e2eb-42f4-bd55-54ff0c52bf6a"/>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Besar]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="297" y="134" width="35" height="15" uuid="a230ee82-2497-4a0d-b740-0db17e830686"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Jumlah]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="362" y="120" width="70" height="15" uuid="3c7c6e4c-5f40-4e5a-ba2b-43aaa78e511f"/>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Kecil]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="366" y="134" width="35" height="15" uuid="c2fa7bc7-734e-4e79-b64c-6d30cb69d6e3"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Jumlah]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="328" y="134" width="35" height="15" uuid="b1d66a0d-19c3-47f0-8dc6-f6e64823dca1"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Satuan]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="397" y="134" width="35" height="15" uuid="dad13e35-e671-4655-a6f8-b5f0af4c79d7"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Satuan]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="431" y="120" width="42" height="30" uuid="aec59b46-f64e-487f-ad8f-dc05d8ae7980"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Total
+Jumlah]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="472" y="120" width="42" height="30" uuid="13b1f1b3-bfb0-48b5-97e4-8584c302e845">
+                    <printWhenExpression><![CDATA[$F{STATUS}.equals("Close")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Qty
+Freeze]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="513" y="120" width="42" height="30" uuid="abac2cd9-3ead-4582-bebf-65df010ea72a">
+                    <printWhenExpression><![CDATA[$F{STATUS}.equals("Close")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Varians]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+    <detail>
+        <band height="18" splitType="Stretch">
+            <textField>
+                <reportElement x="0" y="0" width="42" height="15" uuid="47e89c51-84a9-478e-af25-6f469bbb462c"/>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{ITEM_CODE}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="41" y="0" width="185" height="15" uuid="5336bcb7-7c98-4cc5-be15-5d3a1af082d5"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
+            </textField>
+            <textField isStretchWithOverflow="true">
+                <reportElement x="225" y="0" width="69" height="15" uuid="ad8ba623-8710-4523-a836-6826d501f400"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{CONV_STOCK}) + " " + $F{UOM_PURCHASE} +
+"/" + $F{UOM_STOCK}]]></textFieldExpression>
+            </textField>
+            <textField isStretchWithOverflow="true">
+                <reportElement x="293" y="0" width="70" height="15" uuid="119ac9ce-63c5-4812-ba7a-a90c5529ded1"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{QTY_PURCH}) + "   " + $F{UOM_PURCH}]]></textFieldExpression>
+            </textField>
+            <textField isStretchWithOverflow="true">
+                <reportElement x="362" y="0" width="70" height="15" uuid="5df18908-eb48-4220-85c9-59a01e508db3"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{QTY_STOCK}) + "   " + $F{SATUAN_STOCK}]]></textFieldExpression>
+            </textField>
+            <textField isStretchWithOverflow="true">
+                <reportElement x="431" y="0" width="42" height="15" uuid="be3cbe05-0096-4640-8891-bc542c541707"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{TOTAL_QTY})]]></textFieldExpression>
+            </textField>
+            <textField isStretchWithOverflow="true">
+                <reportElement x="472" y="0" width="42" height="15" uuid="e2669825-c551-4af1-89d8-63dd870ca6f1">
+                    <printWhenExpression><![CDATA[$F{STATUS}.equals("Close")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{QTY_FREEZE})]]></textFieldExpression>
+            </textField>
+            <textField isStretchWithOverflow="true">
+                <reportElement x="513" y="0" width="42" height="15" uuid="c86fa81c-a7cc-436c-a9eb-0c18ae3345f5">
+                    <printWhenExpression><![CDATA[$F{STATUS}.equals("Close")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{VARIANS})]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+    <pageFooter>
+        <band height="54" splitType="Stretch"/>
+    </pageFooter>
+    <summary>
+        <band height="42" splitType="Stretch"/>
+    </summary>
+</jasperReport>

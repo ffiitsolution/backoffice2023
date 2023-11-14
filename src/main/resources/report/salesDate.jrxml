@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="salesDate" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="70dce86b-f548-4d5c-a232-910967db12e0">
-    <property name="ireport.zoom" value="1.6105100000000074"/>
+    <property name="ireport.zoom" value="3.79749833583243"/>
     <property name="ireport.x" value="0"/>
-    <property name="ireport.y" value="0"/>
+    <property name="ireport.y" value="99"/>
     <parameter name="outletCode" class="java.lang.String">
         <defaultValueExpression><![CDATA[]]></defaultValueExpression>
     </parameter>
@@ -453,11 +453,11 @@ U]]>
                 <reportElement x="2" y="78" width="552" height="1" uuid="220c2045-a0e6-4c09-8e8b-6f39808cd864"/>
             </line>
             <staticText>
-                <reportElement x="196" y="28" width="161" height="19" uuid="ef16a081-aae5-409c-8f96-d1677b920d8e"/>
+                <reportElement x="5" y="28" width="549" height="19" uuid="ef16a081-aae5-409c-8f96-d1677b920d8e"/>
                 <textElement textAlignment="Center">
                     <font size="12" isBold="true"/>
                 </textElement>
-                <text><![CDATA[Sales By Date]]></text>
+                <text><![CDATA[Daily Sales Report]]></text>
             </staticText>
             <image>
                 <reportElement x="21" y="0" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="6b7f9666-f046-4f4c-be14-b871ba198ca5"/>
