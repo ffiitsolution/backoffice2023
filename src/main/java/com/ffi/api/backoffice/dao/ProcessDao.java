@@ -117,8 +117,5 @@ public interface ProcessDao {
 
     /////////////done
     
-      ///////////////NEW METHOD CANCEL ORDER 15 NOV 2023 ///////////////
-        public void updateCancelOrder(Map<String, String> mapping);
 
-    /////////////done
 }

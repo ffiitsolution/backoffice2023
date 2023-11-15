@@ -210,10 +210,5 @@ public class ProcessServices {
     }
     ///////////////////////done
 
-    ///////////////NEW METHOD CANCEL ORDER 15 NOV 2023 ///////////////
-    public void updateCancelOrder(Map<String, String> balance) {
-        dao.updateCancelOrder(balance);
-    }
-        ///////////////////////done
     
 }
