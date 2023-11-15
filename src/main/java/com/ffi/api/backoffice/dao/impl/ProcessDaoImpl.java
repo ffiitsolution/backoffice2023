@@ -1920,4 +1920,21 @@ public class ProcessDaoImpl implements ProcessDao {
             System.out.println("query update item: " + qy);
         }
     }
+    
+        ///////////////new method Cancel Order 15 nov 2023////////////////////////////
+    @Override
+    public void updateCancelOrder(Map<String, String> balance) {
+        String qy = "update t_order_header set  "
+                + "status ='2' "
+                + "WHERE  order_no= :orderNo and OUTLET_CODE= :outletCode";
+        Map param = new HashMap();
+        param.put("outletCode", balance.get("outletCode"));
+        param.put("orderNo", balance.get("orderNo"));
+
+        jdbcTemplate.update(qy, param);
+    }
+///////////////done///////////////
+    
+    
+    
 }
