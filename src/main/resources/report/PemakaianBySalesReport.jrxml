@@ -734,7 +734,7 @@ ORDER BY   ITEM ASC]]>
                 </textElement>
                 <text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
             </staticText>
-            <textField isStretchWithOverflow="true">
+            <textField textAdjust="StretchHeight">
                 <reportElement x="426" y="18" width="213" height="13" uuid="2dd056d2-fcc5-4330-98c4-54bee8799ca3"/>
                 <textElement>
                     <font size="9" isUnderline="false"/>

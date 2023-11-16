@@ -232,7 +232,7 @@ Barang]]></text>
                 </textElement>
                 <text><![CDATA[: STOCK OPNAME MONTHLY]]></text>
             </staticText>
-            <textField isStretchWithOverflow="true">
+            <textField textAdjust="StretchHeight">
                 <reportElement x="85" y="103" width="317" height="11" uuid="fb9573ea-10cb-48d9-b2b1-5606103679ee"/>
                 <textElement>
                     <font size="8"/>
@@ -409,7 +409,7 @@ Freeze]]></text>
                 </textElement>
                 <textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
             </textField>
-            <textField isStretchWithOverflow="true">
+            <textField textAdjust="StretchHeight">
                 <reportElement x="225" y="0" width="69" height="15" uuid="ad8ba623-8710-4523-a836-6826d501f400"/>
                 <textElement textAlignment="Right">
                     <font size="8"/>
@@ -417,28 +417,28 @@ Freeze]]></text>
                 <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{CONV_STOCK}) + " " + $F{UOM_PURCHASE} +
 "/" + $F{UOM_STOCK}]]></textFieldExpression>
             </textField>
-            <textField isStretchWithOverflow="true">
+            <textField textAdjust="StretchHeight">
                 <reportElement x="293" y="0" width="70" height="15" uuid="119ac9ce-63c5-4812-ba7a-a90c5529ded1"/>
                 <textElement textAlignment="Right">
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{QTY_PURCH}) + "   " + $F{UOM_PURCH}]]></textFieldExpression>
             </textField>
-            <textField isStretchWithOverflow="true">
+            <textField textAdjust="StretchHeight">
                 <reportElement x="362" y="0" width="70" height="15" uuid="5df18908-eb48-4220-85c9-59a01e508db3"/>
                 <textElement textAlignment="Right">
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{QTY_STOCK}) + "   " + $F{SATUAN_STOCK}]]></textFieldExpression>
             </textField>
-            <textField isStretchWithOverflow="true">
+            <textField textAdjust="StretchHeight">
                 <reportElement x="431" y="0" width="42" height="15" uuid="be3cbe05-0096-4640-8891-bc542c541707"/>
                 <textElement textAlignment="Right">
                     <font size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{TOTAL_QTY})]]></textFieldExpression>
             </textField>
-            <textField isStretchWithOverflow="true">
+            <textField textAdjust="StretchHeight">
                 <reportElement x="472" y="0" width="42" height="15" uuid="e2669825-c551-4af1-89d8-63dd870ca6f1">
                     <printWhenExpression><![CDATA[$F{STATUS}.equals("Close")]]></printWhenExpression>
                 </reportElement>
@@ -447,7 +447,7 @@ Freeze]]></text>
                 </textElement>
                 <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{QTY_FREEZE})]]></textFieldExpression>
             </textField>
-            <textField isStretchWithOverflow="true">
+            <textField textAdjust="StretchHeight">
                 <reportElement x="513" y="0" width="42" height="15" uuid="c86fa81c-a7cc-436c-a9eb-0c18ae3345f5">
                     <printWhenExpression><![CDATA[$F{STATUS}.equals("Close")]]></printWhenExpression>
                 </reportElement>
