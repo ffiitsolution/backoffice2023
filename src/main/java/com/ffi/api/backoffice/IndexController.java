@@ -2413,10 +2413,9 @@ public class IndexController {
         return rm;
     }
     ///////////////done 
-    
-    
+
     ///////////////NEW METHOD LIST ORDER DETAIL SPECIFIC ORDER ///////////////
-        @RequestMapping(value = "/list-order-by-orderno", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/list-order-by-orderno", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view data orderno", response = Object.class)
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
@@ -2435,8 +2434,7 @@ public class IndexController {
         res.setData(viewServices.listDetailOderbyOrderno(balance));
         return res;
     }
-    
-    
-   ///////////////done  
-    
+
+    ///////////////done  
+   
 }

@@ -133,10 +133,12 @@ public class ProcessServices {
     public void updateMCounterSop(String transType, String outletCode) {
         dao.updateMCounterSop(transType, outletCode);
     }
+
     ///////////////new method updateStatusOpname 6-11-2023////////////////////////////
     public void updateOpnameStatus(Map<String, String> balance) {
         dao.updateOpnameStatus(balance);
     }
+
     ///////////////done///////////////
     @Transactional
     public void inserOpnameDetail(DetailOpname opnameDtls) {
@@ -203,8 +205,10 @@ public class ProcessServices {
     ///////////////////////done
 
     ///////////////NEW METHOD PROCES TRANSFER MASTER  26 SEP 2023////   
-        public void processTransferMasters(JsonObject balancing) {
+    public void processTransferMasters(JsonObject balancing) {
         dao.processTransferMasters(balancing);
     }
     ///////////////////////done
+
+    
 }

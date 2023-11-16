@@ -625,19 +625,21 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("outletCode", outletCode);
         jdbcTemplate.update(qy, param);
     }
+
     ///////////////new method updateStatusOpname 6-11-2023////////////////////////////
     @Override
     public void updateOpnameStatus(Map<String, String> balance) {
         String qy = "update t_opname_header set  "
-                + "status ='1' "
+                + "status =:status "
                 + "WHERE  OPNAME_NO= :opnameNo and OUTLET_CODE= :outletCode";
         Map param = new HashMap();
         param.put("outletCode", balance.get("outletCode"));
         param.put("opnameNo", balance.get("opnameNo"));
-
+        param.put("status", balance.get("status"));
         jdbcTemplate.update(qy, param);
     }
 ///////////////done///////////////
+
     @Override
     public void inserOpnameDetail(DetailOpname opnameDtls) {
 
@@ -1920,4 +1922,7 @@ public class ProcessDaoImpl implements ProcessDao {
             System.out.println("query update item: " + qy);
         }
     }
+
+
+
 }
