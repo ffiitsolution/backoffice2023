@@ -577,7 +577,7 @@ public class ViewDoaImpl implements ViewDao {
         String qry = "select * from m_mpcs_header WHERE OUTLET_CODE= :outlet";
         Map prm = new HashMap();
         System.err.println("q :" + qry);
-        prm.put("region", param.get("outlet"));
+        prm.put("outlet", param.get("outlet"));
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
