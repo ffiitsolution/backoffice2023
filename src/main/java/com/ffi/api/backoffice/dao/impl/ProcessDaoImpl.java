@@ -927,10 +927,10 @@ public class ProcessDaoImpl implements ProcessDao {
         Gson gson = new Gson();
         Map<String, Object> map1 = new HashMap<String, Object>();
         try {
-            String qry1 = "SELECT   OUTLET_CODE AS KODE_PEMESANAN, "
-                    + "         CD_SUPPLIER AS KODE_PEMESAN, "
-                    + "         'I' TIPE_PEMESANAN, "
-                    + "         ORDER_NO AS KODE_PEMENSANAN, "
+            String qry1 = "SELECT   OUTLET_CODE AS KODE_PEMESAN, "
+                    + "         CD_SUPPLIER AS KODE_TUJUAN, "
+                    + "         'I' TIPE_PESANAN, "
+                    + "         ORDER_NO AS NOMOR_PESANAN, "
                     + "         TO_CHAR (ORDER_DATE, 'DD-MON-YY') AS TGL_PESAN, "
                     + "         TO_CHAR (DT_DUE, 'DD-MON-YY') AS TGL_BRG_DIKIRIM, "
                     + "         TO_CHAR (DT_EXPIRED, 'DD-MON-YY') AS TGL_BATAS_EXP, "
@@ -938,7 +938,7 @@ public class ProcessDaoImpl implements ProcessDao {
                     + "         '' AS KETERANGAN2, "
                     + "         USER_UPD AS USER_PROSES_PEMESAN, "
                     + "         TO_CHAR (ORDER_DATE, 'DD-MON-YY') AS TGL_PROSES_PEMESAN, "
-                    + "         TIME_UPD AS JAM_PROSES_PESAN, "
+                    + "         TIME_UPD AS JAM_PROSES_PEMESAN, "
                     + "         'B' as STATUS_PESANAN, "
                     + "         '' as NO_SJ_PENGIRIM, "
                     + "         '' as USER_PROSES_PENGIRIM, "
@@ -953,26 +953,26 @@ public class ProcessDaoImpl implements ProcessDao {
             List<Map<String, Object>> list = jdbcTemplate.query(qry1, prm, new RowMapper<Map<String, Object>>() {
                 public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                     Map<String, Object> rh = new HashMap<String, Object>();
-                    String qry2 = " SELECT ITEM_CODE as KODE_BARANG,(TOTAL_QTY_STOCK/QTY_1) AS KONVERSI,CD_UOM_2 AS SATUAN_KECIL,"
-                            + "CD_UOM_1 AS SATUAN_BESAR,QTY_1 AS QTY_PESAN_BESAR,QTY_2 AS QTY_PESAN_KECIL,  "
-                            + "  TOTAL_QTY_STOCK AS TOTAL_QTY_PESAN,'' AS TOTAL_QTY_KIRIM,UNIT_PRICE AS HARGA_UNIT,'' AS TIME_COUNTER,'' AS SEND_FLAG  "
-                            + "  FROM T_ORDER_DETAIL WHERE ORDER_NO = :orderNo ";
-                    System.err.println("q1 :" + qry2);
+                    String qry2 = "SELECT ITEM_CODE as KODE_BARANG,(TOTAL_QTY_STOCK/QTY_1) AS KONVERSI,CD_UOM_2 AS SATUAN_KECIL,"
+                            + " CD_UOM_1 AS SATUAN_BESAR,QTY_1 AS QTY_PESAN_BESAR,QTY_2 AS QTY_PESAN_KECIL,"
+                            + "  TOTAL_QTY_STOCK AS TOTAL_QTY_PESAN,'' AS TOTAL_QTY_KIRIM,UNIT_PRICE AS HARGA_UNIT,'' AS TIME_COUNTER,'' AS SEND_FLAG"
+                            + "  FROM T_ORDER_DETAIL WHERE ORDER_NO =:orderNo";
+                    System.err.println("q2 :" + qry2);
                     List<Map<String, Object>> list2 = jdbcTemplate.query(qry2, prm, new RowMapper<Map<String, Object>>() {
                         @Override
                         public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                             Map<String, Object> rt = new HashMap<String, Object>();
-                            rh.put("kodeBarang", rs.getString("KODE_BARANG"));
-                            rh.put("konversi", rs.getString("KONVERSI"));
-                            rh.put("satuanKecil", rs.getString("SATUAN_KECIL"));
-                            rh.put("satuanBesar", rs.getString("SATUAN_BESAR"));
-                            rh.put("qtyPesanBesar", rs.getString("QTY_PESAN_BESAR"));
-                            rh.put("qtyPesanKecil", rs.getString("QTY_PESAN_KECIL"));
-                            rh.put("totalQtyPesan", rs.getString("TOTAL_QTY_PESAN"));
-                            rh.put("totalQtyKirim", rs.getString("TOTAL_QTY_KIRIM"));
-                            rh.put("hargaUnit", rs.getString("HARGA_UNIT"));
-                            rh.put("timeCounter", rs.getString("TIME_COUNTER"));
-                            rh.put("sendFlag", rs.getString("SEND_FLAG"));
+                            rt.put("kodeBarang", rs.getString("KODE_BARANG"));
+                            rt.put("konversi", rs.getString("KONVERSI"));
+                            rt.put("satuanKecil", rs.getString("SATUAN_KECIL"));
+                            rt.put("satuanBesar", rs.getString("SATUAN_BESAR"));
+                            rt.put("qtyPesanBesar", rs.getString("QTY_PESAN_BESAR"));
+                            rt.put("qtyPesanKecil", rs.getString("QTY_PESAN_KECIL"));
+                            rt.put("totalQtyPesan", rs.getString("TOTAL_QTY_PESAN"));
+                            rt.put("totalQtyKirim", rs.getString("TOTAL_QTY_KIRIM"));
+                            rt.put("hargaUnit", rs.getString("HARGA_UNIT"));
+                            rt.put("timeCounter", rs.getString("TIME_COUNTER"));
+                            rt.put("sendFlag", rs.getString("SEND_FLAG"));
                             return rt;
                         }
                     });
@@ -995,7 +995,6 @@ public class ProcessDaoImpl implements ProcessDao {
                     rh.put("tglProsesPengirim", rs.getString("TGL_PROSES_PENGIRIM"));
                     rh.put("jamProsesPengirim", rs.getString("JAM_PROSES_PENGIRIM"));
                     rh.put("statush", rs.getString("STATUSH"));
-
                     return rh;
                 }
             });
