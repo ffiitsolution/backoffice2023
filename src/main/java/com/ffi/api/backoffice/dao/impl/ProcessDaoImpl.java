@@ -957,6 +957,7 @@ public class ProcessDaoImpl implements ProcessDao {
                             + "CD_UOM_1 AS SATUAN_BESAR,QTY_1 AS QTY_PESAN_BESAR,QTY_2 AS QTY_PESAN_KECIL,  "
                             + "  TOTAL_QTY_STOCK AS TOTAL_QTY_PESAN,'' AS TOTAL_QTY_KIRIM,UNIT_PRICE AS HARGA_UNIT,'' AS TIME_COUNTER,'' AS SEND_FLAG  "
                             + "  FROM T_ORDER_DETAIL WHERE ORDER_NO = :orderNo ";
+                    System.err.println("q1 :" + qry2);
                     List<Map<String, Object>> list2 = jdbcTemplate.query(qry2, prm, new RowMapper<Map<String, Object>>() {
                         @Override
                         public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
