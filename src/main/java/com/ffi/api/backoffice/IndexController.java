@@ -110,9 +110,10 @@ public class IndexController {
         rm.setItem(list);
         return rm;
     }
-
+//////Done
     ///////////////new method from dona 27-02-2023////////////////////////////
     //INSERT SUPPLIER================================================================================================
+
     @RequestMapping(value = "/insert-supplier", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk insert supplier", response = Object.class)
     @ApiResponses(value = {
@@ -2436,5 +2437,4 @@ public class IndexController {
     }
 
     ///////////////done  
-   
 }
