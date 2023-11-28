@@ -613,6 +613,33 @@ public class ViewDoaImpl implements ViewDao {
         return list;
     }
 //////////////done
+    
+    @Override
+    public List<Map<String, Object>> dummyOutletList(Map<String, String> balance) {
+        String query = "SELECT header.recipe_code as HEADER_RECIPE_CODE, header.recipe_remark, header.mpcs_group, header.status, " 
+            + "detail.item_code AS DETAIL_item_code, detail.qty_purchase, detail.uom_purchase "
+            + "FROM M_RECIPE_DETAIL detail "
+            + "JOIN M_RECIPE_HEADER header on header.recipe_code = detail.recipe_code "
+            + "WHERE detail.recipe_code = :recipeCode ";
+        Map param = new HashMap(); // parameter yang dilempar dari API-nya. currently igone param
+        System.err.println("query is: " + query);
+        param.put("recipeCode", balance.get("recipeCode"));
+        List<Map<String, Object>> outletList = jdbcTemplate.query(query, param, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("headerRecipeCode", rs.getString("HEADER_RECIPE_CODE"));
+                rt.put("recipeRemark", rs.getString("recipe_remark"));
+                rt.put("mpcsGroup", rs.getString("mpcs_group"));
+                rt.put("status", rs.getString("status"));
+                rt.put("detailItemCode", rs.getString("DETAIL_item_code"));
+                rt.put("qtyPurchase", rs.getString("qty_purchase"));
+                rt.put("uomPurchase", rs.getString("uom_purchase"));
+                return rt;
+            }
+        });
+        return outletList;
+    }
 
     ///////////////new method from asep 29-mar-2023 //////////////      
     @Override
@@ -708,9 +735,14 @@ public class ViewDoaImpl implements ViewDao {
         if (Logan.get("paket").equalsIgnoreCase("W")) {
             qry = "SELECT * FROM M_ITEM WHERE FLAG_STOCK = 'Y' AND FLAG_MATERIAL = 'Y' ORDER BY ITEM_CODE ASC";
         }
+        /////////////// Revised query for Leftover - Fathur 21-nov-2023 ////////////// 
         if (Logan.get("paket").equalsIgnoreCase("L")) {
-            qry = "select * from m_item where trim(cd_item_leftover) in ('A2-0001', 'A2-0002') order by item_code asc";
+            qry = "SELECT * FROM M_ITEM "
+                + "WHERE (STATUS = 'A' AND FLAG_STOCK = 'Y' AND FLAG_PAKET = 'N') "
+                + "and CD_ITEM_LEFTOVER in (SELECT CODE FROM M_GLOBAL WHERE COND = 'LEFTOVER') "
+                + "order by ITEM_CODE ASC";
         }
+        /////////////// End revised query for Leftover////////////// 
         Map prm = new HashMap();
         prm.put("FlagPaket", Logan.get("paket"));
         System.err.println("q :" + qry);
