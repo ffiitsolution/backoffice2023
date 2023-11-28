@@ -1055,6 +1055,17 @@ public class ProcessDaoImpl implements ProcessDao {
             histKirim.put("sendUser", balance.get("userUpd").toString());
             InsertHistKirim(histKirim);
             //End added by KP
+            
+            //Add Insert into Table T_HIST (28 Nov 203)
+            Map<String,String>tHist=new HashMap<String,String>();
+            tHist.put("outletCode", balance.get("outletCode").toString());
+            tHist.put("tujuanKirim", balance.get("tujuanKirim").toString());
+            tHist.put("noOrder  ", balance.get("orderNo").toString());
+            tHist.put("statusKirim", balance.get("orderNo").toString());
+            tHist.put("orderNo", balance.get("orderNo").toString());
+            
+            //End by Dona
+            
 
         } catch (Exception e) {
             e.printStackTrace();
