@@ -2401,6 +2401,21 @@ public class ViewDoaImpl implements ViewDao {
                 prm.put("orderNo", param.get("orderNo"));
                 prm.put("outletCode", param.get("outletCode"));
             }
+            case "receivingTransactions" -> {
+                query = "SELECT COUNT(*) FROM t_recv_detail WHERE RECV_NO = :recvNo AND OUTLET_CODE = :outletCode";
+                prm.put("recvNo", param.get("recvNo"));
+                prm.put("outletCode", param.get("outletCode"));
+            }
+            case "wastageTransactions" -> {
+                query = "SELECT COUNT(*) FROM T_WASTAGE_DETAIL WHERE WASTAGE_NO = :wastageNo AND OUTLET_CODE = :outletCode";
+                prm.put("wastageNo", param.get("wastageNo"));
+                prm.put("outletCode", param.get("outletCode"));
+            }
+            case "returnOrderTransactions" -> {
+                query = "SELECT COUNT(*) FROM T_RETURN_DETAIL WHERE RETURN_NO = :returnNo AND OUTLET_CODE = :outletCode";
+                prm.put("returnNo", param.get("returnNo"));
+                prm.put("outletCode", param.get("outletCode"));
+            }
         }
         assert query != null;
         return Integer.valueOf(Objects.requireNonNull(jdbcTemplate.queryForObject(query, prm, new RowMapper<String>() {

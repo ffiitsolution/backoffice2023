@@ -170,4 +170,16 @@ public class ReportServices {
     public JasperPrint jasperReportOrderEntryTransactions(Map<String, Object> param, Connection connection) throws JRException, IOException {
         return dao.jasperReportOrderEntryTransactions(param, connection);
     }
+
+    public JasperPrint jasperReportReceivingTransactions(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        return dao.jasperReportReceivingTransactions(param, connection);
+    }
+
+    public JasperPrint jasperReportWastageTransactions(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        return dao.jasperReportWastageTransactions(param, connection);
+    }
+
+    public JasperPrint jasperReportReturnOrderTransactions(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        return dao.jasperReportReturnOrderTransactions(param, connection);
+    }
 }

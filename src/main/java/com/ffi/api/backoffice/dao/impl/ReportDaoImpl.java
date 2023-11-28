@@ -2076,4 +2076,45 @@ public class ReportDaoImpl implements ReportDao {
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }
+
+    @Override
+    public JasperPrint jasperReportReceivingTransactions(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        Map<String, Object> hashMap = new HashMap<>();
+
+        hashMap.put("user", param.get("user"));
+        hashMap.put("city", "X_" + param.get("city"));
+        hashMap.put("recvNo", param.get("recvNo"));
+        hashMap.put("outletCode", param.get("outletCode"));
+
+        ClassPathResource classPathResource = new ClassPathResource("report/receivingTransactions.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
+
+    @Override
+    public JasperPrint jasperReportWastageTransactions(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        Map<String, Object> hashMap = new HashMap<>();
+
+        hashMap.put("user", param.get("user"));
+        hashMap.put("wastageNo", param.get("wastageNo"));
+        hashMap.put("outletCode", param.get("outletCode"));
+
+        ClassPathResource classPathResource = new ClassPathResource("report/wastageTransactions.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
+
+    @Override
+    public JasperPrint jasperReportReturnOrderTransactions(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        Map<String, Object> hashMap = new HashMap<>();
+
+        hashMap.put("user", param.get("user"));
+        hashMap.put("city", "X_" + param.get("city"));
+        hashMap.put("returnNo", param.get("returnNo"));
+        hashMap.put("outletCode", param.get("outletCode"));
+
+        ClassPathResource classPathResource = new ClassPathResource("report/returnOrderTransactions.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
 }
