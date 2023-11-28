@@ -955,7 +955,7 @@ public class ProcessDaoImpl implements ProcessDao {
                     Map<String, Object> rh = new HashMap<String, Object>();
                     String qry2 = "SELECT ITEM_CODE as KODE_BARANG,(TOTAL_QTY_STOCK/QTY_1) AS KONVERSI,CD_UOM_2 AS SATUAN_KECIL,"
                             + " CD_UOM_1 AS SATUAN_BESAR,QTY_1 AS QTY_PESAN_BESAR,QTY_2 AS QTY_PESAN_KECIL,"
-                            + "  TOTAL_QTY_STOCK AS TOTAL_QTY_PESAN,'' AS TOTAL_QTY_KIRIM,UNIT_PRICE AS HARGA_UNIT,'' AS TIME_COUNTER,'' AS SEND_FLAG"
+                            + "  TOTAL_QTY_STOCK AS TOTAL_QTY_PESAN,'' AS TOTAL_QTY_KIRIM,UNIT_PRICE AS HARGA_UNIT,'000000' AS TIME_COUNTER,'N' AS SEND_FLAG"
                             + "  FROM T_ORDER_DETAIL WHERE ORDER_NO =:orderNo";
                     System.err.println("q2 :" + qry2);
                     List<Map<String, Object>> list2 = jdbcTemplate.query(qry2, prm, new RowMapper<Map<String, Object>>() {
