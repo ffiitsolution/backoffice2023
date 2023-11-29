@@ -85,7 +85,7 @@ public interface ProcessDao {
     public void insertScDtlToScHdr(Map<String, String> mapping);
 
     public void sendDataToWarehouse(Map<String, String> mapping);
-
+    
     //Add Insert to Receiving Header & Detail by KP (07-06-2023)
     public void InsertRecvHeaderDetail(JsonObject mapping);
 

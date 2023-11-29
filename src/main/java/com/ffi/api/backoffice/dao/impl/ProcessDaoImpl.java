@@ -1011,7 +1011,7 @@ public class ProcessDaoImpl implements ProcessDao {
                 param.put("kodePemesan", dtl.get("kodePemesan"));
                 param.put("kodeTujuan", dtl.get("kodeTujuan"));
                 param.put("tipePesanan", dtl.get("tipePesanan"));
-                param.put("nomorPesanan", dtl.get("nomorPesanan"));              
+                param.put("nomorPesanan", dtl.get("nomorPesanan"));
                 param.put("tglBrgDikirim", dtl.get("tglBrgDikirim"));
                 param.put("tglBatasExp", dtl.get("tglBatasExp"));
                 param.put("keterangan1", dtl.get("keterangan1"));
@@ -1048,24 +1048,17 @@ public class ProcessDaoImpl implements ProcessDao {
                 map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
                 }.getType());
             }
-
+            //Add Insert into Table T_HIST (28 Nov 2023)
+            Map<String, String> histSend = new HashMap<String, String>();
+            histSend.put("orderNo", balance.get("orderNo").toString());
+            insertHistSend(histSend);
+            //End by Dona
             //Add Insert to HIST_KIRIM by KP (13-06-2023)
             Map<String, String> histKirim = new HashMap<String, String>();
             histKirim.put("orderNo", balance.get("orderNo").toString());
             histKirim.put("sendUser", balance.get("userUpd").toString());
             InsertHistKirim(histKirim);
             //End added by KP
-            
-            //Add Insert into Table T_HIST (28 Nov 203)
-            Map<String,String>tHist=new HashMap<String,String>();
-            tHist.put("outletCode", balance.get("outletCode").toString());
-            tHist.put("tujuanKirim", balance.get("tujuanKirim").toString());
-            tHist.put("noOrder  ", balance.get("orderNo").toString());
-            tHist.put("statusKirim", balance.get("orderNo").toString());
-            tHist.put("orderNo", balance.get("orderNo").toString());
-            
-            //End by Dona
-            
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1154,8 +1147,24 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("sendHour", timeStamp);
         param.put("sendUser", balance.get("sendUser"));
         jdbcTemplate.update(qy, param);
+
     }
     //End added by KP
+
+    // New Method Insert HIST KIRIM 28 NOV 2023/////////
+    public void insertHistSend(Map<String, String> balance) {
+        String qy = "INSERT INTO HIST_KIRIM(OUTLET_CODE,TUJUAN_KIRIM,NO_ORDER,STATUS_KIRIM,TGL_KIRIM,JAM_KIRIM,USER_KIRIM)"
+                + "select outlet_code,cd_supplier as tujuan_kirim,order_no as No_order, "
+                + "           'S' as status_kirim,date_upd as tgl_kirim,B.STAFF_full_NAME as user_kirim,time_upd as jam_kirim  from t_order_header A "
+                + "           left join (select STAFF_CODE,STAFF_full_NAME FROM m_staff ) B "
+                + "           on A.user_upd=B.staff_code            "
+                + "           where order_no:orderNo";
+        Map param = new HashMap();
+        param.put("orderNo", balance.get("orderNo"));
+        jdbcTemplate.update(qy, param);
+        System.err.println("qy :" + qy);
+    }
+    //End
 
     //Add Insert to Wastage Header & Detail by KP (03-08-2023)
     public String wastageCounter(String year, String month, String transType, String outletCode) {
