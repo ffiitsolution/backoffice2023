@@ -712,7 +712,7 @@ public class ViewDoaImpl implements ViewDao {
             qry = "SELECT * FROM M_ITEM "
                 + "WHERE (STATUS = 'A' AND FLAG_STOCK = 'Y' AND FLAG_PAKET = 'N') "
                 + "and CD_ITEM_LEFTOVER in (SELECT CODE FROM M_GLOBAL WHERE COND = 'LEFTOVER') "
-                + "order by ITEM_CODE ASC";
+                + "order by ITEM_CODE ASC"; 
         }
         /////////////// End revised query for Leftover////////////// 
         Map prm = new HashMap();
@@ -2773,5 +2773,50 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
+    
+    ////////////New method for query stock card - Fathur 29-Nov-2023////////////
+    @Override
+    public List<Map<String, Object>> listQueryStockCard(Map<String, String> ref) {
+        String query = "SELECT " 
+            + "SCARD.DATE_UPD, SCARD.TIME_UPD, MGLB.CODE AS CD_WAREHOUSE, MGLB.DESCRIPTION AS NM_WAREHOUSE, " 
+            + "SCARD.ITEM_CODE, MITEM.ITEM_DESCRIPTION as ITEM_NAME, " 
+            + "SCARD.QTY_BEGINNING, SCARD.QTY_IN, SCARD.QTY_OUT, ((QTY_BEGINNING + QTY_IN) - QTY_OUT) as QTY_ENDING, " 
+            + "MITEM.UOM_STOCK AS UNIT, SCARD.REMARK " 
+            + "FROM T_STOCK_CARD SCARD " 
+            + "JOIN M_ITEM MITEM ON SCARD.ITEM_CODE = MITEM.ITEM_CODE "
+            + "JOIN M_GLOBAL MGLB on MGLB.CODE = MITEM.CD_WAREHOUSE "
+            + "WHERE SCARD.DATE_UPD between TO_DATE(:startDate, 'DD/MM/YYYY') and (TO_DATE(:endDate, 'DD/MM/YYYY')+1) "
+            + "AND SCARD.ITEM_CODE LIKE :itemCode "
+            + "AND CD_WAREHOUSE LIKE :cdWarehouse "
+            + "ORDER BY SCARD.DATE_UPD DESC ";
+        Map param = new HashMap();
+        param.put("startDate", ref.get("startDate"));
+        param.put("endDate", ref.get("endDate"));
+        param.put("itemCode", "%" + ref.get("itemCode") + "%");
+        param.put("cdWarehouse", "%" + ref.get("cdWarehouse") + "%");
+        System.err.println("q :" + query);
+        
+        List<Map<String, Object>> queryStockCardlist = jdbcTemplate.query(query, param, new RowMapper<Map<String, Object>>() {
+            @Override
 
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("dateUpd", rs.getString("DATE_UPD"));
+                rt.put("timeUpd", rs.getString("TIME_UPD"));
+                rt.put("itemCode", rs.getString("ITEM_CODE"));
+                rt.put("itemName", rs.getString("ITEM_NAME"));
+                rt.put("qtyBeginning", rs.getString("QTY_BEGINNING"));
+                rt.put("qtyIn", rs.getString("QTY_IN"));
+                rt.put("qtyOut", rs.getString("QTY_OUT"));
+                rt.put("qtyEnding", rs.getString("QTY_ENDING"));
+                rt.put("unit", rs.getString("UNIT"));
+                rt.put("cdWarehouse", rs.getString("CD_WAREHOUSE"));
+                rt.put("nmWarehouse", rs.getString("NM_WAREHOUSE"));
+                rt.put("remark", rs.getString("REMARK"));
+                return rt;
+            }
+        });
+        return queryStockCardlist;
+    }
+    ////////////Done method for query stock card////////////
 }

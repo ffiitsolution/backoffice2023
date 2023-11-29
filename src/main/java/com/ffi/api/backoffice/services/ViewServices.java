@@ -375,5 +375,10 @@ public class ViewServices {
         return viewDao.listDetailOderbyOrderno(ref);
     }
     ///////////////done
-
+    
+    ////////////New method for query stock card - Fathur 29-Nov-2023////////////
+    public List<Map<String, Object>> listQueryStockCard(Map<String, String> ref) {
+        return viewDao.listQueryStockCard(ref);
+    }
+    ////////////Done method for query stock card////////////
 }
