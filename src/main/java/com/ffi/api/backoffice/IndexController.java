@@ -1750,10 +1750,14 @@ public class IndexController {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         String status = "";
         ResponseMessage rm = new ResponseMessage();
+        
         try {
             processServices.sendDataToWarehouse(balance);
+            
             rm.setSuccess(true);
             rm.setMessage("Insert Successfuly");
+            
+            
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Insert Failed: " + e.getMessage());
