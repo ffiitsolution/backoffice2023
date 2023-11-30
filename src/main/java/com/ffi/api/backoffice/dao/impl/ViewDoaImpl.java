@@ -2798,7 +2798,7 @@ public class ViewDoaImpl implements ViewDao {
         
         List<Map<String, Object>> queryStockCardlist = jdbcTemplate.query(query, param, new RowMapper<Map<String, Object>>() {
             @Override
-
+            
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
                 rt.put("dateUpd", rs.getString("DATE_UPD"));
@@ -2819,4 +2819,46 @@ public class ViewDoaImpl implements ViewDao {
         return queryStockCardlist;
     }
     ////////////Done method for query stock card////////////
+
+ 
+    ////////////New method for query stock card detail - Fathur 30-Nov-2023////////////
+    @Override
+    public List<Map<String, Object>> listQueryStockCardDetail(Map<String, String> ref) {
+        String query = "SELECT S.OUTLET_CODE, S.TRANS_DATE, S.CD_TRANS, S.ITEM_CODE, M.ITEM_DESCRIPTION, S.QUANTITY_IN, S.QUANTITY AS QUANTITY_OUT "
+            + "FROM T_STOCK_CARD_DETAIL S "
+            + "JOIN M_ITEM M ON M.ITEM_CODE = S.ITEM_CODE "
+            + "WHERE S.TRANS_DATE = TO_DATE(:date, 'DD/MM/YYYY') "
+            + "AND S.ITEM_CODE LIKE :itemCode ";
+        
+        Map param = new HashMap();
+        Boolean isTransactionIn = ref.get("transactionType").equalsIgnoreCase("IN");
+        if (isTransactionIn) {
+            query += "AND S.QUANTITY_IN > 0";
+        } else {
+            query += "AND S.QUANTITY > 0";
+        }
+        param.put("date", ref.get("date"));
+        param.put("itemCode", "%" + ref.get("itemCode") + "%");
+        
+        System.err.print("query: " + query );
+        
+        List<Map<String, Object>> stockCardDetail = jdbcTemplate.query(query, param, new RowMapper<Map<String, Object>>(){
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("outletCode", rs.getString("OUTLET_CODE"));
+                rt.put("itemCode", rs.getString("ITEM_CODE"));
+                rt.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
+                rt.put("cdTrans", rs.getString("CD_TRANS"));
+                if (isTransactionIn) {    
+                    rt.put("qtyIn", rs.getString("QUANTITY_IN"));
+                } else {
+                    rt.put("qtyOut", rs.getString("QUANTITY_OUT"));
+                }
+                return rt;
+            }
+        });
+        return stockCardDetail;
+    }
+    ////////////Done method for query stock card detail////////////
 }

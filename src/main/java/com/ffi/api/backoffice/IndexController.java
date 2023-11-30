@@ -2464,4 +2464,26 @@ public class IndexController {
     }
     ////////////Done method for query stock card////////////
     
+    ////////////New method for query stock card detail - Fathur 30-Nov-2023////////////
+    @RequestMapping(value = "/stock-card-detail", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view data query stock card detail", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    
+    public @ResponseBody
+    Response listQueryStockCardDetail(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+
+        Response res = new Response();
+        res.setData(viewServices.listQueryStockCardDetail(balance));
+        return res;
+    }
+    ////////////Done method for query stock card detail////////////
+    
 }

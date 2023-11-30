@@ -381,4 +381,10 @@ public class ViewServices {
         return viewDao.listQueryStockCard(ref);
     }
     ////////////Done method for query stock card////////////
+    
+    ////////////New method for query stock card detail - Fathur 30-Nov-2023////////////
+    public List<Map<String, Object>> listQueryStockCardDetail(Map<String, String> ref) {
+        return viewDao.listQueryStockCardDetail(ref);
+    }
+    ////////////Done method for query stock card detail////////////
 }
