@@ -1154,11 +1154,11 @@ public class ProcessDaoImpl implements ProcessDao {
     // New Method Insert HIST KIRIM 28 NOV 2023/////////
     public void insertHistSend(Map<String, String> balance) {
         String qy = "INSERT INTO HIST_KIRIM(OUTLET_CODE,TUJUAN_KIRIM,NO_ORDER,STATUS_KIRIM,TGL_KIRIM,JAM_KIRIM,USER_KIRIM)"
-                + "select outlet_code,cd_supplier as tujuan_kirim,order_no as No_order, "
+                + "VALUES(select outlet_code,cd_supplier as tujuan_kirim,order_no as No_order, "
                 + "           'S' as status_kirim,date_upd as tgl_kirim,B.STAFF_full_NAME as user_kirim,time_upd as jam_kirim  from t_order_header A "
                 + "           left join (select STAFF_CODE,STAFF_full_NAME FROM m_staff ) B "
                 + "           on A.user_upd=B.staff_code            "
-                + "           where order_no:orderNo";
+                + "           where order_no:orderNo)";
         Map param = new HashMap();
         param.put("orderNo", balance.get("orderNo"));
         jdbcTemplate.update(qy, param);

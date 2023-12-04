@@ -274,10 +274,11 @@ public class ViewDoaImpl implements ViewDao {
     ///////////////////done
 
     ///////////////new method from budi 14-03-2023////////////////////////////
+    /////edited by dona 4 des 2023///////////////////
     @Override
     public List<Map<String, Object>> listMenuGroup(Map<String, String> ref) {
         String qry = "SELECT   "
-                + "    M.MENU_GROUP_CODE, "
+                + "    M.MENU_GROUP_CODE,M.STATUS,M.SEQ, "
                 + "    G.DESCRIPTION AS MENU_GROUP "
                 + "FROM M_MENU_GROUP M  "
                 + "JOIN M_GLOBAL G  "
@@ -291,6 +292,8 @@ public class ViewDoaImpl implements ViewDao {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("seq", rs.getString("seq"));
+                rt.put("status", rs.getString("status"));
                 rt.put("menuGroupCode", rs.getString("menu_group_code"));
                 rt.put("menuGroup", rs.getString("menu_group"));
                 return rt;
