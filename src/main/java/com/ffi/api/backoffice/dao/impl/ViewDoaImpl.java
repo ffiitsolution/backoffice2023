@@ -2800,7 +2800,6 @@ public class ViewDoaImpl implements ViewDao {
         
         List<Map<String, Object>> queryStockCardlist = jdbcTemplate.query(query, param, new RowMapper<Map<String, Object>>() {
             @Override
-            
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
                 rt.put("dateUpd", rs.getString("DATE_UPD"));
@@ -2824,9 +2823,10 @@ public class ViewDoaImpl implements ViewDao {
 
  
     ////////////New method for query stock card detail - Fathur 30-Nov-2023////////////
+    // added unit column 4-Des-2023
     @Override
     public List<Map<String, Object>> listQueryStockCardDetail(Map<String, String> ref) {
-        String query = "SELECT S.OUTLET_CODE, S.TRANS_DATE, S.CD_TRANS, S.ITEM_CODE, M.ITEM_DESCRIPTION, S.QUANTITY_IN, S.QUANTITY AS QUANTITY_OUT "
+        String query = "SELECT S.OUTLET_CODE, S.TRANS_DATE, S.CD_TRANS, S.ITEM_CODE, M.ITEM_DESCRIPTION, M.UOM_STOCK AS UNIT, S.QUANTITY_IN, S.QUANTITY AS QUANTITY_OUT "
             + "FROM T_STOCK_CARD_DETAIL S "
             + "JOIN M_ITEM M ON M.ITEM_CODE = S.ITEM_CODE "
             + "WHERE S.TRANS_DATE = TO_DATE(:date, 'DD/MM/YYYY') "
@@ -2857,6 +2857,7 @@ public class ViewDoaImpl implements ViewDao {
                 } else {
                     rt.put("qtyOut", rs.getString("QUANTITY_OUT"));
                 }
+                rt.put("unit", rs.getString("UNIT"));
                 return rt;
             }
         });
