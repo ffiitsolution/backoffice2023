@@ -1473,9 +1473,9 @@ public class ViewDoaImpl implements ViewDao {
                 + "    CONV_WAREHOUSE,CONV_STOCK, "
                 + "    0 TOTAL_JUMLAH, "
                 + "    UOM_PURCHASE AS TOTAL "
-                + "FROM M_ITEM WHERE CD_WAREHOUSE = :cdWarehouse)";
+                + "FROM M_ITEM WHERE CD_WAREHOUSE like :cdWarehouse)";
         Map prm = new HashMap();
-        prm.put("cdWarehouse", balance.get("cdWarehouse"));
+        prm.put("cdWarehouse", "%" + balance.get("cdWarehouse") + "%");
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
