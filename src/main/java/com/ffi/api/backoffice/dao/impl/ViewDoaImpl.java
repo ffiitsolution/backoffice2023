@@ -390,53 +390,53 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listItemDetail(Map<String, String> balance) {
-        String qry = "  SELECT   MMI.MENU_ITEM_CODE,\n"
-                + "           MI.ITEM_DESCRIPTION,\n"
-                + "           MMI.MENU_GROUP_CODE,MG2.DESCRIPTION AS MENU_GROUP_NAME,\n"
-                + "           MP.PRICE,\n"
-                + "           MP.PRICE_TYPE_CODE AS PRICE_TYPE_CODE,\n"
-                + "           MG.DESCRIPTION AS ORDER_DESCRIPTION,\n"
-                + "           CASE\n"
-                + "              WHEN     MENU_SET = 'N'\n"
-                + "                   AND MODIFIER_GROUP1_CODE = ' '\n"
-                + "                   AND MODIFIER_GROUP2_CODE = ' '\n"
-                + "                   AND MODIFIER_GROUP3_CODE = ' '\n"
-                + "                   AND MODIFIER_GROUP4_CODE = ' '\n"
-                + "              THEN\n"
-                + "                 'N'\n"
-                + "              WHEN     MENU_SET = 'Y'\n"
-                + "                   AND MODIFIER_GROUP1_CODE = ' '\n"
-                + "                   AND MODIFIER_GROUP2_CODE = ' '\n"
-                + "                   AND MODIFIER_GROUP3_CODE = ' '\n"
-                + "                   AND MODIFIER_GROUP4_CODE = ' '\n"
-                + "              THEN\n"
-                + "                 'N'\n"
-                + "              ELSE\n"
-                + "                 'Y'\n"
-                + "           END\n"
-                + "              AS MODIFIER_STATUS\n"
-                + "    FROM                  M_MENU_ITEM MMI\n"
-                + "                       LEFT JOIN\n"
-                + "                          M_ITEM MI\n"
-                + "                       ON MMI.MENU_ITEM_CODE = MI.ITEM_CODE\n"
-                + "                    LEFT JOIN\n"
-                + "                       M_PRICE MP\n"
-                + "                    ON MMI.MENU_ITEM_CODE = MP.MENU_ITEM_CODE\n"
-                + "                 LEFT JOIN\n"
-                + "                    M_OUTLET_PRICE MOP\n"
-                + "                 ON MOP.PRICE_TYPE_CODE = MP.PRICE_TYPE_CODE\n"
-                + "              LEFT JOIN\n"
-                + "                 M_GLOBAL MG\n"
-                + "              ON MOP.ORDER_TYPE = MG.CODE AND MG.COND = 'ORDER_TYPE'\n"
-                + "           LEFT JOIN\n"
-                + "              M_GLOBAL MG2\n"
-                + "           ON MMI.MENU_GROUP_CODE = MG2.CODE AND MG2.COND = 'GROUP'\n"
+        String qry = "  SELECT   MMI.MENU_ITEM_CODE, "
+                + "           MI.ITEM_DESCRIPTION, "
+                + "           MMI.MENU_GROUP_CODE,MG2.DESCRIPTION AS MENU_GROUP_NAME, "
+                + "           MP.PRICE, "
+                + "           MP.PRICE_TYPE_CODE AS PRICE_TYPE_CODE, "
+                + "           MG.DESCRIPTION AS ORDER_DESCRIPTION, "
+                + "           CASE "
+                + "              WHEN     MENU_SET = 'N' "
+                + "                   AND MODIFIER_GROUP1_CODE = ' ' "
+                + "                   AND MODIFIER_GROUP2_CODE = ' ' "
+                + "                   AND MODIFIER_GROUP3_CODE = ' ' "
+                + "                   AND MODIFIER_GROUP4_CODE = ' ' "
+                + "              THEN "
+                + "                 'N' "
+                + "              WHEN     MENU_SET = 'Y' "
+                + "                   AND MODIFIER_GROUP1_CODE = ' ' "
+                + "                   AND MODIFIER_GROUP2_CODE = ' ' "
+                + "                   AND MODIFIER_GROUP3_CODE = ' ' "
+                + "                   AND MODIFIER_GROUP4_CODE = ' ' "
+                + "              THEN "
+                + "                 'N' "
+                + "              ELSE "
+                + "                 'Y' "
+                + "           END "
+                + "              AS MODIFIER_STATUS "
+                + "    FROM                  M_MENU_ITEM MMI "
+                + "                       LEFT JOIN "
+                + "                          M_ITEM MI "
+                + "                       ON MMI.MENU_ITEM_CODE = MI.ITEM_CODE "
+                + "                    LEFT JOIN "
+                + "                       M_PRICE MP "
+                + "                    ON MMI.MENU_ITEM_CODE = MP.MENU_ITEM_CODE "
+                + "                 LEFT JOIN "
+                + "                    M_OUTLET_PRICE MOP "
+                + "                 ON MOP.PRICE_TYPE_CODE = MP.PRICE_TYPE_CODE "
+                + "              LEFT JOIN "
+                + "                 M_GLOBAL MG "
+                + "              ON MOP.ORDER_TYPE = MG.CODE AND MG.COND = 'ORDER_TYPE' "
+                + "           LEFT JOIN "
+                + "              M_GLOBAL MG2 "
+                + "           ON MMI.MENU_GROUP_CODE = MG2.CODE AND MG2.COND = 'GROUP' "
                 + "   WHERE       MMI.MENU_GROUP_CODE = :menuGroupCode "
                 + "           AND MMI.MENU_ITEM_CODE = :menuItemCode "
-                + "   AND MMI.STATUS = 'A'\n"
-                + "           AND MI.STATUS = 'A'\n"
-                + "           AND MMI.OUTLET_CODE = :outletCode\n"
-                + "           AND MOP.OUTLET_CODE = :outletCode\n"
+                + "   AND MMI.STATUS = 'A' "
+                + "           AND MI.STATUS = 'A' "
+                + "           AND MMI.OUTLET_CODE = :outletCode "
+                + "           AND MOP.OUTLET_CODE = :outletCode "
                 + "ORDER BY   MMI.MENU_ITEM_CODE";
         Map prm = new HashMap();
         prm.put("outletCode", balance.get("outletCode"));
@@ -615,6 +615,7 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
+
     //////////////done
     ///////////////new method from asep 29-mar-2023 //////////////      
     @Override
@@ -713,9 +714,9 @@ public class ViewDoaImpl implements ViewDao {
         /////////////// Revised query for Leftover - Fathur 21-nov-2023 ////////////// 
         if (Logan.get("paket").equalsIgnoreCase("L")) {
             qry = "SELECT * FROM M_ITEM "
-                + "WHERE (STATUS = 'A' AND FLAG_STOCK = 'Y' AND FLAG_PAKET = 'N') "
-                + "and CD_ITEM_LEFTOVER in (SELECT CODE FROM M_GLOBAL WHERE COND = 'LEFTOVER') "
-                + "order by ITEM_CODE ASC"; 
+                    + "WHERE (STATUS = 'A' AND FLAG_STOCK = 'Y' AND FLAG_PAKET = 'N') "
+                    + "and CD_ITEM_LEFTOVER in (SELECT CODE FROM M_GLOBAL WHERE COND = 'LEFTOVER') "
+                    + "order by ITEM_CODE ASC";
         }
         /////////////// End revised query for Leftover////////////// 
         Map prm = new HashMap();
@@ -2394,8 +2395,8 @@ public class ViewDoaImpl implements ViewDao {
                 prm.put("endTime", param.get("endTime"));
             }
             case "inventoryMovement" -> {
-                query = "SELECT COUNT(*) FROM T_STOCK_CARD WHERE TRANS_DATE BETWEEN :fromDate AND :toDate AND" +
-                        " OUTLET_CODE = :outletCode";
+                query = "SELECT COUNT(*) FROM T_STOCK_CARD WHERE TRANS_DATE BETWEEN :fromDate AND :toDate AND"
+                        + " OUTLET_CODE = :outletCode";
                 prm.put("fromDate", param.get("fromDate"));
                 prm.put("toDate", param.get("toDate"));
                 prm.put("outletCode", param.get("outletCode"));
@@ -2778,29 +2779,29 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
-    
+
     ////////////New method for query stock card - Fathur 29-Nov-2023////////////
     @Override
     public List<Map<String, Object>> listQueryStockCard(Map<String, String> ref) {
-        String query = "SELECT " 
-            + "SCARD.DATE_UPD, SCARD.TIME_UPD, MGLB.CODE AS CD_WAREHOUSE, MGLB.DESCRIPTION AS NM_WAREHOUSE, " 
-            + "SCARD.ITEM_CODE, MITEM.ITEM_DESCRIPTION as ITEM_NAME, " 
-            + "SCARD.QTY_BEGINNING, SCARD.QTY_IN, SCARD.QTY_OUT, ((QTY_BEGINNING + QTY_IN) - QTY_OUT) as QTY_ENDING, " 
-            + "MITEM.UOM_STOCK AS UNIT, SCARD.REMARK " 
-            + "FROM T_STOCK_CARD SCARD " 
-            + "JOIN M_ITEM MITEM ON SCARD.ITEM_CODE = MITEM.ITEM_CODE "
-            + "JOIN M_GLOBAL MGLB on MGLB.CODE = MITEM.CD_WAREHOUSE "
-            + "WHERE SCARD.DATE_UPD between TO_DATE(:startDate, 'DD/MM/YYYY') and (TO_DATE(:endDate, 'DD/MM/YYYY')+1) "
-            + "AND SCARD.ITEM_CODE LIKE :itemCode "
-            + "AND CD_WAREHOUSE LIKE :cdWarehouse "
-            + "ORDER BY SCARD.DATE_UPD DESC ";
+        String query = "SELECT "
+                + "SCARD.DATE_UPD, SCARD.TIME_UPD, MGLB.CODE AS CD_WAREHOUSE, MGLB.DESCRIPTION AS NM_WAREHOUSE, "
+                + "SCARD.ITEM_CODE, MITEM.ITEM_DESCRIPTION as ITEM_NAME, "
+                + "SCARD.QTY_BEGINNING, SCARD.QTY_IN, SCARD.QTY_OUT, ((QTY_BEGINNING + QTY_IN) - QTY_OUT) as QTY_ENDING, "
+                + "MITEM.UOM_STOCK AS UNIT, SCARD.REMARK "
+                + "FROM T_STOCK_CARD SCARD "
+                + "JOIN M_ITEM MITEM ON SCARD.ITEM_CODE = MITEM.ITEM_CODE "
+                + "JOIN M_GLOBAL MGLB on MGLB.CODE = MITEM.CD_WAREHOUSE "
+                + "WHERE SCARD.DATE_UPD between TO_DATE(:startDate, 'DD/MM/YYYY') and (TO_DATE(:endDate, 'DD/MM/YYYY')+1) "
+                + "AND SCARD.ITEM_CODE LIKE :itemCode "
+                + "AND CD_WAREHOUSE LIKE :cdWarehouse "
+                + "ORDER BY SCARD.DATE_UPD DESC ";
         Map param = new HashMap();
         param.put("startDate", ref.get("startDate"));
         param.put("endDate", ref.get("endDate"));
         param.put("itemCode", "%" + ref.get("itemCode") + "%");
         param.put("cdWarehouse", "%" + ref.get("cdWarehouse") + "%");
         System.err.println("q :" + query);
-        
+
         List<Map<String, Object>> queryStockCardlist = jdbcTemplate.query(query, param, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
@@ -2824,17 +2825,16 @@ public class ViewDoaImpl implements ViewDao {
     }
     ////////////Done method for query stock card////////////
 
- 
     ////////////New method for query stock card detail - Fathur 30-Nov-2023////////////
     // added unit column 4-Des-2023
     @Override
     public List<Map<String, Object>> listQueryStockCardDetail(Map<String, String> ref) {
         String query = "SELECT S.OUTLET_CODE, S.TRANS_DATE, S.CD_TRANS, S.ITEM_CODE, M.ITEM_DESCRIPTION, M.UOM_STOCK AS UNIT, S.QUANTITY_IN, S.QUANTITY AS QUANTITY_OUT "
-            + "FROM T_STOCK_CARD_DETAIL S "
-            + "JOIN M_ITEM M ON M.ITEM_CODE = S.ITEM_CODE "
-            + "WHERE S.TRANS_DATE = TO_DATE(:date, 'DD/MM/YYYY') "
-            + "AND S.ITEM_CODE LIKE :itemCode ";
-        
+                + "FROM T_STOCK_CARD_DETAIL S "
+                + "JOIN M_ITEM M ON M.ITEM_CODE = S.ITEM_CODE "
+                + "WHERE S.TRANS_DATE = TO_DATE(:date, 'DD/MM/YYYY') "
+                + "AND S.ITEM_CODE LIKE :itemCode ";
+
         Map param = new HashMap();
         Boolean isTransactionIn = ref.get("transactionType").equalsIgnoreCase("IN");
         if (isTransactionIn) {
@@ -2844,10 +2844,10 @@ public class ViewDoaImpl implements ViewDao {
         }
         param.put("date", ref.get("date"));
         param.put("itemCode", "%" + ref.get("itemCode") + "%");
-        
-        System.err.print("query: " + query );
-        
-        List<Map<String, Object>> stockCardDetail = jdbcTemplate.query(query, param, new RowMapper<Map<String, Object>>(){
+
+        System.err.print("query: " + query);
+
+        List<Map<String, Object>> stockCardDetail = jdbcTemplate.query(query, param, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
@@ -2855,7 +2855,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("itemCode", rs.getString("ITEM_CODE"));
                 rt.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
                 rt.put("cdTrans", rs.getString("CD_TRANS"));
-                if (isTransactionIn) {    
+                if (isTransactionIn) {
                     rt.put("qtyIn", rs.getString("QUANTITY_IN"));
                 } else {
                     rt.put("qtyOut", rs.getString("QUANTITY_OUT"));
@@ -2867,4 +2867,33 @@ public class ViewDoaImpl implements ViewDao {
         return stockCardDetail;
     }
     ////////////Done method for query stock card detail////////////
+
+    ///////////////NEW METHOD MENU GROUP ITEM  4-DEC-2023////////////////////////////
+    @Override
+    public List<Map<String, Object>> listMenuGroupCodeDetail(Map<String, String> balance) {
+        String qry = "  select A.PLU,A.SEQ,B.DESCRIPTION AS MENU_ITEM,A.STATUS from m_menu_item A "
+                + "  LEFT JOIN (SELECT COND,CODE,DESCRIPTION FROM M_GLOBAL WHERE COND='ITEM' AND STATUS='A') B "
+                + "  ON A.MENU_ITEM_CODE=B.CODE  "
+                + "  LEFT JOIN (SELECT COND,CODE,DESCRIPTION FROM M_GLOBAL WHERE COND='GROUP' AND STATUS='A') C "
+                + "  ON A.MENU_GROUP_CODE=C.CODE "
+                + " WHERE  A.MENU_GROUP_CODE=:menuGroupCode";
+        Map prm = new HashMap();
+        prm.put("menuGroupCode", balance.get("menuGroupCode"));
+
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("plu", rs.getString("PLU"));
+                rt.put("seq", rs.getString("SEQ"));
+                rt.put("menuItem", rs.getString("MENU_ITEM"));
+                rt.put("status", rs.getString("STATUS"));
+                return rt;
+            }
+        });
+        return list;
+    }
+
+    ///////////////////////////DONE////////////////////////    
 }

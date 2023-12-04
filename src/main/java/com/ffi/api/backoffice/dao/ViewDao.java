@@ -202,12 +202,16 @@ public interface ViewDao {
     List<Map<String, Object>> listDetailOderbyOrderno(Map<String, String> ref);
 
     /////////////////////////////done
-    
     ////////////New method for query stock card - Fathur 29-Nov-2023////////////
     List<Map<String, Object>> listQueryStockCard(Map<String, String> ref);
     ////////////Done method for query stock card////////////
-    
-////////////New method for query stock card detail - Fathur 30-Nov-2023////////////
+
+    ////////New method for query stock card detail - Fathur 30-Nov-2023////////////
     List<Map<String, Object>> listQueryStockCardDetail(Map<String, String> ref);
     ////////////Done method for query stock card detail////////////
+
+    ////////////New METHODE DETAIL MENU GROUP - Dona 4 DEC 2023////////////
+    List<Map<String, Object>> listMenuGroupCodeDetail(Map<String, String> ref);
+    ////////////Done////////////
+
 }

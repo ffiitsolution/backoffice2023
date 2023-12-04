@@ -368,23 +368,30 @@ public class ViewServices {
     public List<Map<String, Object>> listItemSupplierGudangReturnOrder(Map<String, Object> param) {
         return viewDao.listItemSupplierGudangReturnOrder(param);
     }
-    
-        ///////////////new method from dona 9-11-2023////////////////////////////
 
+    ///////////////new method from dona 9-11-2023////////////////////////////
     public List<Map<String, Object>> listDetailOderbyOrderno(Map<String, String> ref) {
         return viewDao.listDetailOderbyOrderno(ref);
     }
     ///////////////done
-    
+
     ////////////New method for query stock card - Fathur 29-Nov-2023////////////
     public List<Map<String, Object>> listQueryStockCard(Map<String, String> ref) {
         return viewDao.listQueryStockCard(ref);
     }
     ////////////Done method for query stock card////////////
-    
+
     ////////////New method for query stock card detail - Fathur 30-Nov-2023////////////
     public List<Map<String, Object>> listQueryStockCardDetail(Map<String, String> ref) {
         return viewDao.listQueryStockCardDetail(ref);
     }
     ////////////Done method for query stock card detail////////////
+
+    ////////////New METHOD LIST MENU GROUP CODE BY DONA 4 DEC 2023////////////
+    public List<Map<String, Object>> listMenuGroupCodeDetail(Map<String, String> ref) {
+        return viewDao.listMenuGroupCodeDetail(ref);
+
+        ////////////Done method for query stock card detail////////////
+    }
+
 }

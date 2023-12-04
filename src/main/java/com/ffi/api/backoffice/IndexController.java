@@ -2486,4 +2486,25 @@ public class IndexController {
     }
     ////////////Done method for query stock card detail////////////
     
+    ///////////////  NEW METHOD LIST MENU GROUP CODE  BY DONA 4 DEC 2023////////////////////
+       @RequestMapping(value = "/list-menu-group-code-detail", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Menampilkan Data Menu Item Code ", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")
+    }
+    )
+
+    public @ResponseBody
+    Response listMenuGroupCodeDetail(@RequestBody String param) {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        Map<String, Object> map = new LinkedHashMap<String, Object>();
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response res = new Response();
+        res.setData(viewServices.listMenuGroupCodeDetail(balance));
+        return res;
+    }
+   /////////////////////////////DONE//////////////////////////////////// 
 }
