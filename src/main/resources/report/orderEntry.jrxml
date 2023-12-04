@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="orderEntry" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="0793d68f-3216-428e-b721-e2ccbd5a3839">
-    <property name="ireport.zoom" value="1.5000000000000007"/>
+    <property name="ireport.zoom" value="1.650000000000001"/>
     <property name="ireport.x" value="0"/>
     <property name="ireport.y" value="0"/>
     <style name="table">
@@ -100,7 +100,7 @@ ORDER BY a.order_no, e.item_code, a.ORDER_DATE asc]]>
         <groupHeader>
             <band height="25">
                 <textField isBlankWhenNull="true">
-                    <reportElement x="79" y="5" width="71" height="15" uuid="78e83d83-a172-4c2b-b637-def60bfa870c"/>
+                    <reportElement x="79" y="5" width="91" height="15" uuid="78e83d83-a172-4c2b-b637-def60bfa870c"/>
                     <textElement textAlignment="Center">
                         <font size="8"/>
                     </textElement>
@@ -114,21 +114,21 @@ ORDER BY a.order_no, e.item_code, a.ORDER_DATE asc]]>
                     <textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($F{ORDER_DATE})]]></textFieldExpression>
                 </textField>
                 <textField isBlankWhenNull="true">
-                    <reportElement x="149" y="5" width="53" height="15" uuid="e56c7cad-e8db-4d61-b1f7-da494cf14d2b"/>
+                    <reportElement x="169" y="5" width="53" height="15" uuid="e56c7cad-e8db-4d61-b1f7-da494cf14d2b"/>
                     <textElement textAlignment="Center">
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{ORDER_TYPE}]]></textFieldExpression>
                 </textField>
-                <textField isBlankWhenNull="true">
-                    <reportElement x="201" y="5" width="147" height="15" uuid="0f197fec-3ff1-466d-bcf6-dd4d271e21b6"/>
+                <textField textAdjust="StretchHeight" isBlankWhenNull="true">
+                    <reportElement x="221" y="5" width="147" height="15" uuid="0f197fec-3ff1-466d-bcf6-dd4d271e21b6"/>
                     <textElement>
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{ORDER_KE}]]></textFieldExpression>
                 </textField>
-                <textField isBlankWhenNull="true">
-                    <reportElement x="347" y="5" width="158" height="15" uuid="95bdd124-1f07-4e6b-9edd-cdc477ae61c7"/>
+                <textField textAdjust="StretchHeight" isBlankWhenNull="true">
+                    <reportElement x="367" y="5" width="138" height="15" uuid="95bdd124-1f07-4e6b-9edd-cdc477ae61c7"/>
                     <textElement>
                         <font size="8"/>
                     </textElement>
@@ -155,7 +155,7 @@ ORDER BY a.order_no, e.item_code, a.ORDER_DATE asc]]>
         <groupExpression><![CDATA[$F{ORDER_NO}]]></groupExpression>
         <groupHeader>
             <band height="18">
-                <printWhenExpression><![CDATA[$P{detail}.equals(1)]]></printWhenExpression>
+                <printWhenExpression><![CDATA[$P{detail}.equals(1) && (!$F{ITEM_CODE}.equals( null ))]]></printWhenExpression>
                 <staticText>
                     <reportElement x="68" y="2" width="50" height="15" uuid="c09ecc66-ea69-4a9b-96c0-2267cad38d0e"/>
                     <textElement textAlignment="Center">
@@ -263,7 +263,7 @@ ORDER BY a.order_no, e.item_code, a.ORDER_DATE asc]]>
     <columnHeader>
         <band height="98" splitType="Stretch">
             <staticText>
-                <reportElement x="79" y="83" width="71" height="15" uuid="b2c11e13-6675-4555-be14-c57e45a78e89"/>
+                <reportElement x="79" y="83" width="91" height="15" uuid="b2c11e13-6675-4555-be14-c57e45a78e89"/>
                 <textElement textAlignment="Center">
                     <font size="8" isBold="true"/>
                 </textElement>
@@ -284,21 +284,21 @@ ORDER BY a.order_no, e.item_code, a.ORDER_DATE asc]]>
                 <text><![CDATA[No]]></text>
             </staticText>
             <staticText>
-                <reportElement x="149" y="83" width="53" height="15" uuid="e131ad39-e673-40c1-b7c1-4886c97d4a24"/>
+                <reportElement x="169" y="83" width="53" height="15" uuid="e131ad39-e673-40c1-b7c1-4886c97d4a24"/>
                 <textElement textAlignment="Center">
                     <font size="8" isBold="true"/>
                 </textElement>
                 <text><![CDATA[Tipe]]></text>
             </staticText>
             <staticText>
-                <reportElement x="201" y="83" width="147" height="15" uuid="963645e2-aacb-4c67-8edd-8240b2675d2d"/>
+                <reportElement x="221" y="83" width="147" height="15" uuid="963645e2-aacb-4c67-8edd-8240b2675d2d"/>
                 <textElement>
                     <font size="8" isBold="true"/>
                 </textElement>
                 <text><![CDATA[Order Ke]]></text>
             </staticText>
             <staticText>
-                <reportElement x="347" y="83" width="158" height="15" uuid="29ad9a07-ad89-4792-8a54-a76cfbc91c67"/>
+                <reportElement x="367" y="83" width="138" height="15" uuid="29ad9a07-ad89-4792-8a54-a76cfbc91c67"/>
                 <textElement>
                     <font size="8" isBold="true"/>
                 </textElement>
