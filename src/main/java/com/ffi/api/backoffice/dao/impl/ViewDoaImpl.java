@@ -1616,8 +1616,8 @@ public class ViewDoaImpl implements ViewDao {
                 + "where i.status = 'A' AND i.FLAG_MATERIAL = 'Y' AND i.FLAG_STOCK = 'Y' "
                 + "UNION ALL "
                 + "select OD.ITEM_CODE,I.ITEM_DESCRIPTION, "
-                + "(OD.QTY_PURCH/I.CONV_WAREHOUSE) QTY_WAREHOUSE,I.UOM_WAREHOUSE, "
-                + "(OD.QTY_STOCK/I.CONV_STOCK) QTY_PURCHASE,i.CONV_WAREHOUSE,I.UOM_PURCHASE, "
+                + "OD.QTY_PURCH AS QTY_WAREHOUSE,I.UOM_WAREHOUSE, "
+                + "OD.QTY_STOCK AS QTY_PURCHASE,i.CONV_WAREHOUSE,I.UOM_PURCHASE, "
                 + "OD.TOTAL_QTY,i.CONV_STOCK,i.UOM_STOCK "
                 + "from T_OPNAME_DETAIL OD "
                 + "LEFT JOIN M_ITEM I ON I.ITEM_CODE = OD.ITEM_CODE "
@@ -2391,8 +2391,10 @@ public class ViewDoaImpl implements ViewDao {
                 prm.put("endTime", param.get("endTime"));
             }
             case "inventoryMovement" -> {
-                query = "SELECT COUNT(*) FROM T_STOCK_CARD WHERE TRANS_DATE = :transDate AND OUTLET_CODE = :outletCode";
-                prm.put("transDate", param.get("fromDate"));
+                query = "SELECT COUNT(*) FROM T_STOCK_CARD WHERE TRANS_DATE BETWEEN :fromDate AND :toDate AND" +
+                        " OUTLET_CODE = :outletCode";
+                prm.put("fromDate", param.get("fromDate"));
+                prm.put("toDate", param.get("toDate"));
                 prm.put("outletCode", param.get("outletCode"));
             }
             case "stockOpname" -> {

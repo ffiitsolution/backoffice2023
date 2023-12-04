@@ -1101,6 +1101,8 @@ public class ReportDaoImpl implements ReportDao {
             hashMap.put("outletCode", param.get("outletCode"));
             hashMap.put("fromDate", param.get("fromDate"));
             hashMap.put("toDate", param.get("toDate"));
+        } else if (param.get("typeReport").equals("Free Meal Dept") && param.get("typeParam").equals("Department")) {
+            query = "SELECT OUTLET_CODE, OUTLET_NAME FROM M_OUTLET WHERE \"TYPE\" = 'HO' ORDER BY OUTLET_CODE ASC";
         }
 
         assert query != null;
@@ -1174,6 +1176,9 @@ public class ReportDaoImpl implements ReportDao {
                 } else if (param.get("typeReport").equals("Report Stock") && param.get("typeParam").equals("Jenis Gudang")) {
                     rt.put("cdWarehouse", rs.getString("CD_WAREHOUSE"));
                     rt.put("description", rs.getString("DESCRIPTION"));
+                } else if (param.get("typeReport").equals("Free Meal Dept") && param.get("typeParam").equals("Department")) {
+                    rt.put("outletCode", rs.getString("OUTLET_CODE"));
+                    rt.put("outletName", rs.getString("OUTLET_NAME"));
                 }
                 return rt;
             }
