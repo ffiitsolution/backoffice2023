@@ -646,8 +646,8 @@ public class ReportDaoImpl implements ReportDao {
             hashMap.put("typeTransaksi", "Wastage");
             hashMap.put("typeTrans1", "W");
             hashMap.put("typeTrans2", "W");
-        } else if (param.get("typeTransaksi").equals("Left Offer")) {
-            hashMap.put("typeTransaksi", "Left Offer");
+        } else if (param.get("typeTransaksi").equals("Left Over")) {
+            hashMap.put("typeTransaksi", "Left Over");
             hashMap.put("typeTrans1", "L");
             hashMap.put("typeTrans2", "L");
         }
