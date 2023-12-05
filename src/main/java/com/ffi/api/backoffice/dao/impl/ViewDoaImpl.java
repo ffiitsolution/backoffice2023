@@ -16,6 +16,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -2896,4 +2897,62 @@ public class ViewDoaImpl implements ViewDao {
     }
 
     ///////////////////////////DONE////////////////////////    
+
+    ////////////New method for query last EOD - M Joko M 4-Dec-2023////////////
+    @Override
+    public List<Map<String, Object>> lastEodByOutlet(Map<String, String> ref) {
+        Map param = new HashMap();
+        String qry = "select * from (select e.*, o.outlet_name from t_eod_hist e join m_outlet o on o.outlet_code=:outletCode where o.outlet_code = :outletCode order by e.trans_date desc) where rownum = 1";
+        param.put("outletCode", ref.get("outletCode"));
+        
+        System.err.println("q :" + qry);
+        System.err.println("param :" + param.toString());
+        
+        List<Map<String, Object>> list;
+        list = jdbcTemplate.query(qry, param, (ResultSet rs, int i) -> {
+            Map<String, Object> rt = new HashMap<>();
+            rt.put("regionCode", rs.getString("REGION_CODE"));
+            rt.put("outletCode", rs.getString("OUTLET_CODE"));
+            rt.put("transDate", rs.getString("TRANS_DATE"));
+            rt.put("userEod", rs.getString("USER_EOD"));
+            rt.put("dateEod", rs.getString("DATE_EOD"));
+            rt.put("timeEod", rs.getString("TIME_EOD"));
+            rt.put("sendFlag", rs.getString("USER_SEND"));
+            rt.put("dateSend", rs.getString("DATE_SEND"));
+            rt.put("outletName", rs.getString("OUTLET_NAME"));
+            return rt;
+        });
+        return list;
+    }
+    /////////////////done last EOD////////////////
+    
+    ////////////New method for query POS yg Open berdasarkan Outlet - M Joko M 4-Dec-2023////////////
+    public List<Map<String, Object>> eodPosOpened(Map<String, String> ref) {
+        Map param = new HashMap();
+        String qry = "select e.*, p.pos_description from t_eod_hist_dtl e join m_pos p on p.outlet_code=e.outlet_code and p.pos_code=e.pos_code where trans_date=(select trans_date from m_outlet where outlet_code=:outletCode) and process_eod=:active";
+        param.put("outletCode", ref.get("outletCode"));
+        param.put("active", ref.containsKey("active") ? ref.get("active") : "N");
+        
+        System.err.println("q :" + qry);
+        System.err.println("param :" + param.toString());
+        
+        List<Map<String, Object>> list;
+        list = jdbcTemplate.query(qry, param, (ResultSet rs, int i) -> {
+            Map<String, Object> rt = new HashMap<>();
+            rt.put("regionCode", rs.getString("REGION_CODE"));
+            rt.put("outletCode", rs.getString("OUTLET_CODE"));
+            rt.put("transDate", rs.getString("TRANS_DATE"));
+            rt.put("posCode", rs.getString("POS_CODE"));
+            rt.put("posDescription", rs.getString("POS_DESCRIPTION"));
+            rt.put("processEod", rs.getString("PROCESS_EOD"));
+            rt.put("notes", rs.getString("NOTES"));
+            rt.put("userUpd", rs.getString("USER_UPD"));
+            rt.put("dateUpd", rs.getString("DATE_UPD"));
+            rt.put("timeUpd", rs.getString("TIME_UPD"));
+            return rt;
+        });
+        return list;
+    }
+    /////////////////done POS yg Open berdasarkan Outlet////////////////
+    
 }
