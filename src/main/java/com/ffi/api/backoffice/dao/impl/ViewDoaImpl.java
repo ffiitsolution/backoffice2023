@@ -2900,16 +2900,12 @@ public class ViewDoaImpl implements ViewDao {
 
     ////////////New method for query last EOD - M Joko M 4-Dec-2023////////////
     @Override
-    public List<Map<String, Object>> lastEodByOutlet(Map<String, String> ref) {
+    public List<Map<String, Object>> lastEod(Map<String, String> ref) {
         Map param = new HashMap();
         String qry = "select * from (select e.*, o.outlet_name from t_eod_hist e join m_outlet o on o.outlet_code=:outletCode where o.outlet_code = :outletCode order by e.trans_date desc) where rownum = 1";
         param.put("outletCode", ref.get("outletCode"));
-        
         System.err.println("q :" + qry);
-        System.err.println("param :" + param.toString());
-        
-        List<Map<String, Object>> list;
-        list = jdbcTemplate.query(qry, param, (ResultSet rs, int i) -> {
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, param, (ResultSet rs, int i) -> {
             Map<String, Object> rt = new HashMap<>();
             rt.put("regionCode", rs.getString("REGION_CODE"));
             rt.put("outletCode", rs.getString("OUTLET_CODE"));
@@ -2927,17 +2923,12 @@ public class ViewDoaImpl implements ViewDao {
     /////////////////done last EOD////////////////
     
     ////////////New method for query POS yg Open berdasarkan Outlet - M Joko M 4-Dec-2023////////////
-    public List<Map<String, Object>> eodPosOpened(Map<String, String> ref) {
+    public List<Map<String, Object>> listPosOpen(Map<String, String> ref) {
         Map param = new HashMap();
-        String qry = "select e.*, p.pos_description from t_eod_hist_dtl e join m_pos p on p.outlet_code=e.outlet_code and p.pos_code=e.pos_code where trans_date=(select trans_date from m_outlet where outlet_code=:outletCode) and process_eod=:active";
+        String qry = "select e.*, p.pos_description from t_eod_hist_dtl e join m_pos p on p.outlet_code=e.outlet_code and p.pos_code=e.pos_code where trans_date=(select trans_date from m_outlet where outlet_code=:outletCode) and process_eod='N'";
         param.put("outletCode", ref.get("outletCode"));
-        param.put("active", ref.containsKey("active") ? ref.get("active") : "N");
-        
         System.err.println("q :" + qry);
-        System.err.println("param :" + param.toString());
-        
-        List<Map<String, Object>> list;
-        list = jdbcTemplate.query(qry, param, (ResultSet rs, int i) -> {
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, param, (ResultSet rs, int i) -> {
             Map<String, Object> rt = new HashMap<>();
             rt.put("regionCode", rs.getString("REGION_CODE"));
             rt.put("outletCode", rs.getString("OUTLET_CODE"));

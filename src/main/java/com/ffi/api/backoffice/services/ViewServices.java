@@ -395,14 +395,14 @@ public class ViewServices {
     }
 
     ////////////New method for query stock card detail - Joko 4-Dec-2023////////////
-    public List<Map<String, Object>> lastEodByOutlet(Map<String, String> ref) {
-        return viewDao.lastEodByOutlet(ref);
+    public List<Map<String, Object>> lastEod(Map<String, String> ref) {
+        return viewDao.lastEod(ref);
     }
     ////////////Done method for query stock card detail////////////
     
     ////////////New method for query POS yg Open berdasarkan Outlet - M Joko 4-Dec-2023////////////
-    public List<Map<String, Object>> eodPosOpened(Map<String, String> ref) {
-        return viewDao.eodPosOpened(ref);
+    public List<Map<String, Object>> listPosOpen(Map<String, String> ref) {
+        return viewDao.listPosOpen(ref);
     }
     ////////////Done method for query POS yg Open berdasarkan Outlet////////////
 }

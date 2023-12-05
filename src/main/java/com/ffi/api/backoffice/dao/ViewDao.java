@@ -215,11 +215,11 @@ public interface ViewDao {
     ////////////Done////////////
     
     ////////////New method for Last Eod - M. Joko 30-Nov-2023////////////
-    List<Map<String, Object>> lastEodByOutlet(Map<String, String> ref);
+    List<Map<String, Object>> lastEod(Map<String, String> ref);
     ////////////Done method for last Eod ////////////
 
     ////////////New method for POS yg Open berdasarkan Outlet - M. Joko 30-Nov-2023////////////
-    List<Map<String, Object>> eodPosOpened(Map<String, String> ref);
+    List<Map<String, Object>> listPosOpen(Map<String, String> ref);
     ////////////Done method for POS yg Open berdasarkan Outlet ////////////
 
 }

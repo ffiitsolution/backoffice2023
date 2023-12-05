@@ -2508,36 +2508,26 @@ public class IndexController {
     }
    /////////////////////////////DONE//////////////////////////////////// 
    
-   ////////////New method for Last Eod - M Joko 4-Dec-2023////////////
-   @RequestMapping(value = "/last-eod-by-outlet", produces = MediaType.APPLICATION_JSON_VALUE)
-   @ApiOperation(value = "Digunakan untuk ambil data EOD terakhir di outlet", response = Object.class)
+   ////////////New method for Last Eod by Outlet - M Joko 4-Dec-2023////////////
+   @RequestMapping(value = "/last-eod", produces = MediaType.APPLICATION_JSON_VALUE)
+   @ApiOperation(value = "Digunakan untuk ambil data EOD terakhir dan POS yg belum complete di outlet", response = Object.class)
    @ApiResponses(value = {
        @ApiResponse(code = 200, message = "OK"),
        @ApiResponse(code = 404, message = "The resource not found"),}
    )
-   
    public @ResponseBody
-   Response lastEodByOutlet(@RequestBody String param) throws IOException, Exception {
+   Response lastEod(@RequestBody String param) throws IOException, Exception {
        Gson gsn = new Gson();
        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
        }.getType());
-       
-       List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-       List<Map<String, Object>> posOpened = new ArrayList<Map<String, Object>>();
-       List<Map<String, Object>> response = new ArrayList<Map<String, Object>>();
-
-       Response res = new Response();
-       list = viewServices.lastEodByOutlet(balance);
-       posOpened = viewServices.eodPosOpened(balance);
-       
-       Map<String, Object> eod = new HashMap();
-       eod.putAll(list.get(0));
+       List<Map<String, Object>> lastEod = viewServices.lastEod(balance);
+       List<Map<String, Object>> posOpened = viewServices.listPosOpen(balance);
+       List<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
+       Map<String, Object> eod = lastEod.get(0);
        eod.put("posOpened", posOpened);
-       response.add(eod);
-       
-       int total = list.size();
-       res.setData(response);
-       res.setRecordsTotal(total);
+       data.add(eod);
+       Response res = new Response();
+       res.setData(data);
        return res;
    }
    ////////////Done method for Last Eod////////////
