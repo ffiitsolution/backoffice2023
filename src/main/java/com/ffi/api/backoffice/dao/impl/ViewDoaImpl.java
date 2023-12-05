@@ -1920,7 +1920,9 @@ public class ViewDoaImpl implements ViewDao {
                 + "                    CONV_WAREHOUSE,CONV_STOCK, "
                 + "                    0 TOTAL_JUMLAH, "
                 + "                    UOM_PURCHASE AS TOTAL "
-                + "                FROM M_ITEM order by item_code asc)";
+                + "                FROM M_ITEM WHERE "
+                + "                SUBSTR(ITEM_CODE,1,1) != 'X' " // Buglist No.39 - Update item_code where clause by Fathur 5-Dec-2023
+                + "                ORDER BY item_code asc)";
         Map prm = new HashMap();
         prm.put("cdWarehouse", balance.get("cdWarehouse"));
         System.err.println("q :" + qry);
