@@ -276,6 +276,7 @@ public class ViewDoaImpl implements ViewDao {
 
     ///////////////new method from budi 14-03-2023////////////////////////////
     /////edited by dona 4 des 2023///////////////////
+    /////Update where clause by Fathur 6 Des 2023///////////////////
     @Override
     public List<Map<String, Object>> listMenuGroup(Map<String, String> ref) {
         String qry = "SELECT   "
@@ -284,10 +285,17 @@ public class ViewDoaImpl implements ViewDao {
                 + "FROM M_MENU_GROUP M  "
                 + "JOIN M_GLOBAL G  "
                 + "ON M.MENU_GROUP_CODE = G.CODE  "
-                + "WHERE G.COND = 'GROUP' AND M.OUTLET_CODE LIKE :outletCode AND M.STATUS='A'  "
-                + "ORDER BY MENU_GROUP_CODE";
+                + "WHERE G.COND = 'GROUP' AND M.OUTLET_CODE LIKE :outletCode ";
         Map prm = new HashMap();
         prm.put("outletCode", "%" + ref.get("outletCode") + "%");
+        var allStatusParamValue = ref.getOrDefault("allStatus", "N");
+        System.err.println("allStatusParamValue: " + allStatusParamValue);
+        if ("N".equals(allStatusParamValue)) { 
+            qry += "AND M.STATUS = 'A' ORDER BY MENU_GROUP_CODE";
+        } else {
+            qry += "AND M.STATUS IN ('A', 'I' ) ORDER BY MENU_GROUP_CODE";
+        }
+        
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
