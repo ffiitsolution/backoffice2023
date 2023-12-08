@@ -759,6 +759,12 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("item", param.get("item"));
         hashMap.put("user", param.get("user"));
 
+        if (param.get("item").equals("Semua")){
+            hashMap.put("itemName", "Semua");
+        } else {
+            hashMap.put("itemName", param.get("item") + "-" + param.get("itemName"));
+        }
+
         StringBuilder query = new StringBuilder();
 
         if (param.get("typePrint").equals(1.0))
@@ -1103,6 +1109,9 @@ public class ReportDaoImpl implements ReportDao {
             hashMap.put("toDate", param.get("toDate"));
         } else if (param.get("typeReport").equals("Free Meal Dept") && param.get("typeParam").equals("Department")) {
             query = "SELECT OUTLET_CODE, OUTLET_NAME FROM M_OUTLET WHERE \"TYPE\" = 'HO' ORDER BY OUTLET_CODE ASC";
+        } else if (param.get("typeReport").equals("Item Barang") && param.get("typeParam").equals("Jenis Gudang")) {
+            query = "SELECT CODE, DESCRIPTION FROM M_GLOBAL WHERE COND = :city AND STATUS = 'A' ORDER BY CODE ASC";
+            hashMap.put("city", "X_" + param.get("city"));
         }
 
         assert query != null;
@@ -1121,10 +1130,10 @@ public class ReportDaoImpl implements ReportDao {
                     rt.put("description", rs.getString("DESCRIPTION"));
                 } else if (param.get("typeReport").equals("Receiving") && param.get("typeParam").equals("Outlet") && rs.getString("OUTLET_NAME") != null) {
                     rt.put("code", rs.getString("CD_SUPPLIER"));
-                    rt.put("outletName", rs.getString("OUTLET_NAME"));
+                    rt.put("description", rs.getString("OUTLET_NAME"));
                 } else if (param.get("typeReport").equals("Receiving") && param.get("typeParam").equals("Supplier") && rs.getString("SUPPLIER_NAME") != null) {
                     rt.put("code", rs.getString("CD_SUPPLIER"));
-                    rt.put("supplierName", rs.getString("SUPPLIER_NAME"));
+                    rt.put("description", rs.getString("SUPPLIER_NAME"));
                 } else if (param.get("typeReport").equals("Cashier By Date") && param.get("typeParam").equals("Cashier")) {
                     rt.put("cashierCode", rs.getString("CASHIER_CODE"));
                     rt.put("staffName", rs.getString("STAFF_NAME"));
@@ -1179,6 +1188,9 @@ public class ReportDaoImpl implements ReportDao {
                 } else if (param.get("typeReport").equals("Free Meal Dept") && param.get("typeParam").equals("Department")) {
                     rt.put("outletCode", rs.getString("OUTLET_CODE"));
                     rt.put("outletName", rs.getString("OUTLET_NAME"));
+                } else if (param.get("typeReport").equals("Item Barang") && param.get("typeParam").equals("Jenis Gudang")) {
+                    rt.put("code", rs.getString("CODE"));
+                    rt.put("description", rs.getString("DESCRIPTION"));
                 }
                 return rt;
             }
