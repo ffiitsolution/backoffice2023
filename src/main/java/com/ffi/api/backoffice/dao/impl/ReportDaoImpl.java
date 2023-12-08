@@ -1103,6 +1103,9 @@ public class ReportDaoImpl implements ReportDao {
             hashMap.put("toDate", param.get("toDate"));
         } else if (param.get("typeReport").equals("Free Meal Dept") && param.get("typeParam").equals("Department")) {
             query = "SELECT OUTLET_CODE, OUTLET_NAME FROM M_OUTLET WHERE \"TYPE\" = 'HO' ORDER BY OUTLET_CODE ASC";
+        } else if (param.get("typeReport").equals("Item Barang") && param.get("typeParam").equals("Jenis Gudang")) {
+            query = "SELECT CODE, DESCRIPTION FROM M_GLOBAL WHERE COND = :city AND STATUS = 'A' ORDER BY CODE ASC";
+            hashMap.put("city", "X_" + param.get("city"));
         }
 
         assert query != null;
@@ -1179,6 +1182,9 @@ public class ReportDaoImpl implements ReportDao {
                 } else if (param.get("typeReport").equals("Free Meal Dept") && param.get("typeParam").equals("Department")) {
                     rt.put("outletCode", rs.getString("OUTLET_CODE"));
                     rt.put("outletName", rs.getString("OUTLET_NAME"));
+                } else if (param.get("typeReport").equals("Item Barang") && param.get("typeParam").equals("Jenis Gudang")) {
+                    rt.put("code", rs.getString("CODE"));
+                    rt.put("description", rs.getString("DESCRIPTION"));
                 }
                 return rt;
             }
