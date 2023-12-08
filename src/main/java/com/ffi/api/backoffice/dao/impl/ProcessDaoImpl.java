@@ -2031,7 +2031,6 @@ public class ProcessDaoImpl implements ProcessDao {
                         public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                             Map<String, Object> rt = new HashMap<String, Object>();
                             rt.put("orderType", rs.getString("ORDER_TYPE"));
-                            rt.put("orderId", rs.getString("ORDER_ID"));
                             rt.put("itemCode", rs.getString("ITEM_CODE"));
                             rt.put("qty1", rs.getString("QTY_1"));
                             rt.put("cdUom1", rs.getString("CD_UOM_1"));
@@ -2039,10 +2038,7 @@ public class ProcessDaoImpl implements ProcessDao {
                             rt.put("cdUom2", rs.getString("CD_UOM_2"));
                             rt.put("totalQtyStock", rs.getString("TOTAL_QTY_STOCK"));
                             rt.put("unitPrice", rs.getString("UNIT_PRICE"));
-                            rt.put("userUpd", rs.getString("USER_UPD"));
-                            rt.put("timeUpd", rs.getString("TIME_UPD"));
                             rt.put("statusd", rs.getString("STATUSD"));
-
                             return rt;
                         }
                     });
@@ -2071,7 +2067,6 @@ public class ProcessDaoImpl implements ProcessDao {
             for (Map<String, Object> dtl : list) {
                 CloseableHttpClient client = HttpClients.createDefault();
                 String url = urlWarehouse + "/insert-order-outlet-hdrdtl";
-//                ganti url adit
                 HttpPost post = new HttpPost(url);
 
                 post.setHeader("Accept", "*/*");
