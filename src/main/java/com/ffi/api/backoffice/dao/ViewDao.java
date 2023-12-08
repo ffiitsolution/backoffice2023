@@ -5,6 +5,8 @@
 package com.ffi.api.backoffice.dao;
 
 import com.ffi.api.backoffice.model.ParameterLogin;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -155,6 +157,8 @@ public interface ViewDao {
     public String cekItemHq();
 
     public String getCity(String outletCode);
+
+    public String getTransDate(String outletCode);
 
     ///////////////////////////////Add Receiving by KP (06-06-2023)///////////////////////////////
     List<Map<String, Object>> listReceivingHeader(Map<String, String> ref);

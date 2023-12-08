@@ -17,6 +17,7 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -24,7 +25,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.tomcat.jni.Local;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 //import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -1373,14 +1376,21 @@ public class ViewDoaImpl implements ViewDao {
 
     ///////////////////done
     ///////////////NEW METHOD LIST ORDER HEADER BY DONA 18 APRIL 2023////
+    ////////////// WHERE CLOUSE USING BETWEEN TRANS_DATE AND ONE MONTH BEFORE TRANSDATE UPDATE BY DANI 8 DEC 2023
     @Override
     public List<Map<String, Object>> listOrderHeaderAll(Map<String, String> balance) {
         String getCity = getCity(balance.get("outletCode"));
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String transDate = getTransDate(balance.get("outletCode")).toLowerCase();
+        LocalDate localDate = LocalDate.parse(transDate, format);
+        LocalDate beforeTransDate = localDate.minusDays(30);
         String where = "";
         if (!balance.get("orderDate").equals("")) {
             where = "AND ORDER_DATE =:orderDate";
         } else {
-            where = "and ORDER_DATE between TO_CHAR(CURRENT_DATE-7,'dd-MON-yy') and TO_CHAR(CURRENT_DATE,'dd-MON-yy')";
+            // where = "and ORDER_DATE between TO_CHAR(CURRENT_DATE-7,'dd-MON-yy') and TO_CHAR(CURRENT_DATE,'dd-MON-yy')";
+            // WHERE CLOUSE USING BETWEEN TRANS_DATE AND ONE MONTH BEFORE TRANSDATE by Dani
+            where = " and ORDER_DATE >= TO_DATE('"+ beforeTransDate.format(format)+ "', 'YYYY-MM-DD') AND ORDER_DATE <= TO_DATE('"+localDate.format(format)+"', 'YYYY-MM-DD') ";
         }
         String qry = "SELECT H.*,case when G.DESCRIPTION is null and  m.outlet_name is null then s.supplier_name  "
                 + "                when G.DESCRIPTION is null and s.supplier_name  is null then m.outlet_name else "
@@ -1394,7 +1404,8 @@ public class ViewDoaImpl implements ViewDao {
                 + "AND H.ORDER_TYPE LIKE :orderType  "
                 + "AND H.OUTLET_CODE = :outletCode  "
                 + "AND H.Order_to LIKE :orderTo  "
-                + "" + where + "";
+                + "" + where + ""
+                + " ORDER BY ORDER_DATE DESC"; // ORDER DATE DESCENDING by Dani
         Map prm = new HashMap();
         prm.put("status", "%" + balance.get("status") + "%");
         prm.put("orderType", "%" + balance.get("orderType") + "%");
@@ -1456,11 +1467,24 @@ public class ViewDoaImpl implements ViewDao {
             @Override
             public Object mapRow(ResultSet rs, int i) throws SQLException {
                 return rs.getString(1) == null ? "0" : rs.getString(1);
-
             }
         }).toString();
     }
 
+    // DONE
+    ////////// NEW METHOD GET TRANS DATE FROM M_OUTLET BY OUTLET_CODE BY DANI 8 DESEMBER 2023
+    @Override
+    public String getTransDate(String outletCode) {
+        String qry = "SELECT DISTINCT TO_CHAR(TRANS_DATE, 'YYYY-MM-DD') FROM M_OUTLET WHERE OUTLET_CODE = :outletCode and status = 'A'";
+        Map prm = new HashMap();
+        prm.put("outletCode", outletCode);
+        return jdbcTemplate.queryForObject(qry, prm, new RowMapper() {
+            @Override
+            public Object mapRow(ResultSet rs, int i) throws SQLException {
+                return rs.getString(1);
+            }
+        }).toString();
+    }
     ///////////////////done
     ///////////////NEW METHOD LIST ORDER HEADER BY DONA 27 APRIL 2023////
     @Override
