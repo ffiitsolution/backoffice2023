@@ -759,6 +759,12 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("item", param.get("item"));
         hashMap.put("user", param.get("user"));
 
+        if (param.get("item").equals("Semua")){
+            hashMap.put("itemName", "Semua");
+        } else {
+            hashMap.put("itemName", param.get("item") + "-" + param.get("itemName"));
+        }
+
         StringBuilder query = new StringBuilder();
 
         if (param.get("typePrint").equals(1.0))
@@ -1124,10 +1130,10 @@ public class ReportDaoImpl implements ReportDao {
                     rt.put("description", rs.getString("DESCRIPTION"));
                 } else if (param.get("typeReport").equals("Receiving") && param.get("typeParam").equals("Outlet") && rs.getString("OUTLET_NAME") != null) {
                     rt.put("code", rs.getString("CD_SUPPLIER"));
-                    rt.put("outletName", rs.getString("OUTLET_NAME"));
+                    rt.put("description", rs.getString("OUTLET_NAME"));
                 } else if (param.get("typeReport").equals("Receiving") && param.get("typeParam").equals("Supplier") && rs.getString("SUPPLIER_NAME") != null) {
                     rt.put("code", rs.getString("CD_SUPPLIER"));
-                    rt.put("supplierName", rs.getString("SUPPLIER_NAME"));
+                    rt.put("description", rs.getString("SUPPLIER_NAME"));
                 } else if (param.get("typeReport").equals("Cashier By Date") && param.get("typeParam").equals("Cashier")) {
                     rt.put("cashierCode", rs.getString("CASHIER_CODE"));
                     rt.put("staffName", rs.getString("STAFF_NAME"));
