@@ -117,5 +117,6 @@ public interface ProcessDao {
 
     /////////////done
     
+    public void sendDataOutletToWarehouse(Map<String, String> mapping);
 
 }

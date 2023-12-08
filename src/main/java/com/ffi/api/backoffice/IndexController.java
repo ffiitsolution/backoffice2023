@@ -2531,5 +2531,37 @@ public class IndexController {
        return res;
    }
    ////////////Done method for Last Eod////////////
-
+   
+   
+    @RequestMapping(value = "/send-data-outlet-to-warehouse", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk insert transaksi opname header", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    
+    
+    public @ResponseBody
+    ResponseMessage sendDataOutletToWarehouse(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        String status = "";
+        ResponseMessage rm = new ResponseMessage();
+        
+        try {
+            processServices.sendDataOutletToWarehouse(balance);
+            
+            rm.setSuccess(true);
+            rm.setMessage("Insert Successfuly");
+            
+            
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Insert Failed: " + e.getMessage());
+        }
+        rm.setItem(list);
+        return rm;
+    }
 }

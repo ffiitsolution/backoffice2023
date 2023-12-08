@@ -210,4 +210,7 @@ public class ProcessServices {
     }
     ///////////////////////done
 
+    public void sendDataOutletToWarehouse(Map<String, String> balance) {
+        dao.sendDataOutletToWarehouse(balance);    
+    }
 }

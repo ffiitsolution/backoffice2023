@@ -1974,4 +1974,147 @@ public class ProcessDaoImpl implements ProcessDao {
         }
     }
 
+    public void sendDataOutletToWarehouse(Map<String, String> balance) {
+
+        String json = "";
+        Gson gson = new Gson();
+        Map<String, Object> map1 = new HashMap<String, Object>();
+        try {
+            String qry1 = "SELECT OUTLET_CODE,  "
+                    + "ORDER_TYPE,   "
+                    + "ORDER_ID,     "
+                    + "ORDER_NO,     "
+                    + "ORDER_DATE,   "
+                    + "ORDER_TO,     "
+                    + "CD_SUPPLIER,  "
+                    + "DT_DUE,       "
+                    + "DT_EXPIRED,   "
+                    + "REMARK,        "
+                    + "NO_OF_PRINT,  "
+                    + "STATUS,       "
+                    + "USER_UPD,     "
+                    + "DATE_UPD,     "
+                    + "TIME_UPD, "
+                    + "'N' AS STATUSH "
+                    + "FROM   T_ORDER_HEADER "
+                    + "WHERE   ORDER_NO =:orderNo ";
+
+            Map prm = new HashMap();
+            prm.put("orderNo", balance.get("orderNo"));
+            System.err.println("q1 :" + qry1);
+            List<Map<String, Object>> list = jdbcTemplate.query(qry1, prm, new RowMapper<Map<String, Object>>() {
+                public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                    Map<String, Object> rh = new HashMap<String, Object>();
+                    String qry2 = "SELECT ITEM_CODE as KODE_BARANG,(TOTAL_QTY_STOCK/QTY_1) AS KONVERSI,CD_UOM_2 AS SATUAN_KECIL,"
+                            + " CD_UOM_1 AS SATUAN_BESAR,QTY_1 AS QTY_PESAN_BESAR,QTY_2 AS QTY_PESAN_KECIL,"
+                            + "  TOTAL_QTY_STOCK AS TOTAL_QTY_PESAN,'' AS TOTAL_QTY_KIRIM,UNIT_PRICE AS HARGA_UNIT,'000000' AS TIME_COUNTER,'N' AS SEND_FLAG, 'N' as STATUSD"
+                            + "  FROM T_ORDER_DETAIL WHERE ORDER_NO =:orderNo";
+                    System.err.println("q2 :" + qry2);
+                    List<Map<String, Object>> list2 = jdbcTemplate.query(qry2, prm, new RowMapper<Map<String, Object>>() {
+                        @Override
+                        public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                            Map<String, Object> rt = new HashMap<String, Object>();
+                            rt.put("kodeBarang", rs.getString("KODE_BARANG"));
+                            rt.put("konversi", rs.getString("KONVERSI"));
+                            rt.put("satuanKecil", rs.getString("SATUAN_KECIL"));
+                            rt.put("satuanBesar", rs.getString("SATUAN_BESAR"));
+                            rt.put("qtyPesanBesar", rs.getString("QTY_PESAN_BESAR"));
+                            rt.put("qtyPesanKecil", rs.getString("QTY_PESAN_KECIL"));
+                            rt.put("totalQtyPesan", rs.getString("TOTAL_QTY_PESAN"));
+                            rt.put("totalQtyKirim", rs.getString("TOTAL_QTY_KIRIM"));
+                            rt.put("hargaUnit", rs.getString("HARGA_UNIT"));
+                            rt.put("timeCounter", rs.getString("TIME_COUNTER"));
+                            rt.put("sendFlag", rs.getString("SEND_FLAG"));
+                            rt.put("statusd", rs.getString("STATUSD"));
+                            return rt;
+                        }
+                    });
+                    rh.put("itemList", list2);
+                    rh.put("outletCode", rs.getString("OUTLET_CODE"));
+                    rh.put("orderType", rs.getString("ORDER_TYPE"));
+                    rh.put("orderId", rs.getString("ORDER_ID"));
+                    rh.put("orderNo", rs.getString("ORDER_NO"));
+                    rh.put("orderDate", rs.getString("ORDER_DATE"));
+                    rh.put("orderTo", rs.getString("ORDER_TO"));
+                    rh.put("cdSupplier", rs.getString("CD_SUPPLIER"));
+                    rh.put("dtDue", rs.getString("DT_DUE"));
+                    rh.put("dtExpired", rs.getString("DT_EXPIRED"));
+                    rh.put("remark", rs.getString("REMARK"));
+                    rh.put("noOfPrint", rs.getString("NO_OF_PRINT"));
+                    rh.put("status", rs.getString("STATUS"));
+                    rh.put("userUpd", rs.getString("USER_UPD"));
+                    rh.put("dateUpd", rs.getString("DATE_UPD"));
+                    rh.put("timeUpd", rs.getString("TIME_UPD"));
+                    rh.put("statush", rs.getString("STATUSH"));
+
+                    return rh;
+                }
+            });
+
+            for (Map<String, Object> dtl : list) {
+                CloseableHttpClient client = HttpClients.createDefault();
+                String url = urlWarehouse + "/insert-order-headerdetail";
+                HttpPost post = new HttpPost(url);
+
+                post.setHeader("Accept", "*/*");
+                post.setHeader("Content-Type", "application/json");
+
+                Map<String, Object> param = new HashMap<String, Object>();
+                param.put("outletCode", dtl.get("outletCode"));
+                param.put("orderType", dtl.get("orderType"));
+                param.put("orderId", dtl.get("orderId"));
+                param.put("orderNo", dtl.get("orderNo"));
+                param.put("orderDate", dtl.get("orderDate"));
+                param.put("orderTo", dtl.get("orderTo"));
+                param.put("cdSupplier", dtl.get("cdSupplier"));
+                param.put("dtDue", dtl.get("dtDue"));
+                param.put("dtExpired", dtl.get("dtExpired"));
+                param.put("remark", dtl.get("remark"));
+                param.put("noOfPrint", dtl.get("noOfPrint"));
+                param.put("status", dtl.get("status"));
+                param.put("userUpd", dtl.get("userUpd"));
+                param.put("dateUpd", dtl.get("dateUpd"));
+                param.put("timeUpd", dtl.get("timeUpd"));
+                param.put("statush", dtl.get("statush"));
+                //list
+                param.put("itemList", dtl.get("itemList"));
+                param.put("tglPesan", dateNow);
+                param.put("jamProsesPemesan", timeStamp);
+                json = new Gson().toJson(param);
+                StringEntity entity = new StringEntity(json);
+                post.setEntity(entity);
+                CloseableHttpResponse response = client.execute(post);
+                System.out.println("json" + json);
+                BufferedReader br = new BufferedReader(
+                        new InputStreamReader(
+                                (response.getEntity().getContent())
+                        )
+                );
+                StringBuilder content = new StringBuilder();
+                String line;
+                while (null != (line = br.readLine())) {
+                    content.append(line);
+                }
+                String result = content.toString();
+                System.out.println("trans =" + result);
+                map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
+                }.getType());
+            }
+            //Add Insert into Table T_HIST (28 Nov 2023)
+            Map<String, String> histSend = new HashMap<String, String>();
+            histSend.put("orderNo", balance.get("orderNo").toString());
+            insertHistSend(histSend);
+            //End by Dona
+            //Add Insert to HIST_KIRIM by KP (13-06-2023)
+            Map<String, String> histKirim = new HashMap<String, String>();
+            histKirim.put("orderNo", balance.get("orderNo").toString());
+            histKirim.put("sendUser", balance.get("userUpd").toString());
+            InsertHistKirim(histKirim);
+            //End added by KP
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
 }
