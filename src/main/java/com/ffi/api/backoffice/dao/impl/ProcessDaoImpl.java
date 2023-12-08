@@ -1978,8 +1978,8 @@ public class ProcessDaoImpl implements ProcessDao {
         }
     }
 
+    ///////////////New method from Fathur 08-Dec-2023////////////////////////////
     public void sendDataOutletToWarehouse(Map<String, String> balance) {
-
         String json = "";
         Gson gson = new Gson();
         Map<String, Object> map1 = new HashMap<String, Object>();
@@ -2009,27 +2009,40 @@ public class ProcessDaoImpl implements ProcessDao {
             List<Map<String, Object>> list = jdbcTemplate.query(qry1, prm, new RowMapper<Map<String, Object>>() {
                 public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                     Map<String, Object> rh = new HashMap<String, Object>();
-                    String qry2 = "SELECT ITEM_CODE as KODE_BARANG,(TOTAL_QTY_STOCK/QTY_1) AS KONVERSI,CD_UOM_2 AS SATUAN_KECIL,"
-                            + " CD_UOM_1 AS SATUAN_BESAR,QTY_1 AS QTY_PESAN_BESAR,QTY_2 AS QTY_PESAN_KECIL,"
-                            + "  TOTAL_QTY_STOCK AS TOTAL_QTY_PESAN,'' AS TOTAL_QTY_KIRIM,UNIT_PRICE AS HARGA_UNIT,'000000' AS TIME_COUNTER,'N' AS SEND_FLAG, 'N' as STATUSD"
-                            + "  FROM T_ORDER_DETAIL WHERE ORDER_NO =:orderNo";
+                    String qry2 = "SELECT OUTLET_CODE, "
+                            + "ORDER_TYPE, "
+                            + "ORDER_ID, "
+                            + "ORDER_NO, "
+                            + "ITEM_CODE, "
+                            + "QTY_1, "
+                            + "CD_UOM_1, "
+                            + "QTY_2, "
+                            + "CD_UOM_2, "
+                            + "TOTAL_QTY_STOCK, "
+                            + "UNIT_PRICE, "
+                            + "USER_UPD, "
+                            + "DATE_UPD, "
+                            + "TIME_UPD, "
+                            + "'N' AS STATUSD "
+                            + "FROM T_ORDER_DETAIL WHERE ORDER_NO =:orderNo ";
                     System.err.println("q2 :" + qry2);
                     List<Map<String, Object>> list2 = jdbcTemplate.query(qry2, prm, new RowMapper<Map<String, Object>>() {
                         @Override
                         public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                             Map<String, Object> rt = new HashMap<String, Object>();
-                            rt.put("kodeBarang", rs.getString("KODE_BARANG"));
-                            rt.put("konversi", rs.getString("KONVERSI"));
-                            rt.put("satuanKecil", rs.getString("SATUAN_KECIL"));
-                            rt.put("satuanBesar", rs.getString("SATUAN_BESAR"));
-                            rt.put("qtyPesanBesar", rs.getString("QTY_PESAN_BESAR"));
-                            rt.put("qtyPesanKecil", rs.getString("QTY_PESAN_KECIL"));
-                            rt.put("totalQtyPesan", rs.getString("TOTAL_QTY_PESAN"));
-                            rt.put("totalQtyKirim", rs.getString("TOTAL_QTY_KIRIM"));
-                            rt.put("hargaUnit", rs.getString("HARGA_UNIT"));
-                            rt.put("timeCounter", rs.getString("TIME_COUNTER"));
-                            rt.put("sendFlag", rs.getString("SEND_FLAG"));
+                            rt.put("orderType", rs.getString("ORDER_TYPE"));
+                            rt.put("orderId", rs.getString("ORDER_ID"));
+                            rt.put("itemCode", rs.getString("ITEM_CODE"));
+                            rt.put("qty1", rs.getString("QTY_1"));
+                            rt.put("cdUom1", rs.getString("CD_UOM_1"));
+                            rt.put("qty2", rs.getString("QTY_2"));
+                            rt.put("cdUom2", rs.getString("CD_UOM_2"));
+                            rt.put("totalQtyStock", rs.getString("TOTAL_QTY_STOCK"));
+                            rt.put("unitPrice", rs.getString("UNIT_PRICE"));
+                            rt.put("userUpd", rs.getString("USER_UPD"));
+                            rt.put("timeUpd", rs.getString("TIME_UPD"));
                             rt.put("statusd", rs.getString("STATUSD"));
+
                             return rt;
                         }
                     });
@@ -2057,7 +2070,8 @@ public class ProcessDaoImpl implements ProcessDao {
 
             for (Map<String, Object> dtl : list) {
                 CloseableHttpClient client = HttpClients.createDefault();
-                String url = urlWarehouse + "/insert-order-headerdetail";
+                String url = urlWarehouse + "/insert-order-outlet-hdrdtl";
+//                ganti url adit
                 HttpPost post = new HttpPost(url);
 
                 post.setHeader("Accept", "*/*");
@@ -2120,5 +2134,5 @@ public class ProcessDaoImpl implements ProcessDao {
             e.printStackTrace();
         }
     }
-    
+    ///////////////Done new method from Fathur 08-Dec-2023////////////////////////////
 }
