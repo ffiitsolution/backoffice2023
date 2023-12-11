@@ -2832,7 +2832,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "WHERE SCARD.DATE_UPD between TO_DATE(:startDate, 'DD/MM/YYYY') and (TO_DATE(:endDate, 'DD/MM/YYYY')+1) "
                 + "AND SCARD.ITEM_CODE LIKE :itemCode "
                 + "AND CD_WAREHOUSE LIKE :cdWarehouse "
-                + "ORDER BY SCARD.DATE_UPD DESC ";
+                + "ORDER BY SCARD.ITEM_CODE ASC ";
         Map param = new HashMap();
         param.put("startDate", ref.get("startDate"));
         param.put("endDate", ref.get("endDate"));
