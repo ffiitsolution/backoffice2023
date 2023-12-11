@@ -117,6 +117,7 @@ public interface ProcessDao {
 
     /////////////done
     
+    ////////////New method for Transfer master outlet - Fathur 11 Dec 2023////////////
     public void sendDataOutletToWarehouse(Map<String, String> mapping);
-
+    ////////////Done method for Transfer master outlet////////////
 }

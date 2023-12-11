@@ -2532,7 +2532,7 @@ public class IndexController {
    }
    ////////////Done method for Last Eod////////////
    
-   
+    ////////////New method for Transfer master outlet - Fathur 11 Dec 2023////////////
     @RequestMapping(value = "/send-data-outlet-to-warehouse", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk insert transaksi opname header", response = Object.class)
     @ApiResponses(value = {
@@ -2564,4 +2564,5 @@ public class IndexController {
         rm.setItem(list);
         return rm;
     }
+    ////////////Done add method for Transfer master outlet////////////
 }

@@ -1978,7 +1978,7 @@ public class ProcessDaoImpl implements ProcessDao {
         }
     }
 
-    ///////////////New method from Fathur 08-Dec-2023////////////////////////////
+    ///////////////New method from Fathur 11-Dec-2023////////////////////////////
     public void sendDataOutletToWarehouse(Map<String, String> balance) {
         String json = "";
         Gson gson = new Gson();
@@ -2091,8 +2091,6 @@ public class ProcessDaoImpl implements ProcessDao {
                 param.put("statush", dtl.get("statush"));
                 //list
                 param.put("itemList", dtl.get("itemList"));
-                param.put("tglPesan", dateNow);
-                param.put("jamProsesPemesan", timeStamp);
                 json = new Gson().toJson(param);
                 StringEntity entity = new StringEntity(json);
                 post.setEntity(entity);
@@ -2113,21 +2111,18 @@ public class ProcessDaoImpl implements ProcessDao {
                 map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
                 }.getType());
             }
-            //Add Insert into Table T_HIST (28 Nov 2023)
             Map<String, String> histSend = new HashMap<String, String>();
             histSend.put("orderNo", balance.get("orderNo").toString());
             insertHistSend(histSend);
-            //End by Dona
-            //Add Insert to HIST_KIRIM by KP (13-06-2023)
+
             Map<String, String> histKirim = new HashMap<String, String>();
             histKirim.put("orderNo", balance.get("orderNo").toString());
             histKirim.put("sendUser", balance.get("userUpd").toString());
             InsertHistKirim(histKirim);
-            //End added by KP
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    ///////////////Done new method from Fathur 08-Dec-2023////////////////////////////
+    ///////////////Done new method from Fathur ////////////////////////////
 }
