@@ -1392,14 +1392,17 @@ public class ViewDoaImpl implements ViewDao {
             // WHERE CLOUSE USING BETWEEN TRANS_DATE AND ONE MONTH BEFORE TRANSDATE by Dani
             where = " and ORDER_DATE >= TO_DATE('"+ beforeTransDate.format(format)+ "', 'YYYY-MM-DD') AND ORDER_DATE <= TO_DATE('"+localDate.format(format)+"', 'YYYY-MM-DD') ";
         }
-        String qry = "SELECT H.*,case when G.DESCRIPTION is null and  m.outlet_name is null then s.supplier_name  "
+        String qry = "SELECT H.*, case when G.DESCRIPTION is null and  m.outlet_name is null then s.supplier_name  "
                 + "                when G.DESCRIPTION is null and s.supplier_name  is null then m.outlet_name else "
-                + "               g.description end as NAMA_GUDANG FROM T_ORDER_HEADER H "
+                + "               g.description end as NAMA_GUDANG, "
+                + "               case when K.status_kirim = 'S' then 'Sudah' else 'Belum' end as STATUS_KIRIM"
+                + " FROM T_ORDER_HEADER H "
                 + " LEFT JOIN M_GLOBAL G ON G.CODE = H.CD_SUPPLIER AND G.COND = 'X_" + getCity + "' AND G.STATUS = 'A' "
                 + " left join m_outlet M "
                 + "               on H.cd_supplier=m.outlet_code "
                 + "               left join m_supplier S "
                 + "               on h.cd_supplier=s.cd_supplier "
+                + " LEFT JOIN HIST_KIRIM K ON K.NO_ORDER = H.ORDER_NO "
                 + "WHERE H.STATUS LIKE :status  "
                 + "AND H.ORDER_TYPE LIKE :orderType  "
                 + "AND H.OUTLET_CODE = :outletCode  "
