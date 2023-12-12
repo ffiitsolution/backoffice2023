@@ -399,19 +399,19 @@ public class ViewServices {
         return viewDao.lastEod(ref);
     }
     ////////////Done method for query EOD terakhir Outlet ////////////
-    
+
     ////////////New method for query POS yg Open - M Joko 4-Dec-2023////////////
     public List<Map<String, Object>> listPosOpen(Map<String, String> ref) {
         return viewDao.listPosOpen(ref);
     }
     ////////////Done method for query POS yg Open berdasarkan Outlet////////////
-    
+
     ////////////New method for query M POS yg Aktif - M Joko 12-Dec-2023////////////
     public List<Map<String, Object>> listMPosActive(Map<String, String> ref) {
         return viewDao.listMPosActive(ref);
     }
     ////////////Done method for query M POS yg Aktif ////////////
-    
+
     ////////////New method for query T Stock Card sebelumnya - M Joko 12-Dec-2023////////////
     public List<Map<String, Object>> listPreviousTStockCard(Map<String, String> ref) {
         return viewDao.listPreviousTStockCard(ref);
@@ -422,4 +422,10 @@ public class ViewServices {
     public List<Map<String, Object>> listReceivingAll(Map<String, String> ref) {
         return viewDao.listReceivingAll(ref);
     }
+    ////////////New LIST MPCS PLAN BY DONA 12-Dec-2023////////////
+
+    public List<Map<String, Object>> listMpcsPlan(Map<String, String> ref) {
+        return viewDao.listMpcsPlan(ref);
+    }
+    ////////////Done  ////////////
 }

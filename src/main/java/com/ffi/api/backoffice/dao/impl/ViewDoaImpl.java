@@ -293,12 +293,12 @@ public class ViewDoaImpl implements ViewDao {
         prm.put("outletCode", "%" + ref.get("outletCode") + "%");
         var allStatusParamValue = ref.getOrDefault("allStatus", "N");
         System.err.println("allStatusParamValue: " + allStatusParamValue);
-        if ("N".equals(allStatusParamValue)) { 
+        if ("N".equals(allStatusParamValue)) {
             qry += "AND M.STATUS = 'A' ORDER BY MENU_GROUP_CODE";
         } else {
             qry += "AND M.STATUS IN ('A', 'I' ) ORDER BY MENU_GROUP_CODE";
         }
-        
+
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
@@ -1390,7 +1390,7 @@ public class ViewDoaImpl implements ViewDao {
         } else {
             // where = "and ORDER_DATE between TO_CHAR(CURRENT_DATE-7,'dd-MON-yy') and TO_CHAR(CURRENT_DATE,'dd-MON-yy')";
             // WHERE CLOUSE USING BETWEEN TRANS_DATE AND ONE MONTH BEFORE TRANSDATE by Dani
-            where = " and ORDER_DATE >= TO_DATE('"+ beforeTransDate.format(format)+ "', 'YYYY-MM-DD') AND ORDER_DATE <= TO_DATE('"+localDate.format(format)+"', 'YYYY-MM-DD') ";
+            where = " and ORDER_DATE >= TO_DATE('" + beforeTransDate.format(format) + "', 'YYYY-MM-DD') AND ORDER_DATE <= TO_DATE('" + localDate.format(format) + "', 'YYYY-MM-DD') ";
         }
         String qry = "SELECT H.*, case when G.DESCRIPTION is null and  m.outlet_name is null then s.supplier_name  "
                 + "                when G.DESCRIPTION is null and s.supplier_name  is null then m.outlet_name else "
@@ -1488,6 +1488,7 @@ public class ViewDoaImpl implements ViewDao {
             }
         }).toString();
     }
+
     ///////////////////done
     ///////////////NEW METHOD LIST ORDER HEADER BY DONA 27 APRIL 2023////
     @Override
@@ -2669,20 +2670,20 @@ public class ViewDoaImpl implements ViewDao {
                 + "END AS TYPE_RETURN, CONCAT(b.DESCRIPTION, CONCAT(c.OUTLET_NAME, d.SUPPLIER_NAME)) AS return_to,"
                 + " a.STATUS FROM T_RETURN_HEADER a LEFT JOIN M_GLOBAL b ON a.RETURN_TO = b.CODE AND b.COND = :city"
                 + " LEFT JOIN M_OUTLET c ON a.RETURN_TO  = c.OUTLET_CODE LEFT JOIN M_SUPPLIER d ON a.RETURN_TO = d.CD_SUPPLIER ";
-        if(param.containsKey("startDate") && param.get("startDate").length() > 0 ){
+        if (param.containsKey("startDate") && param.get("startDate").length() > 0) {
             query += " WHERE a.RETURN_DATE BETWEEN TO_DATE(:startDate, 'dd-mm-yyyy') AND TO_DATE(:endDate, 'dd-mm-yyyy') ";
             sqlParam.put("startDate", param.get("startDate"));
             sqlParam.put("endDate", param.get("endDate"));
         }
         query += " ORDER BY RETURN_DATE DESC ";
-        if(param.containsKey("limit") && param.get("limit").length() > 0){
+        if (param.containsKey("limit") && param.get("limit").length() > 0) {
             query = "SELECT * FROM ( " + query + " ) WHERE rownum <= :limit";
             sqlParam.put("limit", param.get("limit"));
         }
         sqlParam.put("city", "X_" + param.get("city"));
         System.err.println("q :" + query);
         //////////////////// done aditya /////////////////////////////////////
-        
+
         List<Map<String, Object>> list = jdbcTemplate.query(query, sqlParam, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
@@ -2942,7 +2943,6 @@ public class ViewDoaImpl implements ViewDao {
     }
 
     ///////////////////////////DONE////////////////////////    
-
     ////////////New method for query last EOD - M Joko M 4-Dec-2023////////////
     @Override
     public List<Map<String, Object>> lastEod(Map<String, String> ref) {
@@ -2966,13 +2966,13 @@ public class ViewDoaImpl implements ViewDao {
         return list;
     }
     /////////////////done last EOD////////////////
-    
+
     ////////////New method for query POS yg Open berdasarkan Outlet - M Joko M 4-Dec-2023////////////
     @Override
     public List<Map<String, Object>> listPosOpen(Map<String, String> ref) {
         Map param = new HashMap();
         String qry = "select e.*, p.pos_description from t_eod_hist_dtl e join m_pos p on p.outlet_code=e.outlet_code and p.pos_code=e.pos_code where trans_date=(select trans_date from m_outlet where outlet_code=:outletCode) and process_eod<>'Y'";
-        if(ref.containsKey("posCode")){
+        if (ref.containsKey("posCode")) {
             // ambil 1 pos berdasar code
             qry = "select e.*, p.pos_description from t_eod_hist_dtl e join m_pos p on p.outlet_code=e.outlet_code and p.pos_code=e.pos_code where trans_date=(select trans_date from m_outlet where outlet_code=:outletCode) and e.pos_code=:posCode and rownum = 1";
             param.put("posCode", ref.get("posCode"));
@@ -2997,7 +2997,6 @@ public class ViewDoaImpl implements ViewDao {
     }
     /////////////////done POS yg Open berdasarkan Outlet////////////////
 
-    
     //////////// New method for query M POS yg Active berdasarkan Outlet - M Joko M 12-Dec-2023////////////
     @Override
     public List<Map<String, Object>> listMPosActive(Map<String, String> ref) {
@@ -3018,13 +3017,13 @@ public class ViewDoaImpl implements ViewDao {
             return rt;
         });
     }
-    
+
     //////////// New method for query T Stock Card hari sebelumnya - M Joko M 12-Dec-2023////////////
     @Override
     public List<Map<String, Object>> listPreviousTStockCard(Map<String, String> ref) {
         Map param = new HashMap();
         String qry = "select * from t_stock_card where trans_date=(select trans_date from m_outlet where outlet_code=:outletCode)";
-        if(ref.containsKey("transDate")){
+        if (ref.containsKey("transDate")) {
             qry = "select * from t_stock_card where trans_date=:transDate";
             param.put("transDate", ref.get("transDate"));
         } else {
@@ -3034,25 +3033,25 @@ public class ViewDoaImpl implements ViewDao {
         return jdbcTemplate.query(qry, param, (ResultSet rs, int i) -> {
             Map<String, Object> rt = new HashMap<>();
             rt.put("outletCode", rs.getString("OUTLET_CODE"));
-            rt.put("transDate",rs.getString("TRANS_DATE"));
-            rt.put("itemCode",rs.getString("ITEM_CODE"));
-            rt.put("itemCost",rs.getString("ITEM_COST"));
-            rt.put("qtyBeginning",rs.getString("QTY_BEGINNING"));
-            rt.put("qtyIn",rs.getString("QTY_IN"));
-            rt.put("qtyOut",rs.getString("QTY_OUT"));
-            rt.put("remark",rs.getString("REMARK"));
+            rt.put("transDate", rs.getString("TRANS_DATE"));
+            rt.put("itemCode", rs.getString("ITEM_CODE"));
+            rt.put("itemCost", rs.getString("ITEM_COST"));
+            rt.put("qtyBeginning", rs.getString("QTY_BEGINNING"));
+            rt.put("qtyIn", rs.getString("QTY_IN"));
+            rt.put("qtyOut", rs.getString("QTY_OUT"));
+            rt.put("remark", rs.getString("REMARK"));
             rt.put("userUpd", rs.getString("USER_UPD"));
             rt.put("dateUpd", rs.getString("DATE_UPD"));
             rt.put("timeUpd", rs.getString("TIME_UPD"));
             return rt;
         });
     }
-    
+
     ///////////////NEW METHOD LIST RECEIVING ALL BY DANI 12 DECEMBER 2023////
     @Override
     public List<Map<String, Object>> listReceivingAll(Map<String, String> balance) {
         String getCity = getCity(balance.get("outletCode"));
-        
+
         String qry = "SELECT H.ROWID, H.OUTLET_CODE, H.STATUS, H.ORDER_NO, H.ORDER_TYPE, H.CD_SUPPLIER, TO_CHAR(H.ORDER_DATE, 'DD-Mon-YY') AS ORDER_DATE, "
                 + " CASE WHEN H.ORDER_TO = '3' THEN 'Gudang' WHEN H.ORDER_TO = '2' THEN 'Outlet' WHEN H.ORDER_TO = '1' THEN 'Canvasing' ELSE 'Supplier' END as ORDER_TO, "
                 + " case when G.DESCRIPTION is null and  m.outlet_name is null then s.supplier_name  "
@@ -3085,10 +3084,60 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("gudangName", rs.getString("NAMA_GUDANG"));
                 rt.put("orderDate", rs.getString("ORDER_DATE"));
                 // rt.put("orderId", rs.getString("ORDER_ID"));
-                
+
                 return rt;
             }
         });
         return list;
     }
+
+    /////////////////////////////DONE//////////////////////////////////
+    ///////////////NEW METHOD LIST MPCS PLAN BY DONA 12 DECEMBER 2023////
+    @Override
+    public List<Map<String, Object>> listMpcsPlan(Map<String, String> balance) {
+        String getCity = getCity(balance.get("outletCode"));
+
+        String qry = "SELECT  OUTLET_CODE, MPCS_GROUP, DATE_MPCS, TIME_MPCS, QTY_PROJ, QTY_PROJ_CONV,  "
+                + "QTY_ACC_PROJ, QTY_SOLD, QTY_ACC_SOLD, QTY_VARIANCE, QTY_ACC_VARIANCE, USER_UPD,  "
+                + "DATE_UPD, TIME_UPD, SEQ_MPCS FROM t_summ_mpcs "
+                + "WHERE OUTLET_CODE =:outletCode   "
+                + "AND MPCS_GROUP =mpcsGroup   "
+                + "AND DATE_MPCS =dateMpcs "
+                + "AND TIME_MPCS >='000000' "
+                + "ORDER BY  "
+                + "OUTLET_CODE  ASC, MPCS_GROUP  ASC, DATE_MPCS  ASC, TIME_MPCS  ASC, SEQ_MPCS   "
+                + "ASC ";
+
+        Map prm = new HashMap();
+        prm.put("outletCode", balance.get("outletCode"));
+        prm.put("mpcsGroup", balance.get("mpcsGroup"));
+        prm.put("dateMpcs", balance.get("dateMpcs"));
+
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("outletCode", rs.getString("OUTLET_CODE"));
+                rt.put("mpcsGroup", rs.getString("MPCS_GROUP"));
+                rt.put("dateMpcs", rs.getString("DATE_MPCS"));
+                rt.put("timeMpcs", rs.getString("TIME_MPCS"));
+                rt.put("qtyProj", rs.getString("QTY_PROJ"));
+                rt.put("qtyProjConv", rs.getString("QTY_PROJ_CONV"));
+                rt.put("qtyAccProj", rs.getString("QTY_ACC_PROJ"));
+                rt.put("qtySold", rs.getString("QTY_SOLD"));
+                rt.put("qtyAccSold", rs.getString("QTY_ACC_SOLD"));
+                rt.put("qtyVariance", rs.getString("QTY_VARIANCE"));
+                rt.put("qtyAccVariance", rs.getString("QTY_ACC_VARIANCE"));
+                rt.put("userUpd", rs.getString("USER_UPD"));
+                rt.put("dateUpd", rs.getString("DATE_UPD"));
+                rt.put("timeUpd", rs.getString("TIME_UPD"));
+                rt.put("seqMpcs", rs.getString("SEQ_MPCS"));
+
+                return rt;
+            }
+        });
+        return list;
+    }
+    //////////////////////////////////DONE//////////////////////////////////////////////////////////
 }

@@ -217,7 +217,7 @@ public interface ViewDao {
     ////////////New METHODE DETAIL MENU GROUP - Dona 4 DEC 2023////////////
     List<Map<String, Object>> listMenuGroupCodeDetail(Map<String, String> ref);
     ////////////Done////////////
-    
+
     ////////////New method for Last Eod - M. Joko 30-Nov-2023////////////
     List<Map<String, Object>> lastEod(Map<String, String> ref);
     ////////////Done method for last Eod ////////////
@@ -234,6 +234,9 @@ public interface ViewDao {
     List<Map<String, Object>> listPreviousTStockCard(Map<String, String> ref);
     ////////////Done method for M POS yg Aktif ////////////
 
-        ///////////////NEW METHOD LIST RECEIVING ALL HEADER BY DANI 12 DECEMBER 2023////
+    ///////////////NEW METHOD LIST RECEIVING ALL HEADER BY DANI 12 DECEMBER 2023////
     List<Map<String, Object>> listReceivingAll(Map<String, String> ref);
+    ///////////////NEW METHOD LIST MPCS PLAN 12 DECEMBER 2023////
+    List<Map<String, Object>> listMpcsPlan(Map<String, String> ref);
+    //////////////////////////DONE////////////////////////////
 }
