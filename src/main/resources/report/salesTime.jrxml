@@ -750,7 +750,7 @@ ORDER BY JAM ASC]]>
                 <textElement>
                     <font size="8"/>
                 </textElement>
-                <text><![CDATA[Tanggal dan Jan Cetak ]]></text>
+                <text><![CDATA[Tanggal dan Jam Cetak ]]></text>
             </staticText>
         </band>
     </summary>

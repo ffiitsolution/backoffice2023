@@ -545,7 +545,7 @@ WHERE g.description IN ($P{brand1}, $P{brand2})]]>
                 <textElement>
                     <font size="8"/>
                 </textElement>
-                <text><![CDATA[Tanggal dan Jan Cetak ]]></text>
+                <text><![CDATA[Tanggal dan Jam Cetak ]]></text>
             </staticText>
             <textField>
                 <reportElement x="105" y="6" width="150" height="11" uuid="7b48b705-a927-4f53-a26e-ed5931e3d872"/>

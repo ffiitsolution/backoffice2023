@@ -176,7 +176,7 @@
                 <textElement>
                     <font size="8"/>
                 </textElement>
-                <text><![CDATA[Tanggal dan Jan Cetak ]]></text>
+                <text><![CDATA[Tanggal dan Jam Cetak ]]></text>
             </staticText>
             <textField>
                 <reportElement x="464" y="64" width="150" height="11" uuid="668c0a7e-2eb0-44e9-a7ee-0f456a8cfac9"/>
