@@ -2950,7 +2950,7 @@ public class ViewDoaImpl implements ViewDao {
             rt.put("userEod", rs.getString("USER_EOD"));
             rt.put("dateEod", rs.getString("DATE_EOD"));
             rt.put("timeEod", rs.getString("TIME_EOD"));
-            rt.put("sendFlag", rs.getString("USER_SEND"));
+            rt.put("sendFlag", rs.getString("SEND_FLAG"));
             rt.put("dateSend", rs.getString("DATE_SEND"));
             rt.put("outletName", rs.getString("OUTLET_NAME"));
             return rt;
@@ -2960,9 +2960,15 @@ public class ViewDoaImpl implements ViewDao {
     /////////////////done last EOD////////////////
     
     ////////////New method for query POS yg Open berdasarkan Outlet - M Joko M 4-Dec-2023////////////
+    @Override
     public List<Map<String, Object>> listPosOpen(Map<String, String> ref) {
         Map param = new HashMap();
-        String qry = "select e.*, p.pos_description from t_eod_hist_dtl e join m_pos p on p.outlet_code=e.outlet_code and p.pos_code=e.pos_code where trans_date=(select trans_date from m_outlet where outlet_code=:outletCode) and process_eod='N'";
+        String qry = "select e.*, p.pos_description from t_eod_hist_dtl e join m_pos p on p.outlet_code=e.outlet_code and p.pos_code=e.pos_code where trans_date=(select trans_date from m_outlet where outlet_code=:outletCode) and process_eod<>'Y'";
+        if(ref.containsKey("posCode")){
+            // ambil 1 pos berdasar code
+            qry = "select e.*, p.pos_description from t_eod_hist_dtl e join m_pos p on p.outlet_code=e.outlet_code and p.pos_code=e.pos_code where trans_date=(select trans_date from m_outlet where outlet_code=:outletCode) and e.pos_code=:posCode and rownum = 1";
+            param.put("posCode", ref.get("posCode"));
+        }
         param.put("outletCode", ref.get("outletCode"));
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, param, (ResultSet rs, int i) -> {
@@ -2983,6 +2989,57 @@ public class ViewDoaImpl implements ViewDao {
     }
     /////////////////done POS yg Open berdasarkan Outlet////////////////
 
+    
+    //////////// New method for query M POS yg Active berdasarkan Outlet - M Joko M 12-Dec-2023////////////
+    @Override
+    public List<Map<String, Object>> listMPosActive(Map<String, String> ref) {
+        String qry = "select region_code,outlet_code,pos_code,pos_description,ref_no,a.status,pos_type,description FROM M_pos a join m_global b on b.code=a.pos_type  where a.outlet_code= :outletCode and a.status='A' and b.cond='POS_TYPE'";
+        Map param = new HashMap();
+        param.put("outletCode", ref.get("outletCode"));
+        System.err.println("q :" + qry);
+        return jdbcTemplate.query(qry, param, (ResultSet rs, int i) -> {
+            Map<String, Object> rt = new HashMap<>();
+            rt.put("ref", rs.getString("REF_NO"));
+            rt.put("status", rs.getString("STATUS"));
+            rt.put("posType", rs.getString("POS_TYPE"));
+            rt.put("description", rs.getString("DESCRIPTION"));
+            rt.put("regionCode", rs.getString("REGION_CODE"));
+            rt.put("outletCode", rs.getString("OUTLET_CODE"));
+            rt.put("posCode", rs.getString("POS_CODE"));
+            rt.put("posDescription", rs.getString("POS_DESCRIPTION"));
+            return rt;
+        });
+    }
+    
+    //////////// New method for query T Stock Card hari sebelumnya - M Joko M 12-Dec-2023////////////
+    @Override
+    public List<Map<String, Object>> listPreviousTStockCard(Map<String, String> ref) {
+        Map param = new HashMap();
+        String qry = "select * from t_stock_card where trans_date=(select trans_date from m_outlet where outlet_code=:outletCode)";
+        if(ref.containsKey("transDate")){
+            qry = "select * from t_stock_card where trans_date=:transDate";
+            param.put("transDate", ref.get("transDate"));
+        } else {
+            param.put("outletCode", ref.get("outletCode"));
+        }
+        System.err.println("q : " + qry);
+        return jdbcTemplate.query(qry, param, (ResultSet rs, int i) -> {
+            Map<String, Object> rt = new HashMap<>();
+            rt.put("outletCode", rs.getString("OUTLET_CODE"));
+            rt.put("transDate",rs.getString("TRANS_DATE"));
+            rt.put("itemCode",rs.getString("ITEM_CODE"));
+            rt.put("itemCost",rs.getString("ITEM_COST"));
+            rt.put("qtyBeginning",rs.getString("QTY_BEGINNING"));
+            rt.put("qtyIn",rs.getString("QTY_IN"));
+            rt.put("qtyOut",rs.getString("QTY_OUT"));
+            rt.put("remark",rs.getString("REMARK"));
+            rt.put("userUpd", rs.getString("USER_UPD"));
+            rt.put("dateUpd", rs.getString("DATE_UPD"));
+            rt.put("timeUpd", rs.getString("TIME_UPD"));
+            return rt;
+        });
+    }
+    
     ///////////////NEW METHOD LIST RECEIVING ALL BY DANI 12 DECEMBER 2023////
     @Override
     public List<Map<String, Object>> listReceivingAll(Map<String, String> balance) {

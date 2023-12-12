@@ -2124,5 +2124,70 @@ public class ProcessDaoImpl implements ProcessDao {
             e.printStackTrace();
         }
     }
-    ///////////////Done new method from Fathur ////////////////////////////
+    
+    ////////////New method for insert Eod Hist POS 'N' ke eod - M Joko M 11-Dec-2023////////////
+    @Override
+    public void insertEodPosN(Map<String, String> balance) {
+        String query = "insert into t_eod_hist_dtl (REGION_CODE, OUTLET_CODE, TRANS_DATE, POS_CODE, PROCESS_EOD, NOTES, USER_UPD, DATE_UPD, TIME_UPD) values(:regionCode, :outletCode, (select trans_date from m_outlet where outlet_code=:outletCode), :posCode, :processEod, :notes, :userUpd, :dateUpd, :timeUpd)";
+        Map param = new HashMap();
+        param.put("regionCode", balance.get("regionCode"));
+        param.put("outletCode", balance.get("outletCode"));
+        param.put("posCode", balance.get("posCode"));
+        param.put("processEod", balance.get("processEod"));
+        param.put("notes", balance.get("notes"));
+        param.put("userUpd", balance.get("userUpd"));
+        param.put("dateUpd", dateNow);
+        param.put("timeUpd", timeStamp);
+        System.err.println("q_process: " + query);
+        jdbcTemplate.update(query, param);
+    }
+    
+    ////////////New method for insert T Stock Card EOD - M Joko M 11-Dec-2023////////////
+    @Override
+    public void insertTStockCard(Map<String, String> balance) {
+        String query = "insert into t_stock_card (OUTLET_CODE, TRANS_DATE, ITEM_CODE, ITEM_COST, QTY_BEGINNING, QTY_IN, QTY_OUT, REMARK, USER_UPD, DATE_UPD, TIME_UPD) values (:outletCode, (select trans_date from m_outlet where outlet_code=:outletCode)+1, :itemCode, :itemCost, :qtyBeginning, :qtyIn, :qtyOut, :remark, :userUpd, :dateUpd, :timeUpd)";
+        Map param = new HashMap();
+        param.put("outletCode", balance.get("outletCode"));
+        param.put("itemCode", balance.get("itemCode"));
+        param.put("itemCost", balance.get("itemCost"));
+        param.put("qtyBeginning", balance.get("qtyBeginning"));
+        param.put("qtyIn", balance.get("qtyIn"));
+        param.put("qtyOut", balance.get("qtyOut"));
+        param.put("remark", balance.get("remark"));
+        param.put("userUpd", balance.get("userUpd"));
+        param.put("dateUpd", dateNow);
+        param.put("timeUpd", timeStamp);
+        System.err.println("q_process: " + query);
+        jdbcTemplate.update(query, param);
+    }
+    
+    ////////////New method for insert T EOD Hist - M Joko M 12-Dec-2023////////////
+    @Override
+    public void insertTEodHist(Map<String, String> balance) {
+        String query = "insert into t_eod_hist (REGION_CODE, OUTLET_CODE, TRANS_DATE, USER_EOD, DATE_EOD, TIME_EOD, SEND_FLAG, USER_SEND, DATE_SEND, TIME_SEND) values ((select region_code from m_outlet where outlet_code=:outletCode), :outletCode, (select trans_date from m_outlet where outlet_code=:outletCode), :userEod, :dateEod, :timeEod, :sendFlag, :userSend, :dateSend, :timeSend)";
+        Map param = new HashMap();
+        param.put("outletCode", balance.get("outletCode"));
+        param.put("userEod", balance.get("userUpd"));
+        param.put("dateEod", dateNow);
+        param.put("timeEod", timeStamp);
+        param.put("sendFlag", "N");
+        param.put("userSend", balance.get("userUpd"));
+        param.put("dateSend", dateNow);
+        param.put("timeSend", timeStamp);
+        System.err.println("q_process: " + query);
+        jdbcTemplate.update(query, param);
+    }
+    
+    ////////////New method for increase trans_date M Outlet selesai EOD - M Joko M 11-Dec-2023////////////
+    @Override
+    public void increaseTransDateMOutlet(Map<String, String> balance) {
+        String query = "update m_outlet set trans_date = (select trans_date from m_outlet where outlet_code=:outletCode) + 1, user_upd = :userUpd, time_upd = :timeUpd, date_upd = :dateUpd where outlet_code = :outletCode";
+        Map param = new HashMap();
+        param.put("outletCode", balance.get("outletCode"));
+        param.put("userUpd", balance.get("userUpd"));
+        param.put("dateUpd", dateNow);
+        param.put("timeUpd", timeStamp);
+        System.err.println("q_process: " + query);
+        jdbcTemplate.update(query, param);
+    }
 }

@@ -120,4 +120,15 @@ public interface ProcessDao {
     ////////////New method for Transfer master outlet - Fathur 11 Dec 2023////////////
     public void sendDataOutletToWarehouse(Map<String, String> mapping);
     ////////////Done method for Transfer master outlet////////////
+    ///////////////NEW METHOD insert POS 'N' EOD - M Joko 11/12/2023////////////////////////////
+    public void insertEodPosN(Map<String, String> mapping);
+
+    ///////////////NEW METHOD insert T Stock Card EOD - M Joko 11/12/2023////////////////////////////
+    public void insertTStockCard(Map<String, String> mapping);
+
+    ///////////////NEW METHOD insert T EOD HIST - M Joko 12/12/2023////////////////////////////
+    public void insertTEodHist(Map<String, String> mapping);
+
+    ///////////////NEW METHOD increase trans_date M Outlet selesai EOD - M Joko 11/12/2023////////////////////////////
+    public void increaseTransDateMOutlet(Map<String, String> mapping);
 }

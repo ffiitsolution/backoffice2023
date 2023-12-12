@@ -213,4 +213,24 @@ public class ProcessServices {
     public void sendDataOutletToWarehouse(Map<String, String> balance) {
         dao.sendDataOutletToWarehouse(balance);    
     }
+
+    ///////////////NEW METHOD POS 'N' EOD - M Joko 11/12/2023////   
+    public void insertEodPosN(Map<String, String> balancing) {
+        dao.insertEodPosN(balancing);
+    }
+
+    ///////////////NEW METHOD insert T Stock Card EOD - M Joko 11/12/2023////   
+    public void insertTStockCard(Map<String, String> balancing) {
+        dao.insertTStockCard(balancing);
+    }
+
+    ///////////////NEW METHOD insert T EOD HIST - M Joko 12/12/2023////   
+    public void insertTEodHist(Map<String, String> balancing) {
+        dao.insertTEodHist(balancing);
+    }
+
+    ///////////////NEW METHOD increase trans_date M Outlet selesai EOD - M Joko 11/12/2023////   
+    public void increaseTransDateMOutlet(Map<String, String> balancing) {
+        dao.increaseTransDateMOutlet(balancing);
+    }
 }

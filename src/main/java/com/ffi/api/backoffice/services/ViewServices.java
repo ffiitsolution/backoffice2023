@@ -394,17 +394,29 @@ public class ViewServices {
         ////////////Done method for query stock card detail////////////
     }
 
-    ////////////New method for query stock card detail - Joko 4-Dec-2023////////////
+    ////////////New method for query EOD terakhir Outlet - M Joko 4-Dec-2023////////////
     public List<Map<String, Object>> lastEod(Map<String, String> ref) {
         return viewDao.lastEod(ref);
     }
-    ////////////Done method for query stock card detail////////////
+    ////////////Done method for query EOD terakhir Outlet ////////////
     
-    ////////////New method for query POS yg Open berdasarkan Outlet - M Joko 4-Dec-2023////////////
+    ////////////New method for query POS yg Open - M Joko 4-Dec-2023////////////
     public List<Map<String, Object>> listPosOpen(Map<String, String> ref) {
         return viewDao.listPosOpen(ref);
     }
     ////////////Done method for query POS yg Open berdasarkan Outlet////////////
+    
+    ////////////New method for query M POS yg Aktif - M Joko 12-Dec-2023////////////
+    public List<Map<String, Object>> listMPosActive(Map<String, String> ref) {
+        return viewDao.listMPosActive(ref);
+    }
+    ////////////Done method for query M POS yg Aktif ////////////
+    
+    ////////////New method for query T Stock Card sebelumnya - M Joko 12-Dec-2023////////////
+    public List<Map<String, Object>> listPreviousTStockCard(Map<String, String> ref) {
+        return viewDao.listPreviousTStockCard(ref);
+    }
+    ////////////Done method for query T Stock Card sebelumnya ////////////
 
     ///////////////NEW METHOD LIST RECEIVING BY DANI 12 DECEMBER 2023////
     public List<Map<String, Object>> listReceivingAll(Map<String, String> ref) {
