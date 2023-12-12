@@ -2565,4 +2565,21 @@ public class IndexController {
         return rm;
     }
     ////////////Done add method for Transfer master outlet////////////
+
+    ////////////New method for List Receiving all - Dani 12 Dec 2023////////////
+    @RequestMapping(value = "/list-receiving-all", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk list receving all", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listReceivingAll(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        Response res = new Response();
+        res.setData(viewServices.listReceivingAll(balance));
+        return res;
+    }
 }

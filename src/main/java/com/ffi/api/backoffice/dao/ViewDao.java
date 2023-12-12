@@ -226,4 +226,6 @@ public interface ViewDao {
     List<Map<String, Object>> listPosOpen(Map<String, String> ref);
     ////////////Done method for POS yg Open berdasarkan Outlet ////////////
 
+        ///////////////NEW METHOD LIST RECEIVING ALL HEADER BY DANI 12 DECEMBER 2023////
+    List<Map<String, Object>> listReceivingAll(Map<String, String> ref);
 }

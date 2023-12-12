@@ -2982,5 +2982,48 @@ public class ViewDoaImpl implements ViewDao {
         return list;
     }
     /////////////////done POS yg Open berdasarkan Outlet////////////////
-    
+
+    ///////////////NEW METHOD LIST RECEIVING ALL BY DANI 12 DECEMBER 2023////
+    @Override
+    public List<Map<String, Object>> listReceivingAll(Map<String, String> balance) {
+        String getCity = getCity(balance.get("outletCode"));
+        
+        String qry = "SELECT H.ROWID, H.OUTLET_CODE, H.STATUS, H.ORDER_NO, H.ORDER_TYPE, H.CD_SUPPLIER, TO_CHAR(H.ORDER_DATE, 'DD-Mon-YY') AS ORDER_DATE, "
+                + " CASE WHEN H.ORDER_TO = '3' THEN 'Gudang' WHEN H.ORDER_TO = '2' THEN 'Outlet' WHEN H.ORDER_TO = '1' THEN 'Canvasing' ELSE 'Supplier' END as ORDER_TO, "
+                + " case when G.DESCRIPTION is null and  m.outlet_name is null then s.supplier_name  "
+                + "                when G.DESCRIPTION is null and s.supplier_name  is null then m.outlet_name else "
+                + "               g.description end as NAMA_GUDANG "
+                + " FROM T_ORDER_HEADER H "
+                + " LEFT JOIN M_GLOBAL G ON G.CODE = H.CD_SUPPLIER AND G.COND = 'X_" + getCity + "' AND G.STATUS = 'A' "
+                + " LEFT JOIN M_OUTLET M "
+                + "               on H.cd_supplier = m.outlet_code "
+                + " LEFT JOIN m_supplier S "
+                + "               on H.cd_supplier = S.cd_supplier "
+                + " WHERE H.STATUS = '0' "
+                + " AND H.OUTLET_CODE = :outletCode  "
+                + " ORDER BY ORDER_NO ASC, H.ROWID ASC ";
+
+        Map prm = new HashMap();
+        prm.put("outletCode", balance.get("outletCode"));
+
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("outletCode", rs.getString("OUTLET_CODE"));
+                rt.put("status", rs.getString("STATUS"));
+                rt.put("orderNo", rs.getString("ORDER_NO"));
+                rt.put("orderType", rs.getString("ORDER_TYPE"));
+                rt.put("orderTo", rs.getString("ORDER_TO"));
+                rt.put("cdSupplier", rs.getString("CD_SUPPLIER"));
+                rt.put("gudangName", rs.getString("NAMA_GUDANG"));
+                rt.put("orderDate", rs.getString("ORDER_DATE"));
+                // rt.put("orderId", rs.getString("ORDER_ID"));
+                
+                return rt;
+            }
+        });
+        return list;
+    }
 }

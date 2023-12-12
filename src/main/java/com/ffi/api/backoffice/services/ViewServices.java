@@ -405,4 +405,9 @@ public class ViewServices {
         return viewDao.listPosOpen(ref);
     }
     ////////////Done method for query POS yg Open berdasarkan Outlet////////////
+
+    ///////////////NEW METHOD LIST RECEIVING BY DANI 12 DECEMBER 2023////
+    public List<Map<String, Object>> listReceivingAll(Map<String, String> ref) {
+        return viewDao.listReceivingAll(ref);
+    }
 }
