@@ -2660,21 +2660,29 @@ public class ViewDoaImpl implements ViewDao {
     }
     //End of MPCS
 
+    //////////////////// aditya 12/12/2023 /////////////////////
+    /// tambahan menampilkan data return order 30 hari sebelum nya ////////////////////
     @Override
     public List<Map<String, Object>> listReturnOrderHeader(Map<String, String> param) {
+        Map<String, Object> sqlParam = new HashMap<>();
         String query = "SELECT a.RETURN_NO, a.RETURN_DATE, a.REMARK, CASE WHEN a.TYPE_RETURN = '0' THEN 'Supplier' ELSE 'Gudang' "
                 + "END AS TYPE_RETURN, CONCAT(b.DESCRIPTION, CONCAT(c.OUTLET_NAME, d.SUPPLIER_NAME)) AS return_to,"
                 + " a.STATUS FROM T_RETURN_HEADER a LEFT JOIN M_GLOBAL b ON a.RETURN_TO = b.CODE AND b.COND = :city"
-                + " LEFT JOIN M_OUTLET c ON a.RETURN_TO  = c.OUTLET_CODE LEFT JOIN M_SUPPLIER d ON a.RETURN_TO = "
-                + "d.CD_SUPPLIER WHERE a.RETURN_DATE BETWEEN TO_DATE(:startDate, 'dd-mm-yyyy') AND TO_DATE(:endDate, 'dd-mm-yyyy') "
-                + "ORDER BY RETURN_DATE ASC";
-
-        Map<String, Object> sqlParam = new HashMap<>();
-        sqlParam.put("startDate", param.get("startDate"));
-        sqlParam.put("endDate", param.get("endDate"));
+                + " LEFT JOIN M_OUTLET c ON a.RETURN_TO  = c.OUTLET_CODE LEFT JOIN M_SUPPLIER d ON a.RETURN_TO = d.CD_SUPPLIER ";
+        if(param.containsKey("startDate") && param.get("startDate").length() > 0 ){
+            query += " WHERE a.RETURN_DATE BETWEEN TO_DATE(:startDate, 'dd-mm-yyyy') AND TO_DATE(:endDate, 'dd-mm-yyyy') ";
+            sqlParam.put("startDate", param.get("startDate"));
+            sqlParam.put("endDate", param.get("endDate"));
+        }
+        query += " ORDER BY RETURN_DATE DESC ";
+        if(param.containsKey("limit") && param.get("limit").length() > 0){
+            query = "SELECT * FROM ( " + query + " ) WHERE rownum <= :limit";
+            sqlParam.put("limit", param.get("limit"));
+        }
         sqlParam.put("city", "X_" + param.get("city"));
         System.err.println("q :" + query);
-
+        //////////////////// done aditya /////////////////////////////////////
+        
         List<Map<String, Object>> list = jdbcTemplate.query(query, sqlParam, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
