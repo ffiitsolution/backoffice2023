@@ -1978,26 +1978,26 @@ public class ProcessDaoImpl implements ProcessDao {
         }
     }
 
-    ///////////////New method from Fathur 08-Dec-2023////////////////////////////
+    ///////////////New method from Fathur 11-Dec-2023////////////////////////////
     public void sendDataOutletToWarehouse(Map<String, String> balance) {
         String json = "";
         Gson gson = new Gson();
         Map<String, Object> map1 = new HashMap<String, Object>();
         try {
-            String qry1 = "SELECT OUTLET_CODE,  "
+            String qry1 = "SELECT OUTLET_CODE, "
                     + "ORDER_TYPE,   "
                     + "ORDER_ID,     "
                     + "ORDER_NO,     "
-                    + "ORDER_DATE,   "
+                    + "TO_CHAR(ORDER_DATE, 'DD-MON-YY') AS ORDER_DATE, " 
                     + "ORDER_TO,     "
                     + "CD_SUPPLIER,  "
-                    + "DT_DUE,       "
-                    + "DT_EXPIRED,   "
+                    + "TO_CHAR(DT_DUE, 'DD-MON-YY') AS DT_DUE, " 
+                    + "TO_CHAR(DT_EXPIRED, 'DD-MON-YY') AS DT_EXPIRED, " 
                     + "REMARK,        "
                     + "NO_OF_PRINT,  "
                     + "STATUS,       "
                     + "USER_UPD,     "
-                    + "DATE_UPD,     "
+                    + "TO_CHAR(DATE_UPD, 'DD-MON-YY') AS DATE_UPD,     "
                     + "TIME_UPD, "
                     + "'N' AS STATUSH "
                     + "FROM   T_ORDER_HEADER "
@@ -2021,7 +2021,7 @@ public class ProcessDaoImpl implements ProcessDao {
                             + "TOTAL_QTY_STOCK, "
                             + "UNIT_PRICE, "
                             + "USER_UPD, "
-                            + "DATE_UPD, "
+                            + "TO_CHAR(DATE_UPD, 'DD-MON-YY') AS DATE_UPD, "
                             + "TIME_UPD, "
                             + "'N' AS STATUSD "
                             + "FROM T_ORDER_DETAIL WHERE ORDER_NO =:orderNo ";
@@ -2091,8 +2091,6 @@ public class ProcessDaoImpl implements ProcessDao {
                 param.put("statush", dtl.get("statush"));
                 //list
                 param.put("itemList", dtl.get("itemList"));
-                param.put("tglPesan", dateNow);
-                param.put("jamProsesPemesan", timeStamp);
                 json = new Gson().toJson(param);
                 StringEntity entity = new StringEntity(json);
                 post.setEntity(entity);
@@ -2113,21 +2111,18 @@ public class ProcessDaoImpl implements ProcessDao {
                 map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
                 }.getType());
             }
-            //Add Insert into Table T_HIST (28 Nov 2023)
             Map<String, String> histSend = new HashMap<String, String>();
             histSend.put("orderNo", balance.get("orderNo").toString());
             insertHistSend(histSend);
-            //End by Dona
-            //Add Insert to HIST_KIRIM by KP (13-06-2023)
+
             Map<String, String> histKirim = new HashMap<String, String>();
             histKirim.put("orderNo", balance.get("orderNo").toString());
             histKirim.put("sendUser", balance.get("userUpd").toString());
             InsertHistKirim(histKirim);
-            //End added by KP
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    ///////////////Done new method from Fathur 08-Dec-2023////////////////////////////
+    ///////////////Done new method from Fathur ////////////////////////////
 }
