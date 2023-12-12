@@ -1408,7 +1408,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "AND H.OUTLET_CODE = :outletCode  "
                 + "AND H.Order_to LIKE :orderTo  "
                 + "" + where + ""
-                + " ORDER BY ORDER_DATE DESC"; // ORDER DATE DESCENDING by Dani
+                + " ORDER BY H.DATE_UPD DESC, H.TIME_UPD DESC "; // ORDER  H.DATE_UPD DESC, H.TIME_UPD DESC by Dani 12 Desc 2023
         Map prm = new HashMap();
         prm.put("status", "%" + balance.get("status") + "%");
         prm.put("orderType", "%" + balance.get("orderType") + "%");
