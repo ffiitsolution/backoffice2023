@@ -422,10 +422,34 @@ public class ViewServices {
     public List<Map<String, Object>> listReceivingAll(Map<String, String> ref) {
         return viewDao.listReceivingAll(ref);
     }
-    ////////////New LIST MPCS PLAN BY DONA 12-Dec-2023////////////
 
+    ////////////New LIST MPCS PLAN BY DONA 12-Dec-2023////////////
     public List<Map<String, Object>> listMpcsPlan(Map<String, String> ref) {
         return viewDao.listMpcsPlan(ref);
     }
     ////////////Done  ////////////
+
+    // New Method List MPCS Production - Fathur 13 Dec 2023 //
+    public List<Map<String, Object>> listMpcsProduction(Map<String, String> ref) {
+        return viewDao.mpcsProductionList(ref);
+    }
+    // Done List MPCS Production //
+    
+    // New Method MPCS Production Detail - Fathur 13 Dec 2023 //
+    public List<Map<String, Object>> mpcsProductionDetail(Map<String, String> ref) {
+        return viewDao.mpcsProductionDetail(ref);
+    }
+    // Done MPCS Production Detail //
+    
+    // New Method MPCS Production Product Result - Fathur 13 Dec 2023 //
+    public List<Map<String, Object>> mpcsProductionProductResult(Map<String, String> ref) {
+        return viewDao.mpcsProductionProductResult(ref);
+    }
+    // Done MPCS Production Product Result //
+    
+    // New Method MPCS Production Recipe - Fathur 13 Dec 2023 //
+    public List<Map<String, Object>> mpcsProductionRecipe(Map<String, String> ref) {
+        return viewDao.mpcsProductionRecipe(ref);
+    }
+    // Done MPCS Production Recipe //
 }

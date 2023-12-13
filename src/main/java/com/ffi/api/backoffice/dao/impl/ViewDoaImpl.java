@@ -2103,7 +2103,7 @@ public class ViewDoaImpl implements ViewDao {
                 } else if (param.get("typeTransaksi").equals("Wastage")) {
                     prm.put("typeTrans1", "W");
                     prm.put("typeTrans2", "W");
-                } else if (param.get("typeTransaksi").equals("Left Offer")) {
+                } else if (param.get("typeTransaksi").equals("Left Over")) {
                     prm.put("typeTrans1", "L");
                     prm.put("typeTrans2", "L");
                 }
@@ -3142,4 +3142,125 @@ public class ViewDoaImpl implements ViewDao {
         return list;
     }
     //////////////////////////////////DONE//////////////////////////////////////////////////////////
+    
+    // New Method List MPCS Production By Fathur 13 Dec 2023 //
+    @Override
+    public List<Map<String, Object>> mpcsProductionList(Map<String, String> balance) {
+
+        String qry = "select to_char(to_date(c.TIME_MPCS, 'hh24miss'), 'hh24:mi') as TIME_MPCS, c.QTY_PROD, c.QTY_ACC_PROD, c.DESC_PROD, c.PROD_BY "
+                + "from t_summ_mpcs c "
+                + "where c.date_mpcs = :dateMpcs "
+                + "AND c.MPCS_GROUP = :mpcsGroup";
+
+        Map prm = new HashMap();
+        prm.put("mpcsGroup", balance.get("mpcsGroup"));
+        prm.put("dateMpcs", balance.get("dateMpcs"));
+
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("timeMpcs", rs.getString("TIME_MPCS"));
+                rt.put("qtyProd", rs.getString("QTY_PROD"));
+                rt.put("qtyAccProd", rs.getString("QTY_ACC_PROD"));
+                rt.put("descProd", rs.getString("DESC_PROD"));
+                rt.put("prodBy", rs.getString("PROD_BY"));
+
+                return rt;
+            }
+        });
+        return list;
+    }
+    // Done Method List MPCS Production //
+
+    // New Method List MPCS Production By Fathur 13 Dec 2023 //
+    @Override
+    public List<Map<String, Object>> mpcsProductionDetail(Map<String, String> balance) {
+
+        String qry = "SELECT MPCS_GROUP, RECIPE_CODE, SEQ_MPCS, QUANTITY, to_char(to_date(TIME_UPD, 'hh24miss'), 'hh24:mi') AS TIME_UPD "
+                + "FROM T_MPCS_HIST WHERE MPCS_GROUP = :mpcsGroup AND MPCS_DATE = :dateMpcs "
+                + "AND TIME_UPD <= replace(:maxTime, ':' , '')||'00' "
+                + "AND TIME_UPD >= replace(:minTime, ':' , '')||'00' ";
+
+        Map prm = new HashMap();
+        prm.put("mpcsGroup", balance.get("mpcsGroup"));
+        prm.put("dateMpcs", balance.get("dateMpcs"));
+        prm.put("maxTime", balance.get("maxTime"));
+        prm.put("minTime", balance.get("minTime"));
+
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("mpcsGroup", rs.getString("MPCS_GROUP"));
+                rt.put("recipeCode", rs.getString("RECIPE_CODE"));
+                rt.put("seqMpcs", rs.getString("SEQ_MPCS"));
+                rt.put("quantity", rs.getString("QUANTITY"));
+                rt.put("timeUpd", rs.getString("TIME_UPD"));
+                return rt;
+            }
+        });
+        return list;
+    }
+    // Done Method List MPCS Production //
+
+    // New Method MPCS Production Recipe - Fathur 13 Dec 2023 //
+    @Override
+    public List<Map<String, Object>> mpcsProductionRecipe(Map<String, String> balance) {
+        String qry = "SELECT mpcs.ITEM_CODE, m.item_description, ABS(MPCS.QTY1) AS QTY1, MPCS.UOM1 "
+                + "FROM T_MPCS_DETAIL mpcs "
+                + "join m_item m on m.item_code = mpcs.item_code "
+                + "where mpcs.date_mpcs = :dateMpcs "
+                + "AND mpcs.TYPE_MPCS = :mpcsGroup ";
+        Map prm = new HashMap();
+        prm.put("mpcsGroup", balance.get("mpcsGroup"));
+        prm.put("dateMpcs", balance.get("dateMpcs"));
+
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("itemCode", rs.getString("ITEM_CODE"));
+                rt.put("itemDescription", rs.getString("item_description"));
+                rt.put("qty1", rs.getString("QTY1"));
+                rt.put("uom1", rs.getString("UOM1"));
+
+                return rt;
+            }
+        });
+        return list;
+    }
+    // Done MPCS Production Recipe //
+
+    // New Method MPCS Production Product Result - Fathur 13 Dec 2023 //
+    @Override
+    public List<Map<String, Object>> mpcsProductionProductResult(Map<String, String> balance) {
+
+        String qry = "select PRODUCT_CODE, QTY_STOCK, UOM_STOCK, PRODUCT_REMARK "
+                + "from m_recipe_product "
+                + "where recipe_code = :recipeCode ";
+
+        Map prm = new HashMap();
+        prm.put("recipeCode", balance.get("recipeCode"));
+
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("productCode", rs.getString("PRODUCT_CODE"));
+                rt.put("qtyStock", rs.getString("QTY_STOCK"));
+                rt.put("uomStock", rs.getString("UOM_STOCK"));
+                rt.put("productRemark", rs.getString("PRODUCT_REMARK"));
+
+                return rt;
+            }
+        });
+        return list;
+    }
+    // Done MPCS Production Product Result //
+
 }

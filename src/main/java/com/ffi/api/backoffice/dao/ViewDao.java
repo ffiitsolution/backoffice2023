@@ -239,4 +239,20 @@ public interface ViewDao {
     ///////////////NEW METHOD LIST MPCS PLAN 12 DECEMBER 2023////
     List<Map<String, Object>> listMpcsPlan(Map<String, String> ref);
     //////////////////////////DONE////////////////////////////
+
+    // New Method MPCS Production List By Fathur 13 Dec 2023 //
+    List<Map<String, Object>> mpcsProductionList(Map<String, String> ref);
+    // Done Method MPCS Production List //
+
+    // New Method MPCS Production Detail By Fathur 13 Dec 2023 //
+    List<Map<String, Object>> mpcsProductionDetail(Map<String, String> ref);
+    // Done Method MPCS Production Detail //
+
+    // New Method MPCS Production Product Result By Fathur 13 Dec 2023 //
+    List<Map<String, Object>> mpcsProductionProductResult(Map<String, String> ref);
+    // Done Method MPCS Production ProductResult //
+
+    // New Method MPCS Production Recipe By Fathur 13 Dec 2023 //
+    List<Map<String, Object>> mpcsProductionRecipe(Map<String, String> ref);
+    // Done Method MPCS Production Recipe //
 }

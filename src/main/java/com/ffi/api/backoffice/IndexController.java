@@ -2710,9 +2710,94 @@ public class IndexController {
         res.setData(viewServices.listMpcsPlan(balance));
         return res;
     }
-   /////////////////////////////DONE//////////////////////////////////// 
-    
-    
-    
-    
+    /////////////////////////////DONE//////////////////////////////////// 
+
+    ///////////////  New Method List MPCS Production By Fathur 13 Dec 2023 ////////////////////
+    @RequestMapping(value = "/list-mpcs-production", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Menampilkan Data MPCS Production ", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")
+    }
+    )
+
+    public @ResponseBody
+    Response listMpcsProduction(@RequestBody String param) {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        Map<String, Object> map = new LinkedHashMap<String, Object>();
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response res = new Response();
+        res.setData(viewServices.listMpcsProduction(balance));
+        return res;
+    }
+    //////////////////Done Method List MPCS Production //////////////////////////// 
+
+    ///////////////  New Method MPCS Production Detail By Fathur 13 Dec 2023 ////////////////////
+    @RequestMapping(value = "/mpcs-production-detail", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Menampilkan Data MPCS Production Detail", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")
+    }
+    )
+
+    public @ResponseBody
+    Response mpcsProductionDetail(@RequestBody String param) {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        Map<String, Object> map = new LinkedHashMap<String, Object>();
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response res = new Response();
+        res.setData(viewServices.mpcsProductionDetail(balance));
+        return res;
+    }
+    ////////////////// Done Method MPCS Production Detail //////////////////////////// 
+
+    ///////////////  New Method MPCS Production Recipe By Fathur 13 Dec 2023 ////////////////////
+    @RequestMapping(value = "/mpcs-production-recipe", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Menampilkan Data MPCS Production Recipe", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")
+    }
+    )
+
+    public @ResponseBody
+    Response mpcsProductionRecipe(@RequestBody String param) {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        Map<String, Object> map = new LinkedHashMap<String, Object>();
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response res = new Response();
+        res.setData(viewServices.mpcsProductionRecipe(balance));
+        return res;
+    }
+    ////////////////// Done Method MPCS Production Recipe //////////////////////////// 
+
+    ///////////////  New Method MPCS Production Product Result By Fathur 13 Dec 2023 ////////////////////
+    @RequestMapping(value = "/mpcs-production-product-result", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Menampilkan Data MPCS Production Hasil Produk", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")
+    }
+    )
+
+    public @ResponseBody
+    Response mpcsProductionProductResult(@RequestBody String param) {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        Map<String, Object> map = new LinkedHashMap<String, Object>();
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response res = new Response();
+        res.setData(viewServices.mpcsProductionProductResult(balance));
+        return res;
+    }
+    ////////////////// Done Method MPCS Production Recipe //////////////////////////// 
+
 }
