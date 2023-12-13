@@ -19,6 +19,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -43,8 +45,10 @@ import org.springframework.stereotype.Repository;
 public class ProcessDaoImpl implements ProcessDao {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
-    String timeStamp = new SimpleDateFormat("HHmmss").format(Calendar.getInstance().getTime());
-    String dateNow = new SimpleDateFormat("dd-MMM-yyyy").format(Calendar.getInstance().getTime());
+    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HHmmss");
+    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy");
+    // String LocalDateTime.now().format(timeFormatter) = new SimpleDateFormat("HHmmss").format(Calendar.getInstance().getTime());
+    // String LocalDateTime.now().format(dateFormatter) = new SimpleDateFormat("dd-MMM-yyyy").format(Calendar.getInstance().getTime());
 
     DateFormat dfDate = new SimpleDateFormat("dd-MMM-yyyy");
     DateFormat dfYear = new SimpleDateFormat("yyyy");
@@ -84,8 +88,8 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("flagCanvasing", balance.get("flagCanvasing"));
         param.put("status", balance.get("status"));
         param.put("userUpd", balance.get("userUpd"));
-        param.put("dateUpd", dateNow);
-        param.put("timeUpd", timeStamp);
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         jdbcTemplate.update(sql, param);
     }
     /////////////////////////////////done
@@ -132,8 +136,8 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("flagCanvasing", balance.get("flagCanvasing"));
         param.put("status", balance.get("status"));
         param.put("userUpd", balance.get("userUpd"));
-        param.put("dateUpd", dateNow);
-        param.put("timeUpd", timeStamp);
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         jdbcTemplate.update(qy, param);
     }
 
@@ -149,8 +153,8 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("cdSupplier", balance.get("cdSupplier"));
         param.put("status", balance.get("status"));
         param.put("userUpd", balance.get("userUpd"));
-        param.put("dateUpd", dateNow);
-        param.put("timeUpd", timeStamp);
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         jdbcTemplate.update(qy, param);
     }
 
@@ -162,8 +166,8 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("cdSupplier", balance.get("cdSupplier"));
         param.put("status", balance.get("status"));
         param.put("userUpd", balance.get("userUpd"));
-        param.put("dateUpd", dateNow);
-        param.put("timeUpd", timeStamp);
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         jdbcTemplate.update(qy, param);
     }
     /////////////////////////////////done
@@ -182,8 +186,8 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("fryerTypeSeqCnt", balance.get("fryerTypeSeqCnt"));
         param.put("status", balance.get("status"));
         param.put("userUpd", balance.get("userUpd"));
-        param.put("dateUpd", dateNow);
-        param.put("timeUpd", timeStamp);
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
 
         jdbcTemplate.update(qy, param);
     }
@@ -204,8 +208,8 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("refNo", balance.get("refNo"));
         param.put("status", balance.get("status"));
         param.put("userUpd", balance.get("userUpd"));
-        param.put("dateUpd", dateNow);
-        param.put("timeUpd", timeStamp);
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         param.put("posType", balance.get("posType"));
         jdbcTemplate.update(sql, param);
     }
@@ -220,8 +224,8 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("refNo", balance.get("refNo"));
         param.put("status", balance.get("status"));
         param.put("userUpd", balance.get("userUpd"));
-        param.put("dateUpd", dateNow);
-        param.put("timeUpd", timeStamp);
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         param.put("posType", balance.get("posType"));
         jdbcTemplate.update(qy, param);
     }
@@ -266,8 +270,8 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("passPosCode", balancetest1.get("passPosCode"));
         param.put("status", balancetest1.get("status"));
         param.put("userUpd", balancetest1.get("userUpd"));
-        param.put("dateUpd", dateNow);
-        param.put("timeUpd", timeStamp);
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
 
         jdbcTemplate.update(qy, param);
         jdbcTemplate.update(qy2, param);
@@ -309,8 +313,8 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("passPosCode", balancetest1.get("passPosCode"));
         param.put("status", balancetest1.get("status"));
         param.put("userUpd", balancetest1.get("userUpd"));
-        param.put("dateUpd", dateNow);
-        param.put("timeUpd", timeStamp);
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
 
         jdbcTemplate.update(qy, param);
         jdbcTemplate.update(qy2, param);
@@ -340,8 +344,8 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("fryerTypeReset", balance.get("fryerTypeReset"));
         param.put("status", balance.get("status"));
         param.put("userUpd", balance.get("userUpd"));
-        param.put("dateUpd", dateNow);
-        param.put("timeUpd", timeStamp);
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         param.put("fryerTypeSeqCnt", balance.get("fryerTypeSeqCnt"));
 
         jdbcTemplate.update(qy, param);
@@ -361,8 +365,8 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("value", balance.get("value"));
         param.put("status", balance.get("status"));
         param.put("userUpd", balance.get("userUpd"));
-        param.put("dateUpd", dateNow);
-        param.put("timeUpd", timeStamp);
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         jdbcTemplate.update(qy, param);
     }
 
@@ -378,8 +382,8 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("value", balance.get("value"));
         param.put("status", balance.get("status"));
         param.put("userUpd", balance.get("userUpd"));
-        param.put("dateUpd", dateNow);
-        param.put("timeUpd", timeStamp);
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         jdbcTemplate.update(qy, param);
     }
 
@@ -410,8 +414,8 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("noOfPrint", balance.get("noOfPrint"));
         param.put("status", balance.get("status"));
         param.put("userUpd", balance.get("userUpd"));
-        param.put("dateUpd", dateNow);
-        param.put("timeUpd", timeStamp);
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         param.put("year", year);
         param.put("month", month);
         param.put("transType", balance.get("transType"));
@@ -457,8 +461,8 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("noOfPrint", balance.get("noOfPrint"));
         param.put("status", balance.get("status"));
         param.put("userUpd", balance.get("userUpd"));
-        param.put("dateUpd", dateNow);
-        param.put("timeUpd", timeStamp);
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         param.put("year", year);
         param.put("month", month);
         param.put("transType", balance.get("transType"));
@@ -485,8 +489,8 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("totalQtyStock", balance.get("totalQtyStock"));
         param.put("unitPrice", balance.get("unitPrice"));
         param.put("userUpd", balance.get("userUpd"));
-        param.put("dateUpd", dateNow);
-        param.put("timeUpd", timeStamp);
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         jdbcTemplate.update(qy, param);
     }
 
@@ -519,8 +523,8 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("satuanKecil", balance.get("satuanKecil"));
         param.put("totalQty", balance.get("totalQty"));
         param.put("userUpd", balance.get("userUpd"));
-        param.put("dateUpd", dateNow);
-        param.put("timeUpd", timeStamp);
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         jdbcTemplate.update(qy, param);
     }
 
@@ -536,8 +540,8 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("cdSupplier", balance.get("cdSupplier"));
         param.put("status", balance.get("status"));
         param.put("userUpd", balance.get("userUpd"));
-        param.put("dateUpd", dateNow);
-        param.put("timeUpd", timeStamp);
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         jdbcTemplate.update(qy, param);
     }
     /////////////////////////////////DONE///////////////////////////////////////
@@ -575,8 +579,8 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("remark", balance.getRemark());
         param.put("status", balance.getStatus());
         param.put("userUpd", balance.getUserUpd());
-        param.put("dateUpd", dateNow);
-        param.put("timeUpd", timeStamp);
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         param.put("year", year);
         param.put("month", month);
         param.put("transType", balance.getTransType());
@@ -671,8 +675,8 @@ public class ProcessDaoImpl implements ProcessDao {
                 param.put("qtyStock", dtls.getQtyStock());
                 param.put("uomStock", dtls.getUomStock());
                 param.put("totalQty", dtls.getTotalQty());
-                param.put("dateUpd", dateNow);
-                param.put("timeUpd", timeStamp);
+                param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+                param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
                 jdbcTemplate.update(qy, param);
             } else {
                 qy = "UPDATE T_OPNAME_DETAIL  "
@@ -692,8 +696,8 @@ public class ProcessDaoImpl implements ProcessDao {
                 param.put("qtyStock", dtls.getQtyStock());
                 param.put("uomStock", dtls.getUomStock());
                 param.put("totalQty", dtls.getTotalQty());
-                param.put("dateUpd", dateNow);
-                param.put("timeUpd", timeStamp);
+                param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+                param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
                 jdbcTemplate.update(qy, param);
             }
 
@@ -749,8 +753,8 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("opnameDate", balance.get("opnameDate"));
         param.put("transType", balance.get("transType"));
         param.put("userUpd", balance.get("userUpd"));
-        param.put("dateUpd", dateNow);
-        param.put("timeUpd", timeStamp);
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         jdbcTemplate.update(qry, param);
 
         try {
@@ -762,8 +766,8 @@ public class ProcessDaoImpl implements ProcessDao {
             prm.put("opnameDate", balance.get("opnameDate"));
             prm.put("transType", balance.get("transType"));
             prm.put("userUpd", balance.get("userUpd"));
-            prm.put("dateUpd", dateNow);
-            prm.put("timeUpd", timeStamp);
+            prm.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+            prm.put("timeUpd", LocalDateTime.now().format(timeFormatter));
             System.err.println("q1 :" + qry1);
             List<Map<String, Object>> list = jdbcTemplate.query(qry1, prm, new RowMapper<Map<String, Object>>() {
                 @Override
@@ -810,8 +814,8 @@ public class ProcessDaoImpl implements ProcessDao {
                 param1.put("cdTrans", balance.get("transType") + "-" + balance.get("opnameNo"));
                 param1.put("qtyIn", totIn);
                 param1.put("qtyOut", totOut);
-                param1.put("dateUpd", dateNow);
-                param1.put("timeUpd", timeStamp);
+                param1.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+                param1.put("timeUpd", LocalDateTime.now().format(timeFormatter));
                 jdbcTemplate.update(qry2, param1);
             }
         } catch (Exception e) {
@@ -831,8 +835,8 @@ public class ProcessDaoImpl implements ProcessDao {
             prm.put("opnameDate", balance.get("opnameDate"));
             prm.put("transType", balance.get("transType"));
             prm.put("userUpd", balance.get("userUpd"));
-            prm.put("dateUpd", dateNow);
-            prm.put("timeUpd", timeStamp);
+            prm.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+            prm.put("timeUpd", LocalDateTime.now().format(timeFormatter));
             System.err.println("q1 :" + qry);
             List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
                 @Override
@@ -879,8 +883,8 @@ public class ProcessDaoImpl implements ProcessDao {
                 param.put("cdTrans", balance.get("transType") + balance.get("opnameNo"));
                 param.put("qtyIn", totIn);
                 param.put("qtyOut", totOut);
-                param.put("dateUpd", dateNow);
-                param.put("timeUpd", timeStamp);
+                param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+                param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
                 jdbcTemplate.update(qry2, param);
             }
         } catch (Exception e) {
@@ -1026,8 +1030,8 @@ public class ProcessDaoImpl implements ProcessDao {
                 param.put("statush", dtl.get("statush"));
                 //list
                 param.put("itemList", dtl.get("itemList"));
-                param.put("tglPesan", dateNow);
-                param.put("jamProsesPemesan", timeStamp);
+                param.put("tglPesan", LocalDateTime.now().format(dateFormatter));
+                param.put("jamProsesPemesan", LocalDateTime.now().format(timeFormatter));
                 json = new Gson().toJson(param);
                 StringEntity entity = new StringEntity(json);
                 post.setEntity(entity);
@@ -1130,8 +1134,8 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("totalQty", balance.get("totalQty"));
         param.put("totalPrice", balance.get("totalPrice"));
         param.put("userUpd", balance.get("userUpd"));
-        param.put("dateUpd", dateNow);
-        param.put("timeUpd", timeStamp);
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         jdbcTemplate.update(qy, param);
     }
 
@@ -1143,8 +1147,8 @@ public class ProcessDaoImpl implements ProcessDao {
                 + "WHERE ORDER_NO = :orderNo";
         Map param = new HashMap();
         param.put("orderNo", balance.get("orderNo"));
-        param.put("sendDate", dateNow);
-        param.put("sendHour", timeStamp);
+        param.put("sendDate", LocalDateTime.now().format(dateFormatter));
+        param.put("sendHour", LocalDateTime.now().format(timeFormatter));
         param.put("sendUser", balance.get("sendUser"));
         jdbcTemplate.update(qy, param);
 
@@ -1163,8 +1167,8 @@ public class ProcessDaoImpl implements ProcessDao {
                 + "      where order_no=:orderNo";
         Map param = new HashMap();
         param.put("orderNo", balance.get("orderNo"));
-        param.put("sendDate", dateNow);
-        param.put("sendHour", timeStamp);
+        param.put("sendDate", LocalDateTime.now().format(dateFormatter));
+        param.put("sendHour", LocalDateTime.now().format(timeFormatter));
         jdbcTemplate.update(qy, param);
         System.err.println("qy :" + qy);
     }
@@ -1245,8 +1249,8 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("uom", balance.get("uom"));
         param.put("itemTo", balance.get("itemTo"));
         param.put("userUpd", balance.get("userUpd"));
-        param.put("dateUpd", dateNow);
-        param.put("timeUpd", timeStamp);
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         jdbcTemplate.update(qy, param);
     }
 
@@ -1283,8 +1287,8 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("remark", balancing.getAsJsonObject().getAsJsonPrimitive("remark").getAsString());
         param.put("status", balancing.getAsJsonObject().getAsJsonPrimitive("status").getAsString());
         param.put("userUpd", balancing.getAsJsonObject().getAsJsonPrimitive("userUpd").getAsString());
-        param.put("dateUpd", dateNow);
-        param.put("timeUpd", timeStamp);
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         jdbcTemplate.update(sql, param);
 
         //Detail
@@ -1339,8 +1343,8 @@ public class ProcessDaoImpl implements ProcessDao {
                 param.put("seq", (i + 1));
                 param.put("timeMpcs", df2.format(countTime));
                 param.put("userUpd", balancing.getAsJsonObject().getAsJsonPrimitive("userUpd").getAsString());
-                param.put("dateUpd", dateNow);
-                param.put("timeUpd", timeStamp);
+                param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+                param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
                 jdbcTemplate.update(sql, param);
                 //System.err.println(param);
                 param.clear();
@@ -1394,8 +1398,8 @@ public class ProcessDaoImpl implements ProcessDao {
             param.put("timeMpcs", balancing.getAsJsonObject().getAsJsonPrimitive("timeMpcs").getAsString());
             param.put("qtyPr", balancing.getAsJsonObject().getAsJsonPrimitive("qtyPr").getAsString());
             param.put("userUpd", balancing.getAsJsonObject().getAsJsonPrimitive("userUpd").getAsString());
-            param.put("dateUpd", dateNow);
-            param.put("timeUpd", timeStamp);
+            param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+            param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
             jdbcTemplate.update(sql, param);
         } else {
             sql = "update t_summ_mpcs "
@@ -1442,8 +1446,8 @@ public class ProcessDaoImpl implements ProcessDao {
         prm.put("remark", param.getAsJsonObject().getAsJsonPrimitive("remark").getAsString());
         prm.put("status", param.getAsJsonObject().getAsJsonPrimitive("status").getAsString());
         prm.put("userUpd", param.getAsJsonObject().getAsJsonPrimitive("userUpd").getAsString());
-        prm.put("dateUpd", dateNow);
-        prm.put("timeUpd", timeStamp);
+        prm.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        prm.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         jdbcTemplate.update(queryHeader, prm);
 
         //Insert Detail
@@ -1464,8 +1468,8 @@ public class ProcessDaoImpl implements ProcessDao {
                     .append("', '").append(emp.get(i).getAsJsonObject().getAsJsonPrimitive("qtyPurchase").getAsString())
                     .append("', '").append(emp.get(i).getAsJsonObject().getAsJsonPrimitive("uomPurchase").getAsString())
                     .append("', '").append(emp.get(i).getAsJsonObject().getAsJsonPrimitive("totalQty").getAsString())
-                    .append("', '").append(userUpd).append("', '").append(dateNow).append("', '")
-                    .append(timeStamp).append("')");
+                    .append("', '").append(userUpd).append("', '").append(LocalDateTime.now().format(dateFormatter)).append("', '")
+                    .append(LocalDateTime.now().format(timeFormatter)).append("')");
         }
         query.append(" SELECT * FROM dual");
         String queryDetail = query.toString();
@@ -1557,8 +1561,8 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("templateName", balance.get("templateName"));
         param.put("status", balance.get("status"));
         param.put("userUpd", balance.get("userUpd"));
-        param.put("dateUpd", dateNow);
-        param.put("timeUpd", timeStamp);
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         jdbcTemplate.update(qy, param);
         deleteTempLateDetail(param);
         System.out.println("query insert header: " + qy);
@@ -1585,8 +1589,8 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("itemCode", balance.get("itemCode"));
         param.put("stat", balance.get("stat"));
         param.put("userUpd", balance.get("userUpd"));
-        param.put("dateUpd", dateNow);
-        param.put("timeUpd", timeStamp);
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         jdbcTemplate.update(qy, param);
         System.out.println("query insert header: " + qy);
     }
@@ -1718,8 +1722,8 @@ public class ProcessDaoImpl implements ProcessDao {
             param.put("cdLtemLeftover", balance.get("cdLtemLeftover"));
             param.put("status", balance.get("status"));
             param.put("userUpd", balance.get("userUpd"));
-            param.put("dateUpd", dateNow);
-            param.put("timeUpd", timeStamp);
+            param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+            param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
             param.put("flagPaket", balance.get("timeupd"));
             jdbcTemplate.update(qy, param);
             System.out.println("query insert item: " + qy);
@@ -1791,8 +1795,8 @@ public class ProcessDaoImpl implements ProcessDao {
             param.put("flagPaket", balance.get("flagPaket"));
             param.put("status", balance.get("status"));
             param.put("userUpd", balance.get("userUpd"));
-            param.put("dateUpd", dateNow);
-            param.put("timeUpd", timeStamp);
+            param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+            param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
             jdbcTemplate.update(qy, param);
             System.out.println("query update item: " + qy);
         }
@@ -1898,8 +1902,8 @@ public class ProcessDaoImpl implements ProcessDao {
             param.put("cdLtemLeftover", balance.get("cdLtemLeftover"));
             param.put("status", balance.get("status"));
             param.put("userUpd", balance.get("userUpd"));
-            param.put("dateUpd", dateNow);
-            param.put("timeUpd", timeStamp);
+            param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+            param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
             param.put("flagPaket", balance.get("timeupd"));
             jdbcTemplate.update(qy, param);
             System.out.println("query insert item: " + qy);
@@ -1971,8 +1975,8 @@ public class ProcessDaoImpl implements ProcessDao {
             param.put("flagPaket", balance.get("flagPaket"));
             param.put("status", balance.get("status"));
             param.put("userUpd", balance.get("userUpd"));
-            param.put("dateUpd", dateNow);
-            param.put("timeUpd", timeStamp);
+            param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+            param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
             jdbcTemplate.update(qy, param);
             System.out.println("query update item: " + qy);
         }
@@ -2136,8 +2140,8 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("processEod", balance.get("processEod"));
         param.put("notes", balance.get("notes"));
         param.put("userUpd", balance.get("userUpd"));
-        param.put("dateUpd", dateNow);
-        param.put("timeUpd", timeStamp);
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         System.err.println("q_process: " + query);
         jdbcTemplate.update(query, param);
     }
@@ -2155,8 +2159,8 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("qtyOut", balance.get("qtyOut"));
         param.put("remark", balance.get("remark"));
         param.put("userUpd", balance.get("userUpd"));
-        param.put("dateUpd", dateNow);
-        param.put("timeUpd", timeStamp);
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         System.err.println("q_process: " + query);
         jdbcTemplate.update(query, param);
     }
@@ -2168,12 +2172,12 @@ public class ProcessDaoImpl implements ProcessDao {
         Map param = new HashMap();
         param.put("outletCode", balance.get("outletCode"));
         param.put("userEod", balance.get("userUpd"));
-        param.put("dateEod", dateNow);
-        param.put("timeEod", timeStamp);
+        param.put("dateEod", LocalDateTime.now().format(dateFormatter));
+        param.put("timeEod", LocalDateTime.now().format(timeFormatter));
         param.put("sendFlag", "N");
         param.put("userSend", balance.get("userUpd"));
-        param.put("dateSend", dateNow);
-        param.put("timeSend", timeStamp);
+        param.put("dateSend", LocalDateTime.now().format(dateFormatter));
+        param.put("timeSend", LocalDateTime.now().format(timeFormatter));
         System.err.println("q_process: " + query);
         jdbcTemplate.update(query, param);
     }
@@ -2185,8 +2189,8 @@ public class ProcessDaoImpl implements ProcessDao {
         Map param = new HashMap();
         param.put("outletCode", balance.get("outletCode"));
         param.put("userUpd", balance.get("userUpd"));
-        param.put("dateUpd", dateNow);
-        param.put("timeUpd", timeStamp);
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         System.err.println("q_process: " + query);
         jdbcTemplate.update(query, param);
     }

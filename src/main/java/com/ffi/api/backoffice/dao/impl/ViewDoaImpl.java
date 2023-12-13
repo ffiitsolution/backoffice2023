@@ -92,7 +92,7 @@ public class ViewDoaImpl implements ViewDao {
                 + " where status like :status"
                 + " and city LIKE :city"
                 + " and FLAG_CANVASING Like :flagCanvasing"
-                + " order by cd_Supplier asc";
+                + " order by cd_Supplier desc";
         Map prm = new HashMap();
         prm.put("status", "%" + balance.get("status") + "%");
         prm.put("city", "%" + balance.get("city") + "%");
@@ -2731,8 +2731,9 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> listSupplierGudangReturnOrder(Map<String, String> param) {
         String query = null;
+        Map<String, Object> sqlParam = new HashMap<>();
         if (param.get("typeReturn").equals("Gudang")) {
-            query = "SELECT * FROM M_GLOBAL WHERE COND ='WAREHOUSE' AND STATUS = 'A'";
+            query = "SELECT * FROM M_GLOBAL WHERE COND =:cond AND STATUS = 'A'";
         }
         if (param.get("typeReturn").equals("Supplier")) {
             query = "SELECT * FROM M_SUPPLIER ORDER BY SUPPLIER_NAME ASC";
