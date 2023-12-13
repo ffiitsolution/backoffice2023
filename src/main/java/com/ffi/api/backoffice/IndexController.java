@@ -2690,5 +2690,29 @@ public class IndexController {
         return res;
     }
     
-    ///laniiiii test push
+      ///////////////  NEW METHOD LIST MPCS PLAN  BY DONA 12 DEC 2023////////////////////
+       @RequestMapping(value = "/list-mpcs-plan", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Menampilkan Data MPCS Plan ", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")
+    }
+    )
+
+    public @ResponseBody
+    Response listMpcsPlan(@RequestBody String param) {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        Map<String, Object> map = new LinkedHashMap<String, Object>();
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response res = new Response();
+        res.setData(viewServices.listMpcsPlan(balance));
+        return res;
+    }
+   /////////////////////////////DONE//////////////////////////////////// 
+    
+    
+    
+    
 }
