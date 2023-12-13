@@ -2102,7 +2102,7 @@ public class ViewDoaImpl implements ViewDao {
                 } else if (param.get("typeTransaksi").equals("Wastage")) {
                     prm.put("typeTrans1", "W");
                     prm.put("typeTrans2", "W");
-                } else if (param.get("typeTransaksi").equals("Left Offer")) {
+                } else if (param.get("typeTransaksi").equals("Left Over")) {
                     prm.put("typeTrans1", "L");
                     prm.put("typeTrans2", "L");
                 }
