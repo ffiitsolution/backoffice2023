@@ -1437,6 +1437,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("dateUpd", rs.getString("DATE_UPD"));
                 rt.put("timeUpd", rs.getString("TIME_UPD"));
                 rt.put("gudangName", rs.getString("NAMA_GUDANG"));
+                rt.put("statusKirim", rs.getString("STATUS_KIRIM"));
 
                 return rt;
             }
