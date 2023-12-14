@@ -22,6 +22,8 @@ import java.sql.*;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.Date;
 
@@ -29,9 +31,10 @@ import java.util.Date;
 public class ReportDaoImpl implements ReportDao {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
-
-    String timeStamp = new SimpleDateFormat("HHmmss").format(Calendar.getInstance().getTime());
-    String dateNow = new SimpleDateFormat("dd-MMM-yyyy").format(Calendar.getInstance().getTime());
+    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HHmmss");
+    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy");
+    // String timeStamp = new SimpleDateFormat("HHmmss").format(Calendar.getInstance().getTime());
+    // String dateNow = new SimpleDateFormat("dd-MMM-yyyy").format(Calendar.getInstance().getTime());
 
     @Autowired
     public ReportDaoImpl(NamedParameterJdbcTemplate jdbcTemplate) {
@@ -526,8 +529,8 @@ public class ReportDaoImpl implements ReportDao {
         param.put("param", mapping.get("param"));
         param.put("detail_flag", mapping.get("detail_flag"));
         param.put("userUpd", mapping.get("userUpd"));
-        param.put("dateUpd", dateNow);
-        param.put("timeUpd", timeStamp);
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         param.put("description", mapping.get("description"));
         jdbcTemplate.update(query, param);
     }
