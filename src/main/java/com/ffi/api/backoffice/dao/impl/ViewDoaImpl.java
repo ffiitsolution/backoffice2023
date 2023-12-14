@@ -2734,12 +2734,13 @@ public class ViewDoaImpl implements ViewDao {
         Map<String, Object> sqlParam = new HashMap<>();
         if (param.get("typeReturn").equals("Gudang")) {
             query = "SELECT * FROM M_GLOBAL WHERE COND =:cond AND STATUS = 'A'";
+            sqlParam.put("cond", param.get("cond"));
         }
         if (param.get("typeReturn").equals("Supplier")) {
             query = "SELECT * FROM M_SUPPLIER ORDER BY SUPPLIER_NAME ASC";
         }
 
-        List<Map<String, Object>> list = jdbcTemplate.query(query, new RowMapper<Map<String, Object>>() {
+        List<Map<String, Object>> list = jdbcTemplate.query(query, sqlParam, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
