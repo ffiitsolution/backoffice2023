@@ -2209,18 +2209,27 @@ public class ProcessDaoImpl implements ProcessDao {
     ///////////////NEW METHOD update MPCS plan by Dona 14/12/2023//// 
     @Override
     public void updateMpcsPlan(Map<String, String> balance) {
-        String qy = "update m_pos set ref_no=:refNo,status=:status,pos_type=:posType,USER_UPD=:userUpd,DATE_UPD=:dateUpd,TIME_UPD=:timeUpd where region_code=:regionCode and outlet_code=:outletCode and pos_code=:posCode";
+        String qy = "UPDATE T_SUMM_MPCS SET "
+                + "QTY_PROJ=:qtyProj,"
+                + "QTY_VARIANCE=(-1)*:qtyVariance,"
+                + "USER_UPD=:userUpd,"
+                + "DATE_UPD=:dateUpd,"
+                + "TIME_UPD=:timeUpd "
+                + "WHERE MPCS_GROUP=:mpcsGroup "
+                + "AND DATE_MPCS=:dateMpcs "
+                + "AND SEQ_MPCS=:seqMpcs "
+                + "AND OUTLET_CODE=:outletCode ";
         Map param = new HashMap();
-        param.put("regionCode", balance.get("regionCode"));
-        param.put("outletCode", balance.get("outletCode"));
-        param.put("posCode", balance.get("posCode"));
-        param.put("posDescription", balance.get("posDescription"));
-        param.put("refNo", balance.get("refNo"));
-        param.put("status", balance.get("status"));
-        param.put("userUpd", balance.get("userUpd"));
+        param.put("qtyProj", balance.get("qtyProj"));
+        param.put("outletCode", balance.get("outletCode"));;
+        param.put("qtyVariance", balance.get("qtyVariance"));
+        param.put("mpcsGroup", balance.get("mpcsGroup"));
+        param.put("dateMpcs", balance.get("dateMpcs"));
+        param.put("seqMpcs", balance.get("seqMpcs"));
+         param.put("userUpd", balance.get("userUpd"));
         param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
         param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
-        param.put("posType", balance.get("posType"));
+
         jdbcTemplate.update(qy, param);
     }
 }
