@@ -85,7 +85,7 @@ public interface ProcessDao {
     public void insertScDtlToScHdr(Map<String, String> mapping);
 
     public void sendDataToWarehouse(Map<String, String> mapping);
-    
+
     //Add Insert to Receiving Header & Detail by KP (07-06-2023)
     public void InsertRecvHeaderDetail(JsonObject mapping);
 
@@ -116,9 +116,9 @@ public interface ProcessDao {
     public void updateOpnameStatus(Map<String, String> mapping);
 
     /////////////done
-    
     ////////////New method for Transfer master outlet - Fathur 11 Dec 2023////////////
     public void sendDataOutletToWarehouse(Map<String, String> mapping);
+
     ////////////Done method for Transfer master outlet////////////
     ///////////////NEW METHOD insert POS 'N' EOD - M Joko 11/12/2023////////////////////////////
     public void insertEodPosN(Map<String, String> mapping);
@@ -134,4 +134,9 @@ public interface ProcessDao {
 
     ///////////////NEW METHOD insert T SUMM MPCS - M Joko 14/12/2023//// 
     public void insertTSummMpcs(Map<String, String> mapping);
+
+    ///////////////NEW METHOD UPDATE MPCS PLAN 12 DECEMBER 2023////
+    public void updateMpcsPlan(Map<String, String> mapping);
+
+    //////////////////////////DONE////////////////////////////
 }

@@ -1992,11 +1992,11 @@ public class ProcessDaoImpl implements ProcessDao {
                     + "ORDER_TYPE,   "
                     + "ORDER_ID,     "
                     + "ORDER_NO,     "
-                    + "TO_CHAR(ORDER_DATE, 'DD-MON-YY') AS ORDER_DATE, " 
+                    + "TO_CHAR(ORDER_DATE, 'DD-MON-YY') AS ORDER_DATE, "
                     + "ORDER_TO,     "
                     + "CD_SUPPLIER,  "
-                    + "TO_CHAR(DT_DUE, 'DD-MON-YY') AS DT_DUE, " 
-                    + "TO_CHAR(DT_EXPIRED, 'DD-MON-YY') AS DT_EXPIRED, " 
+                    + "TO_CHAR(DT_DUE, 'DD-MON-YY') AS DT_DUE, "
+                    + "TO_CHAR(DT_EXPIRED, 'DD-MON-YY') AS DT_EXPIRED, "
                     + "REMARK,        "
                     + "NO_OF_PRINT,  "
                     + "STATUS,       "
@@ -2128,7 +2128,7 @@ public class ProcessDaoImpl implements ProcessDao {
             e.printStackTrace();
         }
     }
-    
+
     ////////////New method for insert Eod Hist POS 'N' ke eod - M Joko M 11-Dec-2023////////////
     @Override
     public void insertEodPosN(Map<String, String> balance) {
@@ -2145,7 +2145,7 @@ public class ProcessDaoImpl implements ProcessDao {
         System.err.println("q_process: " + query);
         jdbcTemplate.update(query, param);
     }
-    
+
     ////////////New method for insert T Stock Card EOD - M Joko M 11-Dec-2023////////////
     @Override
     public void insertTStockCard(Map<String, String> balance) {
@@ -2164,7 +2164,7 @@ public class ProcessDaoImpl implements ProcessDao {
         System.err.println("q_process: " + query);
         jdbcTemplate.update(query, param);
     }
-    
+
     ////////////New method for insert T EOD Hist - M Joko M 12-Dec-2023////////////
     @Override
     public void insertTEodHist(Map<String, String> balance) {
@@ -2181,7 +2181,7 @@ public class ProcessDaoImpl implements ProcessDao {
         System.err.println("q_process: " + query);
         jdbcTemplate.update(query, param);
     }
-    
+
     ////////////New method for increase trans_date M Outlet selesai EOD - M Joko M 11-Dec-2023////////////
     @Override
     public void increaseTransDateMOutlet(Map<String, String> balance) {
@@ -2194,7 +2194,7 @@ public class ProcessDaoImpl implements ProcessDao {
         System.err.println("q_process: " + query);
         jdbcTemplate.update(query, param);
     }
-    
+
     ///////////////NEW METHOD insert T SUMM MPCS - M Joko 14/12/2023//// 
     @Override
     public void insertTSummMpcs(Map<String, String> balance) {
@@ -2204,5 +2204,23 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("outletCode", balance.get("outletCode"));
         System.err.println("q_process: " + query);
         jdbcTemplate.update(query, param);
+    }
+
+    ///////////////NEW METHOD update MPCS plan by Dona 14/12/2023//// 
+    @Override
+    public void updateMpcsPlan(Map<String, String> balance) {
+        String qy = "update m_pos set ref_no=:refNo,status=:status,pos_type=:posType,USER_UPD=:userUpd,DATE_UPD=:dateUpd,TIME_UPD=:timeUpd where region_code=:regionCode and outlet_code=:outletCode and pos_code=:posCode";
+        Map param = new HashMap();
+        param.put("regionCode", balance.get("regionCode"));
+        param.put("outletCode", balance.get("outletCode"));
+        param.put("posCode", balance.get("posCode"));
+        param.put("posDescription", balance.get("posDescription"));
+        param.put("refNo", balance.get("refNo"));
+        param.put("status", balance.get("status"));
+        param.put("userUpd", balance.get("userUpd"));
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
+        param.put("posType", balance.get("posType"));
+        jdbcTemplate.update(qy, param);
     }
 }
