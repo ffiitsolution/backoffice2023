@@ -1093,9 +1093,10 @@ public class ReportDaoImpl implements ReportDao {
             hashMap.put("fromDate", param.get("fromDate"));
             hashMap.put("toDate", param.get("toDate"));
         } else if ((param.get("typeReport").equals("Report Stock Card") || param.get("typeReport").equals("Report Stock")) && param.get("typeParam").equals("Item Code")) {
-            query = " SELECT a.ITEM_CODE, b.ITEM_DESCRIPTION  FROM T_STOCK_CARD a LEFT JOIN M_ITEM b ON a.ITEM_CODE " +
+            query = "SELECT a.ITEM_CODE, b.ITEM_DESCRIPTION  FROM T_STOCK_CARD a LEFT JOIN M_ITEM b ON a.ITEM_CODE " +
                     "= b.ITEM_CODE WHERE a.OUTLET_CODE = :outletCode AND a.TRANS_DATE BETWEEN :fromDate AND :toDate" +
-                    " AND b.FLAG_STOCK = 'Y' GROUP BY a.ITEM_CODE, b.ITEM_DESCRIPTION ORDER BY a.ITEM_CODE ASC";
+                    " AND b.FLAG_STOCK = 'Y' AND (a.QTY_BEGINNING != 0 OR a.QTY_IN != 0 OR a.QTY_OUT != 0)" +
+                    " GROUP BY a.ITEM_CODE, b.ITEM_DESCRIPTION ORDER BY a.ITEM_CODE ASC";
             hashMap.put("outletCode", param.get("outletCode"));
             hashMap.put("fromDate", param.get("fromDate"));
             hashMap.put("toDate", param.get("toDate"));
