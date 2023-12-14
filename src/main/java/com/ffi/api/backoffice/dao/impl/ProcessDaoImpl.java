@@ -2211,7 +2211,7 @@ public class ProcessDaoImpl implements ProcessDao {
     public void updateMpcsPlan(Map<String, String> balance) {
         String qy = "UPDATE T_SUMM_MPCS SET "
                 + "QTY_PROJ=:qtyProj,"
-                + "QTY_VARIANCE=(-1)*:qtyVariance,"
+                + "QTY_VARIANCE=(-1)*:qtyProj,"
                 + "USER_UPD=:userUpd,"
                 + "DATE_UPD=:dateUpd,"
                 + "TIME_UPD=:timeUpd "
@@ -2222,13 +2222,14 @@ public class ProcessDaoImpl implements ProcessDao {
         Map param = new HashMap();
         param.put("qtyProj", balance.get("qtyProj"));
         param.put("outletCode", balance.get("outletCode"));;
-        param.put("qtyVariance", balance.get("qtyVariance"));
         param.put("mpcsGroup", balance.get("mpcsGroup"));
         param.put("dateMpcs", balance.get("dateMpcs"));
         param.put("seqMpcs", balance.get("seqMpcs"));
-         param.put("userUpd", balance.get("userUpd"));
+        param.put("userUpd", balance.get("userUpd"));
         param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
         param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
+        System.out.println(qy);
         jdbcTemplate.update(qy, param);
+        System.out.println(qy);
     }
 }
