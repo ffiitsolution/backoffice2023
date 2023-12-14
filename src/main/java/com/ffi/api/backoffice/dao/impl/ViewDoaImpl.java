@@ -358,6 +358,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "    MMI.MENU_ITEM_CODE, "
                 + "    MI.ITEM_DESCRIPTION, "
                 + "    MG.DESCRIPTION AS MENU_GROUP_NAME, "
+                + "    MG.STATUS AS MENU_GROUP_STATUS, "
                 + "    MP.PRICE, "
                 + "    MP.PRICE_TYPE_CODE AS PRICE_TYPE_CODE, "
                 + "    MMI.TAXABLE "
@@ -390,6 +391,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("menuItemCode", rs.getString("menu_item_code"));
                 rt.put("itemDescription", rs.getString("item_description"));
                 rt.put("menuGroupName", rs.getString("menu_group_name"));
+                rt.put("menuGroupStatus", rs.getString("menu_group_status"));
                 rt.put("price", rs.getString("price"));
                 rt.put("priceTypeCode", rs.getString("price_type_code"));
                 rt.put("taxable", rs.getString("taxable"));
