@@ -292,7 +292,7 @@ public class ViewDoaImpl implements ViewDao {
         Map prm = new HashMap();
         prm.put("outletCode", "%" + ref.get("outletCode") + "%");
         var allStatusParamValue = ref.getOrDefault("allStatus", "N");
-        System.err.println("allStatusParamValue: " + allStatusParamValue);
+        
         if ("N".equals(allStatusParamValue)) {
             qry += "AND M.STATUS = 'A' ORDER BY MENU_GROUP_CODE";
         } else {
