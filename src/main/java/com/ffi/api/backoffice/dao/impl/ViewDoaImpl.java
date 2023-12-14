@@ -2731,10 +2731,12 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> listSupplierGudangReturnOrder(Map<String, String> param) {
         String query = null;
+        /////////////////////////////// penambahan param cond untuk return order aditya 12/13/2023 ////////////////
         Map<String, Object> sqlParam = new HashMap<>();
         if (param.get("typeReturn").equals("Gudang")) {
             query = "SELECT * FROM M_GLOBAL WHERE COND =:cond AND STATUS = 'A'";
             sqlParam.put("cond", param.get("cond"));
+        /////////////////////// done aditya //////////////////////
         }
         if (param.get("typeReturn").equals("Supplier")) {
             query = "SELECT * FROM M_SUPPLIER ORDER BY SUPPLIER_NAME ASC";
@@ -2747,6 +2749,10 @@ public class ViewDoaImpl implements ViewDao {
                 if (param.get("typeReturn").equals("Gudang")) {
                     rt.put("code", rs.getString("CODE"));
                     rt.put("description", rs.getString("DESCRIPTION"));
+        ///////////////////////// penambahan value dan status untuk return order gudang aditya 12/14/2023 ///////////
+                    rt.put("value", rs.getString("VALUE"));
+                    rt.put("status", rs.getString("STATUS"));
+        /////////////////////////// done aditya ////////////////////////////////////////////
                 } else {
                     rt.put("cdSupplier", rs.getString("CD_SUPPLIER"));
                     rt.put("supplierName", rs.getString("SUPPLIER_NAME"));
