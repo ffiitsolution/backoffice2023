@@ -131,4 +131,7 @@ public interface ProcessDao {
 
     ///////////////NEW METHOD increase trans_date M Outlet selesai EOD - M Joko 11/12/2023////////////////////////////
     public void increaseTransDateMOutlet(Map<String, String> mapping);
+
+    ///////////////NEW METHOD insert T SUMM MPCS - M Joko 14/12/2023//// 
+    public void insertTSummMpcs(Map<String, String> mapping);
 }

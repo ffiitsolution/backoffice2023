@@ -1627,7 +1627,7 @@ public class IndexController {
             if (cekOpnameHdr.equals("0")) {
                 processServices.inserOpnameHeader(balance);
                 rm.setSuccess(true);
-                rm.setMessage("Insert Success Successfuly");
+                rm.setMessage("Insert Success");
                 map.put("opnameNo", balance.getOpnameNo());
             } else {
                 rm.setSuccess(true);
@@ -1635,9 +1635,9 @@ public class IndexController {
             }
         } catch (Exception e) {
             rm.setSuccess(false);
-            rm.setMessage("Insert Failed Successfuly: " + e.getMessage());
+            rm.setMessage("Insert Failed: " + e.getMessage());
         }
-        if (rm.getMessage().equals("Insert Success Successfuly")) {
+        if (rm.getMessage().equals("Insert Success")) {
             processServices.updateMCounterSop(balance.getTransType(), balance.getOutletCode());
 
         }
@@ -2588,6 +2588,8 @@ public class IndexController {
        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
        }.getType());
        if(!balance.containsKey("outletCode") && !balance.containsKey("userUpd")){
+            errors.add("Missing columns: outletCode, userUpd");
+            d.put("errors",errors);
             d.put("message","Missing columns: outletCode, userUpd");
             data.add(d);
             res.setData(data);
@@ -2660,6 +2662,7 @@ public class IndexController {
                 processServices.insertTStockCard(scardParams);
             }
             processServices.insertTEodHist(balance);
+            processServices.insertTSummMpcs(balance);
             processServices.increaseTransDateMOutlet(balance);
         } else {
             errors.add("! prevStockCards size isEmpty");

@@ -233,4 +233,9 @@ public class ProcessServices {
     public void increaseTransDateMOutlet(Map<String, String> balancing) {
         dao.increaseTransDateMOutlet(balancing);
     }
+
+    ///////////////NEW METHOD insert T SUMM MPCS - M Joko 14/12/2023////   
+    public void insertTSummMpcs(Map<String, String> balancing) {
+        dao.insertTSummMpcs(balancing);
+    }
 }
