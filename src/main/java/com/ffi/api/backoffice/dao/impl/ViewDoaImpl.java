@@ -2700,7 +2700,7 @@ public class ViewDoaImpl implements ViewDao {
             sqlParam.put("startDate", param.get("startDate"));
             sqlParam.put("endDate", param.get("endDate"));
         }
-        query += " ORDER BY RETURN_DATE DESC ";
+        query += " ORDER BY RETURN_DATE DESC, a.DATE_UPD DESC, a.TIME_UPD DESC ";
         if (param.containsKey("limit") && param.get("limit").length() > 0) {
             query = "SELECT * FROM ( " + query + " ) WHERE rownum <= :limit";
             sqlParam.put("limit", param.get("limit"));
