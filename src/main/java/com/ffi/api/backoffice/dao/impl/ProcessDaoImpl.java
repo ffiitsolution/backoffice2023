@@ -2583,7 +2583,7 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("userUpd", balance.get("userUpd"));
         param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
         param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
-        System.out.println(qy);
+        
         jdbcTemplate.update(qy, param);
     }
 

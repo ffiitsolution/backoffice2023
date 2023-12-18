@@ -3359,16 +3359,16 @@ public class ViewDoaImpl implements ViewDao {
     public List<Map<String, Object>> listMpcsPlan(Map<String, String> balance) {
         String getCity = getCity(balance.get("outletCode"));
 
-        String qry = "SELECT  OUTLET_CODE, MPCS_GROUP, DATE_MPCS, TIME_MPCS, QTY_PROJ, QTY_PROJ_CONV,  "
-                + "QTY_ACC_PROJ, QTY_SOLD, QTY_ACC_SOLD, QTY_VARIANCE, QTY_ACC_VARIANCE, USER_UPD,  "
-                + "DATE_UPD, TIME_UPD, SEQ_MPCS FROM t_summ_mpcs "
-                + "WHERE OUTLET_CODE =:outletCode   "
-                + "AND MPCS_GROUP =:mpcsGroup   "
-                + "AND DATE_MPCS =:dateMpcs "
-                + "AND TIME_MPCS >='000000' "
-                + "ORDER BY  "
-                + "OUTLET_CODE  ASC, MPCS_GROUP  ASC, DATE_MPCS  ASC, TIME_MPCS  ASC, SEQ_MPCS   "
-                + "ASC ";
+            String qry = "SELECT  OUTLET_CODE, MPCS_GROUP, DATE_MPCS, TIME_MPCS, QTY_PROJ, QTY_PROJ_CONV,  "
+                    + "QTY_ACC_PROJ, QTY_SOLD, QTY_ACC_SOLD, QTY_VARIANCE, QTY_ACC_VARIANCE, USER_UPD,  "
+                    + "DATE_UPD, TIME_UPD, SEQ_MPCS FROM t_summ_mpcs "
+                    + "WHERE OUTLET_CODE =:outletCode   "
+                    + "AND MPCS_GROUP =:mpcsGroup   "
+                    + "AND DATE_MPCS =:dateMpcs "
+                    + "AND TIME_MPCS >='000000' "
+                    + "ORDER BY  "
+                    + "OUTLET_CODE  ASC, MPCS_GROUP  ASC, DATE_MPCS  ASC, TIME_MPCS  ASC, SEQ_MPCS   "
+                    + "ASC ";
 
         Map prm = new HashMap();
         prm.put("outletCode", balance.get("outletCode"));
