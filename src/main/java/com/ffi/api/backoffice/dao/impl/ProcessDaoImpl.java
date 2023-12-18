@@ -583,10 +583,10 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("userUpd", balance.getUserUpd());
         param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
         param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
+        jdbcTemplate.update(qy, param);
         param.put("year", year);
         param.put("month", month);
         param.put("transType", balance.getTransType());
-        jdbcTemplate.update(qy, param);
         jdbcTemplate.update(qry, param);
         balance.setOpnameNo(opNo);
     }
@@ -603,11 +603,12 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("month", month);
         param.put("transType", transType);
         param.put("outletCode", outletCode);
+        System.err.println("q : " + sql);
+        System.err.println("p : " + param);
         return jdbcTemplate.queryForObject(sql, param, new RowMapper() {
             @Override
             public Object mapRow(ResultSet rs, int i) throws SQLException {
                 return rs.getString(1) == null ? "0" : rs.getString(1);
-
             }
         }).toString();
     }
@@ -633,16 +634,33 @@ public class ProcessDaoImpl implements ProcessDao {
     }
 
     ///////////////new method updateStatusOpname 6-11-2023////////////////////////////
+    /////////////// update menambah item ke t_stock_card_detail by M Joko 18-12-2023////////////////////////////
     @Override
-    public void updateOpnameStatus(Map<String, String> balance) {
-        String qy = "update t_opname_header set  "
-                + "status =:status "
-                + "WHERE  OPNAME_NO= :opnameNo and OUTLET_CODE= :outletCode";
+    public void updateOpnameStatus(Map balance) {
+        System.out.println("updateOpnameStatus balance = " + balance);
         Map param = new HashMap();
+        Integer status = Integer.valueOf(balance.get("status").toString());
+        System.out.println("updateOpnameStatus status = " + status);
         param.put("outletCode", balance.get("outletCode"));
         param.put("opnameNo", balance.get("opnameNo"));
-        param.put("status", balance.get("status"));
+        param.put("status", status);
+        String qy = "update t_opname_header set status =:status WHERE OPNAME_NO = :opnameNo and OUTLET_CODE= :outletCode";
         jdbcTemplate.update(qy, param);
+        if(status == 1){
+            itemOpnameToStockCard(balance);
+        }
+    }
+    
+    public void itemOpnameToStockCard(Map<String, String> balance) {
+            System.out.println("updateOpnameStatus = 1 / Close");
+            // update by M Joko 18-12-23
+            String qryToStockCard = "insert into t_stock_card_detail ( select * from ( SELECT od.OUTLET_CODE ,(select trans_date from m_outlet where outlet_code=od.outlet_code) as TRANS_DATE ,od.ITEM_CODE ,'SOP' AS CD_TRANS ,case when od.qty_freeze = od.total_qty then 0 else (case when od.qty_freeze < od.total_qty then od.total_qty - od.qty_freeze else 0 end) end AS QUANTITY_IN ,case when od.qty_freeze = od.total_qty then 0 else (case when od.qty_freeze > od.total_qty then od.qty_freeze - od.total_qty else 0 end) end AS QUANTITY ,:userUpd AS USER_UPD ,:dateUpd as DATE_UPD ,:timeUpd as TIME_UPD FROM T_OPNAME_DETAIL od where od.opname_no = :opnameNo ) where QUANTITY_IN not in (0,'0') union all (select * from ( SELECT od.OUTLET_CODE ,(select trans_date from m_outlet where outlet_code=od.outlet_code) as TRANS_DATE ,od.ITEM_CODE ,'SOP' AS CD_TRANS ,case when od.qty_freeze = od.total_qty then 0 else (case when od.qty_freeze < od.total_qty then od.total_qty - od.qty_freeze else 0 end) end AS QUANTITY_IN ,case when od.qty_freeze = od.total_qty then 0 else (case when od.qty_freeze > od.total_qty then od.qty_freeze - od.total_qty else 0 end) end AS QUANTITY ,:userUpd AS USER_UPD ,:dateUpd as DATE_UPD ,:timeUpd as TIME_UPD FROM T_OPNAME_DETAIL od where od.opname_no = :opnameNo ) where QUANTITY not in (0,'0')))";
+            Map paramToStockCard = new HashMap();
+            paramToStockCard.put("opnameNo", balance.get("opnameNo"));
+            paramToStockCard.put("userUpd", balance.getOrDefault("userUpd", "SYSTEM"));
+            paramToStockCard.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+            paramToStockCard.put("timeUpd", LocalDateTime.now().format(timeFormatter));
+            jdbcTemplate.update(qryToStockCard, paramToStockCard);
     }
 ///////////////done///////////////
 
