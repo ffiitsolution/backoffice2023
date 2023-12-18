@@ -3186,7 +3186,8 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> mpcsProductionDetail(Map<String, String> balance) {
 
-        String qry = "SELECT MPCS_GROUP, RECIPE_CODE, SEQ_MPCS, QUANTITY, to_char(to_date(TIME_UPD, 'hh24miss'), 'hh24:mi') AS TIME_UPD "
+        String qry = "SELECT MPCS_GROUP, RECIPE_CODE, SEQ_MPCS, QUANTITY, to_char(to_date(TIME_UPD, 'hh24miss'), 'hh24:mi') AS TIME_UPD, "
+                + "(to_char(DATE_UPD, 'YYYY-MM-dd') ||' ' || to_char(to_date(TIME_UPD, 'hh24miss'), 'hh24:mi:ss')) AS DATE_UPD "
                 + "FROM T_MPCS_HIST WHERE MPCS_GROUP = :mpcsGroup AND MPCS_DATE = :dateMpcs "
                 + "AND TIME_UPD <= replace(:maxTime, ':' , '')||'00' "
                 + "AND TIME_UPD >= replace(:minTime, ':' , '')||'00' ";
@@ -3207,6 +3208,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("seqMpcs", rs.getString("SEQ_MPCS"));
                 rt.put("quantity", rs.getString("QUANTITY"));
                 rt.put("timeUpd", rs.getString("TIME_UPD"));
+                rt.put("dateUpd", rs.getString("DATE_UPD"));
                 return rt;
             }
         });
