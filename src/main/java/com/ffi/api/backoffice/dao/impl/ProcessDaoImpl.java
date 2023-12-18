@@ -1992,11 +1992,11 @@ public class ProcessDaoImpl implements ProcessDao {
                     + "ORDER_TYPE,   "
                     + "ORDER_ID,     "
                     + "ORDER_NO,     "
-                    + "TO_CHAR(ORDER_DATE, 'DD-MON-YY') AS ORDER_DATE, " 
+                    + "TO_CHAR(ORDER_DATE, 'DD-MON-YY') AS ORDER_DATE, "
                     + "ORDER_TO,     "
                     + "CD_SUPPLIER,  "
-                    + "TO_CHAR(DT_DUE, 'DD-MON-YY') AS DT_DUE, " 
-                    + "TO_CHAR(DT_EXPIRED, 'DD-MON-YY') AS DT_EXPIRED, " 
+                    + "TO_CHAR(DT_DUE, 'DD-MON-YY') AS DT_DUE, "
+                    + "TO_CHAR(DT_EXPIRED, 'DD-MON-YY') AS DT_EXPIRED, "
                     + "REMARK,        "
                     + "NO_OF_PRINT,  "
                     + "STATUS,       "
@@ -2128,7 +2128,7 @@ public class ProcessDaoImpl implements ProcessDao {
             e.printStackTrace();
         }
     }
-    
+
     ////////////New method for insert Eod Hist POS 'N' ke eod - M Joko M 11-Dec-2023////////////
     @Override
     public void insertEodPosN(Map<String, String> balance) {
@@ -2145,7 +2145,7 @@ public class ProcessDaoImpl implements ProcessDao {
         System.err.println("q_process: " + query);
         jdbcTemplate.update(query, param);
     }
-    
+
     ////////////New method for insert T Stock Card EOD - M Joko M 11-Dec-2023////////////
     @Override
     public void insertTStockCard(Map<String, String> balance) {
@@ -2164,7 +2164,7 @@ public class ProcessDaoImpl implements ProcessDao {
         System.err.println("q_process: " + query);
         jdbcTemplate.update(query, param);
     }
-    
+
     ////////////New method for insert T EOD Hist - M Joko M 12-Dec-2023////////////
     @Override
     public void insertTEodHist(Map<String, String> balance) {
@@ -2181,7 +2181,7 @@ public class ProcessDaoImpl implements ProcessDao {
         System.err.println("q_process: " + query);
         jdbcTemplate.update(query, param);
     }
-    
+
     ////////////New method for increase trans_date M Outlet selesai EOD - M Joko M 11-Dec-2023////////////
     @Override
     public void increaseTransDateMOutlet(Map<String, String> balance) {
@@ -2194,15 +2194,42 @@ public class ProcessDaoImpl implements ProcessDao {
         System.err.println("q_process: " + query);
         jdbcTemplate.update(query, param);
     }
-    
+
     ///////////////NEW METHOD insert T SUMM MPCS - M Joko 14/12/2023//// 
     @Override
     public void insertTSummMpcs(Map<String, String> balance) {
         // query insert from Dona
-        String query = "insert into t_summ_mpcs (select A.OUTLET_CODE ,A.MPCS_GROUP ,A.DATE_MPCS +1 AS DATE_MPCS ,A.SEQ_MPCS ,A.TIME_MPCS ,TOT AS QTY_PROJ_CONV ,A.UOM_PROJ_CONV ,TOT AS QTY_PROJ ,A.UOM_PROJ ,sum(B.tot)over(PARTITION BY A.MPCS_GROUP ORDER BY A.SEQ_MPCS ) as QTY_ACC_PROJ ,A.UOM_ACC_PROJ ,A.DESC_PROD ,0 as QTY_PROD ,A.UOM_PROD ,0 as QTY_ACC_PROD ,A.UOM_ACC_PROD ,A.PROD_BY ,0 as QTY_SOLD ,A.UOM_SOLD ,0 as QTY_ACC_SOLD ,A.UOM_ACC_SOLD ,0 as QTY_REJECT ,A.UOM_REJECT ,0 as QTY_ACC_REJECT ,A.UOM_ACC_REJECT ,0 as QTY_WASTAGE ,A.UOM_WASTAGE ,0 as QTY_ACC_WASTAGE ,A.UOM_ACC_WASTAGE ,0 as QTY_ONHAND ,A.UOM_ONHAND ,0 as QTY_ACC_ONHAND ,A.UOM_ACC_ONHAND ,0 as QTY_VARIANCE ,A.UOM_VARIANCE ,0 as QTY_ACC_VARIANCE ,A.UOM_ACC_VARIANCE ,A.USER_UPD ,A.DATE_UPD ,A.TIME_UPD ,0 as QTY_IN ,0 as QTY_OUT from t_summ_mpcs A LEFT JOIN (SELECT OUTLET_CODE,MPCS_GROUP,SEQ_MPCS,TIME_MPCS,TOT FROM ( select OUTLET_CODE,mpcs_group,seq_mpcs,time_mpcs,sum(qty_sold),sum(qty_sold1),sum(qty_sold2),round((sum(qty_sold)+sum(qty_sold1)+sum(qty_sold2))/3) as tot from( select OUTLET_CODE,mpcs_group,date_mpcs,seq_mpcs,time_mpcs,qty_sold,0 as qty_sold1, 0 as qty_sold2 from t_summ_mpcs where date_mpcs in(select trans_date-7 from m_outlet where outlet_code=:outletCode) union all select OUTLET_CODE,mpcs_group,date_mpcs,seq_mpcs,time_mpcs,0 as qty_sold,qty_sold as qty_sold1, 0 as qty_sold2 from t_summ_mpcs where date_mpcs in(select trans_date-14 from m_outlet where outlet_code=:outletCode) union all select OUTLET_CODE,mpcs_group,date_mpcs,seq_mpcs,time_mpcs,0 as qty_sold,0 as qty_sold1,qty_sold as qty_sold2 from t_summ_mpcs where date_mpcs in(select trans_date-21 from m_outlet where outlet_code=:outletCode) ) group by OUTLET_CODE,mpcs_group,seq_mpcs,time_mpcs order by mpcs_group asc,seq_mpcs) B)B ON A.OUTLET_CODE=B.OUTLET_CODE AND A.MPCS_GROUP=B.MPCS_GROUP AND A.SEQ_MPCS=B.SEQ_MPCS AND A.TIME_MPCS=B.TIME_MPCS WHERE DATE_MPCS IN(select trans_date from m_outlet where outlet_code=:outletCode))";
+        String query = "insert into t_summ_mpcs (select A.OUTLET_CODE ,A.MPCS_GROUP ,A.DATE_MPCS +1 AS DATE_MPCS ,A.SEQ_MPCS ,A.TIME_MPCS ,TOT AS QTY_PROJ_CONV ,A.UOM_PROJ_CONV ,TOT AS QTY_PROJ ,A.UOM_PROJ ,sum(B.tot)over(PARTITION BY A.MPCS_GROUP ORDER BY A.SEQ_MPCS ) as QTY_ACC_PROJ ,A.UOM_ACC_PROJ ,A.DESC_PROD ,0 as QTY_PROD ,A.UOM_PROD ,0 as QTY_ACC_PROD ,A.UOM_ACC_PROD ,A.PROD_BY ,0 as QTY_SOLD ,A.UOM_SOLD ,0 as QTY_ACC_SOLD ,A.UOM_ACC_SOLD ,0 as QTY_REJECT ,A.UOM_REJECT ,0 as QTY_ACC_REJECT ,A.UOM_ACC_REJECT ,0 as QTY_WASTAGE ,A.UOM_WASTAGE ,0 as QTY_ACC_WASTAGE ,A.UOM_ACC_WASTAGE ,0 as QTY_ONHAND ,A.UOM_ONHAND ,0 as QTY_ACC_ONHAND ,A.UOM_ACC_ONHAND, TOT as QTY_VARIANCE,0 as QTY_VARIANCE ,A.UOM_VARIANCE ,0 as QTY_ACC_VARIANCE ,A.UOM_ACC_VARIANCE ,A.USER_UPD ,A.DATE_UPD ,A.TIME_UPD ,0 as QTY_IN ,0 as QTY_OUT from t_summ_mpcs A LEFT JOIN (SELECT OUTLET_CODE,MPCS_GROUP,SEQ_MPCS,TIME_MPCS,TOT FROM ( select OUTLET_CODE,mpcs_group,seq_mpcs,time_mpcs,sum(qty_sold),sum(qty_sold1),sum(qty_sold2),round((sum(qty_sold)+sum(qty_sold1)+sum(qty_sold2))/3) as tot from( select OUTLET_CODE,mpcs_group,date_mpcs,seq_mpcs,time_mpcs,qty_sold,0 as qty_sold1, 0 as qty_sold2 from t_summ_mpcs where date_mpcs in(select trans_date-7 from m_outlet where outlet_code=:outlet) union all select OUTLET_CODE,mpcs_group,date_mpcs,seq_mpcs,time_mpcs,0 as qty_sold,qty_sold as qty_sold1, 0 as qty_sold2 from t_summ_mpcs where date_mpcs in(select trans_date-14 from m_outlet where outlet_code=:outlet) union all select OUTLET_CODE,mpcs_group,date_mpcs,seq_mpcs,time_mpcs,0 as qty_sold,0 as qty_sold1,qty_sold as qty_sold2 from t_summ_mpcs where date_mpcs in(select trans_date-21 from m_outlet where outlet_code=:outlet) ) group by OUTLET_CODE,mpcs_group,seq_mpcs,time_mpcs order by mpcs_group asc,seq_mpcs) B)B ON A.OUTLET_CODE=B.OUTLET_CODE AND A.MPCS_GROUP=B.MPCS_GROUP AND A.SEQ_MPCS=B.SEQ_MPCS AND A.TIME_MPCS=B.TIME_MPCS WHERE DATE_MPCS IN(select trans_date from m_outlet where outlet_code=:outlet))";
         Map param = new HashMap();
         param.put("outletCode", balance.get("outletCode"));
         System.err.println("q_process: " + query);
         jdbcTemplate.update(query, param);
+    }
+
+    ///////////////NEW METHOD update MPCS plan by Dona 14/12/2023//// 
+    @Override
+    public void updateMpcsPlan(Map<String, String> balance) {
+        String qy = "UPDATE T_SUMM_MPCS SET "
+                + "QTY_PROJ=:qtyProj,"
+                + "QTY_VARIANCE=(-1)*:qtyProj,"
+                + "USER_UPD=:userUpd,"
+                + "DATE_UPD=:dateUpd,"
+                + "TIME_UPD=:timeUpd "
+                + "WHERE MPCS_GROUP=:mpcsGroup "
+                + "AND DATE_MPCS=:dateMpcs "
+                + "AND SEQ_MPCS=:seqMpcs "
+                + "AND OUTLET_CODE=:outletCode ";
+        Map param = new HashMap();
+        param.put("qtyProj", balance.get("qtyProj"));
+        param.put("outletCode", balance.get("outletCode"));;
+        param.put("mpcsGroup", balance.get("mpcsGroup"));
+        param.put("dateMpcs", balance.get("dateMpcs"));
+        param.put("seqMpcs", balance.get("seqMpcs"));
+        param.put("userUpd", balance.get("userUpd"));
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
+        System.out.println(qy);
+        jdbcTemplate.update(qy, param);
+        System.out.println(qy);
     }
 }
