@@ -1627,7 +1627,7 @@ public class IndexController {
             if (cekOpnameHdr.equals("0")) {
                 processServices.inserOpnameHeader(balance);
                 rm.setSuccess(true);
-                rm.setMessage("Insert Success Successfuly");
+                rm.setMessage("Insert Success");
                 map.put("opnameNo", balance.getOpnameNo());
             } else {
                 rm.setSuccess(true);
@@ -1635,9 +1635,9 @@ public class IndexController {
             }
         } catch (Exception e) {
             rm.setSuccess(false);
-            rm.setMessage("Insert Failed Successfuly: " + e.getMessage());
+            rm.setMessage("Insert Failed: " + e.getMessage());
         }
-        if (rm.getMessage().equals("Insert Success Successfuly")) {
+        if (rm.getMessage().equals("Insert Success")) {
             processServices.updateMCounterSop(balance.getTransType(), balance.getOutletCode());
 
         }
@@ -1752,14 +1752,13 @@ public class IndexController {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         String status = "";
         ResponseMessage rm = new ResponseMessage();
-        
+
         try {
             processServices.sendDataToWarehouse(balance);
-            
+
             rm.setSuccess(true);
             rm.setMessage("Insert Successfuly");
-            
-            
+
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Insert Failed: " + e.getMessage());
@@ -2443,7 +2442,6 @@ public class IndexController {
     }
 
     ///////////////done  
-    
     ////////////New method for query stock card - Fathur 29-Nov-2023////////////
     @RequestMapping(value = "/stock-card", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view data query stock card", response = Object.class)
@@ -2451,13 +2449,13 @@ public class IndexController {
         @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 404, message = "The resource not found"),}
     )
-    
+
     public @ResponseBody
     Response listQueryStockCard(@RequestBody String param) throws IOException, Exception {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 
         Response res = new Response();
@@ -2465,7 +2463,7 @@ public class IndexController {
         return res;
     }
     ////////////Done method for query stock card////////////
-    
+
     ////////////New method for query stock card detail - Fathur 30-Nov-2023////////////
     @RequestMapping(value = "/stock-card-detail", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view data query stock card detail", response = Object.class)
@@ -2473,13 +2471,13 @@ public class IndexController {
         @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 404, message = "The resource not found"),}
     )
-    
+
     public @ResponseBody
     Response listQueryStockCardDetail(@RequestBody String param) throws IOException, Exception {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 
         Response res = new Response();
@@ -2487,9 +2485,9 @@ public class IndexController {
         return res;
     }
     ////////////Done method for query stock card detail////////////
-    
+
     ///////////////  NEW METHOD LIST MENU GROUP CODE  BY DONA 4 DEC 2023////////////////////
-       @RequestMapping(value = "/list-menu-group-code-detail", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/list-menu-group-code-detail", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan Data Menu Item Code ", response = Object.class)
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
@@ -2508,32 +2506,32 @@ public class IndexController {
         res.setData(viewServices.listMenuGroupCodeDetail(balance));
         return res;
     }
-   /////////////////////////////DONE//////////////////////////////////// 
-   
-   ////////////New method for Last Eod by Outlet - M Joko 4-Dec-2023////////////
-   @RequestMapping(value = "/last-eod", produces = MediaType.APPLICATION_JSON_VALUE)
-   @ApiOperation(value = "Digunakan untuk ambil data EOD terakhir dan POS yg belum complete di outlet", response = Object.class)
-   @ApiResponses(value = {
-       @ApiResponse(code = 200, message = "OK"),
-       @ApiResponse(code = 404, message = "The resource not found"),}
-   )
-   public @ResponseBody
-   Response lastEod(@RequestBody String param) throws IOException, Exception {
-       Gson gsn = new Gson();
-       Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
-       }.getType());
-       List<Map<String, Object>> posOpened = viewServices.listPosOpen(balance);
-       List<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
-       List<Map<String, Object>> lastEod = viewServices.lastEod(balance);
-       Map<String, Object> eod = lastEod.get(0);
-       eod.put("posOpened", posOpened);
-       data.add(eod);
-       Response res = new Response();
-       res.setData(data);
-       return res;
-   }
-   ////////////Done method for Last Eod////////////
-   
+    /////////////////////////////DONE//////////////////////////////////// 
+
+    ////////////New method for Last Eod by Outlet - M Joko 4-Dec-2023////////////
+    @RequestMapping(value = "/last-eod", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk ambil data EOD terakhir dan POS yg belum complete di outlet", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response lastEod(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> posOpened = viewServices.listPosOpen(balance);
+        List<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> lastEod = viewServices.lastEod(balance);
+        Map<String, Object> eod = lastEod.get(0);
+        eod.put("posOpened", posOpened);
+        data.add(eod);
+        Response res = new Response();
+        res.setData(data);
+        return res;
+    }
+    ////////////Done method for Last Eod////////////
+
     ////////////New method for Transfer master outlet - Fathur 11 Dec 2023////////////
     @RequestMapping(value = "/send-data-outlet-to-warehouse", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk insert transaksi opname header", response = Object.class)
@@ -2541,8 +2539,7 @@ public class IndexController {
         @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 404, message = "The resource not found"),}
     )
-    
-    
+
     public @ResponseBody
     ResponseMessage sendDataOutletToWarehouse(@RequestBody String param) throws IOException, Exception {
         Gson gsn = new Gson();
@@ -2551,14 +2548,13 @@ public class IndexController {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         String status = "";
         ResponseMessage rm = new ResponseMessage();
-        
+
         try {
             processServices.sendDataOutletToWarehouse(balance);
-            
+
             rm.setSuccess(true);
             rm.setMessage("Insert Successfuly");
-            
-            
+
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Insert Failed: " + e.getMessage());
@@ -2566,53 +2562,54 @@ public class IndexController {
         rm.setItem(list);
         return rm;
     }
-    
-   
-   ////////////New method for Process EOD - M Joko 8-Dec-2023////////////
-   @RequestMapping(value = "/process-eod", produces = MediaType.APPLICATION_JSON_VALUE)
-   @ApiOperation(value = "Digunakan untuk process data EOD sesuai trans_date Outlet dan POS yg masih open", response = Object.class)
-   @ApiResponses(value = {
-       @ApiResponse(code = 200, message = "OK"),
-       @ApiResponse(code = 400, message = "Failed"),
-       @ApiResponse(code = 404, message = "The resource not found"),}
-   )
-   public @ResponseBody
-   Response processEod(@RequestBody String param) throws IOException, Exception {
-       Gson gsn = new Gson();
-       Response res = new Response();
-       List errors = new ArrayList();
-       List posOpen = new ArrayList();
-       List<Map<String, Object>> prevStockCards = new ArrayList();
-       List<Map<String, Object>> data = new ArrayList<>();
-       Map<String, Object> d = new HashMap();
-       Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
-       }.getType());
-       if(!balance.containsKey("outletCode") && !balance.containsKey("userUpd")){
-            d.put("message","Missing columns: outletCode, userUpd");
+
+    ////////////New method for Process EOD - M Joko 8-Dec-2023////////////
+    @RequestMapping(value = "/process-eod", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk process data EOD sesuai trans_date Outlet dan POS yg masih open", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 400, message = "Failed"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response processEod(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Response res = new Response();
+        List errors = new ArrayList();
+        List posOpen = new ArrayList();
+        List<Map<String, Object>> prevStockCards = new ArrayList();
+        List<Map<String, Object>> data = new ArrayList<>();
+        Map<String, Object> d = new HashMap();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        if (!balance.containsKey("outletCode") && !balance.containsKey("userUpd")) {
+            errors.add("Missing columns: outletCode, userUpd");
+            d.put("errors", errors);
+            d.put("message", "Missing columns: outletCode, userUpd");
             data.add(d);
             res.setData(data);
             return res;
-       }
-       List<Map<String, Object>> listMPosActive = viewServices.listMPosActive(balance);
-       List<Map<String, Object>> lastEod = viewServices.lastEod(balance);
-       Map<String, Object> prevEod = lastEod.get(0);
-       
-       for (int i = 0; i < listMPosActive.size(); i++) {
+        }
+        List<Map<String, Object>> listMPosActive = viewServices.listMPosActive(balance);
+        List<Map<String, Object>> lastEod = viewServices.lastEod(balance);
+        Map<String, Object> prevEod = lastEod.get(0);
+
+        for (int i = 0; i < listMPosActive.size(); i++) {
             var mPos = listMPosActive.get(i);
             String posCode = mPos.get("posCode").toString();
-            if(posCode.length() < 1){
+            if (posCode.length() < 1) {
                 errors.add("! posCode kosong ");
             } else {
                 balance.put("posCode", posCode);
                 List<Map<String, Object>> listPosOpen = viewServices.listPosOpen(balance);
-                if(listPosOpen.size() == 1){
+                if (listPosOpen.size() == 1) {
                     Map<String, Object> pos = listPosOpen.get(0);
-                    if(pos.get("processEod")!="Y"){
+                    if (pos.get("processEod") != "Y") {
                         posOpen.add(pos);
                         errors.add("! pos Open: " + pos.get("posCode"));
                     }
-                } else if(listPosOpen.size() < 1){
-                    errors.add("! listPosOpen kosong: "+posCode);
+                } else if (listPosOpen.size() < 1) {
+                    errors.add("! listPosOpen kosong: " + posCode);
                     // insert pos ke eod 'N'
                     Map<String, String> newParams = new HashMap();
                     newParams.put("regionCode", mPos.get("regionCode").toString());
@@ -2624,26 +2621,26 @@ public class IndexController {
                     processServices.insertEodPosN(newParams);
                     posOpen.add(newParams);
                 } else {
-                    errors.add("! listPosOpen size: "+listPosOpen.size());
+                    errors.add("! listPosOpen size: " + listPosOpen.size());
                 }
             }
         }
-       
-        d.put("errors",errors);
-        d.put("prevEod",prevEod);
-        d.put("listMPosActive",listMPosActive);
-        d.put("listPosOpen",posOpen);
-        d.put("message","Process End of Day Success");
-        
-        if(!errors.isEmpty()){
-            d.put("message","Process End of Day Failed");
+
+        d.put("errors", errors);
+        d.put("prevEod", prevEod);
+        d.put("listMPosActive", listMPosActive);
+        d.put("listPosOpen", posOpen);
+        d.put("message", "Process End of Day Success");
+
+        if (!errors.isEmpty()) {
+            d.put("message", "Process End of Day Failed");
             data.add(d);
             res.setData(data);
             return res;
         }
-        
+
         prevStockCards = viewServices.listPreviousTStockCard(balance);
-        if(!prevStockCards.isEmpty()){
+        if (!prevStockCards.isEmpty()) {
             for (int i = 0; i < prevStockCards.size(); i++) {
                 var pStockCard = prevStockCards.get(i);
                 double operation = Double.parseDouble(pStockCard.getOrDefault("qtyBeginning", "0").toString()) + Double.parseDouble(pStockCard.getOrDefault("qtyIn", "0").toString()) - Double.parseDouble(pStockCard.getOrDefault("qtyOut", "0").toString());
@@ -2660,18 +2657,19 @@ public class IndexController {
                 processServices.insertTStockCard(scardParams);
             }
             processServices.insertTEodHist(balance);
+            processServices.insertTSummMpcs(balance);
             processServices.increaseTransDateMOutlet(balance);
         } else {
             errors.add("! prevStockCards size isEmpty");
-            d.put("errors",errors);
-            d.put("message","Process End of Day Failed");
+            d.put("errors", errors);
+            d.put("message", "Process End of Day Failed");
         }
-        
+
         data.add(d);
         res.setData(data);
         return res;
-   }
-   ////////////Done method for process Last Eod///////////
+    }
+    ////////////Done method for process Last Eod///////////
 
     ////////////New method for List Receiving all - Dani 12 Dec 2023////////////
     @RequestMapping(value = "/list-receiving-all", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -2689,9 +2687,9 @@ public class IndexController {
         res.setData(viewServices.listReceivingAll(balance));
         return res;
     }
-    
-      ///////////////  NEW METHOD LIST MPCS PLAN  BY DONA 12 DEC 2023////////////////////
-       @RequestMapping(value = "/list-mpcs-plan", produces = MediaType.APPLICATION_JSON_VALUE)
+
+    ///////////////  NEW METHOD LIST MPCS PLAN  BY DONA 12 DEC 2023////////////////////
+    @RequestMapping(value = "/list-mpcs-plan", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan Data MPCS Plan ", response = Object.class)
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
@@ -2799,5 +2797,36 @@ public class IndexController {
         return res;
     }
     ////////////////// Done Method MPCS Production Recipe //////////////////////////// 
+
+    ///////////////  NEW METHOD UPDATE MPCS PLAN  BY DONA 14 DEC 2023////////////////////
+    @RequestMapping(value = "/update-mpcs-plan", produces = MediaType.APPLICATION_JSON_VALUE)
+
+    @ApiOperation(value = "Digunakan untuk update MPCS plan", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage updateMpcsPlan(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        ResponseMessage rm = new ResponseMessage();
+        try {
+            processServices.updateMpcsPlan(balance);
+            rm.setSuccess(true);
+            rm.setMessage("Update Success Successfuly");
+
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Update Failed Successfuly: " + e.getMessage());
+        }
+
+        rm.setItem(list);
+
+        return rm;
+    }
+    /////////////////////////////DONE//////////////////////////////////// 
 
 }

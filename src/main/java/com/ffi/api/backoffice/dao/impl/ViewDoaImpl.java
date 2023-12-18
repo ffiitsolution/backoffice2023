@@ -292,7 +292,7 @@ public class ViewDoaImpl implements ViewDao {
         Map prm = new HashMap();
         prm.put("outletCode", "%" + ref.get("outletCode") + "%");
         var allStatusParamValue = ref.getOrDefault("allStatus", "N");
-        System.err.println("allStatusParamValue: " + allStatusParamValue);
+
         if ("N".equals(allStatusParamValue)) {
             qry += "AND M.STATUS = 'A' ORDER BY MENU_GROUP_CODE";
         } else {
@@ -358,6 +358,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "    MMI.MENU_ITEM_CODE, "
                 + "    MI.ITEM_DESCRIPTION, "
                 + "    MG.DESCRIPTION AS MENU_GROUP_NAME, "
+                + "    MG.STATUS AS MENU_GROUP_STATUS, "
                 + "    MP.PRICE, "
                 + "    MP.PRICE_TYPE_CODE AS PRICE_TYPE_CODE, "
                 + "    MMI.TAXABLE "
@@ -390,6 +391,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("menuItemCode", rs.getString("menu_item_code"));
                 rt.put("itemDescription", rs.getString("item_description"));
                 rt.put("menuGroupName", rs.getString("menu_group_name"));
+                rt.put("menuGroupStatus", rs.getString("menu_group_status"));
                 rt.put("price", rs.getString("price"));
                 rt.put("priceTypeCode", rs.getString("price_type_code"));
                 rt.put("taxable", rs.getString("taxable"));
@@ -2731,21 +2733,27 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> listSupplierGudangReturnOrder(Map<String, String> param) {
         String query = null;
+
         Map<String, Object> sqlParam = new HashMap<>();
         if (param.get("typeReturn").equals("Gudang")) {
             query = "SELECT * FROM M_GLOBAL WHERE COND =:cond AND STATUS = 'A'";
+            sqlParam.put("cond", param.get("cond"));
+
         }
         if (param.get("typeReturn").equals("Supplier")) {
             query = "SELECT * FROM M_SUPPLIER ORDER BY SUPPLIER_NAME ASC";
         }
 
-        List<Map<String, Object>> list = jdbcTemplate.query(query, new RowMapper<Map<String, Object>>() {
+        List<Map<String, Object>> list = jdbcTemplate.query(query, sqlParam, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
                 if (param.get("typeReturn").equals("Gudang")) {
                     rt.put("code", rs.getString("CODE"));
                     rt.put("description", rs.getString("DESCRIPTION"));
+                    rt.put("value", rs.getString("VALUE"));
+                    rt.put("status", rs.getString("STATUS"));
+
                 } else {
                     rt.put("cdSupplier", rs.getString("CD_SUPPLIER"));
                     rt.put("supplierName", rs.getString("SUPPLIER_NAME"));
@@ -3142,12 +3150,13 @@ public class ViewDoaImpl implements ViewDao {
         return list;
     }
     //////////////////////////////////DONE//////////////////////////////////////////////////////////
-    
+
     // New Method List MPCS Production By Fathur 13 Dec 2023 //
     @Override
     public List<Map<String, Object>> mpcsProductionList(Map<String, String> balance) {
 
-        String qry = "select to_char(to_date(c.TIME_MPCS, 'hh24miss'), 'hh24:mi') as TIME_MPCS, c.QTY_PROD, c.QTY_ACC_PROD, c.DESC_PROD, c.PROD_BY "
+        String qry = "select to_char(to_date(c.TIME_MPCS, 'hh24miss'), 'hh24:mi') as TIME_MPCS, c.QTY_PROD, c.QTY_ACC_PROD, c.QTY_ACC_PROD, NVL(c.DESC_PROD, ' ') AS DESC_PROD, c.PROD_BY, "
+                + "(to_char(DATE_UPD, 'YYYY-MM-dd') || ' ' || to_char(to_date(TIME_UPD, 'hh24miss'), 'hh24:mi:ss')) AS DATE_UPD "
                 + "from t_summ_mpcs c "
                 + "where c.date_mpcs = :dateMpcs "
                 + "AND c.MPCS_GROUP = :mpcsGroup";
@@ -3166,6 +3175,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("qtyAccProd", rs.getString("QTY_ACC_PROD"));
                 rt.put("descProd", rs.getString("DESC_PROD"));
                 rt.put("prodBy", rs.getString("PROD_BY"));
+                rt.put("dateUpd", rs.getString("DATE_UPD"));
 
                 return rt;
             }
@@ -3178,7 +3188,8 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> mpcsProductionDetail(Map<String, String> balance) {
 
-        String qry = "SELECT MPCS_GROUP, RECIPE_CODE, SEQ_MPCS, QUANTITY, to_char(to_date(TIME_UPD, 'hh24miss'), 'hh24:mi') AS TIME_UPD "
+        String qry = "SELECT MPCS_GROUP, RECIPE_CODE, SEQ_MPCS, QUANTITY, to_char(to_date(TIME_UPD, 'hh24miss'), 'hh24:mi') AS TIME_UPD, "
+                + "(to_char(DATE_UPD, 'YYYY-MM-dd') ||' ' || to_char(to_date(TIME_UPD, 'hh24miss'), 'hh24:mi:ss')) AS DATE_UPD "
                 + "FROM T_MPCS_HIST WHERE MPCS_GROUP = :mpcsGroup AND MPCS_DATE = :dateMpcs "
                 + "AND TIME_UPD <= replace(:maxTime, ':' , '')||'00' "
                 + "AND TIME_UPD >= replace(:minTime, ':' , '')||'00' ";
@@ -3199,6 +3210,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("seqMpcs", rs.getString("SEQ_MPCS"));
                 rt.put("quantity", rs.getString("QUANTITY"));
                 rt.put("timeUpd", rs.getString("TIME_UPD"));
+                rt.put("dateUpd", rs.getString("DATE_UPD"));
                 return rt;
             }
         });

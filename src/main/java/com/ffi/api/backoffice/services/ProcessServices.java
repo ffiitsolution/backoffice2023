@@ -211,7 +211,7 @@ public class ProcessServices {
     ///////////////////////done
 
     public void sendDataOutletToWarehouse(Map<String, String> balance) {
-        dao.sendDataOutletToWarehouse(balance);    
+        dao.sendDataOutletToWarehouse(balance);
     }
 
     ///////////////NEW METHOD POS 'N' EOD - M Joko 11/12/2023////   
@@ -233,4 +233,16 @@ public class ProcessServices {
     public void increaseTransDateMOutlet(Map<String, String> balancing) {
         dao.increaseTransDateMOutlet(balancing);
     }
+
+    ///////////////NEW METHOD insert T SUMM MPCS - M Joko 14/12/2023////   
+    public void insertTSummMpcs(Map<String, String> balancing) {
+        dao.insertTSummMpcs(balancing);
+    }
+
+    ///////////////NEW METHOD UPDATE MPCS PLAN BY DONA 14 DEC 2023////   
+    public void updateMpcsPlan(Map<String, String> balancing) {
+        dao.updateMpcsPlan(balancing);
+    }
+    ////////////////////////DONE///////////////////////
+
 }
