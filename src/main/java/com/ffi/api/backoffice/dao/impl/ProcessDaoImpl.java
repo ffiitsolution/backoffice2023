@@ -4,7 +4,6 @@
  */
 package com.ffi.api.backoffice.dao.impl;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ffi.api.backoffice.dao.ProcessDao;
 import com.ffi.api.backoffice.model.DetailOpname;
@@ -22,7 +21,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -34,8 +32,10 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -596,9 +596,9 @@ public class ProcessDaoImpl implements ProcessDao {
     }
 
     public String opnameNumber(String year, String month, String transType, String outletCode) {
-
-        String sql = "SELECT :transType||ORDER_ID||COUNTNO ORDER_ID FROM ( "
-                + "SELECT A.OUTLET_CODE||:month||A.YEAR AS ORDER_ID,A.COUNTER_NO+1 COUNTNO FROM M_COUNTER A "
+        // update by M Joko 19/12/23 : cek opname number untuk handle m_counter di bulan yg belum ada, perbaikan format sesuai yg berjalan SOP09361220232 ke SOP093623120002
+        String sql = "SELECT :transType||ORDER_ID||LPAD(COUNTNO, 4, '0') ORDER_ID FROM ( "
+                + "SELECT A.OUTLET_CODE||SUBSTR(A.YEAR, -2)||LPAD(:month, 2, '0') AS ORDER_ID,A.COUNTER_NO+1 COUNTNO FROM M_COUNTER A "
                 + "LEFT JOIN M_OUTLET B "
                 + "ON B.OUTLET_CODE=A.OUTLET_CODE "
                 + "WHERE A.YEAR = :year AND A.MONTH= :month AND A.TRANS_TYPE = :transType AND A.OUTLET_CODE= :outletCode)";
@@ -609,12 +609,26 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("outletCode", outletCode);
         System.err.println("q : " + sql);
         System.err.println("p : " + param);
-        return jdbcTemplate.queryForObject(sql, param, new RowMapper() {
-            @Override
-            public Object mapRow(ResultSet rs, int i) throws SQLException {
-                return rs.getString(1) == null ? "0" : rs.getString(1);
-            }
-        }).toString();
+        String result = "";
+        try {
+            result = jdbcTemplate.queryForObject(sql, param, new RowMapper() {
+                @Override
+                public Object mapRow(ResultSet rs, int i) throws SQLException {
+                    System.err.println("rs " + i + ": " + rs);
+                    return rs.getString(1) == null ? "0" : rs.getString(1);
+                }
+            }).toString();
+        } catch (DataAccessException e) {
+            System.err.println("DataAccessException : " + e);
+        }
+        
+        System.err.println("result : " + result);
+        if(result == null || result.equalsIgnoreCase("[]") || result.isEmpty()){
+            updateMCounterSop(transType,outletCode);
+            return opnameNumber(year, month, transType, outletCode);
+        } else {
+            return result;
+        }
     }
 
     @Override
@@ -626,15 +640,26 @@ public class ProcessDaoImpl implements ProcessDao {
         String month = df.format(tgl);
         String year = dfYear.format(tgl);
 
-        String qy = "update m_counter set  "
-                + "counter_no = (select counter_no+1 from M_COUNTER WHERE YEAR = :year AND MONTH= :month AND TRANS_TYPE = :transType AND OUTLET_CODE= :outletCode) "
-                + "WHERE YEAR = :year AND MONTH= :month AND TRANS_TYPE = :transType AND OUTLET_CODE= :outletCode";
-        Map param = new HashMap();
-        param.put("year", year);
-        param.put("month", month);
-        param.put("transType", transType);
-        param.put("outletCode", outletCode);
-        jdbcTemplate.update(qy, param);
+        // update query ambil no, handle jika kosong by M Joko 19-12-23
+        String selectSql = "SELECT COUNT(*) FROM m_counter WHERE OUTLET_CODE = :outletCode AND TRANS_TYPE = :transType AND YEAR = :year AND MONTH = :month";
+        String updateSql = "UPDATE m_counter SET COUNTER_NO = COUNTER_NO + 1 WHERE OUTLET_CODE = :outletCode AND TRANS_TYPE = :transType AND YEAR = :year AND MONTH = :month";
+        String insertSql = "INSERT INTO m_counter (OUTLET_CODE, TRANS_TYPE, YEAR, MONTH, COUNTER_NO) VALUES (:outletCode, :transType, :year, :month, 0)";
+
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("outletCode", outletCode);
+        params.addValue("transType", transType);
+        params.addValue("year", year);
+        params.addValue("month", month);
+
+        int count = jdbcTemplate.queryForObject(selectSql, params, Integer.class);
+
+        if (count > 0) {
+            // Record exists, perform update
+            jdbcTemplate.update(updateSql, params);
+        } else {
+            // Record does not exist, perform insert
+            jdbcTemplate.update(insertSql, params);
+        }
     }
 
     ///////////////new method updateStatusOpname 6-11-2023////////////////////////////
@@ -658,13 +683,37 @@ public class ProcessDaoImpl implements ProcessDao {
     public void itemOpnameToStockCard(Map<String, String> balance) {
             System.out.println("updateOpnameStatus = 1 / Close");
             // update by M Joko 18-12-23
-            String qryToStockCard = "insert into t_stock_card_detail ( select * from ( SELECT od.OUTLET_CODE ,(select trans_date from m_outlet where outlet_code=od.outlet_code) as TRANS_DATE ,od.ITEM_CODE ,'SOP' AS CD_TRANS ,case when od.qty_freeze = od.total_qty then 0 else (case when od.qty_freeze < od.total_qty then od.total_qty - od.qty_freeze else 0 end) end AS QUANTITY_IN ,case when od.qty_freeze = od.total_qty then 0 else (case when od.qty_freeze > od.total_qty then od.qty_freeze - od.total_qty else 0 end) end AS QUANTITY ,:userUpd AS USER_UPD ,:dateUpd as DATE_UPD ,:timeUpd as TIME_UPD FROM T_OPNAME_DETAIL od where od.opname_no = :opnameNo ) where QUANTITY_IN not in (0,'0') union all (select * from ( SELECT od.OUTLET_CODE ,(select trans_date from m_outlet where outlet_code=od.outlet_code) as TRANS_DATE ,od.ITEM_CODE ,'SOP' AS CD_TRANS ,case when od.qty_freeze = od.total_qty then 0 else (case when od.qty_freeze < od.total_qty then od.total_qty - od.qty_freeze else 0 end) end AS QUANTITY_IN ,case when od.qty_freeze = od.total_qty then 0 else (case when od.qty_freeze > od.total_qty then od.qty_freeze - od.total_qty else 0 end) end AS QUANTITY ,:userUpd AS USER_UPD ,:dateUpd as DATE_UPD ,:timeUpd as TIME_UPD FROM T_OPNAME_DETAIL od where od.opname_no = :opnameNo ) where QUANTITY not in (0,'0')))";
-            Map paramToStockCard = new HashMap();
-            paramToStockCard.put("opnameNo", balance.get("opnameNo"));
-            paramToStockCard.put("userUpd", balance.getOrDefault("userUpd", "SYSTEM"));
-            paramToStockCard.put("dateUpd", LocalDateTime.now().format(dateFormatter));
-            paramToStockCard.put("timeUpd", LocalDateTime.now().format(timeFormatter));
-            jdbcTemplate.update(qryToStockCard, paramToStockCard);
+            Map param = new HashMap();
+            param.put("opnameNo", balance.get("opnameNo"));
+            param.put("userUpd", balance.getOrDefault("userUpd", "SYSTEM"));
+            param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+            param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
+            String qryListStockOpname = "SELECT * FROM ( SELECT od.OUTLET_CODE, (SELECT trans_date FROM m_outlet WHERE outlet_code = od.outlet_code) AS TRANS_DATE, od.ITEM_CODE, 'SOP' AS CD_TRANS, CASE WHEN od.qty_freeze < od.total_qty THEN od.total_qty - od.qty_freeze ELSE 0 END AS QUANTITY_IN, CASE WHEN od.qty_freeze > od.total_qty THEN od.qty_freeze - od.total_qty ELSE 0 END AS QUANTITY, :userUpd AS USER_UPD, :dateUpd AS DATE_UPD, :timeUpd AS TIME_UPD FROM T_OPNAME_DETAIL od WHERE od.opname_no = :opnameNo ) WHERE QUANTITY_IN NOT IN (0, '0') UNION ALL SELECT * FROM ( SELECT od.OUTLET_CODE, (SELECT trans_date FROM m_outlet WHERE outlet_code = od.outlet_code) AS TRANS_DATE, od.ITEM_CODE, 'SOP' AS CD_TRANS, CASE WHEN od.qty_freeze < od.total_qty THEN od.total_qty - od.qty_freeze ELSE 0 END AS QUANTITY_IN, CASE WHEN od.qty_freeze > od.total_qty THEN od.qty_freeze - od.total_qty ELSE 0 END AS QUANTITY, :userUpd AS USER_UPD, :dateUpd AS DATE_UPD, :timeUpd AS TIME_UPD FROM T_OPNAME_DETAIL od WHERE od.opname_no = :opnameNo ) WHERE QUANTITY NOT IN (0, '0')";
+        
+        String qryToStockCardDetail = "insert into t_stock_card_detail ( " + qryListStockOpname + " )";
+        jdbcTemplate.update(qryToStockCardDetail, param);
+        
+        String qryUpdateStockCard = """
+                                    UPDATE t_stock_card sc
+                                    SET 
+                                        sc.QTY_IN = sc.QTY_IN + NVL(
+                                            (SELECT tsd.QUANTITY_IN
+                                             FROM t_stock_card_detail tsd
+                                             WHERE tsd.ITEM_CODE = sc.ITEM_CODE
+                                               AND tsd.trans_date = sc.trans_date
+                                               AND tsd.CD_TRANS = 'SOP'), 
+                                            0
+                                        ),
+                                        sc.QTY_OUT = sc.QTY_OUT + NVL(
+                                            (SELECT tsd.QUANTITY
+                                             FROM t_stock_card_detail tsd
+                                             WHERE tsd.ITEM_CODE = sc.ITEM_CODE
+                                               AND tsd.trans_date = sc.trans_date
+                                               AND tsd.CD_TRANS = 'SOP'), 
+                                            0
+                                        )
+                                    WHERE sc.trans_date = (SELECT trans_date FROM m_outlet WHERE outlet_code = sc.outlet_code)""";
+        jdbcTemplate.update(qryUpdateStockCard,param);
     }
 ///////////////done///////////////
 
