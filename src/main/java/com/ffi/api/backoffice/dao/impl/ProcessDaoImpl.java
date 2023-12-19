@@ -1185,12 +1185,22 @@ public class ProcessDaoImpl implements ProcessDao {
                 "SELECT DISTINCT TO_CHAR(TRANS_DATE, 'DD-MON-YYYY') FROM M_OUTLET WHERE OUTLET_CODE = :outletCode and status = 'A'",
                 param, String.class);
         param.put("transDate", transDate);
-        String qsh = "SELECT CASE WHEN QTY_IN IS NULL THEN 0 ELSE QTY_IN END AS QTY_IN FROM T_STOCK_CARD WHERE OUTLET_CODE = :outletCode AND TRANS_DATE = :transDate AND ITEM_CODE = :itemCode ";
-        String qh = "UPDATE T_STOCK_CARD SET QTY_IN = :qtyIn WHERE OUTLET_CODE = :outletCode AND TRANS_DATE = :transDate AND ITEM_CODE = :itemCode ";
-        BigDecimal hdrQtyInDb = jdbcTemplate.queryForObject(qsh, param, BigDecimal.class);
-        hdrQtyInDb = hdrQtyInDb.add(new BigDecimal(balance.get("totalQty")));
-        param.put("qtyIn", hdrQtyInDb);
-        jdbcTemplate.update(qh, param);
+
+        try {
+            String qsh = "SELECT CASE WHEN QTY_IN IS NULL THEN 0 ELSE QTY_IN END AS QTY_IN FROM T_STOCK_CARD WHERE OUTLET_CODE = :outletCode AND TRANS_DATE = :transDate AND ITEM_CODE = :itemCode ";
+            BigDecimal hdrQtyInDb = jdbcTemplate.queryForObject(qsh, param, BigDecimal.class);
+            String quh = "UPDATE T_STOCK_CARD SET QTY_IN = :qtyIn WHERE OUTLET_CODE = :outletCode AND TRANS_DATE = :transDate AND ITEM_CODE = :itemCode ";
+            hdrQtyInDb = hdrQtyInDb.add(new BigDecimal(balance.get("totalQty")));
+            param.put("qtyIn", hdrQtyInDb);
+            jdbcTemplate.update(quh, param);
+        } catch (EmptyResultDataAccessException exx) {
+            String qih = "INSERT INTO T_STOCK_CARD (OUTLET_CODE,TRANS_DATE,ITEM_CODE,ITEM_COST,QTY_BEGINNING,QTY_IN,QTY_OUT,USER_UPD,DATE_UPD,TIME_UPD) VALUES (:outletCode,:transDate,:itemCode,0,0,:qtyIn,0,:userUpd,:dateUpd,:timeUpd) ";
+            param.put("qtyIn", new BigDecimal(balance.get("totalQty")));
+            jdbcTemplate.update(qih, param);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
         try {
             existQty = jdbcTemplate.queryForObject(qf, param, BigDecimal.class);
             BigDecimal quantityIn = new BigDecimal(balance.get("totalQty"));
