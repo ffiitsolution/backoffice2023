@@ -13,10 +13,10 @@
         <defaultValueExpression><![CDATA[]]></defaultValueExpression>
     </parameter>
     <queryString>
-        <![CDATA[select A.OUTLET_CODE,Z.OUTLET_NAME,Z.ADDRESS_1 as outaddress1,Z.ADDRESS_2 as outaddress2,Z.PHONE,Z.CITY,Z.POST_CODE,a.menu_item_code,b.item_description,item_qty,
-amount,total_amount,total_sales,a.bill_no,c.pos_code,
+        <![CDATA[select A.OUTLET_CODE,A.TRANS_TYPE as transtypeitem,Z.OUTLET_NAME,Z.ADDRESS_1 as outaddress1,Z.ADDRESS_2 as outaddress2,Z.PHONE,Z.CITY,Z.POST_CODE,a.menu_item_code,b.item_description,item_qty,
+amount,total_amount,total_rounding,total_tax,total_sales,a.bill_no,c.pos_code,
 c.cashier_code,c.shift_code,c.trans_type,c.order_type,c.delivery_status,
-c.customer_phone_no,c.customer_name,c.address_1,c.city,c.zip_code, c.trans_date from t_pos_bill_item a
+c.customer_phone_no,c.customer_name,c.address_1,c.city,c.zip_code, c.trans_date,D.PAYMENT_METHOD_CODE,E.DESCRIPTION AS PAYMENT_METHOD_DESCRIPTION from t_pos_bill_item a
 left join m_item b
 on a.menu_item_code=b.item_code
 left join t_pos_bill c
@@ -24,9 +24,12 @@ on a.bill_no=c.bill_no
 and a.trans_date=c.trans_date
 LEFT JOIN M_OUTLET Z
 ON A.OUTLET_CODE=Z.OUTLET_CODE
+LEFT JOIN T_POS_BILL_PAYMENT D ON A.BILL_NO = D.BILL_NO AND A.TRANS_DATE = D.TRANS_DATE
+LEFT JOIN M_GLOBAL E ON D.PAYMENT_METHOD_CODE = E.CODE AND E.COND = 'PAY_METHOD'
 where a.bill_no=$P{billNo} AND A.TRANS_DATE=$P{transDate} AND A.OUTLET_CODE=$P{outletCode}]]>
     </queryString>
     <field name="OUTLET_CODE" class="java.lang.String"/>
+    <field name="TRANSTYPEITEM" class="java.lang.String"/>
     <field name="OUTLET_NAME" class="java.lang.String"/>
     <field name="OUTADDRESS1" class="java.lang.String"/>
     <field name="OUTADDRESS2" class="java.lang.String"/>
@@ -38,6 +41,8 @@ where a.bill_no=$P{billNo} AND A.TRANS_DATE=$P{transDate} AND A.OUTLET_CODE=$P{o
     <field name="ITEM_QTY" class="java.math.BigDecimal"/>
     <field name="AMOUNT" class="java.math.BigDecimal"/>
     <field name="TOTAL_AMOUNT" class="java.math.BigDecimal"/>
+    <field name="TOTAL_ROUNDING" class="java.math.BigDecimal"/>
+    <field name="TOTAL_TAX" class="java.math.BigDecimal"/>
     <field name="TOTAL_SALES" class="java.math.BigDecimal"/>
     <field name="BILL_NO" class="java.lang.String"/>
     <field name="POS_CODE" class="java.lang.String"/>
@@ -50,6 +55,8 @@ where a.bill_no=$P{billNo} AND A.TRANS_DATE=$P{transDate} AND A.OUTLET_CODE=$P{o
     <field name="CUSTOMER_NAME" class="java.lang.String"/>
     <field name="ADDRESS_1" class="java.lang.String"/>
     <field name="ZIP_CODE" class="java.lang.String"/>
+    <field name="PAYMENT_METHOD_CODE" class="java.lang.String"/>
+    <field name="PAYMENT_METHOD_DESCRIPTION" class="java.lang.String"/>
     <field name="TRANS_DATE" class="java.sql.Timestamp"/>
     <background>
         <band splitType="Stretch"/>
@@ -339,6 +346,9 @@ where a.bill_no=$P{billNo} AND A.TRANS_DATE=$P{transDate} AND A.OUTLET_CODE=$P{o
         <band height="32" splitType="Stretch">
             <line>
                 <reportElement x="0" y="1" width="555" height="1" uuid="0d46ebb1-fc6e-46ce-ad94-bc9fb9102327"/>
+                <graphicElement>
+                    <pen lineWidth="1.0" lineColor="#000000" lineStyle="Dashed"/>
+                </graphicElement>
             </line>
             <staticText>
                 <reportElement x="2" y="2" width="88" height="25" uuid="79c0efab-4a67-4e15-98f9-ae67675f8632"/>
@@ -349,6 +359,9 @@ where a.bill_no=$P{billNo} AND A.TRANS_DATE=$P{transDate} AND A.OUTLET_CODE=$P{o
             </staticText>
             <line>
                 <reportElement x="0" y="26" width="555" height="1" uuid="b957d74c-f5c8-4d2b-826e-a8e5cccc2c89"/>
+                <graphicElement>
+                    <pen lineWidth="1.0" lineColor="#000000" lineStyle="Dashed"/>
+                </graphicElement>
             </line>
             <staticText>
                 <reportElement x="93" y="2" width="155" height="25" uuid="ea961c4b-39d3-4f2c-9e5f-819b62cc6ca9"/>
@@ -358,8 +371,8 @@ where a.bill_no=$P{billNo} AND A.TRANS_DATE=$P{transDate} AND A.OUTLET_CODE=$P{o
                 <text><![CDATA[Description]]></text>
             </staticText>
             <staticText>
-                <reportElement x="259" y="2" width="140" height="25" uuid="be05f425-5991-4311-9eb1-eae8b03c13ff"/>
-                <textElement textAlignment="Right" verticalAlignment="Middle">
+                <reportElement x="315" y="2" width="140" height="25" uuid="be05f425-5991-4311-9eb1-eae8b03c13ff"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
                     <font size="10" isBold="true"/>
                 </textElement>
                 <text><![CDATA[Item Qty]]></text>
@@ -381,18 +394,12 @@ where a.bill_no=$P{billNo} AND A.TRANS_DATE=$P{transDate} AND A.OUTLET_CODE=$P{o
             </textField>
             <textField textAdjust="StretchHeight">
                 <reportElement x="93" y="0" width="155" height="15" uuid="93fb376d-3382-4648-8157-b9ce628152b6"/>
-                <textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
+                <!-- <textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression> -->
+                <textFieldExpression><![CDATA[$F{TRANSTYPEITEM}.equals("ETA") ? $F{ITEM_DESCRIPTION} + "*" : $F{ITEM_DESCRIPTION}]]></textFieldExpression>
             </textField>
-            <staticText>
-                <reportElement x="359" y="0" width="9" height="15" uuid="f9f4813f-4700-415b-8954-3a9619570a01"/>
-                <textElement verticalAlignment="Middle">
-                    <font size="10" isBold="false"/>
-                </textElement>
-                <text><![CDATA[x]]></text>
-            </staticText>
             <textField>
                 <reportElement x="369" y="0" width="30" height="15" uuid="ebb0c754-7abd-4889-a6de-f6148f1837c1"/>
-                <textElement textAlignment="Right"/>
+                <textElement textAlignment="Center"/>
                 <textFieldExpression><![CDATA[$F{ITEM_QTY}]]></textFieldExpression>
             </textField>
             <textField pattern="#,##0.00">
@@ -403,48 +410,125 @@ where a.bill_no=$P{billNo} AND A.TRANS_DATE=$P{transDate} AND A.OUTLET_CODE=$P{o
         </band>
     </detail>
     <summary>
-        <band height="42" splitType="Stretch">
+        <band height="220" splitType="Stretch">
             <staticText>
-                <reportElement x="3" y="6" width="88" height="14" uuid="224af1ca-5848-42c0-ab0e-271f139f71c1"/>
-                <textElement verticalAlignment="Middle">
+                <reportElement x="252" y="6" width="200" height="22" uuid="224af1ca-5848-42c0-ab0e-271f139f71c1"/>
+                <textElement verticalAlignment="Middle" textAlignment="Right">
                     <font size="10" isBold="true"/>
                 </textElement>
-                <text><![CDATA[Total Amount]]></text>
-            </staticText>
-            <staticText>
-                <reportElement x="93" y="6" width="9" height="14" uuid="b609c4b2-e48d-4263-ae53-46bb054fc4a9"/>
-                <textElement verticalAlignment="Middle">
-                    <font size="10" isBold="false"/>
-                </textElement>
-                <text><![CDATA[:]]></text>
+                <text><![CDATA[Sub Total]]></text>
             </staticText>
             <textField pattern="#,##0.00">
-                <reportElement x="102" y="6" width="239" height="14" uuid="9dd1ec27-7cd3-4046-a742-a2ff19144d96"/>
+                <reportElement x="450" y="10" width="100" height="15" uuid="9dd1ec27-7cd3-4046-a742-a2ff19144d96"/>
+                <textElement textAlignment="Right"/>
                 <textFieldExpression><![CDATA[$F{TOTAL_AMOUNT}]]></textFieldExpression>
             </textField>
+
             <staticText>
-                <reportElement x="3" y="22" width="88" height="14" uuid="599ecf39-00b6-44e5-933b-64513651d58a"/>
-                <textElement verticalAlignment="Middle">
+                <reportElement x="252" y="40" width="200" height="15" uuid="224af1ca-5848-42c0-ab0e-271f139f71c1"/>
+                <textElement verticalAlignment="Middle" textAlignment="Right">
                     <font size="10" isBold="true"/>
                 </textElement>
-                <text><![CDATA[Total Sales]]></text>
-            </staticText>
-            <staticText>
-                <reportElement x="93" y="22" width="9" height="14" uuid="738e77ad-bceb-4e6e-9592-0e3149e8b050"/>
-                <textElement verticalAlignment="Middle">
-                    <font size="10" isBold="false"/>
-                </textElement>
-                <text><![CDATA[:]]></text>
+                <text><![CDATA[Dasar Pengenaan Pajak]]></text>
             </staticText>
             <textField pattern="#,##0.00">
-                <reportElement x="102" y="22" width="239" height="14" uuid="29b93c3b-5199-497a-93e9-8b3f68bb1e95"/>
+                <reportElement x="450" y="40" width="100" height="15" uuid="9dd1ec27-7cd3-4046-a742-a2ff19144d96"/>
+                <textElement textAlignment="Right"/>
+                <textFieldExpression><![CDATA[$F{TOTAL_AMOUNT}]]></textFieldExpression>
+            </textField>
+
+
+            <staticText>
+                <reportElement x="252" y="55" width="200" height="15" uuid="224af1ca-5848-42c0-ab0e-271f139f71c1"/>
+                <textElement verticalAlignment="Middle" textAlignment="Right">
+                    <font size="10" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Pembulatan]]></text>
+            </staticText>
+            <textField pattern="#,##0.00">
+                <reportElement x="450" y="55" width="100" height="15" uuid="9dd1ec27-7cd3-4046-a742-a2ff19144d96"/>
+                <textElement textAlignment="Right"/>
+                <textFieldExpression><![CDATA[$F{TOTAL_ROUNDING}]]></textFieldExpression>
+            </textField>
+
+             <staticText>
+                <reportElement x="252" y="70" width="200" height="15" uuid="224af1ca-5848-42c0-ab0e-271f139f71c1"/>
+                <textElement verticalAlignment="Middle" textAlignment="Right">
+                    <font size="10" isBold="true"/>
+                </textElement>
+                <text><![CDATA[P.Rest 10%]]></text>
+            </staticText>
+            <textField pattern="#,##0.00">
+                <reportElement x="450" y="70" width="100" height="15" uuid="9dd1ec27-7cd3-4046-a742-a2ff19144d96"/>
+                <textElement textAlignment="Right"/>
+                <textFieldExpression><![CDATA[$F{TOTAL_TAX}]]></textFieldExpression>
+            </textField>
+
+            <line>
+                <reportElement x="490" y="90" width="60" height="1" uuid="84a168e6-638c-48c0-82a5-5591ef74061b"/>
+                <graphicElement>
+                    <pen lineWidth="1.0" lineColor="#000000" lineStyle="Dashed"/>
+                </graphicElement>
+            </line>
+
+            <staticText>
+                <reportElement x="252" y="100" width="200" height="15" uuid="599ecf39-00b6-44e5-933b-64513651d58a"/>
+                <textElement verticalAlignment="Middle" textAlignment="Right">
+                    <font size="10" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Total]]></text>
+            </staticText>
+            <textField pattern="#,##0.00">
+                <reportElement x="450" y="100" width="100" height="15" uuid="29b93c3b-5199-497a-93e9-8b3f68bb1e95"/>
+                <textElement textAlignment="Right"/>
                 <textFieldExpression><![CDATA[$F{TOTAL_SALES}]]></textFieldExpression>
             </textField>
+
+            <textField>
+                <reportElement x="252" y="115" width="200" height="15" uuid="29b93c3b-5199-497a-93e9-8b3f68bb1e95"/>
+                <textElement verticalAlignment="Middle" textAlignment="Right"/>
+                <textFieldExpression><![CDATA[$F{PAYMENT_METHOD_DESCRIPTION}]]></textFieldExpression>
+            </textField>
+
+            <textField pattern="#,##0.00">
+                <reportElement x="450" y="115" width="100" height="15" uuid="29b93c3b-5199-497a-93e9-8b3f68bb1e95"/>
+                <textElement textAlignment="Right"/>
+                <textFieldExpression><![CDATA[$F{TOTAL_SALES}]]></textFieldExpression>
+            </textField>
+
             <line>
                 <reportElement x="0" y="3" width="555" height="1" uuid="84a168e6-638c-48c0-82a5-5591ef74061b"/>
+                <graphicElement>
+                    <pen lineWidth="1.0" lineColor="#000000" lineStyle="Dashed"/>
+                </graphicElement>
             </line>
             <line>
-                <reportElement x="0" y="39" width="555" height="1" uuid="64b2f9a6-5172-4afd-957d-c047a6c5dc9b"/>
+                <reportElement x="490" y="30" width="60" height="1" uuid="0d46ebb1-fc6e-46ce-ad94-bc9fb9102327"/>
+                <graphicElement>
+                    <pen lineWidth="1.0" lineColor="#000000" lineStyle="Dashed"/>
+                </graphicElement>
+            </line>
+
+             <line>
+                <reportElement x="490" y="140" width="60" height="1" uuid="0d46ebb1-fc6e-46ce-ad94-bc9fb9102327"/>
+                <graphicElement>
+                    <pen lineWidth="1.0" lineColor="#000000" lineStyle="Dashed"/>
+                </graphicElement>
+            </line>
+
+            <staticText>
+                <reportElement x="450" y="145" width="100" height="20" uuid="599ecf39-00b6-44e5-933b-64513651d58a"/>
+                <textElement verticalAlignment="Middle" textAlignment="Right">
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Terima Kasih]]></text>
+            </staticText>
+
+            <line>
+                <reportElement x="0" y="200" width="555" height="1" uuid="64b2f9a6-5172-4afd-957d-c047a6c5dc9b"/>
+                 <graphicElement>
+                    <pen lineWidth="1.0" lineColor="#000000" lineStyle="Dashed"/>
+                </graphicElement>
             </line>
         </band>
     </summary>
