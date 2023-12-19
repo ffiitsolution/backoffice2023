@@ -1249,7 +1249,10 @@ public class ViewDoaImpl implements ViewDao {
     //list area    
     @Override
     public List<Map<String, Object>> viewArea(Map<String, String> balance) {
-        String qry = "select distinct area_code,area_desc,region_code,regional_desc from V_STRUCTURE_STORE where region_code like :region_code order by region_code,area_code asc";
+        String qry = "SELECT DISTINCT a.AREA_CODE as area_code,c.DESCRIPTION as area_desc, a.REGION_CODE as region_code,b.DESCRIPTION as region_desc FROM M_OUTLET a "
+                + "JOIN M_GLOBAL b ON a.REGION_CODE = b.CODE AND b.COND = 'REG_OUTLET' "
+                + "JOIN M_GLOBAL c ON a.AREA_CODE = c.CODE AND c.COND = 'AREACODE' "
+                + "WHERE region_code like :region_code order by region_code,area_code asc";
         Map prm = new HashMap();
 //         prm.put("region_code", Logan.get("region_code"));
         prm.put("region_code", "%" + balance.get("region_code") + "%");
