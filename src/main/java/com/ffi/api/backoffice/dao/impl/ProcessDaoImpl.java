@@ -238,15 +238,15 @@ public class ProcessDaoImpl implements ProcessDao {
     @Override
     public void insertStaff(Map<String, String> balancetest1) {
         String qy = "INSERT INTO M_STAFF(REGION_CODE,OUTLET_CODE,STAFF_CODE,STAFF_NAME,PASSWORD,ID_CARD,SEX,DATE_OF_BIRTH,ADDRESS_1,ADDRESS_2,CITY,"
-                + "PHONE_NO,MOBILE_PHONE_NO,EMPLOY_DATE,POSITION,ACCESS_LEVEL,RIDER_FLAG,GROUP_ID,STATUS,USER_UPD,DATE_UPD,TIME_UPD,STAFF_FULL_NAME)"
+                + "PHONE_NO,MOBILE_PHONE_NO,EMPLOY_DATE,RESIGN_DATE,POSITION,ACCESS_LEVEL,RIDER_FLAG,GROUP_ID,STATUS,USER_UPD,DATE_UPD,TIME_UPD,STAFF_FULL_NAME)"
                 + "VALUES(:regionCode,:outletCode,:staffCode,:staffName,:passwordCode,:idCard,:sexType,:dateOfBirth,:address1,:address2,"
-                + ":code,:phoneNumber,:mobilePhoneNumber,:employDate,:positionCode,:accesslevelCode,:riderFlag,"
+                + ":code,:phoneNumber,:mobilePhoneNumber,:employDate,:resignDate,:positionCode,:accesslevelCode,:riderFlag,"
                 + ":groupidName,:status,:userUpd,:dateUpd,:timeUpd,:staffFullName)";
 
         String qy2 = "INSERT INTO M_POS_STAFF(REGION_CODE,OUTLET_CODE,STAFF_CODE,STAFF_POS_CODE,STAFF_NAME,PASSWORD,"
                 + "ACCESS_LEVEL,RIDER_FLAG,STATUS,USER_UPD,DATE_UPD,TIME_UPD)"
                 + "VALUES(:regionCode,:outletCode,:staffCode,:staffPosCode,:staffName,:passPosCode,"
-                + ":accesslevelCode,:riderFlag,:status,:userUpd,:dateUpd,:timeUpd)";
+                + ":accesslevelCode,:riderFlag,:statusPos,:userUpd,:dateUpd,:timeUpd)";
 
         Map param = new HashMap();
         param.put("regionCode", balancetest1.get("regionCode"));
@@ -264,6 +264,7 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("phoneNumber", balancetest1.get("phoneNumber"));
         param.put("mobilePhoneNumber", balancetest1.get("mobile"));
         param.put("employDate", balancetest1.get("employeeDate"));
+        param.put("resignDate", balancetest1.get("resignDate"));
         param.put("positionCode", balancetest1.get("positionCode"));
         param.put("accesslevelCode", balancetest1.get("accessLevelCode"));
         param.put("riderFlag", balancetest1.get("riderFlag"));
@@ -271,6 +272,7 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("staffPosCode", balancetest1.get("staffPosCode"));
         param.put("passPosCode", balancetest1.get("passPosCode"));
         param.put("status", balancetest1.get("status"));
+        param.put("statusPos", balancetest1.get("statusPos"));
         param.put("userUpd", balancetest1.get("userUpd"));
         param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
         param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
@@ -282,12 +284,12 @@ public class ProcessDaoImpl implements ProcessDao {
     @Override
     public void updateStaff(Map<String, String> balancetest1) {
         String qy = "UPDATE M_STAFF SET STAFF_NAME = :staffName, ID_CARD = :idCard, STAFF_FULL_NAME = :staffFullName, ADDRESS_2 = :address2,"
-                + "PASSWORD=:passwordCode, EMPLOY_DATE=:employDate, POSITION=:positionCode, ACCESS_LEVEL=:accesslevelCode, RIDER_FLAG=:riderFlag,"
+                + "PASSWORD=:passwordCode, EMPLOY_DATE=:employDate, RESIGN_DATE=:resignDate, POSITION=:positionCode, ACCESS_LEVEL=:accesslevelCode, RIDER_FLAG=:riderFlag,"
                 + "SEX=:sexType, DATE_OF_BIRTH=:dateOfBirth, ADDRESS_1=:address1, CITY=:code, PHONE_NO=:phoneNumber, "
                 + "MOBILE_PHONE_NO=:mobilePhoneNumber, GROUP_ID=:groupidName, STATUS=:status, USER_UPD=:userUpd, DATE_UPD=:dateUpd, TIME_UPD=:timeUpd "
                 + "WHERE STAFF_CODE=:staffCode AND OUTLET_CODE =:outletCode ";    //    String qy = "UPDATE M_STAFF SET STAFF_NAME=:staffName, STAFF_FULL_NAME=:staffFullName, PASSWORD=:staffPassword, USER_UPD=:dateUpd, DATE_UPD=:timeUpd, TIME_UPD=:staffTimeUpdate where STAFF_CODE=:staffCode ";
 
-        String qy2 = "UPDATE M_POS_STAFF SET PASSWORD=:passPosCode,STATUS=:status,STAFF_POS_CODE=:staffPosCode,"
+        String qy2 = "UPDATE M_POS_STAFF SET PASSWORD=:passPosCode,STATUS=:statusPos,STAFF_POS_CODE=:staffPosCode,"
                 + " ACCESS_LEVEL=:accesslevelCode,USER_UPD=:userUpd,DATE_UPD=:dateUpd,TIME_UPD=:timeUpd "
                 + " WHERE STAFF_CODE=:staffCode AND OUTLET_CODE = :outletCode ";
 
@@ -307,6 +309,7 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("phoneNumber", balancetest1.get("phoneNumber"));
         param.put("mobilePhoneNumber", balancetest1.get("mobile"));
         param.put("employDate", balancetest1.get("employeeDate"));
+        param.put("resignDate", balancetest1.get("resignDate"));
         param.put("positionCode", balancetest1.get("positionCode"));
         param.put("accesslevelCode", balancetest1.get("accessLevelCode"));
         param.put("riderFlag", balancetest1.get("riderFlag"));
@@ -314,6 +317,7 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("staffPosCode", balancetest1.get("staffPosCode"));
         param.put("passPosCode", balancetest1.get("passPosCode"));
         param.put("status", balancetest1.get("status"));
+        param.put("statusPos", balancetest1.get("statusPos"));
         param.put("userUpd", balancetest1.get("userUpd"));
         param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
         param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
