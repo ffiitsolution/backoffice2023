@@ -395,7 +395,7 @@ where a.bill_no=$P{billNo} AND A.TRANS_DATE=$P{transDate} AND A.OUTLET_CODE=$P{o
             <textField textAdjust="StretchHeight">
                 <reportElement x="93" y="0" width="155" height="15" uuid="93fb376d-3382-4648-8157-b9ce628152b6"/>
                 <!-- <textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression> -->
-                <textFieldExpression><![CDATA[$F{TRANSTYPEITEM}.equals("ETA") ? $F{ITEM_DESCRIPTION} + "*" : $F{ITEM_DESCRIPTION}]]></textFieldExpression>
+                <textFieldExpression><![CDATA[$F{TRANSTYPEITEM}.equals("TA") ? $F{ITEM_DESCRIPTION} + "*" : $F{ITEM_DESCRIPTION}]]></textFieldExpression>
             </textField>
             <textField>
                 <reportElement x="369" y="0" width="30" height="15" uuid="ebb0c754-7abd-4889-a6de-f6148f1837c1"/>
