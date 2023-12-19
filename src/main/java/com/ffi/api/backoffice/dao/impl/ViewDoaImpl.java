@@ -7,6 +7,7 @@ package com.ffi.api.backoffice.dao.impl;
 import com.ffi.api.backoffice.dao.ViewDao;
 import com.ffi.api.backoffice.model.ParameterLogin;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
@@ -27,6 +28,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.tomcat.jni.Local;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -39,9 +41,12 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class ViewDoaImpl implements ViewDao {
+    
+    @Value("${endpoint.warehouse}")
+    private String warehouseEndpoint;
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
-
+    
     @Autowired
     public ViewDoaImpl(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -3297,4 +3302,48 @@ public class ViewDoaImpl implements ViewDao {
     }
     // Done MPCS Production Product Result //
 
+        ///////////// NEW METHOD get order Detail From Inventory - Dani 19 Des 2023
+    public List<Map<String, Object>> getOrderDetailFromInventory(Map<String, String> mapping) {
+        String json = "";
+        String total = "";
+        Gson gson = new Gson();
+        Map<String, Object> map1 = new HashMap<String, Object>();
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        try {
+            CloseableHttpClient client = HttpClients.createDefault();
+            String url = this.warehouseEndpoint + "/get-delivery-order-from-inv";
+            HttpPost post = new HttpPost(url);
+
+            post.setHeader("Accept", "*/*");
+            post.setHeader("Content-Type", "application/json");
+
+            json = new Gson().toJson(mapping);
+            StringEntity entity = new StringEntity(json);
+            post.setEntity(entity);
+            CloseableHttpResponse response = client.execute(post);
+            System.out.println("json" + json);
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(
+                            (response.getEntity().getContent())));
+            StringBuilder content = new StringBuilder();
+            String line;
+            while (null != (line = br.readLine())) {
+                content.append(line);
+            }
+            String result = content.toString();
+            System.out.println("trans =" + result);
+
+            map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
+            }.getType());
+
+            JsonObject job = gson.fromJson(result, JsonObject.class);
+            JsonArray elem = job.getAsJsonArray("item");
+
+            list = gson.fromJson(elem, new TypeToken<List<Map<String, Object>>>() {
+            }.getType());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }

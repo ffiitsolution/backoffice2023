@@ -255,4 +255,7 @@ public interface ViewDao {
     // New Method MPCS Production Recipe By Fathur 13 Dec 2023 //
     List<Map<String, Object>> mpcsProductionRecipe(Map<String, String> ref);
     // Done Method MPCS Production Recipe //
+
+    ///////////// NEW METHOD get order Detail From Inventory - Dani 19 Des 2023
+    public List<Map<String, Object>> getOrderDetailFromInventory(Map<String, String> mapping);
 }
