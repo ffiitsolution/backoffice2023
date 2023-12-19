@@ -15,6 +15,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -33,6 +34,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -585,10 +587,10 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("userUpd", balance.getUserUpd());
         param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
         param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
+        jdbcTemplate.update(qy, param);
         param.put("year", year);
         param.put("month", month);
         param.put("transType", balance.getTransType());
-        jdbcTemplate.update(qy, param);
         jdbcTemplate.update(qry, param);
         balance.setOpnameNo(opNo);
     }
@@ -605,11 +607,12 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("month", month);
         param.put("transType", transType);
         param.put("outletCode", outletCode);
+        System.err.println("q : " + sql);
+        System.err.println("p : " + param);
         return jdbcTemplate.queryForObject(sql, param, new RowMapper() {
             @Override
             public Object mapRow(ResultSet rs, int i) throws SQLException {
                 return rs.getString(1) == null ? "0" : rs.getString(1);
-
             }
         }).toString();
     }
@@ -635,16 +638,33 @@ public class ProcessDaoImpl implements ProcessDao {
     }
 
     ///////////////new method updateStatusOpname 6-11-2023////////////////////////////
+    /////////////// update menambah item ke t_stock_card_detail by M Joko 18-12-2023////////////////////////////
     @Override
-    public void updateOpnameStatus(Map<String, String> balance) {
-        String qy = "update t_opname_header set  "
-                + "status =:status "
-                + "WHERE  OPNAME_NO= :opnameNo and OUTLET_CODE= :outletCode";
+    public void updateOpnameStatus(Map balance) {
+        System.out.println("updateOpnameStatus balance = " + balance);
         Map param = new HashMap();
+        Integer status = Integer.valueOf(balance.get("status").toString());
+        System.out.println("updateOpnameStatus status = " + status);
         param.put("outletCode", balance.get("outletCode"));
         param.put("opnameNo", balance.get("opnameNo"));
-        param.put("status", balance.get("status"));
+        param.put("status", status);
+        String qy = "update t_opname_header set status =:status WHERE OPNAME_NO = :opnameNo and OUTLET_CODE= :outletCode";
         jdbcTemplate.update(qy, param);
+        if(status == 1){
+            itemOpnameToStockCard(balance);
+        }
+    }
+    
+    public void itemOpnameToStockCard(Map<String, String> balance) {
+            System.out.println("updateOpnameStatus = 1 / Close");
+            // update by M Joko 18-12-23
+            String qryToStockCard = "insert into t_stock_card_detail ( select * from ( SELECT od.OUTLET_CODE ,(select trans_date from m_outlet where outlet_code=od.outlet_code) as TRANS_DATE ,od.ITEM_CODE ,'SOP' AS CD_TRANS ,case when od.qty_freeze = od.total_qty then 0 else (case when od.qty_freeze < od.total_qty then od.total_qty - od.qty_freeze else 0 end) end AS QUANTITY_IN ,case when od.qty_freeze = od.total_qty then 0 else (case when od.qty_freeze > od.total_qty then od.qty_freeze - od.total_qty else 0 end) end AS QUANTITY ,:userUpd AS USER_UPD ,:dateUpd as DATE_UPD ,:timeUpd as TIME_UPD FROM T_OPNAME_DETAIL od where od.opname_no = :opnameNo ) where QUANTITY_IN not in (0,'0') union all (select * from ( SELECT od.OUTLET_CODE ,(select trans_date from m_outlet where outlet_code=od.outlet_code) as TRANS_DATE ,od.ITEM_CODE ,'SOP' AS CD_TRANS ,case when od.qty_freeze = od.total_qty then 0 else (case when od.qty_freeze < od.total_qty then od.total_qty - od.qty_freeze else 0 end) end AS QUANTITY_IN ,case when od.qty_freeze = od.total_qty then 0 else (case when od.qty_freeze > od.total_qty then od.qty_freeze - od.total_qty else 0 end) end AS QUANTITY ,:userUpd AS USER_UPD ,:dateUpd as DATE_UPD ,:timeUpd as TIME_UPD FROM T_OPNAME_DETAIL od where od.opname_no = :opnameNo ) where QUANTITY not in (0,'0')))";
+            Map paramToStockCard = new HashMap();
+            paramToStockCard.put("opnameNo", balance.get("opnameNo"));
+            paramToStockCard.put("userUpd", balance.getOrDefault("userUpd", "SYSTEM"));
+            paramToStockCard.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+            paramToStockCard.put("timeUpd", LocalDateTime.now().format(timeFormatter));
+            jdbcTemplate.update(qryToStockCard, paramToStockCard);
     }
 ///////////////done///////////////
 
@@ -1115,6 +1135,7 @@ public class ProcessDaoImpl implements ProcessDao {
             detailParam.put("totalQty", emp.get(i).getAsJsonObject().getAsJsonPrimitive("totalQty").getAsString());
             detailParam.put("totalPrice", emp.get(i).getAsJsonObject().getAsJsonPrimitive("totalPrice").getAsString());
             detailParam.put("UserUpd", balancing.getAsJsonObject().getAsJsonPrimitive("user").getAsString());
+            detailParam.put("userUpd", balancing.getAsJsonObject().getAsJsonPrimitive("user").getAsString()); // userUpd using 'u' kecil by Dani 18 Dec 2023
             InsertRecvDetail(detailParam);
             detailParam.clear();
         }
@@ -1141,6 +1162,50 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
         param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         jdbcTemplate.update(qy, param);
+        
+        // call insert to t_stock_card_dtl by Dani 18 December 2023
+        updateRecvStockCard(param);
+    }
+
+    // update receive stock card for receive stock by Dani 18 December 2023
+    // this method is for update table t_stock_card and t_stock_card_detail for receive stock
+    public void updateRecvStockCard(Map<String, String> balance) {
+        String qf = "SELECT CASE WHEN QUANTITY_IN IS NULL THEN 0 ELSE QUANTITY_IN END AS QUANTITY_IN FROM T_STOCK_CARD_DETAIL WHERE OUTLET_CODE = :outletCode AND TRANS_DATE = :transDate AND item_code= :itemCode AND cd_trans='RCV'";
+        Map<String, Object> param = new HashMap<>();
+        param.put("outletCode", balance.get("outletCode"));
+        param.put("itemCode", balance.get("itemCode"));
+        param.put("cdTrans", "RCV");
+        param.put("qtyIn", balance.get("totalQty"));
+        param.put("qty", 0);
+        param.put("userUpd", balance.get("userUpd"));
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
+        BigDecimal existQty = null;
+        String transDate = this.jdbcTemplate.queryForObject(
+                "SELECT DISTINCT TO_CHAR(TRANS_DATE, 'DD-MON-YYYY') FROM M_OUTLET WHERE OUTLET_CODE = :outletCode and status = 'A'",
+                param, String.class);
+        param.put("transDate", transDate);
+        String qsh = "SELECT CASE WHEN QTY_IN IS NULL THEN 0 ELSE QTY_IN END AS QTY_IN FROM T_STOCK_CARD WHERE OUTLET_CODE = :outletCode AND TRANS_DATE = :transDate AND ITEM_CODE = :itemCode ";
+        String qh = "UPDATE T_STOCK_CARD SET QTY_IN = :qtyIn WHERE OUTLET_CODE = :outletCode AND TRANS_DATE = :transDate AND ITEM_CODE = :itemCode ";
+        BigDecimal hdrQtyInDb = jdbcTemplate.queryForObject(qsh, param, BigDecimal.class);
+        hdrQtyInDb = hdrQtyInDb.add(new BigDecimal(balance.get("totalQty")));
+        param.put("qtyIn", hdrQtyInDb);
+        jdbcTemplate.update(qh, param);
+        try {
+            existQty = jdbcTemplate.queryForObject(qf, param, BigDecimal.class);
+            BigDecimal quantityIn = new BigDecimal(balance.get("totalQty"));
+            quantityIn = quantityIn.add(existQty);
+            param.put("quantityIn", quantityIn);
+            String qu = "UPDATE T_STOCK_CARD_DETAIL"
+                    + " SET QUANTITY_IN=:quantityIn, QUANTITY=:qty, USER_UPD=:userUpd, DATE_UPD=:dateUpd, TIME_UPD=:timeUpd "
+                    + " WHERE OUTLET_CODE = :outletCode AND TRANS_DATE = :transDate AND item_code= :itemCode AND cd_trans='RCV' ";
+            jdbcTemplate.update(qu, param);
+        } catch (EmptyResultDataAccessException exx) {
+            String qi = "INSERT INTO T_STOCK_CARD_DETAIL (OUTLET_CODE,TRANS_DATE,ITEM_CODE,CD_TRANS,QUANTITY_IN,QUANTITY,USER_UPD,DATE_UPD,TIME_UPD) VALUES (:outletCode, :transDate, :itemCode, :cdTrans , :qtyIn, :qty, :userUpd, :dateUpd, :timeUpd)";
+            jdbcTemplate.update(qi, param);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     //Add Insert to HIST_KIRIM by KP (13-06-2023)

@@ -1410,7 +1410,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "AND H.OUTLET_CODE = :outletCode  "
                 + "AND H.Order_to LIKE :orderTo  "
                 + "" + where + ""
-                + " ORDER BY H.DATE_UPD DESC, H.TIME_UPD DESC "; // ORDER  H.DATE_UPD DESC, H.TIME_UPD DESC by Dani 12 Desc 2023
+                + " ORDER BY H.ORDER_ID DESC, H.DATE_UPD DESC, H.TIME_UPD DESC "; // ORDER  H.DATE_UPD DESC, H.TIME_UPD DESC by Dani 12 Desc 2023
         Map prm = new HashMap();
         prm.put("status", "%" + balance.get("status") + "%");
         prm.put("orderType", "%" + balance.get("orderType") + "%");
@@ -1722,7 +1722,7 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public String cekOpname(String outletCode, String month, String year) {
-        String qry = "SELECT COUNT(*) count FROM T_OPNAME_HEADER WHERE TO_CHAR(OPNAME_DATE,'MON') = :month AND OUTLET_CODE = :outletCode AND TO_CHAR(OPNAME_DATE,'YYYY') = :year ";
+        String qry = "SELECT COUNT(*) count FROM T_OPNAME_HEADER WHERE TO_CHAR(OPNAME_DATE,'MON') = :month AND OUTLET_CODE = :outletCode AND TO_CHAR(OPNAME_DATE,'YYYY') = :year and STATUS IN ('0', '1')";
         Map prm = new HashMap();
         prm.put("outletCode", outletCode);
         prm.put("month", month);
@@ -2560,26 +2560,48 @@ public class ViewDoaImpl implements ViewDao {
         return list;
     }
 
-/////////////////////////////List Stock Opname 7 AUG 2023///////////////////////////////////////////
+    // tambah fungsi untuk validasi nilai param by M Joko - 14 Dec 23
+    private boolean isValidParamKey(Object key){
+        if(key != null){
+            return false;
+        } else if(key != ""){
+            return false;
+        } else return key == " ";
+    }
+    
+/////////////////////////////List Stock Opname 7 AUG 2023///////////////////////////////////////////    
     @Override
     public List<Map<String, Object>> listStockOpname(Map<String, String> balance) {
-        String where = "";
-        if (!balance.get("opnameDate").equals("")) {
-            where = "AND a.OPNAME_DATE =:opnanameDate";
-        } else {
-            where = "and a.OPNAME_DATE between to_date(:dateStart, 'dd-mm-yyyy') and to_date(:dateEnd, 'dd-mm-yyyy')";
-        }
-        String qry = "select a.*,b.template_name,case when A.cd_template='1' then 'TEMPLATE' ELSE 'PER BARANG' END AS type from t_opname_header a "
-                + "left join m_opname_templ_header b "
-                + "on a.cd_template=b.cd_template "
-                + " WHERE a.status=:status and a.CD_TEMPLATE=:cdTemplate "
-                + "" + where + "";
+        // update menampilkan data sebelum di filter by M Joko - 14 Dec 23
         Map prm = new HashMap();
-        prm.put("status", balance.get("status"));
-        prm.put("cdTemplate", balance.get("cdTemplate"));
-        prm.put("dateStart", balance.get("dateStart"));
-        prm.put("dateEnd", balance.get("dateEnd"));
-        System.err.println("q :" + qry);
+        String qry = "select * from (select a.*,b.template_name,case when A.cd_template=:cdTemplate then 'TEMPLATE' ELSE 'PER BARANG' END AS type ";
+        qry += "from t_opname_header a left join m_opname_templ_header b on a.cd_template=b.cd_template where a.cd_template = :cdTemplate ";
+        if(isValidParamKey(balance.get("dateStart")) && isValidParamKey(balance.get("dateEnd"))){
+            qry += " and a.opname_date between to_date(:dateStart, 'dd-mm-yyyy') and to_date(:dateEnd, 'dd-mm-yyyy') ";
+            prm.put("dateStart", balance.get("dateStart"));
+            prm.put("dateEnd", balance.get("dateEnd"));
+        }
+        if(isValidParamKey(balance.get("status"))){
+            qry += " and a.status = :status ";
+            prm.put("status", balance.get("status"));
+        }
+        if(isValidParamKey(balance.get("outletCode")) ){
+            qry += " and a.outlet_code = :outletCode ";
+            prm.put("outletCode", balance.get("outletCode"));
+        }
+        if(isValidParamKey(balance.get("cdTemplate")) ){
+            prm.put("cdTemplate", balance.get("cdTemplate"));
+        } else {
+            prm.put("cdTemplate", "1");
+        }
+        if(isValidParamKey(balance.get("limit")) ){
+            prm.put("limit", balance.get("limit"));
+        } else {
+            prm.put("limit", "501");
+        }
+        qry += " order by a.date_upd desc, a.time_upd desc) where rownum < :limit";
+        
+        System.err.println("p : " + prm);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
@@ -2678,7 +2700,7 @@ public class ViewDoaImpl implements ViewDao {
             sqlParam.put("startDate", param.get("startDate"));
             sqlParam.put("endDate", param.get("endDate"));
         }
-        query += " ORDER BY RETURN_DATE DESC ";
+        query += " ORDER BY RETURN_DATE DESC, a.DATE_UPD DESC, a.TIME_UPD DESC ";
         if (param.containsKey("limit") && param.get("limit").length() > 0) {
             query = "SELECT * FROM ( " + query + " ) WHERE rownum <= :limit";
             sqlParam.put("limit", param.get("limit"));
@@ -3155,7 +3177,8 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> mpcsProductionList(Map<String, String> balance) {
 
-        String qry = "select to_char(to_date(c.TIME_MPCS, 'hh24miss'), 'hh24:mi') as TIME_MPCS, c.QTY_PROD, c.QTY_ACC_PROD, c.DESC_PROD, c.PROD_BY "
+        String qry = "select to_char(to_date(c.TIME_MPCS, 'hh24miss'), 'hh24:mi') as TIME_MPCS, c.QTY_PROD, c.QTY_ACC_PROD, c.QTY_ACC_PROD, NVL(c.DESC_PROD, ' ') AS DESC_PROD, c.PROD_BY, "
+                + "(to_char(DATE_UPD, 'YYYY-MM-dd') || ' ' || to_char(to_date(TIME_UPD, 'hh24miss'), 'hh24:mi:ss')) AS DATE_UPD "
                 + "from t_summ_mpcs c "
                 + "where c.date_mpcs = :dateMpcs "
                 + "AND c.MPCS_GROUP = :mpcsGroup";
@@ -3174,6 +3197,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("qtyAccProd", rs.getString("QTY_ACC_PROD"));
                 rt.put("descProd", rs.getString("DESC_PROD"));
                 rt.put("prodBy", rs.getString("PROD_BY"));
+                rt.put("dateUpd", rs.getString("DATE_UPD"));
 
                 return rt;
             }
@@ -3186,7 +3210,8 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> mpcsProductionDetail(Map<String, String> balance) {
 
-        String qry = "SELECT MPCS_GROUP, RECIPE_CODE, SEQ_MPCS, QUANTITY, to_char(to_date(TIME_UPD, 'hh24miss'), 'hh24:mi') AS TIME_UPD "
+        String qry = "SELECT MPCS_GROUP, RECIPE_CODE, SEQ_MPCS, QUANTITY, to_char(to_date(TIME_UPD, 'hh24miss'), 'hh24:mi') AS TIME_UPD, "
+                + "(to_char(DATE_UPD, 'YYYY-MM-dd') ||' ' || to_char(to_date(TIME_UPD, 'hh24miss'), 'hh24:mi:ss')) AS DATE_UPD "
                 + "FROM T_MPCS_HIST WHERE MPCS_GROUP = :mpcsGroup AND MPCS_DATE = :dateMpcs "
                 + "AND TIME_UPD <= replace(:maxTime, ':' , '')||'00' "
                 + "AND TIME_UPD >= replace(:minTime, ':' , '')||'00' ";
@@ -3207,6 +3232,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("seqMpcs", rs.getString("SEQ_MPCS"));
                 rt.put("quantity", rs.getString("QUANTITY"));
                 rt.put("timeUpd", rs.getString("TIME_UPD"));
+                rt.put("dateUpd", rs.getString("DATE_UPD"));
                 return rt;
             }
         });

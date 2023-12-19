@@ -1635,7 +1635,7 @@ public class IndexController {
             }
         } catch (Exception e) {
             rm.setSuccess(false);
-            rm.setMessage("Insert Failed: " + e.getMessage());
+            rm.setMessage("Insert Failed: inserOpnameHeader: " + e.getMessage());
         }
         if (rm.getMessage().equals("Insert Success")) {
             processServices.updateMCounterSop(balance.getTransType(), balance.getOutletCode());
@@ -2400,7 +2400,7 @@ public class IndexController {
     public @ResponseBody
     ResponseMessage updateOpnameStatus(@RequestBody String param) throws IOException, Exception {
         Gson gsn = new Gson();
-        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, String>>() {
         }.getType());
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         ResponseMessage rm = new ResponseMessage();
@@ -2411,7 +2411,7 @@ public class IndexController {
 
         } catch (Exception e) {
             rm.setSuccess(false);
-            rm.setMessage("Update Failed Successfuly: " + e.getMessage());
+            rm.setMessage("updateOpnameStatus Failed: " + e.getMessage());
         }
 
         rm.setItem(list);
