@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ffi.api.backoffice.dao.ProcessDao;
 import com.ffi.api.backoffice.model.DetailOpname;
 import com.ffi.api.backoffice.model.HeaderOpname;
+import com.ffi.api.backoffice.utils.DynamicRowMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -689,6 +690,8 @@ public class ProcessDaoImpl implements ProcessDao {
         jdbcTemplate.update(qy, param);
         if(status == 1){
             itemOpnameToStockCard(balance);
+            // update by M Joko 20-dec-23 
+            updateMCounterAfterStockOpname(balance);
         }
     }
     
@@ -2370,6 +2373,15 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         System.out.println(qy);
         jdbcTemplate.update(qy, param);
-        System.out.println(qy);
+    }
+
+    ////////////New method for insert m_counter setelah Stock Opname - M Joko M 20-Dec-2023////////////
+    // jika row dengan menu_id, year, month sudah ada, tidak akan insert
+    public void updateMCounterAfterStockOpname(Map<String, String> balance) {
+        Map param = new HashMap();
+        param.put("outletCode", balance.get("outletCode"));
+        String qryCounter = "INSERT INTO m_counter (OUTLET_CODE, TRANS_TYPE, YEAR, MONTH, COUNTER_NO) ( SELECT mo.OUTLET_CODE, menu_id AS TRANS_TYPE, CASE WHEN EXTRACT(MONTH FROM mo.TRANS_DATE) = 12 THEN EXTRACT(YEAR FROM mo.TRANS_DATE) + 1 ELSE EXTRACT(YEAR FROM mo.TRANS_DATE) END AS YEAR, CASE WHEN EXTRACT(MONTH FROM mo.TRANS_DATE) = 12 THEN 1 ELSE EXTRACT(MONTH FROM mo.TRANS_DATE) END AS MONTH, 0 AS COUNTER_NO FROM M_MENUDTL m JOIN m_outlet mo ON mo.OUTLET_CODE = :outletCode WHERE m.TYPE_ID = 'counter' AND m.APLIKASI = 'SOP' AND m.STATUS = 'A' AND NOT EXISTS ( SELECT 1 FROM m_counter mc WHERE mc.OUTLET_CODE = mo.OUTLET_CODE AND mc.TRANS_TYPE = m.menu_id AND mc.YEAR = CASE WHEN EXTRACT(MONTH FROM mo.TRANS_DATE) = 12 THEN EXTRACT(YEAR FROM mo.TRANS_DATE) + 1 ELSE EXTRACT(YEAR FROM mo.TRANS_DATE) END AND mc.MONTH = CASE WHEN EXTRACT(MONTH FROM mo.TRANS_DATE) = 12 THEN 1 ELSE EXTRACT(MONTH FROM mo.TRANS_DATE) END ))";
+        System.err.println("q updateMCounterAfterStockOpname: " + qryCounter);
+        jdbcTemplate.update(qryCounter,param);
     }
 }
