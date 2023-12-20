@@ -919,7 +919,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("areaCode", rs.getString("AREA_CODE"));
                 rt.put("cityStaff", rs.getString("CITY_STAFF"));
                 rt.put("positionName", rs.getString("POSITION_NAME"));
-                rt.put("accesssName", rs.getString("ACCESS_NAME"));
+                rt.put("accessName", rs.getString("ACCESS_NAME"));
                 rt.put("outletCode", rs.getString("OUTLET_CODE"));
                 rt.put("staffCode", rs.getString("STAFF_CODE"));
                 rt.put("staffName", rs.getString("STAFF_NAME"));

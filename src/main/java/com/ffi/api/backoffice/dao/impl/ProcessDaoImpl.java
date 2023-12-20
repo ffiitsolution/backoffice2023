@@ -266,7 +266,13 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("employDate", balancetest1.get("employeeDate"));
         param.put("resignDate", balancetest1.get("resignDate"));
         param.put("positionCode", balancetest1.get("positionCode"));
-        param.put("accesslevelCode", balancetest1.get("accessLevelCode"));
+
+        if (balancetest1.get("accessLevelCode").length() <= 3) {
+            param.put("accesslevelCode", balancetest1.get("accessLevelCode"));
+        } else {
+            param.put("accesslevelCode", "");
+        }
+
         param.put("riderFlag", balancetest1.get("riderFlag"));
         param.put("groupidName", balancetest1.get("groupCode"));
         param.put("staffPosCode", balancetest1.get("staffPosCode"));
@@ -311,7 +317,13 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("employDate", balancetest1.get("employeeDate"));
         param.put("resignDate", balancetest1.get("resignDate"));
         param.put("positionCode", balancetest1.get("positionCode"));
-        param.put("accesslevelCode", balancetest1.get("accessLevelCode"));
+
+        if (balancetest1.get("accessLevelCode").length() <= 3) {
+            param.put("accesslevelCode", balancetest1.get("accessLevelCode"));
+        } else {
+            param.put("accesslevelCode", "");
+        }
+
         param.put("riderFlag", balancetest1.get("riderFlag"));
         param.put("groupidName", balancetest1.get("groupCode"));
         param.put("staffPosCode", balancetest1.get("staffPosCode"));
