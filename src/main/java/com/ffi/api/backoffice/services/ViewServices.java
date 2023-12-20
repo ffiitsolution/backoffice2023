@@ -452,4 +452,9 @@ public class ViewServices {
         return viewDao.mpcsProductionRecipe(ref);
     }
     // Done MPCS Production Recipe //
+
+        ///////////// NEW METHOD get order Detail From Inventory - Dani 19 Des 2023
+    public List<Map<String, Object>> getOrderDetailFromInventory(Map<String, String> balancing) {
+        return viewDao.getOrderDetailFromInventory(balancing);
+    }
 }

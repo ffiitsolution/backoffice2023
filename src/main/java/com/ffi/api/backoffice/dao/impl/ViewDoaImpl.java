@@ -7,6 +7,7 @@ package com.ffi.api.backoffice.dao.impl;
 import com.ffi.api.backoffice.dao.ViewDao;
 import com.ffi.api.backoffice.model.ParameterLogin;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
@@ -27,6 +28,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.tomcat.jni.Local;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -39,9 +41,12 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class ViewDoaImpl implements ViewDao {
+    
+    @Value("${endpoint.warehouse}")
+    private String warehouseEndpoint;
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
-
+    
     @Autowired
     public ViewDoaImpl(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -1244,7 +1249,10 @@ public class ViewDoaImpl implements ViewDao {
     //list area    
     @Override
     public List<Map<String, Object>> viewArea(Map<String, String> balance) {
-        String qry = "select distinct area_code,area_desc,region_code,regional_desc from V_STRUCTURE_STORE where region_code like :region_code order by region_code,area_code asc";
+        String qry = "SELECT DISTINCT a.AREA_CODE as area_code,c.DESCRIPTION as area_desc, a.REGION_CODE as region_code,b.DESCRIPTION as region_desc FROM M_OUTLET a "
+                + "JOIN M_GLOBAL b ON a.REGION_CODE = b.CODE AND b.COND = 'REG_OUTLET' "
+                + "JOIN M_GLOBAL c ON a.AREA_CODE = c.CODE AND c.COND = 'AREACODE' "
+                + "WHERE region_code like :region_code order by region_code,area_code asc";
         Map prm = new HashMap();
 //         prm.put("region_code", Logan.get("region_code"));
         prm.put("region_code", "%" + balance.get("region_code") + "%");
@@ -2863,14 +2871,14 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> listQueryStockCard(Map<String, String> ref) {
         String query = "SELECT "
-                + "SCARD.DATE_UPD, SCARD.TIME_UPD, MGLB.CODE AS CD_WAREHOUSE, MGLB.DESCRIPTION AS NM_WAREHOUSE, "
+                + "SCARD.TRANS_DATE, SCARD.TIME_UPD, MGLB.CODE AS CD_WAREHOUSE, MGLB.DESCRIPTION AS NM_WAREHOUSE, "
                 + "SCARD.ITEM_CODE, MITEM.ITEM_DESCRIPTION as ITEM_NAME, "
                 + "SCARD.QTY_BEGINNING, SCARD.QTY_IN, SCARD.QTY_OUT, ((QTY_BEGINNING + QTY_IN) - QTY_OUT) as QTY_ENDING, "
                 + "MITEM.UOM_STOCK AS UNIT, SCARD.REMARK "
                 + "FROM T_STOCK_CARD SCARD "
                 + "JOIN M_ITEM MITEM ON SCARD.ITEM_CODE = MITEM.ITEM_CODE "
                 + "JOIN M_GLOBAL MGLB on MGLB.CODE = MITEM.CD_WAREHOUSE "
-                + "WHERE SCARD.DATE_UPD between TO_DATE(:startDate, 'DD/MM/YYYY') and (TO_DATE(:endDate, 'DD/MM/YYYY')+1) "
+                + "WHERE SCARD.TRANS_DATE between TO_DATE(:startDate, 'DD/MM/YYYY') and (TO_DATE(:endDate, 'DD/MM/YYYY')+1) "
                 + "AND SCARD.ITEM_CODE LIKE :itemCode "
                 + "AND CD_WAREHOUSE LIKE :cdWarehouse "
                 + "ORDER BY SCARD.ITEM_CODE ASC ";
@@ -2885,7 +2893,7 @@ public class ViewDoaImpl implements ViewDao {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("dateUpd", rs.getString("DATE_UPD"));
+                rt.put("dateUpd", rs.getString("TRANS_DATE"));
                 rt.put("timeUpd", rs.getString("TIME_UPD"));
                 rt.put("itemCode", rs.getString("ITEM_CODE"));
                 rt.put("itemName", rs.getString("ITEM_NAME"));
@@ -3297,4 +3305,48 @@ public class ViewDoaImpl implements ViewDao {
     }
     // Done MPCS Production Product Result //
 
+        ///////////// NEW METHOD get order Detail From Inventory - Dani 19 Des 2023
+    public List<Map<String, Object>> getOrderDetailFromInventory(Map<String, String> mapping) {
+        String json = "";
+        String total = "";
+        Gson gson = new Gson();
+        Map<String, Object> map1 = new HashMap<String, Object>();
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        try {
+            CloseableHttpClient client = HttpClients.createDefault();
+            String url = this.warehouseEndpoint + "/get-delivery-order-from-inv";
+            HttpPost post = new HttpPost(url);
+
+            post.setHeader("Accept", "*/*");
+            post.setHeader("Content-Type", "application/json");
+
+            json = new Gson().toJson(mapping);
+            StringEntity entity = new StringEntity(json);
+            post.setEntity(entity);
+            CloseableHttpResponse response = client.execute(post);
+            System.out.println("json" + json);
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(
+                            (response.getEntity().getContent())));
+            StringBuilder content = new StringBuilder();
+            String line;
+            while (null != (line = br.readLine())) {
+                content.append(line);
+            }
+            String result = content.toString();
+            System.out.println("trans =" + result);
+
+            map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
+            }.getType());
+
+            JsonObject job = gson.fromJson(result, JsonObject.class);
+            JsonArray elem = job.getAsJsonArray("item");
+
+            list = gson.fromJson(elem, new TypeToken<List<Map<String, Object>>>() {
+            }.getType());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }
