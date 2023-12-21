@@ -896,7 +896,7 @@ public class ViewDoaImpl implements ViewDao {
     public List<Map<String, Object>> listStaff(Map<String, String> ref) {
         String qry = "SELECT DISTINCT VS.REGIONAL_DESC,VS.OUTLET_NAME,VS.AREA_DESC,VS.AREA_CODE,G.DESCRIPTION CITY_STAFF, "
                 + "G1.DESCRIPTION POSITION_NAME,G2.DESCRIPTION ACCESS_NAME, "
-                + "S.*,PS.STAFF_POS_CODE,PS.PASSWORD AS PASS_POS_CODE,s.access_level ACCESS_LEVEL FROM M_STAFF S "
+                + "S.*,PS.STAFF_POS_CODE,PS.PASSWORD AS PASS_POS_CODE, PS.STATUS AS STATUS_POS,s.access_level ACCESS_LEVEL FROM M_STAFF S "
                 + "JOIN V_STRUCTURE_STORE VS ON VS.OUTLET_CODE = S.OUTLET_CODE  "
                 + "LEFT JOIN M_POS_STAFF PS ON PS.STAFF_CODE = S.STAFF_CODE  "
                 + "LEFT JOIN M_GLOBAL G ON G.CODE = S.CITY AND G.COND = 'CITY' "
@@ -924,7 +924,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("areaCode", rs.getString("AREA_CODE"));
                 rt.put("cityStaff", rs.getString("CITY_STAFF"));
                 rt.put("positionName", rs.getString("POSITION_NAME"));
-                rt.put("accesssName", rs.getString("ACCESS_NAME"));
+                rt.put("accessName", rs.getString("ACCESS_NAME"));
                 rt.put("outletCode", rs.getString("OUTLET_CODE"));
                 rt.put("staffCode", rs.getString("STAFF_CODE"));
                 rt.put("staffName", rs.getString("STAFF_NAME"));
@@ -945,6 +945,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("riderFlag", rs.getString("RIDER_FLAG"));
                 rt.put("groupId", rs.getString("GROUP_ID"));
                 rt.put("statusName", rs.getString("STATUS"));
+                rt.put("statusPos", rs.getString("STATUS_POS"));
                 rt.put("staffPosCode", rs.getString("STAFF_POS_CODE"));
                 rt.put("passPosCode", rs.getString("PASS_POS_CODE"));
 
@@ -2872,14 +2873,13 @@ public class ViewDoaImpl implements ViewDao {
     ////////////New method for query stock card - Fathur 29-Nov-2023////////////
     @Override
     public List<Map<String, Object>> listQueryStockCard(Map<String, String> ref) {
-        String query = "SELECT "
-                + "SCARD.TRANS_DATE, SCARD.TIME_UPD, MGLB.CODE AS CD_WAREHOUSE, MGLB.DESCRIPTION AS NM_WAREHOUSE, "
+        String query = "SELECT SCARD.TRANS_DATE, SCARD.TIME_UPD, NVL(MGLB.CODE, ' ') AS CD_WAREHOUSE, NVL(MGLB.DESCRIPTION, ' ') AS NM_WAREHOUSE, "
                 + "SCARD.ITEM_CODE, MITEM.ITEM_DESCRIPTION as ITEM_NAME, "
                 + "SCARD.QTY_BEGINNING, SCARD.QTY_IN, SCARD.QTY_OUT, ((QTY_BEGINNING + QTY_IN) - QTY_OUT) as QTY_ENDING, "
                 + "MITEM.UOM_STOCK AS UNIT, SCARD.REMARK "
                 + "FROM T_STOCK_CARD SCARD "
-                + "JOIN M_ITEM MITEM ON SCARD.ITEM_CODE = MITEM.ITEM_CODE "
-                + "JOIN M_GLOBAL MGLB on MGLB.CODE = MITEM.CD_WAREHOUSE "
+                + "LEFT JOIN M_ITEM MITEM ON SCARD.ITEM_CODE = MITEM.ITEM_CODE "
+                + "LEFT JOIN M_GLOBAL MGLB on MGLB.CODE = MITEM.CD_WAREHOUSE "
                 + "WHERE SCARD.TRANS_DATE between TO_DATE(:startDate, 'DD/MM/YYYY') and (TO_DATE(:endDate, 'DD/MM/YYYY')+1) "
                 + "AND SCARD.ITEM_CODE LIKE :itemCode "
                 + "AND CD_WAREHOUSE LIKE :cdWarehouse "

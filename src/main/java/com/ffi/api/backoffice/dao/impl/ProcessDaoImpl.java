@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ffi.api.backoffice.dao.ProcessDao;
 import com.ffi.api.backoffice.model.DetailOpname;
 import com.ffi.api.backoffice.model.HeaderOpname;
+import com.ffi.api.backoffice.utils.DynamicRowMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -267,7 +268,13 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("employDate", balancetest1.get("employeeDate"));
         param.put("resignDate", balancetest1.get("resignDate"));
         param.put("positionCode", balancetest1.get("positionCode"));
-        param.put("accesslevelCode", balancetest1.get("accessLevelCode"));
+
+        if (balancetest1.get("accessLevelCode").length() <= 3) {
+            param.put("accesslevelCode", balancetest1.get("accessLevelCode"));
+        } else {
+            param.put("accesslevelCode", "");
+        }
+
         param.put("riderFlag", balancetest1.get("riderFlag"));
         param.put("groupidName", balancetest1.get("groupCode"));
         param.put("staffPosCode", balancetest1.get("staffPosCode"));
@@ -279,7 +286,10 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
 
         jdbcTemplate.update(qy, param);
-        jdbcTemplate.update(qy2, param);
+
+        if (balancetest1.get("staffPosCode") != null) {
+            jdbcTemplate.update(qy2, param);
+        }
     }
 
     @Override
@@ -312,7 +322,13 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("employDate", balancetest1.get("employeeDate"));
         param.put("resignDate", balancetest1.get("resignDate"));
         param.put("positionCode", balancetest1.get("positionCode"));
-        param.put("accesslevelCode", balancetest1.get("accessLevelCode"));
+
+        if (balancetest1.get("accessLevelCode").length() <= 3) {
+            param.put("accesslevelCode", balancetest1.get("accessLevelCode"));
+        } else {
+            param.put("accesslevelCode", "");
+        }
+
         param.put("riderFlag", balancetest1.get("riderFlag"));
         param.put("groupidName", balancetest1.get("groupCode"));
         param.put("staffPosCode", balancetest1.get("staffPosCode"));
@@ -324,7 +340,10 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
 
         jdbcTemplate.update(qy, param);
-        jdbcTemplate.update(qy2, param);
+
+        if (balancetest1.get("staffPosCode") != null) {
+            jdbcTemplate.update(qy2, param);
+        }
     }
 
     @Override
@@ -683,6 +702,8 @@ public class ProcessDaoImpl implements ProcessDao {
         jdbcTemplate.update(qy, param);
         if(status == 1){
             itemOpnameToStockCard(balance);
+            // update by M Joko 20-dec-23 
+            updateMCounterAfterStockOpname(balance);
         }
     }
     
@@ -2336,10 +2357,10 @@ public class ProcessDaoImpl implements ProcessDao {
     @Override
     public void insertTSummMpcs(Map<String, String> balance) {
         // query insert from Dona
-        String query = "insert into t_summ_mpcs (select A.OUTLET_CODE ,A.MPCS_GROUP ,A.DATE_MPCS +1 AS DATE_MPCS ,A.SEQ_MPCS ,A.TIME_MPCS ,TOT AS QTY_PROJ_CONV ,A.UOM_PROJ_CONV ,TOT AS QTY_PROJ ,A.UOM_PROJ ,sum(B.tot)over(PARTITION BY A.MPCS_GROUP ORDER BY A.SEQ_MPCS ) as QTY_ACC_PROJ ,A.UOM_ACC_PROJ ,A.DESC_PROD ,0 as QTY_PROD ,A.UOM_PROD ,0 as QTY_ACC_PROD ,A.UOM_ACC_PROD ,A.PROD_BY ,0 as QTY_SOLD ,A.UOM_SOLD ,0 as QTY_ACC_SOLD ,A.UOM_ACC_SOLD ,0 as QTY_REJECT ,A.UOM_REJECT ,0 as QTY_ACC_REJECT ,A.UOM_ACC_REJECT ,0 as QTY_WASTAGE ,A.UOM_WASTAGE ,0 as QTY_ACC_WASTAGE ,A.UOM_ACC_WASTAGE ,0 as QTY_ONHAND ,A.UOM_ONHAND ,0 as QTY_ACC_ONHAND ,A.UOM_ACC_ONHAND, TOT as QTY_VARIANCE,0 as QTY_VARIANCE ,A.UOM_VARIANCE ,0 as QTY_ACC_VARIANCE ,A.UOM_ACC_VARIANCE ,A.USER_UPD ,A.DATE_UPD ,A.TIME_UPD ,0 as QTY_IN ,0 as QTY_OUT from t_summ_mpcs A LEFT JOIN (SELECT OUTLET_CODE,MPCS_GROUP,SEQ_MPCS,TIME_MPCS,TOT FROM ( select OUTLET_CODE,mpcs_group,seq_mpcs,time_mpcs,sum(qty_sold),sum(qty_sold1),sum(qty_sold2),round((sum(qty_sold)+sum(qty_sold1)+sum(qty_sold2))/3) as tot from( select OUTLET_CODE,mpcs_group,date_mpcs,seq_mpcs,time_mpcs,qty_sold,0 as qty_sold1, 0 as qty_sold2 from t_summ_mpcs where date_mpcs in(select trans_date-7 from m_outlet where outlet_code=:outletCode) union all select OUTLET_CODE,mpcs_group,date_mpcs,seq_mpcs,time_mpcs,0 as qty_sold,qty_sold as qty_sold1, 0 as qty_sold2 from t_summ_mpcs where date_mpcs in(select trans_date-14 from m_outlet where outlet_code=:outletCode) union all select OUTLET_CODE,mpcs_group,date_mpcs,seq_mpcs,time_mpcs,0 as qty_sold,0 as qty_sold1,qty_sold as qty_sold2 from t_summ_mpcs where date_mpcs in(select trans_date-21 from m_outlet where outlet_code=:outletCode) ) group by OUTLET_CODE,mpcs_group,seq_mpcs,time_mpcs order by mpcs_group asc,seq_mpcs) B)B ON A.OUTLET_CODE=B.OUTLET_CODE AND A.MPCS_GROUP=B.MPCS_GROUP AND A.SEQ_MPCS=B.SEQ_MPCS AND A.TIME_MPCS=B.TIME_MPCS WHERE DATE_MPCS IN(select trans_date from m_outlet where outlet_code=:outletCode))";
+        String query = "insert into t_summ_mpcs (select A.OUTLET_CODE ,A.MPCS_GROUP ,A.DATE_MPCS +1 AS DATE_MPCS ,A.SEQ_MPCS ,A.TIME_MPCS ,TOT AS QTY_PROJ_CONV ,A.UOM_PROJ_CONV ,TOT AS QTY_PROJ ,A.UOM_PROJ ,sum(B.tot)over(PARTITION BY A.MPCS_GROUP ORDER BY A.SEQ_MPCS ) as QTY_ACC_PROJ ,A.UOM_ACC_PROJ ,A.DESC_PROD ,0 as QTY_PROD ,A.UOM_PROD ,0 as QTY_ACC_PROD ,A.UOM_ACC_PROD ,A.PROD_BY ,0 as QTY_SOLD ,A.UOM_SOLD ,0 as QTY_ACC_SOLD ,A.UOM_ACC_SOLD ,0 as QTY_REJECT ,A.UOM_REJECT ,0 as QTY_ACC_REJECT ,A.UOM_ACC_REJECT ,0 as QTY_WASTAGE ,A.UOM_WASTAGE ,0 as QTY_ACC_WASTAGE ,A.UOM_ACC_WASTAGE ,0 as QTY_ONHAND ,A.UOM_ONHAND ,0 as QTY_ACC_ONHAND ,A.UOM_ACC_ONHAND, TOT as QTY_VARIANCE, A.UOM_VARIANCE ,0 as QTY_ACC_VARIANCE ,A.UOM_ACC_VARIANCE ,A.USER_UPD ,A.DATE_UPD ,A.TIME_UPD ,0 as QTY_IN ,0 as QTY_OUT from t_summ_mpcs A LEFT JOIN (SELECT OUTLET_CODE,MPCS_GROUP,SEQ_MPCS,TIME_MPCS,TOT FROM ( select OUTLET_CODE,mpcs_group,seq_mpcs,time_mpcs,sum(qty_sold),sum(qty_sold1),sum(qty_sold2),round((sum(qty_sold)+sum(qty_sold1)+sum(qty_sold2))/3) as tot from( select OUTLET_CODE,mpcs_group,date_mpcs,seq_mpcs,time_mpcs,qty_sold,0 as qty_sold1, 0 as qty_sold2 from t_summ_mpcs where date_mpcs in(select trans_date-7 from m_outlet where outlet_code=:outletCode) union all select OUTLET_CODE,mpcs_group,date_mpcs,seq_mpcs,time_mpcs,0 as qty_sold,qty_sold as qty_sold1, 0 as qty_sold2 from t_summ_mpcs where date_mpcs in(select trans_date-14 from m_outlet where outlet_code=:outletCode) union all select OUTLET_CODE,mpcs_group,date_mpcs,seq_mpcs,time_mpcs,0 as qty_sold,0 as qty_sold1,qty_sold as qty_sold2 from t_summ_mpcs where date_mpcs in(select trans_date-21 from m_outlet where outlet_code=:outletCode) ) group by OUTLET_CODE,mpcs_group,seq_mpcs,time_mpcs order by mpcs_group asc,seq_mpcs) B)B ON A.OUTLET_CODE=B.OUTLET_CODE AND A.MPCS_GROUP=B.MPCS_GROUP AND A.SEQ_MPCS=B.SEQ_MPCS AND A.TIME_MPCS=B.TIME_MPCS WHERE DATE_MPCS IN(select trans_date from m_outlet where outlet_code=:outletCode))";
         Map param = new HashMap();
         param.put("outletCode", balance.get("outletCode"));
-        System.err.println("q_process: " + query);
+        System.err.println("q insertTSummMpcs: " + query);
         jdbcTemplate.update(query, param);
     }
 
@@ -2367,6 +2388,15 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         System.out.println(qy);
         jdbcTemplate.update(qy, param);
-        System.out.println(qy);
+    }
+
+    ////////////New method for insert m_counter setelah Stock Opname - M Joko M 20-Dec-2023////////////
+    // jika row dengan menu_id, year, month sudah ada, tidak akan insert
+    public void updateMCounterAfterStockOpname(Map<String, String> balance) {
+        Map param = new HashMap();
+        param.put("outletCode", balance.get("outletCode"));
+        String qryCounter = "INSERT INTO m_counter (OUTLET_CODE, TRANS_TYPE, YEAR, MONTH, COUNTER_NO) ( SELECT mo.OUTLET_CODE, menu_id AS TRANS_TYPE, CASE WHEN EXTRACT(MONTH FROM mo.TRANS_DATE) = 12 THEN EXTRACT(YEAR FROM mo.TRANS_DATE) + 1 ELSE EXTRACT(YEAR FROM mo.TRANS_DATE) END AS YEAR, CASE WHEN EXTRACT(MONTH FROM mo.TRANS_DATE) = 12 THEN 1 ELSE EXTRACT(MONTH FROM mo.TRANS_DATE) END AS MONTH, 0 AS COUNTER_NO FROM M_MENUDTL m JOIN m_outlet mo ON mo.OUTLET_CODE = :outletCode WHERE m.TYPE_ID = 'counter' AND m.APLIKASI = 'SOP' AND m.STATUS = 'A' AND NOT EXISTS ( SELECT 1 FROM m_counter mc WHERE mc.OUTLET_CODE = mo.OUTLET_CODE AND mc.TRANS_TYPE = m.menu_id AND mc.YEAR = CASE WHEN EXTRACT(MONTH FROM mo.TRANS_DATE) = 12 THEN EXTRACT(YEAR FROM mo.TRANS_DATE) + 1 ELSE EXTRACT(YEAR FROM mo.TRANS_DATE) END AND mc.MONTH = CASE WHEN EXTRACT(MONTH FROM mo.TRANS_DATE) = 12 THEN 1 ELSE EXTRACT(MONTH FROM mo.TRANS_DATE) END ))";
+        System.err.println("q updateMCounterAfterStockOpname: " + qryCounter);
+        jdbcTemplate.update(qryCounter,param);
     }
 }

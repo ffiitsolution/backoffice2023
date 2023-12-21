@@ -876,7 +876,7 @@ public class IndexController {
             rm.setMessage("Insert Success");
         } catch (Exception e) {
             rm.setSuccess(false);
-            rm.setMessage("Insert Failed : " + e.getMessage());
+            rm.setMessage("Insert Failed : Kode User atau ID Card Telah ada");
         }
         rm.setItem(list);
         return rm;

@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 @Repository
 public class ReportDaoImpl implements ReportDao {
@@ -1907,6 +1908,112 @@ public class ReportDaoImpl implements ReportDao {
             }
         });
         return list;
+    }
+
+    @Override
+    public List<Map<String, Object>> listQuerySales(Map<String, Object> param) {
+        String query = null;
+        String wherePos = "";
+        if (param.containsKey("firstPos") && param.containsKey("lastPos")) {
+            wherePos = " AND to_number(POS_CODE) >= :firstPos AND to_number(POS_CODE) <= :lastPos ";
+        }
+
+        String whereCashier = "";
+        if (param.containsKey("firstCashier") && param.containsKey("lastCashier")) {
+            whereCashier = " AND to_number(CASHIER_CODE) >= :firstCashier AND to_number(CASHIER_CODE) <= :lastCashier ";
+        }
+
+        String whereShift = "";
+        if (param.containsKey("firstShift") && param.containsKey("lastShift")) {
+            whereCashier = " AND SHIFT_CODE >= :firstShift AND SHIFT_CODE <= :lastShift ";
+        }
+
+        query = "SELECT TRANS_DATE AS TANGGAL, "
+        + "    SUM(SLS) AS PENJUALAN, "
+        + "    SUM(RFD) AS REFUND, "
+        + "    SUM(PRS) AS SETORAN_AWAL, "
+        + "    SUM(TLO) AS SETORAN_TERAKHIR, "
+        + "    SUM(DNT) AS DONASI, "
+        + "    SUM(OPF) AS MODAL, "
+        + "    SUM(CAT) AS CATERING, "
+        + "    SUM(DP) AS DOWNPAYMENT, "
+        + "    SUM(SLS) + SUM(RFD) + SUM(CAT) + SUM(DP) AS TOTAL, "
+        + "    SUM(SLS) + SUM(OPF) AS CASH, "
+        + "    SUM(PRS) + SUM(TLO) AS SETOR, "
+        + "    (SUM(SLS) + SUM(OPF)) + (SUM(PRS) + SUM(TLO)) AS SISA "
+        + "FROM ( "
+        + "        SELECT TRANS_DATE, "
+        + "            CASE "
+        + "                WHEN TRANS_CODE = 'SLS' THEN AMT "
+        + "                ELSE 0 "
+        + "            END AS SLS, "
+        + "            CASE "
+        + "                WHEN TRANS_CODE = 'RFD' THEN AMT "
+        + "                ELSE 0 "
+        + "            END AS RFD, "
+        + "            CASE "
+        + "                WHEN TRANS_CODE = 'PRS' THEN AMT "
+        + "                ELSE 0 "
+        + "            END AS PRS, "
+        + "            CASE "
+        + "                WHEN TRANS_CODE = 'TLO' THEN AMT "
+        + "                ELSE 0 "
+        + "            END AS TLO, "
+        + "            CASE "
+        + "                WHEN TRANS_CODE = 'DNT' THEN AMT "
+        + "                ELSE 0 "
+        + "            END AS DNT, "
+        + "            CASE "
+        + "                WHEN TRANS_CODE = 'OPF' THEN AMT "
+        + "                ELSE 0 "
+        + "            END AS OPF, "
+        + "            CASE "
+        + "                WHEN TRANS_CODE = 'CAT' THEN AMT "
+        + "                ELSE 0 "
+        + "            END AS CAT, "
+        + "            CASE "
+        + "                WHEN TRANS_CODE = 'DP' THEN AMT "
+        + "                ELSE 0 "
+        + "            END AS DP "
+        + "        FROM( "
+        + "                SELECT TRANS_DATE, "
+        + "                    TRANS_CODE, "
+        + "                    SUM(TRANS_AMOUNT) AMT "
+        + "                FROM T_POS_DAY_TRANS "
+        + "                WHERE OUTLET_CODE = :outletCode "
+        + "                    AND TRANS_DATE >= :startTransDate "
+        + "                    AND TRANS_DATE <= :endTransDate "
+        + wherePos
+        + whereCashier
+        // + whereShift
+        + "                GROUP BY TRANS_DATE, "
+        + "                    TRANS_CODE "
+        + "            ) "
+        + "    ) "
+        + "GROUP BY TRANS_DATE "
+        + "ORDER BY TRANS_DATE ASC";
+
+        return jdbcTemplate.query(query, param, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                        rt.put("tanggal", rs.getString("TANGGAL"));
+                        rt.put("penjualan", rs.getString("PENJUALAN"));
+                        rt.put("refund", rs.getString("REFUND"));
+                        rt.put("setoran_awal", rs.getString("SETORAN_AWAL"));
+                        rt.put("setoran_terakhir", rs.getString("SETORAN_TERAKHIR"));
+                        rt.put("donasi", rs.getString("DONASI"));
+                        rt.put("modal", rs.getString("MODAL"));
+                        rt.put("catering", rs.getString("CATERING"));
+                        rt.put("downpayment", rs.getString("DOWNPAYMENT"));
+                        rt.put("total", rs.getString("TOTAL"));
+                        rt.put("cash", rs.getString("CASH"));
+                        rt.put("setor", rs.getString("SETOR"));                        
+                        rt.put("sisa", rs.getString("SISA"));
+
+                return rt;
+            }
+        });
     }
 
     @Override

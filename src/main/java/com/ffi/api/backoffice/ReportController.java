@@ -647,6 +647,29 @@ public class ReportController {
         return rm;
     }
 
+    @RequestMapping(value = "/list-query-sales", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk mengambil query sales", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")
+    })
+    public @ResponseBody
+    Response viewListQuerySales(@RequestBody String param) throws JRException, IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, Object> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response rm = new Response();
+        try {
+            list = reportServices.listQuerySales(balance);
+            rm.setData(list);
+            rm.setRecordsTotal(list.size());
+        } catch (Exception e) {
+            rm.setRecordsTotal(0);
+        }
+        return rm;
+    }
+
     @CrossOrigin
     @RequestMapping(value = "/report-transaction-by-payment-type-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report transaction by payment type", response = Object.class)
