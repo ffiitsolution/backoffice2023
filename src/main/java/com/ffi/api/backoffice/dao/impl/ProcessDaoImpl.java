@@ -284,7 +284,10 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
 
         jdbcTemplate.update(qy, param);
-        jdbcTemplate.update(qy2, param);
+
+        if (balancetest1.get("staffPosCode") != null) {
+            jdbcTemplate.update(qy2, param);
+        }
     }
 
     @Override
@@ -335,7 +338,10 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
 
         jdbcTemplate.update(qy, param);
-        jdbcTemplate.update(qy2, param);
+
+        if (balancetest1.get("staffPosCode") != null) {
+            jdbcTemplate.update(qy2, param);
+        }
     }
 
     @Override
