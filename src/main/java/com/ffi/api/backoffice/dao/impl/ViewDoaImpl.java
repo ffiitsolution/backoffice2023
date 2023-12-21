@@ -945,7 +945,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("riderFlag", rs.getString("RIDER_FLAG"));
                 rt.put("groupId", rs.getString("GROUP_ID"));
                 rt.put("statusName", rs.getString("STATUS"));
-                rt.put("STATUS_POS", rs.getString("STATUS_POS"));
+                rt.put("statusPos", rs.getString("STATUS_POS"));
                 rt.put("staffPosCode", rs.getString("STAFF_POS_CODE"));
                 rt.put("passPosCode", rs.getString("PASS_POS_CODE"));
 
