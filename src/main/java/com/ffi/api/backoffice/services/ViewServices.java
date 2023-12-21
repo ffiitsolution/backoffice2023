@@ -457,4 +457,8 @@ public class ViewServices {
     public List<Map<String, Object>> getOrderDetailFromInventory(Map<String, String> balancing) {
         return viewDao.getOrderDetailFromInventory(balancing);
     }
+
+    public List<Map<String, Object>> listDeliveryOrderHdr(Map<String, String> mapping) {
+        return viewDao.listDeliveryOrderHdr(mapping);
+    }
 }

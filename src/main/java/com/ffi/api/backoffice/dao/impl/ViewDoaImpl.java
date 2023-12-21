@@ -1917,9 +1917,11 @@ public class ViewDoaImpl implements ViewDao {
                 + "from t_recv_detail rd "
                 + "left join t_order_detail od on od.order_no = rd.order_no and od.item_code = rd.item_code "
                 + "left join m_item mi on mi.item_code = rd.item_code "
-                + "where rd.recv_no = :recv_no ";
+                + "where rd.recv_no = :recv_no AND rd.order_no = :noOrder ";
         Map prm = new HashMap();
         prm.put("recv_no", ref.get("recv_no"));
+        prm.put("noOrder", ref.get("noOrder"));
+        
         //prm.put("dateEnd", ref.get("dateEnd"));
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
@@ -3348,5 +3350,31 @@ public class ViewDoaImpl implements ViewDao {
             e.printStackTrace();
         }
         return list;
+    }
+
+    ///////// NEW METHOD get Delivery Order Header List - Dani 20 Des 2023
+    public List<Map<String, Object>> listDeliveryOrderHdr(Map<String, String> mapping) {
+        mapping.put("status", "%"+ (mapping.get("status") != null ? mapping.get("status") : "") + "%");
+        String qry = "SELECT hdr.OUTLET_TO, mot.OUTLET_NAME as OUTLET_TO_NAME, hdr.OUTLET_CODE , hdr.REMARK, hdr.REQUEST_NO, hdr.DELIVERY_NO, "
+        + " to_char(hdr.DELIVERY_DATE, 'dd/mm/yyyy') as DELIVERY_DATE, CASE WHEN hdr.STATUS = '0' THEN 'Open' WHEN hdr.STATUS = '1' THEN 'Close' WHEN hdr.STATUS = '2' THEN 'Cancel' END as STATUS "
+        + " FROM T_DEV_HEADER hdr LEFT JOIN M_OUTLET mot ON hdr.OUTLET_TO = mot.OUTLET_CODE "
+         + " WHERE hdr.DELIVERY_DATE >=:dateStart AND hdr.DELIVERY_DATE <=:dateEnd"
+         + " AND hdr.OUTLET_CODE = :outletCode "
+         + " AND hdr.STATUS LIKE :status ORDER BY hdr.DELIVERY_DATE ASC";
+        return jdbcTemplate.query(qry, mapping, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Map<String, Object> row = new HashMap<>();
+                row.put("outletToName", rs.getString("OUTLET_TO_NAME"));
+                row.put("outletTo", rs.getString("OUTLET_TO"));
+                row.put("outletCode", rs.getString("OUTLET_CODE"));
+                row.put("deliveryNo", rs.getString("DELIVERY_NO"));
+                row.put("deliveryDate", rs.getString("DELIVERY_DATE"));
+                row.put("status", rs.getString("STATUS"));
+                row.put("remark", rs.getString("REMARK"));
+                row.put("requestNo", rs.getString("REQUEST_NO"));
+                return row;
+            }
+        });
     }
 }

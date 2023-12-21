@@ -6,7 +6,6 @@ package com.ffi.api.backoffice.dao;
 
 import com.ffi.api.backoffice.model.ParameterLogin;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -258,4 +257,7 @@ public interface ViewDao {
 
     ///////////// NEW METHOD get order Detail From Inventory - Dani 19 Des 2023
     public List<Map<String, Object>> getOrderDetailFromInventory(Map<String, String> mapping);
+
+    //////////// NEW METHOD list delivery Order header 20 Des 2023
+    public List<Map<String, Object>> listDeliveryOrderHdr(Map<String, String> mapping);
 }

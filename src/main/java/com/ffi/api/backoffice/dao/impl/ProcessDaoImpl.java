@@ -19,6 +19,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -634,11 +635,11 @@ public class ProcessDaoImpl implements ProcessDao {
     @Override
     public void updateMCounterSop(String transType, String outletCode) {
 
-        DateFormat df = new SimpleDateFormat("MM");
-        DateFormat dfYear = new SimpleDateFormat("yyyy");
-        Date tgl = new Date();
-        String month = df.format(tgl);
-        String year = dfYear.format(tgl);
+        // DateFormat df = new SimpleDateFormat("MM");
+        // DateFormat dfYear = new SimpleDateFormat("yyyy");
+        // Date tgl = new Date();
+        // String month = df.format(tgl);
+        // String year = dfYear.format(tgl);
 
         // update query ambil no, handle jika kosong by M Joko 19-12-23
         String selectSql = "SELECT COUNT(*) FROM m_counter WHERE OUTLET_CODE = :outletCode AND TRANS_TYPE = :transType AND YEAR = :year AND MONTH = :month";
@@ -648,9 +649,14 @@ public class ProcessDaoImpl implements ProcessDao {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("outletCode", outletCode);
         params.addValue("transType", transType);
-        params.addValue("year", year);
-        params.addValue("month", month);
 
+        // using transDate from outlet code by Dani 20 Dec 2023
+        LocalDate transDate = LocalDate.parse(this.jdbcTemplate.queryForObject(
+                "SELECT DISTINCT TO_CHAR(TRANS_DATE, 'YYYY-MM-DD') FROM M_OUTLET WHERE OUTLET_CODE = :outletCode and status = 'A'",
+                params, String.class));
+        params.addValue("year", transDate.getYear());
+        params.addValue("month", transDate.getMonthValue());
+ 
         int count = jdbcTemplate.queryForObject(selectSql, params, Integer.class);
 
         if (count > 0) {
@@ -1188,6 +1194,9 @@ public class ProcessDaoImpl implements ProcessDao {
             InsertRecvDetail(detailParam);
             detailParam.clear();
         }
+
+        // call updateMCounterSop to update counter rcv by Dani 20 Desc 2023
+        updateMCounterSop(balancing.getAsJsonObject().getAsJsonPrimitive("transType").getAsString(),balancing.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
     }
 
     public void InsertRecvDetail(Map<String, String> balance) {

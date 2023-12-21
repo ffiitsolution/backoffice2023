@@ -2845,4 +2845,21 @@ public class IndexController {
         rm.setData(this.viewServices.getOrderDetailFromInventory(balance));
         return rm;
     }
+
+    // query list delivery order By Dani 18 Des 2023
+    @RequestMapping(value = "/list-delivery-order", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "query list delivery order", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listDeliveryOrderHdr(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        Response rm = new Response();
+        rm.setData(this.viewServices.listDeliveryOrderHdr(balance));
+        return rm;
+    }
 }
