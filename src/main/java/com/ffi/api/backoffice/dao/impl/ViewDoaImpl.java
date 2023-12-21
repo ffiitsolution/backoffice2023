@@ -2871,14 +2871,13 @@ public class ViewDoaImpl implements ViewDao {
     ////////////New method for query stock card - Fathur 29-Nov-2023////////////
     @Override
     public List<Map<String, Object>> listQueryStockCard(Map<String, String> ref) {
-        String query = "SELECT "
-                + "SCARD.TRANS_DATE, SCARD.TIME_UPD, MGLB.CODE AS CD_WAREHOUSE, MGLB.DESCRIPTION AS NM_WAREHOUSE, "
+        String query = "SELECT SCARD.TRANS_DATE, SCARD.TIME_UPD, NVL(MGLB.CODE, ' ') AS CD_WAREHOUSE, NVL(MGLB.DESCRIPTION, ' ') AS NM_WAREHOUSE, "
                 + "SCARD.ITEM_CODE, MITEM.ITEM_DESCRIPTION as ITEM_NAME, "
                 + "SCARD.QTY_BEGINNING, SCARD.QTY_IN, SCARD.QTY_OUT, ((QTY_BEGINNING + QTY_IN) - QTY_OUT) as QTY_ENDING, "
                 + "MITEM.UOM_STOCK AS UNIT, SCARD.REMARK "
                 + "FROM T_STOCK_CARD SCARD "
-                + "JOIN M_ITEM MITEM ON SCARD.ITEM_CODE = MITEM.ITEM_CODE "
-                + "JOIN M_GLOBAL MGLB on MGLB.CODE = MITEM.CD_WAREHOUSE "
+                + "LEFT JOIN M_ITEM MITEM ON SCARD.ITEM_CODE = MITEM.ITEM_CODE "
+                + "LEFT JOIN M_GLOBAL MGLB on MGLB.CODE = MITEM.CD_WAREHOUSE "
                 + "WHERE SCARD.TRANS_DATE between TO_DATE(:startDate, 'DD/MM/YYYY') and (TO_DATE(:endDate, 'DD/MM/YYYY')+1) "
                 + "AND SCARD.ITEM_CODE LIKE :itemCode "
                 + "AND CD_WAREHOUSE LIKE :cdWarehouse "
