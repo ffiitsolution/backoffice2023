@@ -1464,8 +1464,41 @@ public class ProcessDaoImpl implements ProcessDao {
             InsertWastageDetail(detailParam);
             detailParam.clear();
         }
+
+        itemWastageToStockCard(balancing, opNo);
     }
     //End added by KP
+
+    public void itemWastageToStockCard(JsonObject balancing, String wastageNo) {
+        Map param = new HashMap();
+        param.put("wastageNo", wastageNo);
+        param.put("userUpd", balancing.getAsJsonObject().getAsJsonPrimitive("userUpd").getAsString());
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
+
+        if (balancing.getAsJsonObject().getAsJsonPrimitive("transType").getAsString().contains("W")) {
+            try {
+                String queryInsetStockCardDetail = "insert into t_stock_card_detail(SELECT a.OUTLET_CODE, (SELECT TRANS_DATE FROM M_OUTLET WHERE OUTLET_CODE = a.OUTLET_CODE) AS TRANS_DATE, a.ITEM_CODE, 'WST' AS CD_TRANS, 0 AS QUANTITY_IN, a.QUANTITY AS QUANTITY, :userUpd AS USER_UPD, :dateUpd AS DATE_UPD, :timeUpd AS TIME_UPD FROM T_WASTAGE_DETAIL a WHERE a.WASTAGE_NO = :wastageNo)";
+                jdbcTemplate.update(queryInsetStockCardDetail,param);
+            } catch (Exception ex) {
+                String queryInsetStockCardDetail = "UPDATE T_STOCK_CARD_DETAIL a SET a.QUANTITY = a.QUANTITY + NVL((SELECT b.QUANTITY FROM T_WASTAGE_DETAIL b WHERE b.WASTAGE_NO =:wastageNo AND b.ITEM_CODE = a.ITEM_CODE), 0) WHERE a.TRANS_DATE = (SELECT TRANS_DATE FROM M_OUTLET WHERE OUTLET_CODE = a.OUTLET_CODE) AND a.CD_TRANS = 'WST'";
+                jdbcTemplate.update(queryInsetStockCardDetail, param);
+            }
+
+            String queryUpdateStockCard = "UPDATE T_STOCK_CARD a SET a.QTY_OUT = a.QTY_OUT + NVL((SELECT b.QUANTITY FROM T_STOCK_CARD_DETAIL b WHERE b.ITEM_CODE = a.ITEM_CODE AND a.TRANS_DATE = b.TRANS_DATE AND b.CD_TRANS = 'WST'), 0), a.REMARK = :wastageNo WHERE a.TRANS_DATE = (SELECT TRANS_DATE FROM M_OUTLET WHERE OUTLET_CODE = a.OUTLET_CODE)";
+            jdbcTemplate.update(queryUpdateStockCard, param);
+        } else {
+            try {
+                String queryInsetStockCardDetail = "insert into t_stock_card_detail(SELECT OUTLET_CODE, TRANS_DATE, ITEM_CODE, CD_TRANS, SUM(QUANTITY_IN) AS QUANTITY_IN, SUM(QUANTITY) AS QUANTITY, USER_UPD, DATE_UPD, TIME_UPD FROM (SELECT a.OUTLET_CODE, (SELECT TRANS_DATE FROM M_OUTLET WHERE OUTLET_CODE = a.OUTLET_CODE) AS TRANS_DATE, a.ITEM_CODE, 'LOV' AS CD_TRANS, 0 AS QUANTITY_IN, a.QUANTITY AS QUANTITY, :userUpd AS USER_UPD, :dateUpd AS DATE_UPD, :timeUpd AS TIME_UPD FROM T_WASTAGE_DETAIL a WHERE a.WASTAGE_NO =:wastageNo UNION ALL SELECT a.OUTLET_CODE, (SELECT TRANS_DATE FROM M_OUTLET WHERE OUTLET_CODE = a.OUTLET_CODE) AS TRANS_DATE, a.ITEM_TO AS ITEM_CODE, 'LOV' AS CD_TRANS, a.QUANTITY AS QUANTITY_IN, 0 AS QUANTITY, :userUpd AS USER_UPD, :dateUpd AS DATE_UPD, :timeUpd AS TIME_UPD FROM T_WASTAGE_DETAIL a WHERE a.WASTAGE_NO = :wastageNo) GROUP BY ITEM_CODE, OUTLET_CODE, TRANS_DATE, CD_TRANS, USER_UPD, DATE_UPD, TIME_UPD)";
+                jdbcTemplate.update(queryInsetStockCardDetail, param);
+            } catch (Exception ex) {
+                String queryInsetStockCardDetail = "UPDATE T_STOCK_CARD_DETAIL a SET a.QUANTITY_IN = a.QUANTITY_IN + NVL((SELECT SUM(b.QUANTITY) FROM T_WASTAGE_DETAIL b WHERE b.WASTAGE_NO = :wastageNo AND b.ITEM_TO = a.ITEM_CODE), 0), a.QUANTITY = a.QUANTITY + NVL((SELECT SUM(b.QUANTITY) FROM T_WASTAGE_DETAIL b WHERE b.WASTAGE_NO = :wastageNo AND b.ITEM_CODE = a.ITEM_CODE), 0) WHERE a.TRANS_DATE = (SELECT TRANS_DATE FROM M_OUTLET WHERE OUTLET_CODE = a.OUTLET_CODE) AND a.CD_TRANS = 'LOV'";
+                jdbcTemplate.update(queryInsetStockCardDetail, param);
+            }
+            String queryUpdateStockCard = "UPDATE T_STOCK_CARD a SET a.QTY_IN = a.QTY_IN + NVL((SELECT b.QUANTITY_IN FROM T_STOCK_CARD_DETAIL b WHERE b.ITEM_CODE = a.ITEM_CODE AND a.TRANS_DATE = b.TRANS_DATE AND b.CD_TRANS = 'LOV'), 0), a.QTY_OUT = a.QTY_OUT + NVL((SELECT b.QUANTITY FROM T_STOCK_CARD_DETAIL b WHERE b.ITEM_CODE = a.ITEM_CODE AND a.TRANS_DATE = b.TRANS_DATE AND b.CD_TRANS = 'LOV'), 0), a.REMARK = :wastageNo WHERE a.TRANS_DATE = (SELECT TRANS_DATE FROM M_OUTLET WHERE OUTLET_CODE = a.OUTLET_CODE)";
+            jdbcTemplate.update(queryUpdateStockCard, param);
+        }
+    }
 
     //Insert MPCS by Kevin (08-08-2023)
     @Override
