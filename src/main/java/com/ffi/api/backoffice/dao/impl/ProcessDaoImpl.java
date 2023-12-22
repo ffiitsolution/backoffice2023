@@ -9,6 +9,7 @@ import com.ffi.api.backoffice.dao.ProcessDao;
 import com.ffi.api.backoffice.model.DetailOpname;
 import com.ffi.api.backoffice.model.HeaderOpname;
 import com.ffi.api.backoffice.utils.DynamicRowMapper;
+import com.ffi.api.backoffice.utils.RestApiUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -36,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -1632,9 +1634,69 @@ public class ProcessDaoImpl implements ProcessDao {
         query.append(" SELECT * FROM dual");
         String queryDetail = query.toString();
         jdbcTemplate.update(queryDetail, new HashMap<>());
-
+        
+        // insert t_stock_card_detail
+        // todo: 
+        String qryRO = "SELECT h.type_return, h.return_to, h.remark, TO_CHAR(h.return_date, 'DD-MON-YY') as return_date, d.* FROM t_return_detail d JOIN t_return_header h ON d.return_no = h.return_no AND d.outlet_code = h.outlet_code WHERE d.return_no = :returnNo AND d.outlet_code = :outletCode";
+        Map<String, Object> prmRO = new HashMap<>();
+        prmRO.put("returnNo", noReturn);
+        prmRO.put("outletCode", outletCode);
+        List<Map<String, Object>> listDetailRO = jdbcTemplate.query(qryRO, prmRO, new DynamicRowMapper());
+        System.err.println("listDetailRO to wh : " + listDetailRO);
+        
+        // update stock card by M Joko - 22-12-23
+        updateStockCardRO(listDetailRO, noReturn, outletCode);
+        
+        // kirim return order ke gudang by M Joko - 22-12-23
+        String typeReturn = param.getAsJsonPrimitive("typeReturn").getAsString();
+        if(typeReturn.equalsIgnoreCase("1") ){
+            System.err.println("send return order to wh : " + noReturn);
+            sendReturnOrderDetailToWH(listDetailRO);
+        }
     }
-
+    
+    // TODO:
+    // kirim return order ke api warehouse by M Joko - 22-12-23
+    public void updateStockCardRO(List<Map<String, Object>> listDetailRO, String noReturn, String outletCode) {
+        for (int i = 0; i < listDetailRO.size(); i++) {
+            //insert t_stock_card_detail by M Joko - 22-12-23
+            Map<String, Object> detailRO = listDetailRO.get(i);
+            String qryInsert = "MERGE INTO t_stock_card_detail dst USING ( SELECT :outletCode AS outlet_code, (SELECT trans_date FROM m_outlet WHERE outlet_code = :outletCode) AS trans_date, :itemCode AS item_code, 'RTR' AS cd_trans, 0 AS quantity_in, :qtyOut AS quantity, :userUpd AS user_upd, SYSDATE AS date_upd, TO_CHAR(SYSDATE, 'HH24MISS') AS time_upd FROM dual ) src ON ( dst.outlet_code = src.outlet_code AND dst.trans_date = src.trans_date AND dst.item_code = src.item_code ) WHEN MATCHED THEN UPDATE SET dst.quantity_in = dst.quantity_in + src.quantity_in, dst.quantity = src.quantity, dst.user_upd = src.user_upd, dst.date_upd = src.date_upd, dst.time_upd = src.time_upd WHEN NOT MATCHED THEN INSERT ( outlet_code, trans_date, item_code, cd_trans, quantity_in, quantity, user_upd, date_upd, time_upd ) VALUES ( src.outlet_code, src.trans_date, src.item_code, src.cd_trans, src.quantity_in, src.quantity, src.user_upd, src.date_upd, src.time_upd )";
+            Map<String, Object> prm = new HashMap<>();
+            prm.put("outletCode", detailRO.get("outletCode"));
+            prm.put("itemCode", detailRO.get("itemCode"));
+            prm.put("qtyOut", detailRO.get("totalQty"));
+            prm.put("userUpd", detailRO.get("userUpd"));
+            System.err.println("qryInsert: " + qryInsert);
+            System.err.println("detailRO: " + detailRO);
+            jdbcTemplate.update(qryInsert, prm);
+            
+            //update t_stock_card by M Joko - 22-12-23
+            String qryUpdateStockCard = "UPDATE t_stock_card SET QTY_OUT = QTY_OUT + NVL(:qtyOut, 0) WHERE trans_date = (SELECT trans_date FROM m_outlet WHERE outlet_code = :outletCode) and item_code = :itemCode";
+            System.err.println("qryUpdateStockCard: " + qryInsert);
+            jdbcTemplate.update(qryUpdateStockCard, prm);
+        }
+    }
+    
+    // kirim return order ke api warehouse by M Joko - 22-12-23
+    public boolean sendReturnOrderDetailToWH(List<Map<String, Object>> listDetailRO) {
+        try {
+            String url = urlWarehouse + "/insert-return-order-wh";
+            RestApiUtil restApiUtil = new RestApiUtil();
+            System.out.println("sendReturnOrderDetailToWH URL: " + url);
+            ResponseEntity<String> responseEntity = restApiUtil.post(url, listDetailRO, null);
+            String responseBody = responseEntity.getBody();
+            int statusCode = responseEntity.getStatusCodeValue();
+            System.out.println("sendReturnOrderDetailToWH Response: " + responseBody);
+            System.out.println("sendReturnOrderDetailToWH Status Code: " + statusCode);
+            return statusCode >= 200 && statusCode < 300;
+        } catch (Exception e) {
+            System.out.println("sendReturnOrderDetailToWH error: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    
     public String returnOrderCounter(String year, String month, String transType, String outletCode) {
         if (transType.equalsIgnoreCase("ID")) {
             String dateMonth = month.concat("-").concat(year);
