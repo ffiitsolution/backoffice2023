@@ -139,4 +139,7 @@ public interface ProcessDao {
     public void updateMpcsPlan(Map<String, String> mapping);
 
     //////////////////////////DONE////////////////////////////
+
+    ///////////////NEW METHOD insert T SUMM MPCS - M Joko 27/12/2023//// 
+    public void updateOrderEntryExpired(Map<String, String> mapping);
 }

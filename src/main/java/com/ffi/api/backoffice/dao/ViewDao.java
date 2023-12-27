@@ -229,10 +229,6 @@ public interface ViewDao {
     List<Map<String, Object>> listMPosActive(Map<String, String> ref);
     ////////////Done method for M POS yg Aktif ////////////
 
-    ////////////New method for T Stock Card sebelumnya - M. Joko 30-Nov-2023////////////
-    List<Map<String, Object>> listPreviousTStockCard(Map<String, String> ref);
-    ////////////Done method for M POS yg Aktif ////////////
-
     ///////////////NEW METHOD LIST RECEIVING ALL HEADER BY DANI 12 DECEMBER 2023////
     List<Map<String, Object>> listReceivingAll(Map<String, String> ref);
     ///////////////NEW METHOD LIST MPCS PLAN 12 DECEMBER 2023////

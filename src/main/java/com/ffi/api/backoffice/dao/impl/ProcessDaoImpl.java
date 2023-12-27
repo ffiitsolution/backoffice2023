@@ -1671,8 +1671,7 @@ public class ProcessDaoImpl implements ProcessDao {
         jdbcTemplate.update(queryDetail, new HashMap<>());
         
         // insert t_stock_card_detail
-        // todo: 
-        String qryRO = "SELECT h.type_return, h.return_to, h.remark, TO_CHAR(h.return_date, 'DD-MON-YY') as return_date, d.* FROM t_return_detail d JOIN t_return_header h ON d.return_no = h.return_no AND d.outlet_code = h.outlet_code WHERE d.return_no = :returnNo AND d.outlet_code = :outletCode";
+        String qryRO = "SELECT h.type_return, h.return_to, h.remark, TO_CHAR(h.return_date, 'DD-MON-YY') AS return_date, d.outlet_code, d.return_id, d.return_no, d.item_code, d.qty_warehouse, d.uom_warehouse, d.qty_purchase, d.uom_purchase, d.total_qty, d.user_upd, TO_CHAR(d.date_upd, 'DD-MON-YY') AS date_upd, d.time_upd FROM t_return_detail d JOIN t_return_header h ON d.return_no = h.return_no AND d.outlet_code = h.outlet_code WHERE d.return_no = :returnNo AND d.outlet_code = :outletCode";
         Map<String, Object> prmRO = new HashMap<>();
         prmRO.put("returnNo", noReturn);
         prmRO.put("outletCode", outletCode);
@@ -1690,13 +1689,12 @@ public class ProcessDaoImpl implements ProcessDao {
         }
     }
     
-    // TODO:
     // kirim return order ke api warehouse by M Joko - 22-12-23
     public void updateStockCardRO(List<Map<String, Object>> listDetailRO, String noReturn, String outletCode) {
         for (int i = 0; i < listDetailRO.size(); i++) {
             //insert t_stock_card_detail by M Joko - 22-12-23
             Map<String, Object> detailRO = listDetailRO.get(i);
-            String qryInsert = "MERGE INTO t_stock_card_detail dst USING ( SELECT :outletCode AS outlet_code, (SELECT trans_date FROM m_outlet WHERE outlet_code = :outletCode) AS trans_date, :itemCode AS item_code, 'RTR' AS cd_trans, 0 AS quantity_in, :qtyOut AS quantity, :userUpd AS user_upd, SYSDATE AS date_upd, TO_CHAR(SYSDATE, 'HH24MISS') AS time_upd FROM dual ) src ON ( dst.outlet_code = src.outlet_code AND dst.trans_date = src.trans_date AND dst.item_code = src.item_code ) WHEN MATCHED THEN UPDATE SET dst.quantity_in = dst.quantity_in + src.quantity_in, dst.quantity = src.quantity, dst.user_upd = src.user_upd, dst.date_upd = src.date_upd, dst.time_upd = src.time_upd WHEN NOT MATCHED THEN INSERT ( outlet_code, trans_date, item_code, cd_trans, quantity_in, quantity, user_upd, date_upd, time_upd ) VALUES ( src.outlet_code, src.trans_date, src.item_code, src.cd_trans, src.quantity_in, src.quantity, src.user_upd, src.date_upd, src.time_upd )";
+            String qryInsert = "MERGE INTO t_stock_card_detail dst USING ( SELECT :outletCode AS outlet_code, (SELECT trans_date FROM m_outlet WHERE outlet_code = :outletCode) AS trans_date, :itemCode AS item_code, 'RTR' AS cd_trans, 0 AS quantity_in, :qtyOut AS quantity, :userUpd AS user_upd, SYSDATE AS date_upd, TO_CHAR(SYSDATE, 'HH24MISS') AS time_upd FROM dual ) src ON ( dst.outlet_code = src.outlet_code AND dst.cd_trans = src.cd_trans AND dst.trans_date = src.trans_date AND dst.item_code = src.item_code ) WHEN MATCHED THEN UPDATE SET dst.quantity = dst.quantity + src.quantity, dst.user_upd = src.user_upd, dst.date_upd = src.date_upd, dst.time_upd = src.time_upd WHEN NOT MATCHED THEN INSERT ( outlet_code, trans_date, item_code, cd_trans, quantity_in, quantity, user_upd, date_upd, time_upd ) VALUES ( src.outlet_code, src.trans_date, src.item_code, src.cd_trans, src.quantity_in, src.quantity, src.user_upd, src.date_upd, src.time_upd )";
             Map<String, Object> prm = new HashMap<>();
             prm.put("outletCode", detailRO.get("outletCode"));
             prm.put("itemCode", detailRO.get("itemCode"));
@@ -1719,6 +1717,9 @@ public class ProcessDaoImpl implements ProcessDao {
             String url = urlWarehouse + "/insert-return-order-wh";
             RestApiUtil restApiUtil = new RestApiUtil();
             System.out.println("sendReturnOrderDetailToWH URL: " + url);
+            Gson gson = new Gson();
+            System.out.println("sendReturnOrderDetailToWH listDetailRO: " + listDetailRO);
+            System.out.println("sendReturnOrderDetailToWH json RO: " + gson.toJson(listDetailRO));
             ResponseEntity<String> responseEntity = restApiUtil.post(url, listDetailRO, null);
             String responseBody = responseEntity.getBody();
             int statusCode = responseEntity.getStatusCodeValue();
@@ -1730,7 +1731,6 @@ public class ProcessDaoImpl implements ProcessDao {
             return false;
         }
     }
-    
     
     public String returnOrderCounter(String year, String month, String transType, String outletCode) {
         if (transType.equalsIgnoreCase("ID")) {
@@ -2402,20 +2402,13 @@ public class ProcessDaoImpl implements ProcessDao {
     }
 
     ////////////New method for insert T Stock Card EOD - M Joko M 11-Dec-2023////////////
+    // 27/12/23 update ambil item dari m_item, bukan prev Stock Card
     @Override
     public void insertTStockCard(Map<String, String> balance) {
-        String query = "insert into t_stock_card (OUTLET_CODE, TRANS_DATE, ITEM_CODE, ITEM_COST, QTY_BEGINNING, QTY_IN, QTY_OUT, REMARK, USER_UPD, DATE_UPD, TIME_UPD) values (:outletCode, (select trans_date from m_outlet where outlet_code=:outletCode)+1, :itemCode, :itemCost, :qtyBeginning, :qtyIn, :qtyOut, :remark, :userUpd, :dateUpd, :timeUpd)";
+        String query = "insert into t_stock_card (SELECT :outletCode AS OUTLET_CODE, (SELECT trans_date FROM m_outlet WHERE outlet_code = :outletCode) AS TRANS_DATE, mi.ITEM_CODE, 0 AS ITEM_COST, (nvl(tsc.qty_beginning,0) + nvl(tsc.qty_in,0) - nvl(tsc.qty_out,0)) AS QTY_BEGINNING, 0 AS QTY_IN, 0 AS QTY_OUT, 'EOD' AS REMARK, :userUpd AS USER_UPD, TO_CHAR(SYSDATE, 'DD MON RR') AS DATE_UPD, TO_CHAR(SYSDATE, 'HH24MISS') AS TIME_UPD FROM m_item mi LEFT JOIN T_STOCK_CARD tsc ON tsc.trans_date = (SELECT trans_date FROM m_outlet WHERE outlet_code = :outletCode) AND tsc.item_code = mi.item_code WHERE mi.FLAG_STOCK = 'Y' AND mi.FLAG_MATERIAL = 'Y' AND mi.STATUS = 'A')";
         Map param = new HashMap();
         param.put("outletCode", balance.get("outletCode"));
-        param.put("itemCode", balance.get("itemCode"));
-        param.put("itemCost", balance.get("itemCost"));
-        param.put("qtyBeginning", balance.get("qtyBeginning"));
-        param.put("qtyIn", balance.get("qtyIn"));
-        param.put("qtyOut", balance.get("qtyOut"));
-        param.put("remark", balance.get("remark"));
-        param.put("userUpd", balance.get("userUpd"));
-        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
-        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
+        param.put("userUpd", balance.getOrDefault("userUpd", "SYSTEM"));
         System.err.println("q_process: " + query);
         jdbcTemplate.update(query, param);
     }
@@ -2492,8 +2485,26 @@ public class ProcessDaoImpl implements ProcessDao {
     public void updateMCounterAfterStockOpname(Map<String, String> balance) {
         Map param = new HashMap();
         param.put("outletCode", balance.get("outletCode"));
-        String qryCounter = "INSERT INTO m_counter (OUTLET_CODE, TRANS_TYPE, YEAR, MONTH, COUNTER_NO) ( SELECT mo.OUTLET_CODE, menu_id AS TRANS_TYPE, CASE WHEN EXTRACT(MONTH FROM mo.TRANS_DATE) = 12 THEN EXTRACT(YEAR FROM mo.TRANS_DATE) + 1 ELSE EXTRACT(YEAR FROM mo.TRANS_DATE) END AS YEAR, CASE WHEN EXTRACT(MONTH FROM mo.TRANS_DATE) = 12 THEN 1 ELSE EXTRACT(MONTH FROM mo.TRANS_DATE) END AS MONTH, 0 AS COUNTER_NO FROM M_MENUDTL m JOIN m_outlet mo ON mo.OUTLET_CODE = :outletCode WHERE m.TYPE_ID = 'counter' AND m.APLIKASI = 'SOP' AND m.STATUS = 'A' AND NOT EXISTS ( SELECT 1 FROM m_counter mc WHERE mc.OUTLET_CODE = mo.OUTLET_CODE AND mc.TRANS_TYPE = m.menu_id AND mc.YEAR = CASE WHEN EXTRACT(MONTH FROM mo.TRANS_DATE) = 12 THEN EXTRACT(YEAR FROM mo.TRANS_DATE) + 1 ELSE EXTRACT(YEAR FROM mo.TRANS_DATE) END AND mc.MONTH = CASE WHEN EXTRACT(MONTH FROM mo.TRANS_DATE) = 12 THEN 1 ELSE EXTRACT(MONTH FROM mo.TRANS_DATE) END ))";
+        String qryCounter = "INSERT INTO m_counter (OUTLET_CODE, TRANS_TYPE, YEAR, MONTH, COUNTER_NO) ( SELECT mo.OUTLET_CODE, menu_id AS TRANS_TYPE, CASE WHEN EXTRACT(MONTH FROM mo.TRANS_DATE) = 12 THEN EXTRACT(YEAR FROM mo.TRANS_DATE) + 1 ELSE EXTRACT(YEAR FROM mo.TRANS_DATE) END AS YEAR, CASE WHEN EXTRACT(MONTH FROM mo.TRANS_DATE) = 12 THEN 1 ELSE EXTRACT(MONTH FROM mo.TRANS_DATE) + 1 END AS MONTH, 0 AS COUNTER_NO FROM M_MENUDTL m JOIN m_outlet mo ON mo.OUTLET_CODE = :outletCode WHERE m.TYPE_ID = 'counter' AND m.APLIKASI = 'SOP' AND m.STATUS = 'A' AND NOT EXISTS ( SELECT 1 FROM m_counter mc WHERE mc.OUTLET_CODE = mo.OUTLET_CODE AND mc.TRANS_TYPE = m.menu_id AND mc.YEAR = CASE WHEN EXTRACT(MONTH FROM mo.TRANS_DATE) = 12 THEN EXTRACT(YEAR FROM mo.TRANS_DATE) + 1 ELSE EXTRACT(YEAR FROM mo.TRANS_DATE) END AND mc.MONTH = CASE WHEN EXTRACT(MONTH FROM mo.TRANS_DATE) = 12 THEN 1 ELSE EXTRACT(MONTH FROM mo.TRANS_DATE) + 1 END ) )";
         System.err.println("q updateMCounterAfterStockOpname: " + qryCounter);
         jdbcTemplate.update(qryCounter,param);
+    }
+
+    ////////////New method for update t_order_header jika expired setelah End of Day - M Joko M 27-Dec-2023////////////
+    @Override
+    public void updateOrderEntryExpired(Map<String, String> balance) {
+        String qryList = "SELECT * FROM t_order_header WHERE outlet_code = :outletCode AND status = 1 AND dt_expired = (select trans_date from m_outlet where outlet_code=:outletCode)";
+        Map<String, Object> prmOE = new HashMap<>();
+        prmOE.put("outletCode", balance.get("outletCode"));
+        List<Map<String, Object>> listOE = jdbcTemplate.query(qryList, prmOE, new DynamicRowMapper());
+        for (int i = 0; i < listOE.size(); i++) {
+            Map<String, Object> orderEntry = listOE.get(i);
+            Map prmUpd = new HashMap();
+            prmUpd.put("outletCode", orderEntry.get("outletCode"));
+            prmUpd.put("orderNumber", orderEntry.get("orderNumber"));
+            String qryUpd = "update t_order_header set status = 0 where order_number = :orderNumber and outlet_code = :outletCode";
+            System.err.println("updateOrderEntryExpired (" + orderEntry.get("orderNumber") + "): " + qryUpd);
+            jdbcTemplate.update(qryUpd,prmUpd);
+        }
     }
 }

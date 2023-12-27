@@ -3062,35 +3062,6 @@ public class ViewDoaImpl implements ViewDao {
         });
     }
 
-    //////////// New method for query T Stock Card hari sebelumnya - M Joko M 12-Dec-2023////////////
-    @Override
-    public List<Map<String, Object>> listPreviousTStockCard(Map<String, String> ref) {
-        Map param = new HashMap();
-        String qry = "select * from t_stock_card where trans_date=(select trans_date from m_outlet where outlet_code=:outletCode)";
-        if (ref.containsKey("transDate")) {
-            qry = "select * from t_stock_card where trans_date=:transDate";
-            param.put("transDate", ref.get("transDate"));
-        } else {
-            param.put("outletCode", ref.get("outletCode"));
-        }
-        System.err.println("q : " + qry);
-        return jdbcTemplate.query(qry, param, (ResultSet rs, int i) -> {
-            Map<String, Object> rt = new HashMap<>();
-            rt.put("outletCode", rs.getString("OUTLET_CODE"));
-            rt.put("transDate", rs.getString("TRANS_DATE"));
-            rt.put("itemCode", rs.getString("ITEM_CODE"));
-            rt.put("itemCost", rs.getString("ITEM_COST"));
-            rt.put("qtyBeginning", rs.getString("QTY_BEGINNING"));
-            rt.put("qtyIn", rs.getString("QTY_IN"));
-            rt.put("qtyOut", rs.getString("QTY_OUT"));
-            rt.put("remark", rs.getString("REMARK"));
-            rt.put("userUpd", rs.getString("USER_UPD"));
-            rt.put("dateUpd", rs.getString("DATE_UPD"));
-            rt.put("timeUpd", rs.getString("TIME_UPD"));
-            return rt;
-        });
-    }
-
     ///////////////NEW METHOD LIST RECEIVING ALL BY DANI 12 DECEMBER 2023////
     @Override
     public List<Map<String, Object>> listReceivingAll(Map<String, String> balance) {
