@@ -249,4 +249,9 @@ public class ProcessServices {
     public void updateOrderEntryExpired(Map<String, String> balancing) {
         dao.updateOrderEntryExpired(balancing);
     }
+
+    ///////////////NEW METHOD kirim ulang return order - M Joko 27/12/2023////   
+    public boolean sendReturnOrderToWH(JsonObject object) {
+        return dao.sendReturnOrderToWH(object);
+    }
 }

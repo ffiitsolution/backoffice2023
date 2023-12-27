@@ -1622,6 +1622,8 @@ public class ProcessDaoImpl implements ProcessDao {
         String month = df.format(tgl);
         String year = dfYear.format(tgl);
 
+        String typeReturn = param.getAsJsonPrimitive("typeReturn").getAsString();
+        
         //Getting last number for Return Order
         String noID = returnOrderCounter(year, month, "ID", param.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
         String noReturn = returnOrderCounter(year, month, "RTR", param.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
@@ -1639,7 +1641,7 @@ public class ProcessDaoImpl implements ProcessDao {
         prm.put("returnDate", param.getAsJsonObject().getAsJsonPrimitive("returnDate").getAsString());
         prm.put("returnTo", param.getAsJsonObject().getAsJsonPrimitive("returnTo").getAsString());
         prm.put("remark", param.getAsJsonObject().getAsJsonPrimitive("remark").getAsString());
-        prm.put("status", param.getAsJsonObject().getAsJsonPrimitive("status").getAsString());
+        prm.put("status", typeReturn.equalsIgnoreCase("1") ? 0 : 1);
         prm.put("userUpd", param.getAsJsonObject().getAsJsonPrimitive("userUpd").getAsString());
         prm.put("dateUpd", LocalDateTime.now().format(dateFormatter));
         prm.put("timeUpd", LocalDateTime.now().format(timeFormatter));
@@ -1682,10 +1684,12 @@ public class ProcessDaoImpl implements ProcessDao {
         updateStockCardRO(listDetailRO, noReturn, outletCode);
         
         // kirim return order ke gudang by M Joko - 22-12-23
-        String typeReturn = param.getAsJsonPrimitive("typeReturn").getAsString();
         if(typeReturn.equalsIgnoreCase("1") ){
             System.err.println("send return order to wh : " + noReturn);
-            sendReturnOrderDetailToWH(listDetailRO);
+            if(sendReturnOrderDetailToWH(listDetailRO)){
+                String qryUpdStatus = "update t_return_header set status = 1 where return_no = :returNo and outlet_code = :outletCode";
+                jdbcTemplate.update(qryUpdStatus, prmRO);
+            }
         }
     }
     
@@ -1709,6 +1713,34 @@ public class ProcessDaoImpl implements ProcessDao {
             System.err.println("qryUpdateStockCard: " + qryInsert);
             jdbcTemplate.update(qryUpdateStockCard, prm);
         }
+    }
+
+       // kirim ulang return order
+    @Override
+    public boolean sendReturnOrderToWH(JsonObject balance) {
+        // todo:
+        String outletCode = balance.getAsJsonPrimitive("outletCode").getAsString();
+        String returnNo = balance.getAsJsonPrimitive("returnNo").getAsString();
+        
+        // insert t_stock_card_detail
+        String qryRO = "SELECT h.type_return, h.return_to, h.remark, TO_CHAR(h.return_date, 'DD-MON-YY') AS return_date, d.outlet_code, d.return_id, d.return_no, d.item_code, d.qty_warehouse, d.uom_warehouse, d.qty_purchase, d.uom_purchase, d.total_qty, d.user_upd, TO_CHAR(d.date_upd, 'DD-MON-YY') AS date_upd, d.time_upd FROM t_return_detail d JOIN t_return_header h ON d.return_no = h.return_no AND d.outlet_code = h.outlet_code WHERE d.return_no = :returnNo AND d.outlet_code = :outletCode";
+        Map<String, Object> prmRO = new HashMap<>();
+        prmRO.put("returnNo", returnNo);
+        prmRO.put("outletCode", outletCode);
+        List<Map<String, Object>> listDetailRO = jdbcTemplate.query(qryRO, prmRO, new DynamicRowMapper());
+        System.err.println("listDetailRO to wh : " + listDetailRO);
+        
+        if(sendReturnOrderDetailToWH(listDetailRO)){
+            String qryUpdStatus = "update t_return_header set status = 1 where return_no = :returNo and outlet_code = :outletCode";
+            try{
+                jdbcTemplate.update(qryUpdStatus, prmRO);
+                return true;
+            } catch (DataAccessException e){
+                System.err.println("qryUpdStatus error: " + e.getMessage());
+                return false;
+            }
+        }
+        return false;
     }
     
     // kirim return order ke api warehouse by M Joko - 22-12-23

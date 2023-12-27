@@ -2238,19 +2238,31 @@ public class IndexController {
     public @ResponseBody
     ResponseMessage InsertReturnOrderHeaderDetail(@RequestBody String param) throws IOException, Exception {
         Gson gsn = new Gson();
-        JsonObject result = gsn.fromJson(param, JsonObject.class);
+        JsonObject balance = gsn.fromJson(param, JsonObject.class);
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         ResponseMessage rm = new ResponseMessage();
-        try {
-            processServices.insertReturnOrderHeaderDetail(result);
-            rm.setSuccess(true);
-            rm.setMessage("Insert Return Order Successfuly");
-        } catch (Exception e) {
-            rm.setSuccess(false);
-            rm.setMessage("Insert Return Order Failed: " + e.getMessage());
-            System.err.println(e);
+        if(balance.has("kirim") && balance.has("returNo")){
+            // kirim 
+            // todo:
+            if(processServices.sendReturnOrderToWH(balance)){
+                rm.setSuccess(true);
+                rm.setMessage("Send Return Order Successfuly");
+            } else {
+                rm.setSuccess(false);
+                rm.setMessage("Send Return Order Failed");
+            }
+        } else {
+            try {
+                processServices.insertReturnOrderHeaderDetail(balance);
+                rm.setSuccess(true);
+                rm.setMessage("Insert Return Order Successfuly");
+            } catch (Exception e) {
+                rm.setSuccess(false);
+                rm.setMessage("Insert Return Order Failed: " + e.getMessage());
+                System.err.println(e);
+            }
+            rm.setItem(list);
         }
-        rm.setItem(list);
         return rm;
     }
 
