@@ -739,6 +739,8 @@ public class ReportDaoImpl implements ReportDao {
         if (param.containsKey("paket"))
             query.append(" AND a.FLAG_PAKET = 'Y'");
 
+
+
         if (!param.get("jenisGudang").equals("Semua") || param.containsKey("bahanBaku") || param.containsKey("itemJual")
                 || param.containsKey("pembelian") || param.containsKey("produksi") || param.containsKey("openMarket") ||
                 param.containsKey("canvasing") || param.containsKey("transferDo") || param.containsKey("paket")) {
@@ -1115,8 +1117,7 @@ public class ReportDaoImpl implements ReportDao {
         } else if (param.get("typeReport").equals("Free Meal Dept") && param.get("typeParam").equals("Department")) {
             query = "SELECT OUTLET_CODE, OUTLET_NAME FROM M_OUTLET WHERE \"TYPE\" = 'HO' ORDER BY OUTLET_CODE ASC";
         } else if (param.get("typeReport").equals("Item Barang") && param.get("typeParam").equals("Jenis Gudang")) {
-            query = "SELECT CODE, DESCRIPTION FROM M_GLOBAL WHERE COND = :city AND STATUS = 'A' ORDER BY CODE ASC";
-            hashMap.put("city", "X_" + param.get("city"));
+            query = "SELECT CODE, DESCRIPTION FROM M_GLOBAL WHERE COND = 'WAREHOUSE' AND STATUS = 'A' ORDER BY CODE ASC";
         }
 
         assert query != null;
