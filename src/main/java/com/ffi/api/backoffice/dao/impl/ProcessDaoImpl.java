@@ -1338,9 +1338,13 @@ public class ProcessDaoImpl implements ProcessDao {
     public String wastageCounter(String year, String month, String transType, String outletCode) {
         if (transType.equalsIgnoreCase("ID")) {
             String dateMonth = month.concat("-").concat(year);
+            String outletCodeQuery = outletCode;
+            if (outletCodeQuery.charAt(0) == '0') {
+                outletCodeQuery = outletCodeQuery.substring(1);
+            }
             String sqlId = "select to_char(nvl(max(substr(wastage_id, -3)) + 1, 1), 'fm000') as no_urut "
                     + "from t_wastage_header "
-                    + "where wastage_id like '" + outletCode.concat("0").concat(month) + "%' "
+                    + "where wastage_id like '" + outletCodeQuery.concat("0").concat(month) + "%' "
                     + "and to_char(wastage_date,'mm-yyyy') = :dateMonth";
             System.err.println("Query for Id :" + sqlId);
             Map paramId = new HashMap();
@@ -1369,6 +1373,9 @@ public class ProcessDaoImpl implements ProcessDao {
 
             }
         }).toString();
+        System.out.println(noUrut);
+        System.out.println(param);
+        System.exit(0);
         if (noUrut.equalsIgnoreCase("0")) {
             sql = "insert into m_counter(outlet_code, trans_type, year, month, counter_no) "
                     + "values (:outletCode, :transType, :year, :month, 1)";

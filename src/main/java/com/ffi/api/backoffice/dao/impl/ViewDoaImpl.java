@@ -732,10 +732,12 @@ public class ViewDoaImpl implements ViewDao {
         }
         /////////////// Revised query for Leftover - Fathur 21-nov-2023 ////////////// 
         if (Logan.get("paket").equalsIgnoreCase("L")) {
-            qry = "SELECT * FROM M_ITEM "
+            /*qry = "SELECT * FROM M_ITEM "
                     + "WHERE (STATUS = 'A' AND FLAG_STOCK = 'Y' AND FLAG_PAKET = 'N') "
                     + "and CD_ITEM_LEFTOVER in (SELECT CODE FROM M_GLOBAL WHERE COND = 'LEFTOVER') "
-                    + "order by ITEM_CODE ASC";
+                    + "order by ITEM_CODE ASC";*/
+            qry = "SELECT * FROM M_ITEM WHERE STATUS = 'A' AND FLAG_STOCK = 'Y' AND FLAG_PAKET = 'N'" +
+                    " AND CD_ITEM_LEFTOVER IS NOT NULL AND CD_ITEM_LEFTOVER != ' '";
         }
         /////////////// End revised query for Leftover////////////// 
         Map prm = new HashMap();
