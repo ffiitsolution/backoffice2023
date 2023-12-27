@@ -1373,9 +1373,6 @@ public class ProcessDaoImpl implements ProcessDao {
 
             }
         }).toString();
-        System.out.println(noUrut);
-        System.out.println(param);
-        System.exit(0);
         if (noUrut.equalsIgnoreCase("0")) {
             sql = "insert into m_counter(outlet_code, trans_type, year, month, counter_no) "
                     + "values (:outletCode, :transType, :year, :month, 1)";
