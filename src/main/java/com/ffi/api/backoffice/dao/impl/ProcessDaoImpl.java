@@ -24,10 +24,8 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -289,7 +287,7 @@ public class ProcessDaoImpl implements ProcessDao {
 
         jdbcTemplate.update(qy, param);
 
-        if (balancetest1.get("staffPosCode") != null) {
+        if (!Objects.equals(balancetest1.get("staffPosCode"), "")) {
             jdbcTemplate.update(qy2, param);
         }
     }
@@ -343,7 +341,7 @@ public class ProcessDaoImpl implements ProcessDao {
 
         jdbcTemplate.update(qy, param);
 
-        if (balancetest1.get("staffPosCode") != null) {
+        if (!Objects.equals(balancetest1.get("staffPosCode"), "")) {
             jdbcTemplate.update(qy2, param);
         }
     }

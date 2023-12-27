@@ -728,7 +728,7 @@ public class ViewDoaImpl implements ViewDao {
         }
         //W for Wastage
         if (Logan.get("paket").equalsIgnoreCase("W")) {
-            qry = "SELECT * FROM M_ITEM WHERE FLAG_STOCK = 'Y' AND FLAG_MATERIAL = 'Y' ORDER BY ITEM_CODE ASC";
+            qry = "SELECT * FROM M_ITEM WHERE FLAG_STOCK = 'Y' AND FLAG_MATERIAL = 'Y' AND STATUS = 'A' ORDER BY ITEM_CODE ASC";
         }
         /////////////// Revised query for Leftover - Fathur 21-nov-2023 ////////////// 
         if (Logan.get("paket").equalsIgnoreCase("L")) {
