@@ -33,7 +33,7 @@ LEFT JOIN M_GLOBAL e ON b.CD_SUPPLIER = e.CODE AND e.COND =$P{city}
 LEFT JOIN T_RECV_DETAIL f ON a.RECV_NO = f.RECV_NO
 LEFT JOIN M_ITEM g ON f.ITEM_CODE = g.ITEM_CODE
 JOIN M_OUTLET h ON a.OUTLET_CODE = h.OUTLET_CODE
-WHERE a.OUTLET_CODE =$P{outletCode} AND a.RECV_DATE BETWEEN $P{fromDate} AND $P{toDate} $P!{query} ORDER BY a.RECV_DATE, a.RECV_NO ASC]]>
+WHERE a.OUTLET_CODE =$P{outletCode} AND a.RECV_DATE BETWEEN $P{fromDate} AND $P{toDate} $P!{query} ORDER BY a.RECV_DATE DESC, a.RECV_NO DESC]]>
     </queryString>
     <field name="NUM" class="java.math.BigDecimal"/>
     <field name="RECV_NO" class="java.lang.String"/>
@@ -59,7 +59,7 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.RECV_DATE BETWEEN $P{fromDate} AND $P{
         <groupHeader>
             <band height="25">
                 <textField>
-                    <reportElement x="30" y="5" width="50" height="15" uuid="fa0a4808-9bf2-435d-b0cb-cb8bd890c9f9"/>
+                    <reportElement x="15" y="5" width="50" height="15" uuid="fa0a4808-9bf2-435d-b0cb-cb8bd890c9f9"/>
                     <textElement textAlignment="Center">
                         <font size="8"/>
                     </textElement>
@@ -80,7 +80,7 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.RECV_DATE BETWEEN $P{fromDate} AND $P{
                     <textFieldExpression><![CDATA[$F{ORDER_NO}]]></textFieldExpression>
                 </textField>
                 <textField>
-                    <reportElement x="257" y="5" width="124" height="15" uuid="cfcbddbf-a95b-4013-98c4-ffa3e68c940c"/>
+                    <reportElement x="275" y="5" width="124" height="15" uuid="cfcbddbf-a95b-4013-98c4-ffa3e68c940c"/>
                     <textElement>
                         <font size="8"/>
                     </textElement>
@@ -99,13 +99,6 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.RECV_DATE BETWEEN $P{fromDate} AND $P{
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{STATUS}]]></textFieldExpression>
-                </textField>
-                <textField>
-                    <reportElement x="0" y="5" width="31" height="15" uuid="21abc5f2-d4b5-4a43-9489-5a351674505d"/>
-                    <textElement textAlignment="Center">
-                        <font size="8"/>
-                    </textElement>
-                    <textFieldExpression><![CDATA[$F{NUM} + " ."]]></textFieldExpression>
                 </textField>
             </band>
         </groupHeader>
@@ -296,14 +289,7 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.RECV_DATE BETWEEN $P{fromDate} AND $P{
                 <reportElement x="1" y="97" width="552" height="1" uuid="371e98c2-9796-4da8-892c-38586fab3ead"/>
             </line>
             <staticText>
-                <reportElement x="0" y="83" width="31" height="15" uuid="86534604-64af-4f1c-93ec-ba160bb569d8"/>
-                <textElement textAlignment="Center">
-                    <font size="8" isBold="true"/>
-                </textElement>
-                <text><![CDATA[No]]></text>
-            </staticText>
-            <staticText>
-                <reportElement x="30" y="83" width="50" height="15" uuid="9413f34f-d583-449a-9075-8be218f212a9"/>
+                <reportElement x="15" y="83" width="50" height="15" uuid="9413f34f-d583-449a-9075-8be218f212a9"/>
                 <textElement textAlignment="Center">
                     <font size="8" isBold="true"/>
                 </textElement>
@@ -324,8 +310,8 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.RECV_DATE BETWEEN $P{fromDate} AND $P{
                 <text><![CDATA[Order No]]></text>
             </staticText>
             <staticText>
-                <reportElement x="257" y="83" width="124" height="15" uuid="5ef8eb90-03f6-41d2-bdfc-339274197696"/>
-                <textElement>
+                <reportElement x="247" y="83" width="124" height="15" uuid="5ef8eb90-03f6-41d2-bdfc-339274197696"/>
+                <textElement textAlignment="Center">
                     <font size="8" isBold="true"/>
                 </textElement>
                 <text><![CDATA[Catatan]]></text>
