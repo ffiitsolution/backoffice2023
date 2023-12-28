@@ -260,4 +260,17 @@ public interface ViewDao {
 
     //////////// NEW METHOD list delivery Order header 20 Des 2023
     public List<Map<String, Object>> listDeliveryOrderHdr(Map<String, String> mapping);
+
+    ///////// NEW METHOD get HO Outlet List - Dani 22 Des 2023
+    public List<Map<String, Object>> listOutletHo(Map<String, String> mapping);
+
+    //////// NEW METHOD get Delivery Order By Dani 27 Des 2023
+    public Map<String, Object> getDeliveryOrder(Map<String, String> mapping);
+
+    ///// NEW METHOD TO GET LIST ORDER OUTLET TO OUTLET FROM WAREHOUSE BY DANI 28 DEC 2023
+    public List<Map<String, Object>> getListOrderOutletHeaderWarehouse(Map<String, String> mapping);
+
+    //////// NEW METHOD to get detail outlet to outlet from warehouse  BY DANI 28 DEC 2023
+    public Map<String, Object> getOrderOutletWarehouse(Map<String, String> mapping);
+    
 }

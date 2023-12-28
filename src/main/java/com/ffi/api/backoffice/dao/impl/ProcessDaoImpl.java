@@ -14,7 +14,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,10 +25,15 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.transaction.Transactional;
+
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -39,6 +46,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -2399,4 +2407,181 @@ public class ProcessDaoImpl implements ProcessDao {
         System.err.println("q updateMCounterAfterStockOpname: " + qryCounter);
         jdbcTemplate.update(qryCounter,param);
     }
+    
+    // New Method for insert or update to t_dev_header and t_dev_detail by Dani 27 Dec 2023
+    @Transactional
+    public void insertUpdateDeliveryOrder(Map<String, Object> resource) throws Exception {
+        Gson gson = new Gson();
+        String queryHeader = "SELECT count(*) FROM T_DEV_HEADER WHERE REQUEST_NO = :requestNo AND OUTLET_TO = :outletTo";
+        Integer countHeader = jdbcTemplate.queryForObject(queryHeader, resource, Integer.class);
+        resource.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        resource.put("timeUpd", LocalDateTime.now().format(timeFormatter));
+        if (countHeader > 0) {
+            // query update header
+            String queryHeaderUpdate = "UPDATE T_DEV_HEADER " +
+                    " SET DELIVERY_DATE=:deliveryDate, REMARK=:remark, STATUS=:status, USER_UPD=:userUpd, DATE_UPD=:dateUpd, TIME_UPD=:timeUpd" +
+                    " WHERE OUTLET_CODE=:outletCode AND OUTLET_TO=:outletTo AND REQUEST_NO=:requestNo";
+                    jdbcTemplate.update(queryHeaderUpdate, resource);
+        } else {
+            // query insert header
+            LocalDate transDate = LocalDate.parse(this.jdbcTemplate.queryForObject(
+                "SELECT DISTINCT TO_CHAR(TRANS_DATE, 'YYYY-MM-DD') FROM M_OUTLET WHERE OUTLET_CODE = :outletCode and status = 'A'",
+                resource, String.class));
+            String dlvNo = opnameNumber(transDate.getYear() + "", transDate.getMonthValue() +"", "DLV", (String) resource.get("outletCode"));
+            updateMCounterSop("DLV", (String) resource.get("outletCode"));
+            resource.put("deliveryNo", dlvNo);
+            String queryHeaderInsert = "INSERT INTO T_DEV_HEADER " +
+                    " (OUTLET_CODE, OUTLET_TO, REQUEST_NO, DELIVERY_NO, DELIVERY_DATE, REMARK, STATUS, USER_UPD, DATE_UPD, TIME_UPD)" +
+                    " VALUES(:outletCode, :outletTo, :requestNo, :deliveryNo, :deliveryDate, :remark, :status, :userUpd, :dateUpd, :timeUpd)";
+            jdbcTemplate.update(queryHeaderInsert, resource);
+        }
+        JsonArray details = gson.toJsonTree(resource.get("details")).getAsJsonArray();
+        details.forEach(detail -> {
+            JsonObject obj = detail.getAsJsonObject();
+            obj.addProperty("requestNo", (String) resource.get("requestNo"));
+            obj.addProperty("deliveryNo", (String) resource.get("deliveryNo"));
+            obj.addProperty("outletTo", (String) resource.get("outletTo"));
+            obj.addProperty("outletCode", (String) resource.get("outletCode"));
+            obj.addProperty("userUpd", (String) resource.get("userUpd"));
+            obj.addProperty("dateUpd", (String) resource.get("dateUpd"));
+            obj.addProperty("timeUpd", (String) resource.get("timeUpd"));
+            insertUpdateDeliveryOrderDetail(detail.getAsJsonObject());
+        });
+    }
+
+    // NEW METHOD FOR INSERT AND UPDATE DELIVERY OURDER DETAIL BY DANI BY DEC 2023
+    public void insertUpdateDeliveryOrderDetail(JsonObject details) {
+        Gson gson = new Gson();
+        for (int i = 0; i < details.size(); i++) {
+            String queryDetail = "SELECT count(*) FROM T_DEV_DETAIL WHERE REQUEST_NO=:requestNo AND OUTLET_TO=:outletTo AND ITEM_CODE=:itemCode";
+            Map<String, Object> map = gson.fromJson(details, new TypeToken<Map<String, Object>>() {
+            }.getType());
+            Integer countDetail = jdbcTemplate.queryForObject(queryDetail, map, Integer.class);
+            if (countDetail > 0) {
+                // query update detail
+                String queryDetailUpdate = "UPDATE T_DEV_DETAIL" +
+                        " SET DELIVERY_NO=:deliveryNo, QTY_PURCH=:qtyPurch, UOM_PURCH=:uomPurch, QTY_STOCK=:qtyStock, UOM_STOCK=:uomStock, TOTAL_QTY=:totalQty, USER_UPD=:userUpd, DATE_UPD=:dateUpd, TIME_UPD=:timeUpd" +
+                        " WHERE OUTLET_CODE=:outletCode AND OUTLET_TO=:outletTo AND REQUEST_NO=:requestNo AND ITEM_CODE=:itemCode";
+                        jdbcTemplate.update(queryDetailUpdate, map);
+            } else {
+                // query insert detail
+                String queryDetailInsert = " INSERT INTO T_DEV_DETAIL " +
+                        " (OUTLET_CODE, OUTLET_TO, REQUEST_NO, DELIVERY_NO, ITEM_CODE, QTY_PURCH, UOM_PURCH, QTY_STOCK, UOM_STOCK, TOTAL_QTY, USER_UPD, DATE_UPD, TIME_UPD)" +
+                        " VALUES(:outletCode, :outletTo, :requestNo, :deliveryNo, :itemCode, :qtyPurch, :uomPurch, :qtyStock, :uomStock, :totalQty, :userUpd, :dateUpd, :timeUpd)";
+                        jdbcTemplate.update(queryDetailInsert, map);
+            }
+        }
+    }
+
+    /////// NEW METHOD for kirim delivery Order by Dani 28 Dec 2023
+    @Transactional
+    public void kirimDeloveryOrder(Map<String, String> data) throws ClientProtocolException, IOException {
+        data.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        data.put("timeUpd", LocalDateTime.now().format(timeFormatter));
+        String query = "UPDATE T_DEV_HEADER SET STATUS = '1' WHERE REQUEST_NO=:requestNo AND DELIVERY_NO =:deliveryNo";
+        jdbcTemplate.update(query, data);
+        // hit api to warehouse
+        String qhs = "SELECT OUTLET_TO as OUTLET_CODE, REQUEST_NO as ORDER_NO, STATUS FROM T_DEV_HEADER WHERE REQUEST_NO=:requestNo AND DELIVERY_NO = :deliveryNo";
+        Map<String, Object> hdr = jdbcTemplate.queryForObject(qhs, data, new DynamicRowMapper());
+        hdr.put("userUpd", data.get("userUpd"));
+        hdr.put("dateUpd", data.get("dateUpd"));
+        hdr.put("timeUpd", data.get("timeUpd"));
+
+        String qds = "SELECT QTY_PURCH as QTY_1, QTY_STOCK as QTY_2, TOTAL_QTY, ITEM_CODE, REQUEST_NO as ORDER_NO, OUTLET_TO as OUTLET_CODE FROM T_DEV_DETAIL WHERE REQUEST_NO=:requestNo AND DELIVERY_NO=:deliveryNo";
+        List<Map<String, Object>> dtls = jdbcTemplate.query(qds, data, new DynamicRowMapper());
+        dtls.forEach(dtl -> {
+            dtl.put("realOutletCode", data.get("outletCode"));
+            dtl.put("userUpd", data.get("userUpd"));
+            dtl.put("dateUpd", data.get("dateUpd"));
+            dtl.put("timeUpd", data.get("timeUpd"));
+        });
+
+        hdr.put("details", dtls);
+
+        List<Map<String, Object>> list = new ArrayList<>();
+        Map<String, Object> map1 = new HashMap<String, Object>();
+        String json = "";
+        String total = "";
+        Gson gson = new Gson();
+        CloseableHttpClient client = HttpClients.createDefault();
+        String url = this.urlWarehouse + "/update-order-outlet-to-outlet";
+        HttpPost post = new HttpPost(url);
+        post.setHeader("Accept", "*/*");
+        post.setHeader("Content-Type", "application/json");
+        json = new Gson().toJson(hdr);
+        StringEntity entity = new StringEntity(json);
+        post.setEntity(entity);
+        CloseableHttpResponse response = client.execute(post);
+        System.out.println("json" + json);
+        BufferedReader br = new BufferedReader(
+                new InputStreamReader(
+                        (response.getEntity().getContent())));
+        StringBuilder content = new StringBuilder();
+        String line;
+        while (null != (line = br.readLine())) {
+            content.append(line);
+        }
+        String result = content.toString();
+        System.out.println("trans =" + result);
+        map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        JsonObject job = gson.fromJson(result, JsonObject.class);
+        
+        // update stock card below
+        dtls.forEach(dtl -> {
+            updateDelvStockCard(dtl);
+        });
+    }
+
+    // update receive stock card for delery order stock by Dani 28 December 2023
+    // this method is for update table t_stock_card and t_stock_card_detail for delivery order stock
+        public void updateDelvStockCard(Map<String, Object> balance) {
+        String qf = "SELECT CASE WHEN QUANTITY IS NULL THEN 0 ELSE QUANTITY END AS QUANTITY FROM T_STOCK_CARD_DETAIL WHERE OUTLET_CODE = :outletCode AND TRANS_DATE = :transDate AND item_code= :itemCode AND cd_trans='DLV'";
+        Map<String, Object> param = new HashMap<>();
+        param.put("outletCode", balance.get("realOutletCode"));
+        param.put("itemCode", balance.get("itemCode"));
+        param.put("cdTrans", "DLV");
+        param.put("qtyIn", 0);
+        param.put("qty", balance.get("totalQty"));
+        param.put("userUpd", balance.get("userUpd"));
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
+        BigDecimal existQty = null;
+        String transDate = this.jdbcTemplate.queryForObject(
+                "SELECT DISTINCT TO_CHAR(TRANS_DATE, 'DD-MON-YYYY') FROM M_OUTLET WHERE OUTLET_CODE = :outletCode and status = 'A'",
+                param, String.class);
+        param.put("transDate", transDate);
+
+        try {
+            String qsh = "SELECT CASE WHEN QTY_OUT IS NULL THEN 0 ELSE QTY_OUT END AS QTY_OUT FROM T_STOCK_CARD WHERE OUTLET_CODE = :outletCode AND TRANS_DATE = :transDate AND ITEM_CODE = :itemCode ";
+            BigDecimal hdrQtyInDb = jdbcTemplate.queryForObject(qsh, param, BigDecimal.class);
+            String quh = "UPDATE T_STOCK_CARD SET QTY_OUT = :qtyOut WHERE OUTLET_CODE = :outletCode AND TRANS_DATE = :transDate AND ITEM_CODE = :itemCode ";
+            hdrQtyInDb = hdrQtyInDb.add((BigDecimal) balance.get("totalQty"));
+            param.put("qtyOut", hdrQtyInDb);
+            jdbcTemplate.update(quh, param);
+        } catch (EmptyResultDataAccessException exx) {
+            String qih = "INSERT INTO T_STOCK_CARD (OUTLET_CODE,TRANS_DATE,ITEM_CODE,ITEM_COST,QTY_BEGINNING,QTY_IN,QTY_OUT,USER_UPD,DATE_UPD,TIME_UPD) VALUES (:outletCode,:transDate,:itemCode,0,0,0,:qtyOut,:userUpd,:dateUpd,:timeUpd) ";
+            param.put("qtyOut", (BigDecimal) balance.get("totalQty"));
+            jdbcTemplate.update(qih, param);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        try {
+            existQty = jdbcTemplate.queryForObject(qf, param, BigDecimal.class);
+            BigDecimal quantity = (BigDecimal) balance.get("totalQty");
+            quantity = quantity.add(existQty);
+            param.put("qty", quantity);
+            String qu = "UPDATE T_STOCK_CARD_DETAIL"
+                    + " SET QUANTITY=:qty, USER_UPD=:userUpd, DATE_UPD=:dateUpd, TIME_UPD=:timeUpd "
+                    + " WHERE OUTLET_CODE = :outletCode AND TRANS_DATE = :transDate AND item_code= :itemCode AND cd_trans='DLV' ";
+            jdbcTemplate.update(qu, param);
+        } catch (EmptyResultDataAccessException exx) {
+            String qi = "INSERT INTO T_STOCK_CARD_DETAIL (OUTLET_CODE,TRANS_DATE,ITEM_CODE,CD_TRANS,QUANTITY_IN,QUANTITY,USER_UPD,DATE_UPD,TIME_UPD) VALUES (:outletCode, :transDate, :itemCode, 'DLV' , 0, :qty, :userUpd, :dateUpd, :timeUpd)";
+            jdbcTemplate.update(qi, param);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
 }

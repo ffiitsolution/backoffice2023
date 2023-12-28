@@ -139,4 +139,9 @@ public interface ProcessDao {
     public void updateMpcsPlan(Map<String, String> mapping);
 
     //////////////////////////DONE////////////////////////////
+
+    ///////////// NEW METHOD INSERT OR UPDATE DELIVERY ORDER by Dani 27 Dec 2023
+    public void insertUpdateDeliveryOrder(Map<String, Object> mapping) throws Exception;
+
+    public void kirimDeloveryOrder(Map<String, String> mapping) throws Exception;
 }

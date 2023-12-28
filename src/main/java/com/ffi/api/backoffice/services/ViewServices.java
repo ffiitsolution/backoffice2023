@@ -461,4 +461,25 @@ public class ViewServices {
     public List<Map<String, Object>> listDeliveryOrderHdr(Map<String, String> mapping) {
         return viewDao.listDeliveryOrderHdr(mapping);
     }
+
+    ///////// NEW METHOD get HO Outlet List - Dani 22 Des 2023
+    public List<Map<String, Object>> listOutletHo(Map<String, String> ref) {
+        return viewDao.listOutletHo(ref);
+    }
+
+    //////// NEW METHOD get Delivery Order By Dani 27 Des 2023
+    public Map<String, Object> getDeliveryOrder(Map<String, String> mapping) {
+        return viewDao.getDeliveryOrder(mapping);
+    }
+    
+    ///// NEW METHOD TO GET LIST ORDER OUTLET TO OUTLET FROM WAREHOUSE BY DANI 28 DEC 2023
+    public List<Map<String, Object>> getListOrderOutletHeaderWarehouse(Map<String, String> mapping) {
+        return viewDao.getListOrderOutletHeaderWarehouse(mapping);
+    }
+
+    //////// NEW METHOD to get detail outlet to outlet from warehouse  BY DANI 28 DEC 2023
+    public Map<String, Object> getOrderOutletWarehouse(Map<String, String> mapping) {
+        return viewDao.getOrderOutletWarehouse(mapping);
+    }
+    
 }

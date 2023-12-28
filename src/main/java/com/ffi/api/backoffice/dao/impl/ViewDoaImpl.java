@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.lang.Nullable;
 //import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -1922,7 +1923,7 @@ public class ViewDoaImpl implements ViewDao {
         Map prm = new HashMap();
         prm.put("recv_no", ref.get("recv_no"));
         prm.put("noOrder", ref.get("noOrder"));
-        
+
         //prm.put("dateEnd", ref.get("dateEnd"));
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
@@ -3307,7 +3308,7 @@ public class ViewDoaImpl implements ViewDao {
     }
     // Done MPCS Production Product Result //
 
-        ///////////// NEW METHOD get order Detail From Inventory - Dani 19 Des 2023
+    ///////////// NEW METHOD get order Detail From Inventory - Dani 19 Des 2023
     public List<Map<String, Object>> getOrderDetailFromInventory(Map<String, String> mapping) {
         String json = "";
         String total = "";
@@ -3352,6 +3353,49 @@ public class ViewDoaImpl implements ViewDao {
         return list;
     }
 
+    ///////// NEW METHOD get Delivery Order outlet to outlet - Dani 22 Dec 2023
+    public Map<String, Object> getDeliveryOrderOutletToOutlet(Map<String, String> mapping) {
+        String json = "";
+        String total = "";
+        Gson gson = new Gson();
+        Map<String, Object> map1 = new HashMap<String, Object>();
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        try {
+            CloseableHttpClient client = HttpClients.createDefault();
+            String url = this.warehouseEndpoint + "/get-order-outlet-to-outlet";
+            HttpPost post = new HttpPost(url);
+
+            post.setHeader("Accept", "*/*");
+            post.setHeader("Content-Type", "application/json");
+
+            json = new Gson().toJson(mapping);
+            StringEntity entity = new StringEntity(json);
+            post.setEntity(entity);
+            CloseableHttpResponse response = client.execute(post);
+            System.out.println("json" + json);
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(
+                            (response.getEntity().getContent())));
+            StringBuilder content = new StringBuilder();
+            String line;
+            while (null != (line = br.readLine())) {
+                content.append(line);
+            }
+            String result = content.toString();
+            System.out.println("trans =" + result);
+
+            map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
+            }.getType());
+            JsonObject job = gson.fromJson(result, JsonObject.class);
+            JsonArray elem = job.getAsJsonArray("item");
+            map1 =  gson.fromJson(elem.get(0), new TypeToken<Map<String, Object>>() {
+            }.getType());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return map1;
+    }
+
     ///////// NEW METHOD get Delivery Order Header List - Dani 20 Des 2023
     public List<Map<String, Object>> listDeliveryOrderHdr(Map<String, String> mapping) {
         mapping.put("status", "%"+ (mapping.get("status") != null ? mapping.get("status") : "") + "%");
@@ -3360,7 +3404,7 @@ public class ViewDoaImpl implements ViewDao {
         + " FROM T_DEV_HEADER hdr LEFT JOIN M_OUTLET mot ON hdr.OUTLET_TO = mot.OUTLET_CODE "
          + " WHERE hdr.DELIVERY_DATE >=:dateStart AND hdr.DELIVERY_DATE <=:dateEnd"
          + " AND hdr.OUTLET_CODE = :outletCode "
-         + " AND hdr.STATUS LIKE :status ORDER BY hdr.DELIVERY_DATE ASC";
+         + " AND hdr.STATUS LIKE :status ORDER BY hdr.STATUS ASC, hdr.DELIVERY_DATE DESC, hdr.DATE_UPD DESC, hdr.TIME_UPD DESC";
         return jdbcTemplate.query(qry, mapping, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -3376,5 +3420,188 @@ public class ViewDoaImpl implements ViewDao {
                 return row;
             }
         });
+    }
+
+    ///////// NEW METHOD get HO Outlet List - Dani 22 Des 2023
+    public List<Map<String, Object>> listOutletHo(Map<String, String> mapping) {
+        String qry = "SELECT a.region_code,b.description region_name,a.outlet_code,a.area_code,c.description area_name, a.initial_outlet, a.outlet_name, a.type,d.description type_store, a.status "
+                + "FROM M_OUTLET a "
+                + "join m_global b on a.region_code=b.code and b.cond='REG_OUTLET'"
+                + "join m_global c on a.area_code=c.code  and c.cond='AREACODE'"
+                + "join m_global d on a.type=d.code  and d.cond='OUTLET_TP'"
+                + "where a.type = 'HO' and a.status='A' and  a.REGION_CODE LIKE :region AND a.AREA_CODE LIKE :area AND a.TYPE LIKE :type";
+        Map prm = new HashMap();
+        System.err.println("q :" + qry);
+        prm.put("region", "%" + mapping.get("region") + "%");
+        prm.put("area", "%" + mapping.get("area") + "%");
+        prm.put("type", "%" + mapping.get("type") + "%");
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("region", rs.getString("region_code"));
+                rt.put("regionname", rs.getString("region_name"));
+                rt.put("area", rs.getString("area_code"));
+                rt.put("areaname", rs.getString("area_name"));
+                rt.put("outlet", rs.getString("outlet_code"));
+                rt.put("Initial", rs.getString("initial_outlet"));
+                rt.put("Name", rs.getString("outlet_name"));
+                rt.put("Type", rs.getString("type"));
+                rt.put("typename", rs.getString("type_store"));
+                rt.put("Status", rs.getString("status"));
+                return rt;
+            }
+        });
+        return list;
+    }
+
+    
+    // NEW METHOD To get delivery order by Dani 27 Dec 2023
+    public Map<String, Object> getDeliveryOrder(Map<String, String> mapping) {
+
+        String queryHeader = "SELECT hdr.OUTLET_TO, mot.OUTLET_NAME as OUTLET_TO_NAME, hdr.OUTLET_CODE , hdr.REMARK, hdr.REQUEST_NO, hdr.DELIVERY_NO, "
+        + " to_char(hdr.DELIVERY_DATE, 'dd/mm/yyyy') as DELIVERY_DATE, CASE WHEN hdr.STATUS = '0' THEN 'Open' WHEN hdr.STATUS = '1' THEN 'Close' WHEN hdr.STATUS = '2' THEN 'Cancel' END as STATUS "
+        + " FROM T_DEV_HEADER hdr LEFT JOIN M_OUTLET mot ON hdr.OUTLET_TO = mot.OUTLET_CODE "
+        + " WHERE hdr.OUTLET_CODE = :outletCode "
+        + " AND hdr.OUTLET_TO = :outletTo "
+        + " AND hdr.DELIVERY_NO = :deliveryNo "
+        + " AND hdr.REQUEST_NO = :requestNo ";
+        Map<String, Object> dlvr = jdbcTemplate.queryForObject(queryHeader, mapping, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Map<String, Object> row = new HashMap<>();
+                row.put("outletToName", rs.getString("OUTLET_TO_NAME"));
+                row.put("outletTo", rs.getString("OUTLET_TO"));
+                row.put("outletCode", rs.getString("OUTLET_CODE"));
+                row.put("deliveryNo", rs.getString("DELIVERY_NO"));
+                row.put("deliveryDate", rs.getString("DELIVERY_DATE"));
+                row.put("status", rs.getString("STATUS"));
+                row.put("remark", rs.getString("REMARK"));
+                row.put("requestNo", rs.getString("REQUEST_NO"));
+                return row;
+            }
+        });
+
+        String queryDtls = "SELECT B.ITEM_DESCRIPTION, B.CONV_WAREHOUSE, C.OUTLET_NAME AS OUTLET_TO_NAME, A.OUTLET_CODE, A.OUTLET_TO, A.REQUEST_NO, "
+        + " A.DELIVERY_NO, A.ITEM_CODE, A.QTY_PURCH, A.UOM_PURCH, A.QTY_STOCK, A.UOM_STOCK, A.TOTAL_QTY, A.USER_UPD, TO_CHAR(A.DATE_UPD, 'DD-MON-YYYY') AS DATE_UPD, A.TIME_UPD "
+        + " FROM T_DEV_DETAIL A LEFT JOIN M_ITEM B ON A.ITEM_CODE = B.ITEM_CODE LEFT JOIN M_OUTLET C ON A.OUTLET_TO = C.OUTLET_CODE "
+        + " WHERE A.REQUEST_NO =:requestNo AND A.DELIVERY_NO =:deliveryNo AND A.OUTLET_TO = :outletTo ";
+        List<Map<String, Object>> dtls = jdbcTemplate.query(queryDtls, dlvr, new RowMapper() {
+            @Override
+            public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Map<String, Object> map = new HashMap<>();
+                map.put("convWarehouse", rs.getString("CONV_WAREHOUSE"));
+                map.put("outletToName", rs.getString("OUTLET_TO_NAME"));
+                map.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
+                map.put("outletCode", rs.getString("OUTLET_CODE"));
+                map.put("outletTo", rs.getString("OUTLET_TO"));
+                map.put("requestNo", rs.getString("REQUEST_NO"));
+                map.put("deliveryNo", rs.getString("DELIVERY_NO"));
+                map.put("itemCode", rs.getString("ITEM_CODE"));
+                map.put("qtyPurch", rs.getBigDecimal("QTY_PURCH"));
+                map.put("uomPurch", rs.getString("UOM_PURCH"));
+                map.put("qtyStock", rs.getBigDecimal("QTY_STOCK"));
+                map.put("uomStock", rs.getString("UOM_STOCK"));
+                map.put("totalQty", rs.getBigDecimal("TOTAL_QTY"));
+                map.put("userUpd", rs.getString("USER_UPD"));
+                map.put("dateUpd", rs.getString("DATE_UPD"));
+                map.put("timeUpd", rs.getString("TIME_UPD"));
+                return map;
+            }
+        });
+        dlvr.put("details", dtls);
+        return dlvr;
+    }
+
+
+    ///// NEW METHOD TO GET LIST ORDER OUTLET TO OUTLET FROM WAREHOUSE BY DANI 28 DEC 2023
+    public List<Map<String, Object>> getListOrderOutletHeaderWarehouse(Map<String, String> mapping) {
+        List<Map<String, Object>> list = new ArrayList<>();
+        Map<String, Object> map1 = new HashMap<String, Object>();
+        String json = "";
+        String total = "";
+        Gson gson = new Gson();
+        try {
+            CloseableHttpClient client = HttpClients.createDefault();
+            String url = this.warehouseEndpoint + "/get-order-outlet-to-outlet-header";
+            HttpPost post = new HttpPost(url);
+
+            post.setHeader("Accept", "*/*");
+            post.setHeader("Content-Type", "application/json");
+
+            json = new Gson().toJson(mapping);
+            StringEntity entity = new StringEntity(json);
+            post.setEntity(entity);
+            CloseableHttpResponse response = client.execute(post);
+            System.out.println("json" + json);
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(
+                            (response.getEntity().getContent())));
+            StringBuilder content = new StringBuilder();
+            String line;
+            while (null != (line = br.readLine())) {
+                content.append(line);
+            }
+            String result = content.toString();
+            System.out.println("trans =" + result);
+
+            map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
+            }.getType());
+
+            JsonObject job = gson.fromJson(result, JsonObject.class);
+            JsonArray elem = job.getAsJsonArray("item");
+
+            list = gson.fromJson(elem, new TypeToken<List<Map<String, Object>>>() {
+            }.getType());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return list;
+    }
+
+    //////// NEW METHOD to get detail outlet to outlet from warehouse  BY DANI 28 DEC 2023
+    public Map<String, Object> getOrderOutletWarehouse(Map<String, String> mapping) {
+        List<Map<String, Object>> list = new ArrayList<>();
+        Map<String, Object> map1 = new HashMap<String, Object>();
+        String json = "";
+        String total = "";
+        Gson gson = new Gson();
+        try {
+            CloseableHttpClient client = HttpClients.createDefault();
+            String url = this.warehouseEndpoint + "/get-order-outlet-to-outlet";
+            HttpPost post = new HttpPost(url);
+
+            post.setHeader("Accept", "*/*");
+            post.setHeader("Content-Type", "application/json");
+
+            json = new Gson().toJson(mapping);
+            StringEntity entity = new StringEntity(json);
+            post.setEntity(entity);
+            CloseableHttpResponse response = client.execute(post);
+            System.out.println("json" + json);
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(
+                            (response.getEntity().getContent())));
+            StringBuilder content = new StringBuilder();
+            String line;
+            while (null != (line = br.readLine())) {
+                content.append(line);
+            }
+            String result = content.toString();
+            System.out.println("trans =" + result);
+
+            map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
+            }.getType());
+
+            JsonObject job = gson.fromJson(result, JsonObject.class);
+            JsonArray elem = job.getAsJsonArray("item");
+
+            list = gson.fromJson(elem, new TypeToken<List<Map<String, Object>>>() {
+            }.getType());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list.get(0);   
     }
 }

@@ -2862,4 +2862,157 @@ public class IndexController {
         rm.setData(this.viewServices.listDeliveryOrderHdr(balance));
         return rm;
     }
+
+    // query list m_outlet HO By Dani 18 Des 2023
+    @RequestMapping(value = "/list-outlet-ho", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view supplier", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listOutletHo(@RequestBody String param) throws JRException, IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> logan = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        Response res = new Response();
+        res.setData(viewServices.listOutletHo(logan));
+        return res;
+    }
+
+    // query insert update Delivery order By Dani 27 Des 2023
+    @RequestMapping(value = "/insert-update-delivery-order", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk insert delivery order", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage insertUpdateDeliveryOrder(@RequestBody String param) throws JRException, IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, Object> data = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        var rm = new ResponseMessage();
+        try {
+            processServices.insertUpdateDeliveryOrder(data);
+            rm.setSuccess(true);
+            rm.setMessage("Success Successfuly");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            rm.setSuccess(false);
+            rm.setMessage("Failed: " + e.getMessage());
+        }
+        return rm;
+    }
+
+    // query to get Delivery order By Dani 27 Des 2023
+    @RequestMapping(value = "/get-delivery-order", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk insert delivery order", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage getDeliveryOrder(@RequestBody String param) throws JRException, IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> data = gsn.fromJson(param, new TypeToken<Map<String, String>>() {
+        }.getType());
+
+        var rm = new ResponseMessage();
+        try {
+            List<Map<String, Object>> list = new ArrayList<>();
+            list.add(viewServices.getDeliveryOrder(data));
+            rm.setSuccess(true);
+            rm.setMessage("Success Successfuly");
+            rm.setItem(list);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            rm.setSuccess(false);
+            rm.setMessage("Failed: " + e.getMessage());
+        }
+        return rm;
+    }
+
+    // query to kirim Delivery order By Dani 28 Des 2023
+    @RequestMapping(value = "/kirim-delivery-order", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk insert delivery order", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage kirimDeliveryOrder(@RequestBody String param) throws JRException, IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> data = gsn.fromJson(param, new TypeToken<Map<String, String>>() {
+        }.getType());
+
+        var rm = new ResponseMessage();
+        try {
+            processServices.kirimDeliveryOrder(data);
+            rm.setSuccess(true);
+            rm.setMessage("Success Successfuly");
+        } catch (Exception e) {
+            e.printStackTrace();
+            rm.setSuccess(false);
+            rm.setMessage("Failed: " + e.getMessage());
+        }
+        return rm;
+    }
+
+    // get to Delivery order outlet to outlet from warehouse By Dani 28 Des 2023
+    @RequestMapping(value = "/get-list-outlet-order-warehouse", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan get list order outlet to outlet from warehouse", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage getListOrderOutletHeaderWarehouse(@RequestBody String param) throws JRException, IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> data = gsn.fromJson(param, new TypeToken<Map<String, String>>() {
+        }.getType());
+
+        var rm = new ResponseMessage();
+        try {
+            rm.setSuccess(true);
+            rm.setMessage("Success Successfuly");
+            rm.setItem(viewServices.getListOrderOutletHeaderWarehouse(data));
+        } catch (Exception e) {
+            e.printStackTrace();
+            rm.setSuccess(false);
+            rm.setMessage("Failed: " + e.getMessage());
+        }
+        return rm;
+    }
+
+    //////// NEW METHOD to get detail outlet to outlet from warehouse  BY DANI 28 DEC 2023
+    @RequestMapping(value = "/get-outlet-order-warehouse", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan get list order outlet to outlet from warehouse", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage getOrderOutletWarehouse(@RequestBody String param) throws JRException, IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> data = gsn.fromJson(param, new TypeToken<Map<String, String>>() {
+        }.getType());
+
+        var rm = new ResponseMessage();
+        try {
+            rm.setSuccess(true);
+            rm.setMessage("Success Successfuly");
+            List<Map<String, Object>> list = new ArrayList<>();
+            list.add(viewServices.getOrderOutletWarehouse(data));
+            rm.setItem(list);
+        } catch (Exception e) {
+            e.printStackTrace();
+            rm.setSuccess(false);
+            rm.setMessage("Failed: " + e.getMessage());
+        }
+        return rm;
+    }
 }

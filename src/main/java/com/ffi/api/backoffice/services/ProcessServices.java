@@ -245,4 +245,13 @@ public class ProcessServices {
     }
     ////////////////////////DONE///////////////////////
 
+    //////////// NEW METHOD INSERT DELIVERY ORDER BY DANI 27 DEC 2023
+    public void insertUpdateDeliveryOrder(Map<String, Object> resource) throws Exception {
+        dao.insertUpdateDeliveryOrder(resource);
+    }
+
+    public void kirimDeliveryOrder(Map<String, String> resource) throws Exception {
+        dao.kirimDeloveryOrder(resource);
+    }
+
 }
