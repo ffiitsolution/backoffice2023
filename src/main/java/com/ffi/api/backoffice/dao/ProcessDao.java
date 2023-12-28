@@ -140,8 +140,15 @@ public interface ProcessDao {
 
     //////////////////////////DONE////////////////////////////
 
+    ///////////////NEW METHOD insert T SUMM MPCS - M Joko 27/12/2023//// 
+    public void updateOrderEntryExpired(Map<String, String> mapping);
+    
+    ///////////////NEW METHOD kirim ulang return order - M Joko 27/12/2023//// 
+    public boolean sendReturnOrderToWH(JsonObject object);
+    
     ///////////// NEW METHOD INSERT OR UPDATE DELIVERY ORDER by Dani 27 Dec 2023
     public void insertUpdateDeliveryOrder(Map<String, Object> mapping) throws Exception;
 
     public void kirimDeloveryOrder(Map<String, String> mapping) throws Exception;
+
 }

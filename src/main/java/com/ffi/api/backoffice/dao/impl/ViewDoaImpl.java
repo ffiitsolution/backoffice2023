@@ -601,6 +601,16 @@ public class ViewDoaImpl implements ViewDao {
         Map prm = new HashMap();
         System.err.println("q :" + qry);
         prm.put("outlet", param.get("outlet"));
+        var statusParam = param.get("status");
+        System.err.println("statusParam " + statusParam);
+        if ("A".equals(statusParam)) {
+            qry += " AND STATUS = 'A' ";
+        } if("I".equals(statusParam)){
+            qry += " AND STATUS = 'I' ";
+        } else {
+            qry += " AND STATUS IN ('A', 'I' )";
+        }
+        
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
@@ -729,14 +739,16 @@ public class ViewDoaImpl implements ViewDao {
         }
         //W for Wastage
         if (Logan.get("paket").equalsIgnoreCase("W")) {
-            qry = "SELECT * FROM M_ITEM WHERE FLAG_STOCK = 'Y' AND FLAG_MATERIAL = 'Y' ORDER BY ITEM_CODE ASC";
+            qry = "SELECT * FROM M_ITEM WHERE FLAG_STOCK = 'Y' AND FLAG_MATERIAL = 'Y' AND STATUS = 'A' ORDER BY ITEM_CODE ASC";
         }
         /////////////// Revised query for Leftover - Fathur 21-nov-2023 ////////////// 
         if (Logan.get("paket").equalsIgnoreCase("L")) {
-            qry = "SELECT * FROM M_ITEM "
+            /*qry = "SELECT * FROM M_ITEM "
                     + "WHERE (STATUS = 'A' AND FLAG_STOCK = 'Y' AND FLAG_PAKET = 'N') "
                     + "and CD_ITEM_LEFTOVER in (SELECT CODE FROM M_GLOBAL WHERE COND = 'LEFTOVER') "
-                    + "order by ITEM_CODE ASC";
+                    + "order by ITEM_CODE ASC";*/
+            qry = "SELECT * FROM M_ITEM WHERE STATUS = 'A' AND FLAG_STOCK = 'Y' AND FLAG_PAKET = 'N'" +
+                    " AND CD_ITEM_LEFTOVER IS NOT NULL AND CD_ITEM_LEFTOVER != ' '";
         }
         /////////////// End revised query for Leftover////////////// 
         Map prm = new HashMap();
@@ -1527,7 +1539,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "    CONV_WAREHOUSE,CONV_STOCK, "
                 + "    0 TOTAL_JUMLAH, "
                 + "    UOM_PURCHASE AS TOTAL "
-                + "FROM M_ITEM WHERE CD_WAREHOUSE like :cdWarehouse)";
+                + "FROM M_ITEM WHERE CD_WAREHOUSE like :cdWarehouse ORDER BY ITEM_CODE ASC)";
         Map prm = new HashMap();
         prm.put("cdWarehouse", "%" + balance.get("cdWarehouse") + "%");
         System.err.println("q :" + qry);
@@ -2803,12 +2815,12 @@ public class ViewDoaImpl implements ViewDao {
         String query = null;
         Map<String, Object> sqlParam = new HashMap<>();
         if (param.containsKey("cdSupplier")) {
-            query = "SELECT b.ITEM_DESCRIPTION, b.STATUS, b.UOM_WAREHOUSE, b.UOM_PURCHASE, b.UOM_STOCK, b.ITEM_CODE "
+            query = "SELECT b.ITEM_DESCRIPTION, b.STATUS, b.CONV_WAREHOUSE, b.CONV_STOCK, b.UOM_WAREHOUSE, b.UOM_PURCHASE, b.UOM_STOCK, b.ITEM_CODE "
                     + "FROM M_ITEM_SUPPLIER a LEFT JOIN M_ITEM b ON a.ITEM_CODE = b.ITEM_CODE WHERE CD_SUPPLIER =:cdSupplier";
             sqlParam.put("cdSupplier", param.get("cdSupplier"));
         }
         if (param.containsKey("cdWarehouse")) {
-            query = "SELECT ITEM_DESCRIPTION, STATUS, UOM_WAREHOUSE, UOM_PURCHASE, UOM_STOCK, ITEM_CODE FROM M_ITEM WHERE "
+            query = "SELECT ITEM_DESCRIPTION, STATUS, CONV_WAREHOUSE, CONV_STOCK, UOM_WAREHOUSE, UOM_PURCHASE, UOM_STOCK, ITEM_CODE FROM M_ITEM WHERE "
                     + "CD_WAREHOUSE =:cdWarehouse ORDER BY ITEM_CODE ASC";
             sqlParam.put("cdWarehouse", param.get("cdWarehouse"));
         }
@@ -2818,6 +2830,8 @@ public class ViewDoaImpl implements ViewDao {
                 Map<String, Object> rt = new HashMap<String, Object>();
                 rt.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
                 rt.put("status", rs.getString("STATUS"));
+                rt.put("convWarehouse", rs.getString("CONV_WAREHOUSE"));
+                rt.put("convStock", rs.getString("CONV_STOCK"));
                 rt.put("uomWarehouse", rs.getString("UOM_WAREHOUSE"));
                 rt.put("uomPurchase", rs.getString("UOM_PURCHASE"));
                 rt.put("uomStock", rs.getString("UOM_STOCK"));
@@ -3057,35 +3071,6 @@ public class ViewDoaImpl implements ViewDao {
             rt.put("outletCode", rs.getString("OUTLET_CODE"));
             rt.put("posCode", rs.getString("POS_CODE"));
             rt.put("posDescription", rs.getString("POS_DESCRIPTION"));
-            return rt;
-        });
-    }
-
-    //////////// New method for query T Stock Card hari sebelumnya - M Joko M 12-Dec-2023////////////
-    @Override
-    public List<Map<String, Object>> listPreviousTStockCard(Map<String, String> ref) {
-        Map param = new HashMap();
-        String qry = "select * from t_stock_card where trans_date=(select trans_date from m_outlet where outlet_code=:outletCode)";
-        if (ref.containsKey("transDate")) {
-            qry = "select * from t_stock_card where trans_date=:transDate";
-            param.put("transDate", ref.get("transDate"));
-        } else {
-            param.put("outletCode", ref.get("outletCode"));
-        }
-        System.err.println("q : " + qry);
-        return jdbcTemplate.query(qry, param, (ResultSet rs, int i) -> {
-            Map<String, Object> rt = new HashMap<>();
-            rt.put("outletCode", rs.getString("OUTLET_CODE"));
-            rt.put("transDate", rs.getString("TRANS_DATE"));
-            rt.put("itemCode", rs.getString("ITEM_CODE"));
-            rt.put("itemCost", rs.getString("ITEM_COST"));
-            rt.put("qtyBeginning", rs.getString("QTY_BEGINNING"));
-            rt.put("qtyIn", rs.getString("QTY_IN"));
-            rt.put("qtyOut", rs.getString("QTY_OUT"));
-            rt.put("remark", rs.getString("REMARK"));
-            rt.put("userUpd", rs.getString("USER_UPD"));
-            rt.put("dateUpd", rs.getString("DATE_UPD"));
-            rt.put("timeUpd", rs.getString("TIME_UPD"));
             return rt;
         });
     }

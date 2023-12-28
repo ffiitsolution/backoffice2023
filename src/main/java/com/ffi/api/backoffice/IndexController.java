@@ -2238,19 +2238,31 @@ public class IndexController {
     public @ResponseBody
     ResponseMessage InsertReturnOrderHeaderDetail(@RequestBody String param) throws IOException, Exception {
         Gson gsn = new Gson();
-        JsonObject result = gsn.fromJson(param, JsonObject.class);
+        JsonObject balance = gsn.fromJson(param, JsonObject.class);
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         ResponseMessage rm = new ResponseMessage();
-        try {
-            processServices.insertReturnOrderHeaderDetail(result);
-            rm.setSuccess(true);
-            rm.setMessage("Insert Return Order Successfuly");
-        } catch (Exception e) {
-            rm.setSuccess(false);
-            rm.setMessage("Insert Return Order Failed: " + e.getMessage());
-            System.err.println(e);
+        if(balance.has("kirim") && balance.has("returnNo")){
+            // kirim 
+            // todo:
+            if(processServices.sendReturnOrderToWH(balance)){
+                rm.setSuccess(true);
+                rm.setMessage("Send Return Order Successfuly");
+            } else {
+                rm.setSuccess(false);
+                rm.setMessage("Send Return Order Failed");
+            }
+        } else {
+            try {
+                processServices.insertReturnOrderHeaderDetail(balance);
+                rm.setSuccess(true);
+                rm.setMessage("Insert Return Order Successfuly");
+            } catch (Exception e) {
+                rm.setSuccess(false);
+                rm.setMessage("Insert Return Order Failed: " + e.getMessage());
+                System.err.println(e);
+            }
+            rm.setItem(list);
         }
-        rm.setItem(list);
         return rm;
     }
 
@@ -2573,11 +2585,12 @@ public class IndexController {
     )
     public @ResponseBody
     Response processEod(@RequestBody String param) throws IOException, Exception {
+        long startTime = System.currentTimeMillis();
+        System.err.println("Start End of Day Process: " + startTime);
         Gson gsn = new Gson();
         Response res = new Response();
         List errors = new ArrayList();
         List posOpen = new ArrayList();
-        List<Map<String, Object>> prevStockCards = new ArrayList();
         List<Map<String, Object>> data = new ArrayList<>();
         Map<String, Object> d = new HashMap();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
@@ -2618,7 +2631,11 @@ public class IndexController {
                     newParams.put("processEod", "N");
                     newParams.put("notes", " ");
                     newParams.put("userUpd", balance.getOrDefault("userUpd", "SYSTEM"));
-                    processServices.insertEodPosN(newParams);
+                    try{
+                        processServices.insertEodPosN(newParams);
+                    } catch (Exception e){
+                        errors.add("insertEodPosN failed: " + e.getMessage());
+                    }
                     posOpen.add(newParams);
                 } else {
                     errors.add("! listPosOpen size: " + listPosOpen.size());
@@ -2639,34 +2656,38 @@ public class IndexController {
             return res;
         }
 
-        prevStockCards = viewServices.listPreviousTStockCard(balance);
-        if (!prevStockCards.isEmpty()) {
-            for (int i = 0; i < prevStockCards.size(); i++) {
-                var pStockCard = prevStockCards.get(i);
-                double operation = Double.parseDouble(pStockCard.getOrDefault("qtyBeginning", "0").toString()) + Double.parseDouble(pStockCard.getOrDefault("qtyIn", "0").toString()) - Double.parseDouble(pStockCard.getOrDefault("qtyOut", "0").toString());
-                NumberFormat format = new DecimalFormat("#.####");
-                Map<String, String> scardParams = new HashMap();
-                scardParams.put("outletCode", pStockCard.get("outletCode").toString());
-                scardParams.put("itemCode", pStockCard.get("itemCode").toString());
-                scardParams.put("itemCost", pStockCard.get("itemCost").toString());
-                scardParams.put("qtyBeginning", format.format(operation));
-                scardParams.put("qtyIn", "0");
-                scardParams.put("qtyOut", "0");
-                scardParams.put("remark", pStockCard.getOrDefault("remark", " ").toString());
-                scardParams.put("userUpd", balance.getOrDefault("userUpd", "SYSTEM"));
-                processServices.insertTStockCard(scardParams);
+        // todo
+            try {
+                processServices.insertTStockCard(balance);
+            } catch (Exception e){
+                errors.add("insertTStockCard failed: " + e.getMessage());
             }
-            processServices.insertTEodHist(balance);
-            processServices.insertTSummMpcs(balance);
-            processServices.increaseTransDateMOutlet(balance);
-        } else {
-            errors.add("! prevStockCards size isEmpty");
-            d.put("errors", errors);
-            d.put("message", "Process End of Day Failed");
-        }
+            try {
+                processServices.insertTEodHist(balance);
+            } catch (Exception e){
+                errors.add("insertTEodHist failed: " + e.getMessage());
+            }
+            try {
+                processServices.insertTSummMpcs(balance);
+            } catch (Exception e){
+                errors.add("insertTSummMpcs failed: " + e.getMessage());
+            }
+            try {
+                processServices.updateOrderEntryExpired(balance);
+            } catch (Exception e){
+                errors.add("updateOrderEntryExpired failed: " + e.getMessage());
+            }
+            try {
+                processServices.increaseTransDateMOutlet(balance);
+            } catch (Exception e){
+                errors.add("increaseTransDateMOutlet failed: " + e.getMessage());
+            }
 
         data.add(d);
         res.setData(data);
+        double elapsedTimeSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
+        System.err.println("Finished End of Day Process after: " + elapsedTimeSeconds + " seconds");
+        res.setDraw((int) elapsedTimeSeconds );
         return res;
     }
     ////////////Done method for process Last Eod///////////

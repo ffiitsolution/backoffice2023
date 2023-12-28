@@ -60,14 +60,14 @@ WHERE a.STATUS = $P{status} ORDER BY a.RECIPE_CODE, c.PRODUCT_CODE, b.ITEM_CODE 
         <groupFooter>
             <band height="18">
                 <textField>
-                    <reportElement isPrintRepeatedValues="false" x="165" y="0" width="84" height="15" uuid="6902e52d-ac0c-416d-b6c5-4a696aa8840c"/>
+                    <reportElement isPrintRepeatedValues="false" x="140" y="0" width="84" height="15" uuid="6902e52d-ac0c-416d-b6c5-4a696aa8840c"/>
                     <textElement textAlignment="Right">
                         <font size="8"/>
                     </textElement>
                     <textFieldExpression><![CDATA["+  " + $F{PRODUCT_CODE} + "    "]]></textFieldExpression>
                 </textField>
                 <textField>
-                    <reportElement isPrintRepeatedValues="false" x="248" y="0" width="231" height="15" uuid="ba3f0796-073d-4d64-a863-a8b0c8787bca"/>
+                    <reportElement isPrintRepeatedValues="false" x="228" y="0" width="231" height="15" uuid="ba3f0796-073d-4d64-a863-a8b0c8787bca"/>
                     <textElement>
                         <font size="8"/>
                     </textElement>

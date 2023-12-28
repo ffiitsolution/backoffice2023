@@ -254,4 +254,13 @@ public class ProcessServices {
         dao.kirimDeloveryOrder(resource);
     }
 
+    ///////////////NEW METHOD update t_order_header jika expired setelah End of Day - M Joko 27/12/2023////   
+    public void updateOrderEntryExpired(Map<String, String> balancing) {
+        dao.updateOrderEntryExpired(balancing);
+    }
+
+    ///////////////NEW METHOD kirim ulang return order - M Joko 27/12/2023////   
+    public boolean sendReturnOrderToWH(JsonObject object) {
+        return dao.sendReturnOrderToWH(object);
+    }
 }

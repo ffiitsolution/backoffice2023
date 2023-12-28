@@ -412,12 +412,6 @@ public class ViewServices {
     }
     ////////////Done method for query M POS yg Aktif ////////////
 
-    ////////////New method for query T Stock Card sebelumnya - M Joko 12-Dec-2023////////////
-    public List<Map<String, Object>> listPreviousTStockCard(Map<String, String> ref) {
-        return viewDao.listPreviousTStockCard(ref);
-    }
-    ////////////Done method for query T Stock Card sebelumnya ////////////
-
     ///////////////NEW METHOD LIST RECEIVING BY DANI 12 DECEMBER 2023////
     public List<Map<String, Object>> listReceivingAll(Map<String, String> ref) {
         return viewDao.listReceivingAll(ref);
