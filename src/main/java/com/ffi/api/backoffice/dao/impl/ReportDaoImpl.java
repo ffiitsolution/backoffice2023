@@ -1118,6 +1118,13 @@ public class ReportDaoImpl implements ReportDao {
             query = "SELECT OUTLET_CODE, OUTLET_NAME FROM M_OUTLET WHERE \"TYPE\" = 'HO' ORDER BY OUTLET_CODE ASC";
         } else if (param.get("typeReport").equals("Item Barang") && param.get("typeParam").equals("Jenis Gudang")) {
             query = "SELECT CODE, DESCRIPTION FROM M_GLOBAL WHERE COND = 'WAREHOUSE' AND STATUS = 'A' ORDER BY CODE ASC";
+        } else if (param.get("typeReport").equals("Item Selected by Time") && param.get("typeParam").equals("Kode Item")) {
+            query = "SELECT a.MENU_ITEM_CODE, b.ITEM_DESCRIPTION FROM T_POS_BILL_ITEM a LEFT JOIN M_ITEM b ON" +
+                    " a.MENU_ITEM_CODE = b.ITEM_CODE WHERE a.TRANS_DATE BETWEEN :fromDate AND :toDate AND " +
+                    "a.OUTLET_CODE = :outletCode GROUP BY a.MENU_ITEM_CODE, b.ITEM_DESCRIPTION ORDER BY a.MENU_ITEM_CODE ASC";
+            hashMap.put("outletCode", param.get("outletCode"));
+            hashMap.put("fromDate", param.get("fromDate"));
+            hashMap.put("toDate", param.get("toDate"));
         }
 
         assert query != null;
@@ -1197,6 +1204,9 @@ public class ReportDaoImpl implements ReportDao {
                 } else if (param.get("typeReport").equals("Item Barang") && param.get("typeParam").equals("Jenis Gudang")) {
                     rt.put("code", rs.getString("CODE"));
                     rt.put("description", rs.getString("DESCRIPTION"));
+                } else if (param.get("typeReport").equals("Item Selected by Time") && param.get("typeParam").equals("Kode Item")) {
+                    rt.put("code", rs.getString("MENU_ITEM_CODE"));
+                    rt.put("description", rs.getString("ITEM_DESCRIPTION"));
                 }
                 return rt;
             }
@@ -2243,6 +2253,20 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("outletCode", param.get("outletCode"));
 
         ClassPathResource classPathResource = new ClassPathResource("report/returnOrderTransactions.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
+
+    @Override
+    public JasperPrint jasperReportItemSelectedByTime(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        Map<String, Object> hashMap = new HashMap<>();
+
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("kodeItem", param.get("kodeItem"));
+        hashMap.put("fromDate", param.get("fromDate"));
+        hashMap.put("toDate", param.get("toDate"));
+
+        ClassPathResource classPathResource = new ClassPathResource("report/ReportItemSelectedbyTime.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }
