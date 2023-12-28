@@ -245,6 +245,15 @@ public class ProcessServices {
     }
     ////////////////////////DONE///////////////////////
 
+    //////////// NEW METHOD INSERT DELIVERY ORDER BY DANI 27 DEC 2023
+    public void insertUpdateDeliveryOrder(Map<String, Object> resource) throws Exception {
+        dao.insertUpdateDeliveryOrder(resource);
+    }
+
+    public void kirimDeliveryOrder(Map<String, String> resource) throws Exception {
+        dao.kirimDeloveryOrder(resource);
+    }
+
     ///////////////NEW METHOD update t_order_header jika expired setelah End of Day - M Joko 27/12/2023////   
     public void updateOrderEntryExpired(Map<String, String> balancing) {
         dao.updateOrderEntryExpired(balancing);

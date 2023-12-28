@@ -2222,7 +2222,8 @@ public class ReportDaoImpl implements ReportDao {
 
         hashMap.put("user", param.get("user"));
         hashMap.put("city", "X_" + param.get("city"));
-        hashMap.put("recvNo", param.get("recvNo"));
+        hashMap.put("recvNo", param.get("recvNo"));       
+         hashMap.put("noOrder", param.get("noOrder"));
         hashMap.put("outletCode", param.get("outletCode"));
 
         ClassPathResource classPathResource = new ClassPathResource("report/receivingTransactions.jrxml");

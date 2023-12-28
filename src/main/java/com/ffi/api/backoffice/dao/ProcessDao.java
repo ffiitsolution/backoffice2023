@@ -145,4 +145,10 @@ public interface ProcessDao {
     
     ///////////////NEW METHOD kirim ulang return order - M Joko 27/12/2023//// 
     public boolean sendReturnOrderToWH(JsonObject object);
+    
+    ///////////// NEW METHOD INSERT OR UPDATE DELIVERY ORDER by Dani 27 Dec 2023
+    public void insertUpdateDeliveryOrder(Map<String, Object> mapping) throws Exception;
+
+    public void kirimDeloveryOrder(Map<String, String> mapping) throws Exception;
+
 }
