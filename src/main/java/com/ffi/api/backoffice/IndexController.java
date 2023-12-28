@@ -2241,7 +2241,7 @@ public class IndexController {
         JsonObject balance = gsn.fromJson(param, JsonObject.class);
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         ResponseMessage rm = new ResponseMessage();
-        if(balance.has("kirim") && balance.has("returNo")){
+        if(balance.has("kirim") && balance.has("returnNo")){
             // kirim 
             // todo:
             if(processServices.sendReturnOrderToWH(balance)){

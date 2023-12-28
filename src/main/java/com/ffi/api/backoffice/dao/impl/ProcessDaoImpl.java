@@ -1721,17 +1721,19 @@ public class ProcessDaoImpl implements ProcessDao {
         // todo:
         String outletCode = balance.getAsJsonPrimitive("outletCode").getAsString();
         String returnNo = balance.getAsJsonPrimitive("returnNo").getAsString();
+        String userUpd = balance.getAsJsonPrimitive("userUpd").getAsString();
         
         // insert t_stock_card_detail
         String qryRO = "SELECT h.type_return, h.return_to, h.remark, TO_CHAR(h.return_date, 'DD-MON-YY') AS return_date, d.outlet_code, d.return_id, d.return_no, d.item_code, d.qty_warehouse, d.uom_warehouse, d.qty_purchase, d.uom_purchase, d.total_qty, d.user_upd, TO_CHAR(d.date_upd, 'DD-MON-YY') AS date_upd, d.time_upd FROM t_return_detail d JOIN t_return_header h ON d.return_no = h.return_no AND d.outlet_code = h.outlet_code WHERE d.return_no = :returnNo AND d.outlet_code = :outletCode";
         Map<String, Object> prmRO = new HashMap<>();
         prmRO.put("returnNo", returnNo);
         prmRO.put("outletCode", outletCode);
+        prmRO.put("userUpd", userUpd);
         List<Map<String, Object>> listDetailRO = jdbcTemplate.query(qryRO, prmRO, new DynamicRowMapper());
         System.err.println("listDetailRO to wh : " + listDetailRO);
         
         if(sendReturnOrderDetailToWH(listDetailRO)){
-            String qryUpdStatus = "update t_return_header set status = 1 where return_no = :returNo and outlet_code = :outletCode";
+            String qryUpdStatus = "update t_return_header set status = 1 where return_no = :returnNo and outlet_code = :outletCode";
             try{
                 jdbcTemplate.update(qryUpdStatus, prmRO);
                 return true;
@@ -2437,7 +2439,36 @@ public class ProcessDaoImpl implements ProcessDao {
     // 27/12/23 update ambil item dari m_item, bukan prev Stock Card
     @Override
     public void insertTStockCard(Map<String, String> balance) {
-        String query = "insert into t_stock_card (SELECT :outletCode AS OUTLET_CODE, (SELECT trans_date FROM m_outlet WHERE outlet_code = :outletCode) AS TRANS_DATE, mi.ITEM_CODE, 0 AS ITEM_COST, (nvl(tsc.qty_beginning,0) + nvl(tsc.qty_in,0) - nvl(tsc.qty_out,0)) AS QTY_BEGINNING, 0 AS QTY_IN, 0 AS QTY_OUT, 'EOD' AS REMARK, :userUpd AS USER_UPD, TO_CHAR(SYSDATE, 'DD MON RR') AS DATE_UPD, TO_CHAR(SYSDATE, 'HH24MISS') AS TIME_UPD FROM m_item mi LEFT JOIN T_STOCK_CARD tsc ON tsc.trans_date = (SELECT trans_date FROM m_outlet WHERE outlet_code = :outletCode) AND tsc.item_code = mi.item_code WHERE mi.FLAG_STOCK = 'Y' AND mi.FLAG_MATERIAL = 'Y' AND mi.STATUS = 'A')";
+        String query = """
+                INSERT INTO t_stock_card (
+                SELECT
+                    :outletCode AS OUTLET_CODE,
+                    mi.TRANS_DATE+1,
+                    mi.ITEM_CODE,
+                    0 AS ITEM_COST,
+                    (NVL(tsc.qty_beginning, 0) + NVL(tsc.qty_in, 0) - NVL(tsc.qty_out, 0)) AS QTY_BEGINNING,
+                    0 AS QTY_IN,
+                    0 AS QTY_OUT,
+                    'EOD' AS REMARK,
+                    :userUpd AS USER_UPD,
+                    TO_CHAR(SYSDATE, 'DD MON RR') AS DATE_UPD,
+                    TO_CHAR(SYSDATE, 'HH24MISS') AS TIME_UPD
+                FROM
+                    (
+                        SELECT
+                            (SELECT trans_date FROM m_outlet WHERE outlet_code = :outletCode) AS TRANS_DATE,
+                            ITEM_CODE
+                        FROM
+                            m_item
+                        WHERE
+                            FLAG_STOCK = 'Y'
+                            AND FLAG_MATERIAL = 'Y'
+                            AND STATUS = 'A'
+                    ) mi
+                LEFT JOIN
+                    T_STOCK_CARD tsc ON tsc.trans_date = mi.TRANS_DATE AND tsc.item_code = mi.ITEM_CODE
+                )
+                       """;
         Map param = new HashMap();
         param.put("outletCode", balance.get("outletCode"));
         param.put("userUpd", balance.getOrDefault("userUpd", "SYSTEM"));
@@ -2529,14 +2560,17 @@ public class ProcessDaoImpl implements ProcessDao {
         Map<String, Object> prmOE = new HashMap<>();
         prmOE.put("outletCode", balance.get("outletCode"));
         List<Map<String, Object>> listOE = jdbcTemplate.query(qryList, prmOE, new DynamicRowMapper());
-        for (int i = 0; i < listOE.size(); i++) {
-            Map<String, Object> orderEntry = listOE.get(i);
-            Map prmUpd = new HashMap();
-            prmUpd.put("outletCode", orderEntry.get("outletCode"));
-            prmUpd.put("orderNumber", orderEntry.get("orderNumber"));
-            String qryUpd = "update t_order_header set status = 0 where order_number = :orderNumber and outlet_code = :outletCode";
-            System.err.println("updateOrderEntryExpired (" + orderEntry.get("orderNumber") + "): " + qryUpd);
-            jdbcTemplate.update(qryUpd,prmUpd);
+        if(!listOE.isEmpty()){
+            for (int i = 0; i < listOE.size(); i++) {
+                Map<String, Object> orderEntry = listOE.get(i);
+                System.err.println("orderEntry (" + i + "): " + orderEntry);
+                Map prmUpd = new HashMap();
+                prmUpd.put("outletCode", orderEntry.get("outletCode"));
+                prmUpd.put("orderNo", orderEntry.get("orderNo"));
+                String qryUpd = "update t_order_header set status = 0 where order_no = :orderNo and outlet_code = :outletCode";
+                System.err.println("updateOrderEntryExpired (" + orderEntry.get("orderNo") + "): " + qryUpd);
+                jdbcTemplate.update(qryUpd,prmUpd);
+            }
         }
     }
 }
