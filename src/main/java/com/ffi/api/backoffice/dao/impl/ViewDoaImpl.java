@@ -600,6 +600,16 @@ public class ViewDoaImpl implements ViewDao {
         Map prm = new HashMap();
         System.err.println("q :" + qry);
         prm.put("outlet", param.get("outlet"));
+        var statusParam = param.get("status");
+        System.err.println("statusParam " + statusParam);
+        if ("A".equals(statusParam)) {
+            qry += " AND STATUS = 'A' ";
+        } if("I".equals(statusParam)){
+            qry += " AND STATUS = 'I' ";
+        } else {
+            qry += " AND STATUS IN ('A', 'I' )";
+        }
+        
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
