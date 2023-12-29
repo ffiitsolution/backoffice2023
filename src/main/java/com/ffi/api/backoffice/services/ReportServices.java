@@ -186,4 +186,8 @@ public class ReportServices {
     public JasperPrint jasperReportReturnOrderTransactions(Map<String, Object> param, Connection connection) throws JRException, IOException {
         return dao.jasperReportReturnOrderTransactions(param, connection);
     }
+
+    public JasperPrint jasperReportItemSelectedByTime(Map<String, Object> param, Connection connection) throws  JRException, IOException {
+        return dao.jasperReportItemSelectedByTime(param, connection);
+    }
 }
