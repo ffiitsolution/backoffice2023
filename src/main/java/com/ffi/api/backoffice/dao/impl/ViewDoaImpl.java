@@ -3629,7 +3629,7 @@ public class ViewDoaImpl implements ViewDao {
         String json = "";
         try {
             CloseableHttpClient client = HttpClients.createDefault();
-            String url = "http://localhost:60552/warehouse/get-order-entry-status";
+            String url = this.warehouseEndpoint + "/get-order-entry-status";
             HttpPost post = new HttpPost(url);
             post.setHeader("Accept", "*/*");
             post.setHeader("Content-Type", "application/json");
