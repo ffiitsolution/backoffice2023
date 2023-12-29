@@ -592,6 +592,7 @@ public class ProcessDaoImpl implements ProcessDao {
         String year = dfYear.format(tgl);
 
         String opNo = opnameNumber(year, month, balance.getTransType(), balance.getOutletCode());
+        balance.setOpnameNo(opNo);
 
         String qy = "INSERT INTO T_OPNAME_HEADER (OUTLET_CODE,CD_TEMPLATE,OPNAME_NO,OPNAME_DATE,REMARK,STATUS,USER_UPD,DATE_UPD,TIME_UPD) "
                 + "values(:outletCode,:cdTemplate,:opnameNo,:opnameDate,:remark,:status,:userUpd,:dateUpd,:timeUpd)";
@@ -622,7 +623,6 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("month", month);
         param.put("transType", balance.getTransType());
         jdbcTemplate.update(qry, param);
-        balance.setOpnameNo(opNo);
     }
 
     public String opnameNumber(String year, String month, String transType, String outletCode) {
@@ -710,7 +710,7 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("status", status);
         String qy = "update t_opname_header set status =:status WHERE OPNAME_NO = :opnameNo and OUTLET_CODE= :outletCode";
         jdbcTemplate.update(qy, param);
-        if(status == 1){
+        if(status == 1 || status == '1'){
             itemOpnameToStockCard(balance);
             // update by M Joko 20-dec-23 
             updateMCounterAfterStockOpname(balance);
@@ -725,6 +725,7 @@ public class ProcessDaoImpl implements ProcessDao {
             param.put("userUpd", balance.getOrDefault("userUpd", "SYSTEM"));
             param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
             param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
+            // hanya yg ada nilai di in dan out yg dimasukkan ke stock card
             String qryListStockOpname = "SELECT * FROM ( SELECT od.OUTLET_CODE, (SELECT trans_date FROM m_outlet WHERE outlet_code = od.outlet_code) AS TRANS_DATE, od.ITEM_CODE, 'SOP' AS CD_TRANS, CASE WHEN od.qty_freeze < od.total_qty THEN od.total_qty - od.qty_freeze ELSE 0 END AS QUANTITY_IN, CASE WHEN od.qty_freeze > od.total_qty THEN od.qty_freeze - od.total_qty ELSE 0 END AS QUANTITY, :userUpd AS USER_UPD, :dateUpd AS DATE_UPD, :timeUpd AS TIME_UPD FROM T_OPNAME_DETAIL od WHERE od.opname_no = :opnameNo ) WHERE QUANTITY_IN NOT IN (0, '0') UNION ALL SELECT * FROM ( SELECT od.OUTLET_CODE, (SELECT trans_date FROM m_outlet WHERE outlet_code = od.outlet_code) AS TRANS_DATE, od.ITEM_CODE, 'SOP' AS CD_TRANS, CASE WHEN od.qty_freeze < od.total_qty THEN od.total_qty - od.qty_freeze ELSE 0 END AS QUANTITY_IN, CASE WHEN od.qty_freeze > od.total_qty THEN od.qty_freeze - od.total_qty ELSE 0 END AS QUANTITY, :userUpd AS USER_UPD, :dateUpd AS DATE_UPD, :timeUpd AS TIME_UPD FROM T_OPNAME_DETAIL od WHERE od.opname_no = :opnameNo ) WHERE QUANTITY NOT IN (0, '0')";
         
         String qryToStockCardDetail = "insert into t_stock_card_detail ( " + qryListStockOpname + " )";
@@ -733,7 +734,7 @@ public class ProcessDaoImpl implements ProcessDao {
         String qryUpdateStockCard = """
                                     UPDATE t_stock_card sc
                                     SET 
-                                        sc.QTY_IN = sc.QTY_IN + NVL(
+                                        sc.QTY_IN = NVL(sc.QTY_IN,0) + NVL(
                                             (SELECT tsd.QUANTITY_IN
                                              FROM t_stock_card_detail tsd
                                              WHERE tsd.ITEM_CODE = sc.ITEM_CODE
@@ -741,7 +742,7 @@ public class ProcessDaoImpl implements ProcessDao {
                                                AND tsd.CD_TRANS = 'SOP'), 
                                             0
                                         ),
-                                        sc.QTY_OUT = sc.QTY_OUT + NVL(
+                                        sc.QTY_OUT = NVL(sc.QTY_OUT) + NVL(
                                             (SELECT tsd.QUANTITY
                                              FROM t_stock_card_detail tsd
                                              WHERE tsd.ITEM_CODE = sc.ITEM_CODE
@@ -1731,7 +1732,6 @@ public class ProcessDaoImpl implements ProcessDao {
        // kirim ulang return order
     @Override
     public boolean sendReturnOrderToWH(JsonObject balance) {
-        // todo:
         String outletCode = balance.getAsJsonPrimitive("outletCode").getAsString();
         String returnNo = balance.getAsJsonPrimitive("returnNo").getAsString();
         String userUpd = balance.getAsJsonPrimitive("userUpd").getAsString();
@@ -1769,10 +1769,8 @@ public class ProcessDaoImpl implements ProcessDao {
             System.out.println("sendReturnOrderDetailToWH json RO: " + gson.toJson(listDetailRO));
             ResponseEntity<String> responseEntity = restApiUtil.post(url, listDetailRO, null);
             String responseBody = responseEntity.getBody();
-            int statusCode = responseEntity.getStatusCodeValue();
             System.out.println("sendReturnOrderDetailToWH Response: " + responseBody);
-            System.out.println("sendReturnOrderDetailToWH Status Code: " + statusCode);
-            return statusCode >= 200 && statusCode < 300;
+            return true;
         } catch (Exception e) {
             System.out.println("sendReturnOrderDetailToWH error: " + e.getMessage());
             return false;
@@ -2569,7 +2567,7 @@ public class ProcessDaoImpl implements ProcessDao {
     ////////////New method for update t_order_header jika expired setelah End of Day - M Joko M 27-Dec-2023////////////
     @Override
     public void updateOrderEntryExpired(Map<String, String> balance) {
-        String qryList = "SELECT * FROM t_order_header WHERE outlet_code = :outletCode AND status = 1 AND dt_expired = (select trans_date from m_outlet where outlet_code=:outletCode)";
+        String qryList = "SELECT * FROM t_order_header WHERE outlet_code = :outletCode AND status = 0 AND dt_expired <= (select trans_date from m_outlet where outlet_code=:outletCode)";
         Map<String, Object> prmOE = new HashMap<>();
         prmOE.put("outletCode", balance.get("outletCode"));
         List<Map<String, Object>> listOE = jdbcTemplate.query(qryList, prmOE, new DynamicRowMapper());
@@ -2580,7 +2578,7 @@ public class ProcessDaoImpl implements ProcessDao {
                 Map prmUpd = new HashMap();
                 prmUpd.put("outletCode", orderEntry.get("outletCode"));
                 prmUpd.put("orderNo", orderEntry.get("orderNo"));
-                String qryUpd = "update t_order_header set status = 0 where order_no = :orderNo and outlet_code = :outletCode";
+                String qryUpd = "update t_order_header set status = 2 where order_no = :orderNo and outlet_code = :outletCode";
                 System.err.println("updateOrderEntryExpired (" + orderEntry.get("orderNo") + "): " + qryUpd);
                 jdbcTemplate.update(qryUpd,prmUpd);
             }
