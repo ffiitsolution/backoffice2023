@@ -1049,7 +1049,7 @@ public class ProcessDaoImpl implements ProcessDao {
                     + "         TO_CHAR (ORDER_DATE, 'DD-MON-YY') AS TGL_PESAN, "
                     + "         TO_CHAR (DT_DUE, 'DD-MON-YY') AS TGL_BRG_DIKIRIM, "
                     + "         TO_CHAR (DT_EXPIRED, 'DD-MON-YY') AS TGL_BATAS_EXP, "
-                    + "         REMARK AS KETERANGAN1, "
+                    + "         CASE WHEN REMARK IS NULL THEN ' ' ELSE REMARK END AS KETERANGAN1, "
                     + "         ' ' AS KETERANGAN2, "
                     + "         USER_UPD AS USER_PROSES_PEMESAN, "
                     + "         TO_CHAR (ORDER_DATE, 'DD-MON-YY') AS TGL_PROSES_PEMESAN, "
