@@ -3620,5 +3620,44 @@ public class ViewDoaImpl implements ViewDao {
         }
         return list.get(0);   
     }
+
+    // Get Order Entry status from inv by Fathur 29 Dec 2023 // 
+    @Override
+    public Map<String, Object> getOrderEntryStatusFromInv (Map<String, String> mapping) {
+        Map<String, Object> map1 = new HashMap<String, Object>();
+        Gson gson = new Gson();
+        String json = "";
+        try {
+            CloseableHttpClient client = HttpClients.createDefault();
+            String url = "http://localhost:60552/warehouse/get-order-entry-status";
+            HttpPost post = new HttpPost(url);
+            post.setHeader("Accept", "*/*");
+            post.setHeader("Content-Type", "application/json");
+            
+            json = new Gson().toJson(mapping);
+            StringEntity entity = new StringEntity(json);
+            post.setEntity(entity);
+            CloseableHttpResponse response = client.execute(post);
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(
+                            (response.getEntity().getContent())));
+            StringBuilder content = new StringBuilder();
+            String line;
+            while (null != (line = br.readLine())) {
+                content.append(line);
+            }
+            String result = content.toString();
+
+            map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
+            }.getType());
+            
+        
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return map1;
+    }
+    // Done get Order Entry status from inv // 
+
 }
  
