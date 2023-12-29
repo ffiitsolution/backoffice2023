@@ -18,7 +18,11 @@
     </parameter>
     <queryString>
         <![CDATA[/* Formatted on 10/9/2023 4:27:48 PM (QP5 v5.114.809.3010) */
-SELECT   OUTLET_CODE,
+SELECT
+	*
+FROM
+	(
+	SELECT   OUTLET_CODE,
          outlet_name,
          item_code,
          item_description,
@@ -447,7 +451,9 @@ SELECT   OUTLET_CODE,
                               ORDER BY   item_code ASC, trans_date ASC, NUMB ASC)
                      WHERE   ITEM_CODE IN ($P!{itemCode})
                              AND trans_date BETWEEN $P{fromDate}
-                                                AND  $P{toDate}))]]>
+                                                AND  $P{toDate}))
+	) WHERE SALDO_AWAL IS NOT NULL
+]]>
     </queryString>
     <field name="OUTLET_CODE" class="java.lang.String"/>
     <field name="OUTLET_NAME" class="java.lang.String"/>
@@ -844,7 +850,7 @@ SELECT   OUTLET_CODE,
                 </rectangle>
                 <staticText>
                     <reportElement x="212" y="30" width="110" height="15" uuid="518c40b1-ad3e-4fb6-ba89-7fc2982b80b7"/>
-                    <text><![CDATA[RECIEVE]]></text>
+                    <text><![CDATA[RECEIVE]]></text>
                 </staticText>
                 <staticText>
                     <reportElement x="411" y="0" width="58" height="15" uuid="e7acc9af-49a1-4176-83ad-6e219ea092ac"/>
@@ -871,6 +877,7 @@ SELECT   OUTLET_CODE,
                 </textField>
                 <textField pattern="#,##0.00">
                     <reportElement x="331" y="194" width="68" height="16" uuid="ca0c3775-b9ae-4d00-8684-50116f0e94e5"/>
+                    <textElement textAlignment="Right"/>
                     <textFieldExpression><![CDATA[$V{TOTALIN}]]></textFieldExpression>
                 </textField>
                 <textField pattern="#,##0.00">
