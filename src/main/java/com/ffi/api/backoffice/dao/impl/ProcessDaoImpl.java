@@ -1228,6 +1228,9 @@ public class ProcessDaoImpl implements ProcessDao {
 
         // call updateMCounterSop to update counter rcv by Dani 20 Desc 2023
         updateMCounterSop(balancing.getAsJsonObject().getAsJsonPrimitive("transType").getAsString(),balancing.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
+        // update status t_order_header menjadi close by Dani 29 Dec 2023
+        String qu = " UPDATE T_ORDER_HEADER SET STATUS = '1' WHERE ORDER_NO = :ord_no ";
+        jdbcTemplate.update(qu, param);
     }
 
     public void InsertRecvDetail(Map<String, String> balance) {

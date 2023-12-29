@@ -6,6 +6,7 @@ package com.ffi.api.backoffice.dao.impl;
 
 import com.ffi.api.backoffice.dao.ViewDao;
 import com.ffi.api.backoffice.model.ParameterLogin;
+import com.ffi.api.backoffice.utils.DynamicRowMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -13,6 +14,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -1830,6 +1832,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "rc.recv_no, "
                 + "rc.recv_date, "
                 + "rc.order_no, "
+                + "CASE WHEN ord.ORDER_TO = '3' THEN 'Gudang' WHEN ord.ORDER_TO = '2' THEN 'Outlet' WHEN ord.ORDER_TO = '1' THEN 'Canvasing' ELSE 'Supplier' END as ORDER_TO,"
                 + "sp.supplier_name, "
                 + "CASE "
                 + "WHEN rc.order_no LIKE '%P%' AND sp.supplier_name IS NOT NULL THEN 'Pembelian' || ' ' || 'Supplier' || ' ' || sp.SUPPLIER_NAME "
@@ -1877,6 +1880,7 @@ public class ViewDoaImpl implements ViewDao {
                 Map<String, Object> rt = new HashMap<String, Object>();
                 rt.put("noTerima", rs.getString("recv_no"));
                 rt.put("tanggal", rs.getString("recv_date"));
+                rt.put("orderTo", rs.getString("order_to"));
                 rt.put("noOrder", rs.getString("order_no"));
                 rt.put("suppName", rs.getString("supplier_name"));
                 rt.put("remark", rs.getString("remark"));
@@ -3580,13 +3584,24 @@ public class ViewDoaImpl implements ViewDao {
             }.getType());
 
             JsonObject job = gson.fromJson(result, JsonObject.class);
-            JsonArray elem = job.getAsJsonArray("item");
+            JsonArray element = job.getAsJsonArray("item");
+            JsonObject elem = element.get(0).getAsJsonObject();
+            JsonArray details = elem.getAsJsonArray("details");
+            details.forEach(dtl -> {
+                String itemCode = dtl.getAsJsonObject().getAsJsonPrimitive("itemCode").getAsString();
+                String strq = "SELECT CONV_WAREHOUSE, ITEM_DESCRIPTION FROM M_ITEM WHERE ITEM_CODE = :itemCode";
+                Map<String, String> map = new HashMap<>();
+                map.put("itemCode", itemCode);
+                Map<String, Object> a = jdbcTemplate.queryForObject(strq, map, new DynamicRowMapper());
+                dtl.getAsJsonObject().addProperty("itemDescription", (String) a.get("itemDescription"));
+                dtl.getAsJsonObject().addProperty("convWarehouse", (BigDecimal) a.get("convWarehouse"));
+            });
+            list = gson.fromJson(element, new TypeToken<List<Map<String, Object>>>() {}.getType());
 
-            list = gson.fromJson(elem, new TypeToken<List<Map<String, Object>>>() {
-            }.getType());
         } catch (Exception e) {
             e.printStackTrace();
         }
         return list.get(0);   
     }
 }
+ 
