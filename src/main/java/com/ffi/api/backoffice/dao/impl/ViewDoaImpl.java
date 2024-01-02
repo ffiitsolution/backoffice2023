@@ -2504,6 +2504,12 @@ public class ViewDoaImpl implements ViewDao {
                 prm.put("toDate", param.get("toDate"));
                 prm.put("kodeItem", param.get("kodeItem"));
             }
+            case "deliveryOrderTransactions" -> {
+                query = "select COUNT(*) FROM T_DEV_DETAIL WHERE OUTLET_CODE = :outletCode AND REQUEST_NO = :requestNo AND DELIVERY_NO = :deliveryNo";
+                prm.put("outletCode", param.get("outletCode"));
+                prm.put("requestNo", param.get("requestNo"));
+                prm.put("deliveryNo", param.get("deliveryNo"));
+            }
         }
         assert query != null;
         return Integer.valueOf(Objects.requireNonNull(jdbcTemplate.queryForObject(query, prm, new RowMapper<String>() {
@@ -3397,7 +3403,7 @@ public class ViewDoaImpl implements ViewDao {
     public List<Map<String, Object>> listDeliveryOrderHdr(Map<String, String> mapping) {
         mapping.put("status", "%"+ (mapping.get("status") != null ? mapping.get("status") : "") + "%");
         String qry = "SELECT hdr.OUTLET_TO, mot.OUTLET_NAME as OUTLET_TO_NAME, hdr.OUTLET_CODE , hdr.REMARK, hdr.REQUEST_NO, hdr.DELIVERY_NO, "
-        + " to_char(hdr.DELIVERY_DATE, 'dd/mm/yyyy') as DELIVERY_DATE, CASE WHEN hdr.STATUS = '0' THEN 'Open' WHEN hdr.STATUS = '1' THEN 'Close' WHEN hdr.STATUS = '2' THEN 'Cancel' END as STATUS "
+        + " to_char(hdr.DELIVERY_DATE, 'DD-Mon-YYYY') as DELIVERY_DATE, CASE WHEN hdr.STATUS = '0' THEN 'Open' WHEN hdr.STATUS = '1' THEN 'Close' WHEN hdr.STATUS = '2' THEN 'Cancel' END as STATUS "
         + " FROM T_DEV_HEADER hdr LEFT JOIN M_OUTLET mot ON hdr.OUTLET_TO = mot.OUTLET_CODE "
          + " WHERE hdr.DELIVERY_DATE >=:dateStart AND hdr.DELIVERY_DATE <=:dateEnd"
          + " AND hdr.OUTLET_CODE = :outletCode "
@@ -3457,7 +3463,7 @@ public class ViewDoaImpl implements ViewDao {
     public Map<String, Object> getDeliveryOrder(Map<String, String> mapping) {
 
         String queryHeader = "SELECT hdr.OUTLET_TO, mot.OUTLET_NAME as OUTLET_TO_NAME, hdr.OUTLET_CODE , hdr.REMARK, hdr.REQUEST_NO, hdr.DELIVERY_NO, "
-        + " to_char(hdr.DELIVERY_DATE, 'dd/mm/yyyy') as DELIVERY_DATE, CASE WHEN hdr.STATUS = '0' THEN 'Open' WHEN hdr.STATUS = '1' THEN 'Close' WHEN hdr.STATUS = '2' THEN 'Cancel' END as STATUS "
+        + " to_char(hdr.DELIVERY_DATE, 'DD-Mon-YYYY') as DELIVERY_DATE, CASE WHEN hdr.STATUS = '0' THEN 'Open' WHEN hdr.STATUS = '1' THEN 'Close' WHEN hdr.STATUS = '2' THEN 'Cancel' END as STATUS "
         + " FROM T_DEV_HEADER hdr LEFT JOIN M_OUTLET mot ON hdr.OUTLET_TO = mot.OUTLET_CODE "
         + " WHERE hdr.OUTLET_CODE = :outletCode "
         + " AND hdr.OUTLET_TO = :outletTo "
