@@ -35,9 +35,9 @@ FROM
             WHEN CD_TRANS = 'DLV' THEN 'DELIVERY'
             WHEN CD_TRANS = 'RCV' THEN 'RECEIVE'
             WHEN CD_TRANS = 'WST' THEN 'WASTAGE '
-            WHEN CD_TRANS = 'RET' THEN 'RETUR'
+            WHEN CD_TRANS = 'RTR' THEN 'RETUR'
             WHEN CD_TRANS = 'SOP' THEN 'STOCK OPNAME'
-            ELSE 'SALDO AWAL'
+            WHEN CD_TRANS = 'SAL' THEN 'SALDO AWAL'
          END
             AS CD_TRANS,
          trans_date,
