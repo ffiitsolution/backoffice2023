@@ -476,4 +476,7 @@ public class ViewServices {
         return viewDao.getOrderOutletWarehouse(mapping);
     }
     
+    public Map<String, Object> getOrderEntryStatusFromInv(Map<String, String> mapping) {
+        return viewDao.getOrderEntryStatusFromInv(mapping);
+    }
 }

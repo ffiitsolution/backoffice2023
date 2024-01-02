@@ -269,4 +269,7 @@ public interface ViewDao {
     //////// NEW METHOD to get detail outlet to outlet from warehouse  BY DANI 28 DEC 2023
     public Map<String, Object> getOrderOutletWarehouse(Map<String, String> mapping);
     
+    // Get Order Entry status from inv by Fathur 29 Dec 2023 // 
+    public Map<String, Object> getOrderEntryStatusFromInv (Map<String, String> mapping);
+    
 }

@@ -768,7 +768,7 @@ public class ReportDaoImpl implements ReportDao {
         if (param.get("item").equals("Semua")){
             hashMap.put("itemName", "Semua");
         } else {
-            hashMap.put("itemName", param.get("item") + "-" + param.get("itemName"));
+            hashMap.put("itemName", param.get("item") + " - " + param.get("itemName"));
         }
 
         StringBuilder query = new StringBuilder();

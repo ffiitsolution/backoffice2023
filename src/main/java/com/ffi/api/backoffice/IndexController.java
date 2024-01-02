@@ -3036,4 +3036,21 @@ public class IndexController {
         }
         return rm;
     }
+    // Done
+
+    // Get Order Entry status from inv by Fathur 29 Dec 2023 // 
+    @RequestMapping(value = "/get-order-entry-status", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk get status delivery order from inv", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Map<String, Object> getOrderEntryStatusFromInv(@RequestBody String param) throws JRException, IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> data = gsn.fromJson(param, new TypeToken<Map<String, String>>() {
+        }.getType());
+        return viewServices.getOrderEntryStatusFromInv(data);
+    }
+    // Done get Order Entry status from inv // 
 }
