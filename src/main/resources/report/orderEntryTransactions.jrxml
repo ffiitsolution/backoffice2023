@@ -486,7 +486,7 @@ Barang]]></text>
 			</line>
 			<textField textAdjust="StretchHeight">
 				<reportElement x="26" y="81" width="310" height="11" uuid="fc0d55d1-b430-42bc-b709-df5d0285d5d8">
-					<printWhenExpression><![CDATA[$P{typeOrderEntry}.equals("Gudang")]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$P{typeOrderEntry}.equals("Gudang") || $P{typeOrderEntry}.equals("Supplier")]]></printWhenExpression>
 				</reportElement>
 				<textElement>
 					<font size="8"/>
