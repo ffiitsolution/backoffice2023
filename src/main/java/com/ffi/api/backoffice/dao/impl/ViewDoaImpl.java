@@ -2519,6 +2519,30 @@ public class ViewDoaImpl implements ViewDao {
                 prm.put("toDate", param.get("toDate"));
                 prm.put("kodeItem", param.get("kodeItem"));
             }
+            case "daftarMenu" -> {
+                query = "SELECT COUNT (*) from" + 
+                        "(select mmi.menu_group_code,mmi.menu_item_code, mg.description, mp.price, " + 
+                        "mmi.modifier_group1_Code, mmi.modifier_group2_code, mmi.modifier_group3_code, " + 
+                        "mmi.modifier_group4_code, mmi.modifier_group5_code, mmi.modifier_group6_code, " + 
+                        "mmi.modifier_group7_code, mmi.call_group_code " +
+                        "from m_menu_item mmi " + 
+                        "join m_global mg on mmi.menu_item_code = mg.code " +
+                        "join m_outlet_price mop on mmi.outlet_code = mop.outlet_code " + 
+                        "join m_price mp on mmi.menu_item_code = mp.menu_item_code and " + 
+                        "mop.price_type_code = mp.price_type_code " +
+                        "left join m_menu_item_limit mmil on " + 
+                        "mmi.region_code = mmil.region_code and mmi.outlet_code = mmil.outlet_code and " + 
+                        "mmi.menu_item_code = mmil.menu_item_code where mmi.outlet_code = :outletCode and " + 
+                        "mmi.menu_group_code in (select menu_group_code " + 
+                        "from m_menu_group_limit " + 
+                        "where order_type = :orderType) and mmi.status = :status and " +
+                        "mg.cond = 'ITEM' and mop.order_type = :orderType and (mmil.order_type   is null or " + 
+                        "mmil.order_type = :orderType) order by mmi.menu_group_code,mmi.seq)a " + 
+                        "LEFT JOIN M_GLOBAL b ON a.menu_group_code=b.code";
+                prm.put("outletCode", param.get("outletCode"));
+                prm.put("orderType", param.get("orderType"));
+                prm.put("status", param.get("status"));
+            }
         }
         assert query != null;
         return Integer.valueOf(Objects.requireNonNull(jdbcTemplate.queryForObject(query, prm, new RowMapper<String>() {
@@ -3665,5 +3689,14 @@ public class ViewDoaImpl implements ViewDao {
     }
     // Done get Order Entry status from inv // 
 
+
+    //////// NEW METHOD to get list daftar menu by Rafi 29 DEC 2023
+    public List<Map<String, Object>> getListDaftarMenuReport() {
+        String query = "SELECT DISTINCT (mmgl.ORDER_TYPE) AS ORDER_TYPE, mg.DESCRIPTION  FROM M_MENU_GROUP_LIMIT mmgl " + 
+                "LEFT JOIN M_GLOBAL mg ON mmgl.ORDER_TYPE = mg.CODE AND mg.COND = 'ORDER_TYPE' " + 
+                "ORDER BY ORDER_TYPE ASC ";
+
+        return jdbcTemplate.query(query, new HashMap(), new DynamicRowMapper());
+    }
 }
  

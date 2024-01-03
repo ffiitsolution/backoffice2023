@@ -3053,4 +3053,27 @@ public class IndexController {
         return viewServices.getOrderEntryStatusFromInv(data);
     }
     // Done get Order Entry status from inv // 
+
+    // Get List Daftar Menu Report  By Rafi 29 Des 2023
+    @RequestMapping(value = "/get-list-daftar-menu-report", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan get list report daftar menu", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage getListDaftarMenuReport() throws JRException, IOException, Exception {
+
+        var rm = new ResponseMessage();
+        try {
+            rm.setSuccess(true);
+            rm.setMessage("Success Successfuly");
+            rm.setItem(viewServices.getListDaftarMenuReport());
+        } catch (Exception e) {
+            e.printStackTrace();
+            rm.setSuccess(false);
+            rm.setMessage("Failed: " + e.getMessage());
+        }
+        return rm;
+    }
 }
