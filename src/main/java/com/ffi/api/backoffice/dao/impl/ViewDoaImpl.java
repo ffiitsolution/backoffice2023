@@ -2943,6 +2943,7 @@ public class ViewDoaImpl implements ViewDao {
     }
 
     ////////////New method for query stock card - Fathur 29-Nov-2023////////////
+    // Updated query 3-Jan-2024//
     @Override
     public List<Map<String, Object>> listQueryStockCard(Map<String, String> ref) {
         String city = "'X_" + getCity(ref.get("outletCode")) + "' ";
@@ -2957,7 +2958,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "AND SCARD.ITEM_CODE LIKE :itemCode "
                 + "AND CD_WAREHOUSE LIKE :cdWarehouse "
                 + "AND MITEM.FLAG_STOCK = 'Y' "
-                + "AND  MGLB.COND = " + city
+                + "AND (MGLB.COND = " + city + " OR MGLB.COND  = 'WAREHOUSE')"
                 + "ORDER BY SCARD.ITEM_CODE ASC, SCARD.TRANS_DATE ASC ";
         Map param = new HashMap();
         param.put("startDate", ref.get("startDate"));
