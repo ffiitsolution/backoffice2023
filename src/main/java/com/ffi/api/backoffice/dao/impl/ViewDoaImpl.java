@@ -1541,7 +1541,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "    CONV_WAREHOUSE,CONV_STOCK, "
                 + "    0 TOTAL_JUMLAH, "
                 + "    UOM_PURCHASE AS TOTAL "
-                + "FROM M_ITEM WHERE CD_WAREHOUSE like :cdWarehouse ORDER BY ITEM_CODE ASC)";
+                + "FROM M_ITEM WHERE CD_WAREHOUSE like :cdWarehouse AND STATUS = 'A' ORDER BY ITEM_CODE ASC)";
         Map prm = new HashMap();
         prm.put("cdWarehouse", "%" + balance.get("cdWarehouse") + "%");
         System.err.println("q :" + qry);
@@ -1988,7 +1988,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "                    0 TOTAL_JUMLAH, "
                 + "                    UOM_PURCHASE AS TOTAL "
                 + "                FROM M_ITEM WHERE "
-                + "                SUBSTR(ITEM_CODE,1,1) != 'X' " // Buglist No.39 - Update item_code where clause by Fathur 5-Dec-2023
+                + "                SUBSTR(ITEM_CODE,1,1) != 'X' AND STATUS = 'A' "
                 + "                ORDER BY item_code asc)";
         Map prm = new HashMap();
         prm.put("cdWarehouse", balance.get("cdWarehouse"));
@@ -2039,7 +2039,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "           CONV_WAREHOUSE,CONV_STOCK, "
                 + "           0 TOTAL_JUMLAH, "
                 + "           UOM_PURCHASE AS TOTAL "
-                + "        FROM M_ITEM)) A "
+                + "        FROM M_ITEM WHERE STATUS = 'A' )) A "
                 + "                   LEFT JOIN M_ITEM_SUPPLIER S "
                 + "                   ON A.ITEM_CODE=S.ITEM_CODE "
                 + "                   WHERE S.CD_SUPPLIER=:cdSupplier";
