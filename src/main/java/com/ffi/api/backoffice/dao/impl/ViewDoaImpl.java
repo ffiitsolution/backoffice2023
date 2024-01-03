@@ -1828,12 +1828,17 @@ public class ViewDoaImpl implements ViewDao {
     ///////////////////////////////Add Receiving by KP (06-06-2023)///////////////////////////////
     @Override
     public List<Map<String, Object>> listReceivingHeader(Map<String, String> ref) {
+        ref.put("city", "X_"+ref.get("city"));
         String qry = "select "
                 + "rc.recv_no, "
                 + "rc.recv_date, "
                 + "rc.order_no, "
                 + "CASE WHEN ord.ORDER_TO = '3' THEN 'Gudang' WHEN ord.ORDER_TO = '2' THEN 'Outlet' WHEN ord.ORDER_TO = '1' THEN 'Canvasing' ELSE 'Supplier' END as ORDER_TO,"
-                + "sp.supplier_name, "
+                + "CASE "
+                + "WHEN MG.DESCRIPTION IS NOT NULL THEN MG.DESCRIPTION "
+                + "WHEN mo.OUTLET_NAME IS NOT NULL THEN mo.OUTLET_NAME "
+                + "WHEN sp.supplier_name IS NOT NULL THEN sp.SUPPLIER_NAME "
+                + "END AS supplier_name, "
                 + "CASE "
                 + "WHEN rc.order_no LIKE '%P%' AND sp.supplier_name IS NOT NULL THEN 'Pembelian' || ' ' || 'Supplier' || ' ' || sp.SUPPLIER_NAME "
                 + "WHEN rc.order_no LIKE '%P%' AND MG.DESCRIPTION IS NOT NULL THEN 'Pembelian' || ' ' || mg.DESCRIPTION "
@@ -1854,7 +1859,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "from t_recv_header rc "
                 + "left join t_order_header ord on ord.order_no = rc.order_no "
                 + "left join m_supplier sp on sp.cd_supplier = ord.cd_supplier "
-                + "left join m_global mg on mg.cond = 'X_JKT' and mg.code = ord.cd_supplier "
+                + "left join m_global mg on mg.cond = :city and mg.code = ord.cd_supplier "
                 + "left join m_outlet mo on mo.outlet_code = ord.cd_supplier "
                 + "left join hist_kirim hk on hk.no_order = ord.order_no "
                 + "where rc.recv_date between to_date(:dateStart, 'dd-mm-yyyy') and to_date(:dateEnd, 'dd-mm-yyyy') "
@@ -1862,6 +1867,7 @@ public class ViewDoaImpl implements ViewDao {
         //"and length(ord.cd_supplier) = 5 " +
         //"order by rc.recv_date ";
         Map prm = new HashMap();
+        prm.put("city", ref.get("city"));
         prm.put("dateStart", ref.get("dateStart"));
         prm.put("dateEnd", ref.get("dateEnd"));
         String filter = ref.get("filter");
