@@ -2517,13 +2517,14 @@ public class ViewDoaImpl implements ViewDao {
                 prm.put("deliveryNo", param.get("deliveryNo"));
             }
             case "salesVoid" -> {
-                // todo: m joko
-                query = "SELECT COUNT(*) FROM t_pos_bill_item WHERE TRANS_DATE BETWEEN :fromDate AND :toDate AND" +
-                        " OUTLET_CODE = :outletCode AND MENU_ITEM_CODE = :kodeItem";
+                param.putIfAbsent("canceled", "Item");
+                query = "SELECT COUNT(*) FROM t_pos_item_void iv WHERE iv.OUTLET_CODE = :outletCode AND iv.VOID_TYPE = 'CAN' AND iv.TRANS_DATE BETWEEN :fromDate AND :toDate";
+                if(param.get("canceled").toString().equalsIgnoreCase("Order")){
+                    query = "SELECT COUNT(*) FROM t_pos_bill pb WHERE pb.OUTLET_CODE = :outletCode AND pb.DELIVERY_STATUS <> 'CLS' AND pb.TRANS_DATE BETWEEN :fromDate AND :toDate";
+                }
                 prm.put("outletCode", param.get("outletCode"));
                 prm.put("fromDate", param.get("fromDate"));
                 prm.put("toDate", param.get("toDate"));
-                prm.put("kodeItem", param.get("kodeItem"));
             }
             case "daftarMenu" -> {
                 query = "SELECT COUNT (*) from" + 
@@ -2551,6 +2552,8 @@ public class ViewDoaImpl implements ViewDao {
             }
         }
         assert query != null;
+        System.err.println("q :" + query);
+        System.err.println("prm :" + prm);
         return Integer.valueOf(Objects.requireNonNull(jdbcTemplate.queryForObject(query, prm, new RowMapper<String>() {
             @Override
             public String mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -2642,12 +2645,10 @@ public class ViewDoaImpl implements ViewDao {
     }
 
     // tambah fungsi untuk validasi nilai param by M Joko - 14 Dec 23
-    private boolean isValidParamKey(Object key){
-        if(key != null){
+    private boolean isValidParamKey(String value){
+        if(value == null || "".equals(value)){
             return false;
-        } else if(key != ""){
-            return false;
-        } else return key == " ";
+        } else return !" ".equals(value);
     }
     
 /////////////////////////////List Stock Opname 7 AUG 2023///////////////////////////////////////////    
@@ -2678,28 +2679,28 @@ public class ViewDoaImpl implements ViewDao {
         if(isValidParamKey(balance.get("limit")) ){
             prm.put("limit", balance.get("limit"));
         } else {
-            prm.put("limit", "501");
+            prm.put("limit", "1001");
         }
         qry += " order by a.date_upd desc, a.time_upd desc) where rownum < :limit";
         
+        System.err.println("balance : " + balance);
+        System.err.println("status : " + balance.get("status"));
+        System.err.println("isValidParamKey : " + isValidParamKey(balance.get("status")));
         System.err.println("p : " + prm);
-        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
-            @Override
-            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
-                Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("outletCode", rs.getString("OUTLET_CODE"));
-                rt.put("cdTemplate", rs.getString("CD_TEMPLATE"));
-                rt.put("opnanameNo", rs.getString("OPNAME_NO"));
-                rt.put("opnameDate", rs.getString("OPNAME_DATE"));
-                rt.put("remark", rs.getString("remark"));
-                rt.put("type", rs.getString("TYPE"));
-                rt.put("status", rs.getString("STATUS"));
-                rt.put("userUpd", rs.getString("USER_UPD"));
-                rt.put("dateUpd", rs.getString("DATE_UPD"));
-                rt.put("timeUpd", rs.getString("TIME_UPD"));
-                rt.put("templateName", rs.getString("TEMPLATE_NAME"));
-                return rt;
-            }
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, (ResultSet rs, int i) -> {
+            Map<String, Object> rt = new HashMap<>();
+            rt.put("outletCode", rs.getString("OUTLET_CODE"));
+            rt.put("cdTemplate", rs.getString("CD_TEMPLATE"));
+            rt.put("opnanameNo", rs.getString("OPNAME_NO"));
+            rt.put("opnameDate", rs.getString("OPNAME_DATE"));
+            rt.put("remark", rs.getString("remark"));
+            rt.put("type", rs.getString("TYPE"));
+            rt.put("status", rs.getString("STATUS"));
+            rt.put("userUpd", rs.getString("USER_UPD"));
+            rt.put("dateUpd", rs.getString("DATE_UPD"));
+            rt.put("timeUpd", rs.getString("TIME_UPD"));
+            rt.put("templateName", rs.getString("TEMPLATE_NAME"));
+            return rt;
         });
         return list;
     }

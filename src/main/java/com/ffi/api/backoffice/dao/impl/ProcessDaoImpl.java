@@ -2454,7 +2454,7 @@ public class ProcessDaoImpl implements ProcessDao {
                 INSERT INTO t_stock_card (
                 SELECT
                     :outletCode AS OUTLET_CODE,
-                    mi.TRANS_DATE+1,
+                    mi.TRANS_DATE+1 AS TRANS_DATE,
                     mi.ITEM_CODE,
                     0 AS ITEM_COST,
                     (NVL(tsc.qty_beginning, 0) + NVL(tsc.qty_in, 0) - NVL(tsc.qty_out, 0)) AS QTY_BEGINNING,

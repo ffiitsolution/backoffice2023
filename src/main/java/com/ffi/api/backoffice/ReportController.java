@@ -923,13 +923,13 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        Integer cekDataReport = viewServices.cekDataReport(prm, "salesVOid");
+        Integer cekDataReport = viewServices.cekDataReport(prm, "salesVoid");
         if (cekDataReport > 0) {
-            JasperPrint jasperPrint = reportServices.jasperReportItemSelectedByTime(prm, conn);
+            JasperPrint jasperPrint = reportServices.jasperReportSalesVoid(prm, conn);
             conn.close();
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
             HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=itemSelectedByTime.pdf");
+            headers.add("Content-Disposition", "inline; filename=salesVoid.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
         } else
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
