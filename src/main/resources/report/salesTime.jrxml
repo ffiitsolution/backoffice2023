@@ -55,12 +55,12 @@
     </parameter>
     <queryString>
         <![CDATA[SELECT * FROM(
-select z.*,NVL((z.total_amount/b.total)*100, 0) as persentage, NVL((z.TRANSAKSI/NULLIF(d.total_persentasi, 0))*100, 0) AS TOTAL_PERSENTASI from (
+select z.*,NVL((z.total_sales/b.total)*100, 0) as persentage, NVL((z.TRANSAKSI/NULLIF(d.total_persentasi, 0))*100, 0) AS TOTAL_PERSENTASI from (
 select a.*,$P{outletCode} as outlet_code from (
 SELECT
 	'00' AS jam,
 	COUNT (0) AS TRANSAKSI,
-	NVL(SUM (total_amount), 0) as total_amount
+	NVL(SUM (total_sales), 0) as total_sales
 FROM
 	t_pos_bill
 WHERE
@@ -78,7 +78,7 @@ UNION ALL
 SELECT
 	'01' AS jam,
 	COUNT (0) AS TRANSAKSI,
-	NVL(SUM (total_amount), 0) as total_amount
+	NVL(SUM (total_sales), 0) as total_sales
 FROM
 	t_pos_bill
 WHERE
@@ -96,7 +96,7 @@ UNION ALL
 SELECT
 	'02' AS jam,
 	COUNT (0) AS TRANSAKSI,
-	NVL(SUM (total_amount), 0) as total_amount
+	NVL(SUM (total_sales), 0) as total_sales
 FROM
 	t_pos_bill
 WHERE
@@ -114,7 +114,7 @@ UNION ALL
 SELECT
 	'03' AS jam,
 	COUNT (0) AS TRANSAKSI,
-	NVL(SUM (total_amount), 0) as total_amount
+	NVL(SUM (total_sales), 0) as total_sales
 FROM
 	t_pos_bill
 WHERE
@@ -132,7 +132,7 @@ UNION ALL
 SELECT
 	'04' AS jam,
 	COUNT (0) AS TRANSAKSI,
-	NVL(SUM (total_amount), 0) as total_amount
+	NVL(SUM (total_sales), 0) as total_sales
 FROM
 	t_pos_bill
 WHERE
@@ -150,7 +150,7 @@ UNION ALL
 SELECT
 	'05' AS jam,
 	COUNT (0) AS TRANSAKSI,
-	NVL(SUM (total_amount), 0) as total_amount
+	NVL(SUM (total_sales), 0) as total_sales
 FROM
 	t_pos_bill
 WHERE
@@ -168,7 +168,7 @@ UNION ALL
 SELECT
 	'06' AS jam,
 	COUNT (0) AS TRANSAKSI,
-	NVL(SUM (total_amount), 0) as total_amount
+	NVL(SUM (total_sales), 0) as total_sales
 FROM
 	t_pos_bill
 WHERE
@@ -186,7 +186,7 @@ UNION ALL
 SELECT
 	'07' AS jam,
 	COUNT (0) AS TRANSAKSI,
-	NVL(SUM (total_amount), 0) as total_amount
+	NVL(SUM (total_sales), 0) as total_sales
 FROM
 	t_pos_bill
 WHERE
@@ -204,7 +204,7 @@ UNION ALL
 SELECT
 	'08' AS jam,
 	COUNT (0) AS TRANSAKSI,
-	NVL(SUM (total_amount), 0) as total_amount
+	NVL(SUM (total_sales), 0) as total_sales
 FROM
 	t_pos_bill
 WHERE
@@ -222,7 +222,7 @@ UNION ALL
 SELECT
 	'09' AS jam,
 	COUNT (0) AS TRANSAKSI,
-	NVL(SUM (total_amount), 0) as total_amount
+	NVL(SUM (total_sales), 0) as total_sales
 FROM
 	t_pos_bill
 WHERE
@@ -240,7 +240,7 @@ UNION ALL
 SELECT
 	'10' AS jam,
 	COUNT (0) AS TRANSAKSI,
-	NVL(SUM (total_amount), 0) as total_amount
+	NVL(SUM (total_sales), 0) as total_sales
 FROM
 	t_pos_bill
 WHERE
@@ -258,7 +258,7 @@ UNION ALL
 SELECT
 	'11' AS jam,
 	COUNT (0) AS TRANSAKSI,
-	NVL(SUM (total_amount), 0) as total_amount
+	NVL(SUM (total_sales), 0) as total_sales
 FROM
 	t_pos_bill
 WHERE
@@ -276,7 +276,7 @@ UNION ALL
 SELECT
 	'12' AS jam,
 	COUNT (0) AS TRANSAKSI,
-	NVL(SUM (total_amount), 0) as total_amount
+	NVL(SUM (total_sales), 0) as total_sales
 FROM
 	t_pos_bill
 WHERE
@@ -294,7 +294,7 @@ UNION ALL
 SELECT
 	'13' AS jam,
 	COUNT (0) AS TRANSAKSI,
-	NVL(SUM (total_amount), 0) as total_amount
+	NVL(SUM (total_sales), 0) as total_sales
 FROM
 	t_pos_bill
 WHERE
@@ -312,7 +312,7 @@ UNION ALL
 SELECT
 	'14' AS jam,
 	COUNT (0) AS TRANSAKSI,
-	NVL(SUM (total_amount), 0) as total_amount
+	NVL(SUM (total_sales), 0) as total_sales
 FROM
 	t_pos_bill
 WHERE
@@ -330,7 +330,7 @@ UNION ALL
 SELECT
 	'15' AS jam,
 	COUNT (0) AS TRANSAKSI,
-	NVL(SUM (total_amount), 0) as total_amount
+	NVL(SUM (total_sales), 0) as total_sales
 FROM
 	t_pos_bill
 WHERE
@@ -348,7 +348,7 @@ UNION ALL
 SELECT
 	'16' AS jam,
 	COUNT (0) AS TRANSAKSI,
-	NVL(SUM (total_amount), 0) as total_amount
+	NVL(SUM (total_sales), 0) as total_sales
 FROM
 	t_pos_bill
 WHERE
@@ -366,7 +366,7 @@ UNION ALL
 SELECT
 	'17' AS jam,
 	COUNT (0) AS TRANSAKSI,
-	NVL(SUM (total_amount), 0) as total_amount
+	NVL(SUM (total_sales), 0) as total_sales
 FROM
 	t_pos_bill
 WHERE
@@ -384,7 +384,7 @@ UNION ALL
 SELECT
 	'18' AS jam,
 	COUNT (0) AS TRANSAKSI,
-	NVL(SUM (total_amount), 0) as total_amount
+	NVL(SUM (total_sales), 0) as total_sales
 FROM
 	t_pos_bill
 WHERE
@@ -402,7 +402,7 @@ UNION ALL
 SELECT
 	'19' AS jam,
 	COUNT (0) AS TRANSAKSI,
-	NVL(SUM (total_amount), 0) as total_amount
+	NVL(SUM (total_sales), 0) as total_sales
 FROM
 	t_pos_bill
 WHERE
@@ -420,7 +420,7 @@ UNION ALL
 SELECT
 	'20' AS jam,
 	COUNT (0) AS TRANSAKSI,
-	NVL(SUM (total_amount), 0) as total_amount
+	NVL(SUM (total_sales), 0) as total_sales
 FROM
 	t_pos_bill
 WHERE
@@ -438,7 +438,7 @@ UNION ALL
 SELECT
 	'21' AS jam,
 	COUNT (0) AS TRANSAKSI,
-	NVL(SUM (total_amount), 0) as total_amount
+	NVL(SUM (total_sales), 0) as total_sales
 FROM
 	t_pos_bill
 WHERE
@@ -456,7 +456,7 @@ UNION ALL
 SELECT
 	'22' AS jam,
 	COUNT (0) AS TRANSAKSI,
-	NVL(SUM (total_amount), 0) as total_amount
+	NVL(SUM (total_sales), 0) as total_sales
 FROM
 	t_pos_bill
 WHERE
@@ -474,7 +474,7 @@ UNION ALL
 SELECT
 	'23' AS jam,
 	COUNT (0) AS TRANSAKSI,
-	NVL(SUM (total_amount), 0) as total_amount
+	NVL(SUM (total_sales), 0) as total_sales
 FROM
 	t_pos_bill
 WHERE
@@ -490,7 +490,7 @@ WHERE
 		OR delivery_status IS NULL)
 )a)z
 left join
-(SELECT   $P{outletCode} AS outlet_code, SUM (total_amount) as total FROM   t_pos_bill
+(SELECT   $P{outletCode} AS outlet_code, SUM (total_sales) as total FROM   t_pos_bill
     WHERE       outlet_code IN $P{outletCode}
             AND trans_date BETWEEN $P{fromDate} AND $P{toDate}
             AND pos_code BETWEEN $P{posCode1} AND $P{posCode2}
@@ -513,7 +513,7 @@ ORDER BY JAM ASC]]>
     </queryString>
     <field name="JAM" class="java.lang.String"/>
     <field name="TRANSAKSI" class="java.math.BigDecimal"/>
-    <field name="TOTAL_AMOUNT" class="java.math.BigDecimal"/>
+    <field name="TOTAL_SALES" class="java.math.BigDecimal"/>
     <field name="OUTLET_CODE" class="java.lang.String"/>
     <field name="PERSENTAGE" class="java.math.BigDecimal"/>
     <field name="TOTAL_PERSENTASI" class="java.math.BigDecimal"/>
@@ -521,7 +521,7 @@ ORDER BY JAM ASC]]>
         <variableExpression><![CDATA[$F{TRANSAKSI}]]></variableExpression>
     </variable>
     <variable name="sumTotalAmount" class="java.math.BigDecimal" calculation="Sum">
-        <variableExpression><![CDATA[$F{TOTAL_AMOUNT}]]></variableExpression>
+        <variableExpression><![CDATA[$F{TOTAL_SALES}]]></variableExpression>
     </variable>
     <background>
         <band splitType="Stretch"/>
@@ -699,7 +699,7 @@ ORDER BY JAM ASC]]>
             <textField pattern="#,##0.00">
                 <reportElement x="342" y="2" width="100" height="18" uuid="7df019bf-4d10-4585-94f4-e53d7aed8d0a"/>
                 <textElement textAlignment="Right" verticalAlignment="Middle"/>
-                <textFieldExpression><![CDATA[$F{TOTAL_AMOUNT}]]></textFieldExpression>
+                <textFieldExpression><![CDATA[$F{TOTAL_SALES}]]></textFieldExpression>
             </textField>
             <textField pattern="">
                 <reportElement x="451" y="2" width="100" height="18" uuid="dbd2cf6b-53cf-4d52-800a-d6d57aa0b3f3"/>
