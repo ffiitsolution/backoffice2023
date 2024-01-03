@@ -2902,9 +2902,9 @@ public class ViewDoaImpl implements ViewDao {
     /////////////////////////////List Detail Order by No 9-11-2023///////////////////////////////////////////
     @Override
     public List<Map<String, Object>> listDetailOderbyOrderno(Map<String, String> ref) {
-        String qry = "SELECT   A.*,B.item_description  "
+        String qry = "SELECT   A.*,B.item_description, B.UOM_STOCK  "
                 + " FROM T_ORDER_DETAIL A  "
-                + " left join (select item_code,item_description from m_item ) B  "
+                + " left join (select item_code,item_description, uom_stock from m_item ) B  "
                 + " on A.ITEM_CODE=b.item_code  "
                 + "WHERE ORDER_NO IN   "
                 + "(SELECT ORDER_NO   "
@@ -2931,6 +2931,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("cdUom1", rs.getString("CD_UOM_1"));
                 rt.put("qty2", rs.getString("QTY_2"));
                 rt.put("cdUom2", rs.getString("CD_UOM_2"));
+                rt.put("uomStock", rs.getString("uom_stock"));
                 rt.put("totalQtyStock", rs.getString("TOTAL_QTY_STOCK"));
                 rt.put("unitPrice", rs.getString("UNIT_PRICE"));
                 rt.put("userUpd", rs.getString("USER_UPD"));
