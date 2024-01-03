@@ -582,10 +582,43 @@ U]]>
         <band height="25" splitType="Stretch">
             <textField>
                 <reportElement x="5" y="0" width="140" height="20" uuid="605c2bb0-8765-4d06-8445-5f2cb0ec2525"/>
-                <textFieldExpression><![CDATA[$F{K}]]></textFieldExpression>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+               <textFieldExpression><![CDATA[
+                    $F{K}.equals("TOTAL_PENDAPATAN") ? "Total Pendapatan" : 
+                    ($F{K}.equals("TOTAL_PENJUALAN") ? "Total Penjualan" : 
+                    ($F{K}.equals("TOTAL_PENJUALAN_FNB") ? "Total Penjualan F & B" : 
+                    ($F{K}.equals("TOTAL_PENJUALAN_CD") ? "Total Penjualan CD" : 
+                    ($F{K}.equals("KUPON_DIGUNAKAN") ? "Kupon (Digunakan)" : 
+                    ($F{K}.equals("KUPON_TERPAKAI") ? "Kupon (Terpakai)" : 
+                    ($F{K}.equals("KEMBALIAN") ? "Kembalian Pre Paid" : 
+                    ($F{K}.equals("BIAYA_ANTAR") ? "Biaya Antar" : 
+                    ($F{K}.equals("TAX_BIAYA_ANTAR") ? "Tax Biaya Antar" : 
+                    ($F{K}.equals("DONASI") ? "Donasi" : 
+                    ($F{K}.equals("CASH") ? "Cash" : 
+                    ($F{K}.equals("TAXABLE") ? "Taxable" : 
+                    ($F{K}.equals("PAJAK_RESTORAN") ? "Pajak Restoran" : 
+                    ($F{K}.equals("PPN") ? "Ppn" : 
+                    ($F{K}.equals("PEMBULATAN") ? "Pembulatan" : 
+                    ($F{K}.equals("GROSS_SALES") ? "Gross Sales" : 
+                    ($F{K}.equals("MODAL") ? "Modal" : 
+                    ($F{K}.equals("CASH_PULL") ? "Cash Pull" : 
+                    ($F{K}.equals("DIS1") ? "Diskon 2.5%" : 
+                    ($F{K}.equals("DIS2") ? "Diskon 5%" : 
+                    ($F{K}.equals("DIS3") ? "Diskon 7.5%" : 
+                    ($F{K}.equals("DIS4") ? "Diskon 10%" : 
+                    ($F{K}.equals("DIS5") ? "Diskon 20%" : 
+                    ($F{K}.equals("DIS6") ? "Diskon Open" : 
+                    ($F{K}.equals("TOTAL_TRANSAKSI") ? "Total Transaksi" : 
+                    ($F{K}.equals("TRANSAKSI_EI") ? "Transaksi Eat In" : $F{K})))))))))))))))))))))))))
+                ]]></textFieldExpression>
             </textField>
             <textField>
                 <reportElement x="450" y="0" width="100" height="20" uuid="546ac859-4792-4190-b188-4c213490d857"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
                 <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{V})]]></textFieldExpression>
             </textField>
         </band>
