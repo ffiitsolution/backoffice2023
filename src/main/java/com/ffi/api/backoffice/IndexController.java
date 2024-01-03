@@ -2446,14 +2446,12 @@ public class IndexController {
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-
         Response res = new Response();
         res.setData(viewServices.listDetailOderbyOrderno(balance));
         return res;
     }
-
     ///////////////done  
+    
     ////////////New method for query stock card - Fathur 29-Nov-2023////////////
     @RequestMapping(value = "/stock-card", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view data query stock card", response = Object.class)
@@ -2467,8 +2465,6 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 
         Response res = new Response();
         res.setData(viewServices.listQueryStockCard(balance));
@@ -2489,8 +2485,6 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 
         Response res = new Response();
         res.setData(viewServices.listQueryStockCardDetail(balance));
