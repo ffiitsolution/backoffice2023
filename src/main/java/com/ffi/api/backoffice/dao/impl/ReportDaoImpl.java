@@ -2288,4 +2288,18 @@ public class ReportDaoImpl implements ReportDao {
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
         }
+
+    ///////////////NEW METHOD REPORT DAFTAR MENU BY RAFI 29 DECEMBER 2023////
+     @Override
+    public JasperPrint jasperReportDaftarMenu(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        Map<String, Object> hashMap = new HashMap<>();
+
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("orderType", param.get("orderType"));
+        hashMap.put("status", param.get("status"));
+
+        ClassPathResource classPathResource = new ClassPathResource("report/reportDaftarMenu.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
 }

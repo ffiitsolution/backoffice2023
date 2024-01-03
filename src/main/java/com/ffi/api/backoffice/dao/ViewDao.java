@@ -272,4 +272,6 @@ public interface ViewDao {
     // Get Order Entry status from inv by Fathur 29 Dec 2023 // 
     public Map<String, Object> getOrderEntryStatusFromInv (Map<String, String> mapping);
     
+    //////// NEW METHOD to get list daftar menu report by Rafi 29 Des 2023
+    public List<Map<String, Object>> getListDaftarMenuReport();
 }

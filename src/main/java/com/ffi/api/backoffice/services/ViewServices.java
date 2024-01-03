@@ -475,6 +475,11 @@ public class ViewServices {
     public Map<String, Object> getOrderOutletWarehouse(Map<String, String> mapping) {
         return viewDao.getOrderOutletWarehouse(mapping);
     }
+
+    //////// NEW METHOD to get list report daftar menu  by Rafi 29 Des 2023
+    public List<Map<String, Object>> getListDaftarMenuReport() {
+        return viewDao.getListDaftarMenuReport();
+    }
     
     public Map<String, Object> getOrderEntryStatusFromInv(Map<String, String> mapping) {
         return viewDao.getOrderEntryStatusFromInv(mapping);
