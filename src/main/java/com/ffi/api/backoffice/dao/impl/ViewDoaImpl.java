@@ -2939,6 +2939,7 @@ public class ViewDoaImpl implements ViewDao {
     ////////////New method for query stock card - Fathur 29-Nov-2023////////////
     @Override
     public List<Map<String, Object>> listQueryStockCard(Map<String, String> ref) {
+        String city = "'X_" + getCity(ref.get("outletCode")) + "' ";
         String query = "SELECT SCARD.TRANS_DATE, SCARD.TIME_UPD, NVL(MGLB.CODE, ' ') AS CD_WAREHOUSE, NVL(MGLB.DESCRIPTION, ' ') AS NM_WAREHOUSE, "
                 + "SCARD.ITEM_CODE, MITEM.ITEM_DESCRIPTION as ITEM_NAME, "
                 + "SCARD.QTY_BEGINNING, SCARD.QTY_IN, SCARD.QTY_OUT, ((QTY_BEGINNING + QTY_IN) - QTY_OUT) as QTY_ENDING, "
@@ -2949,13 +2950,14 @@ public class ViewDoaImpl implements ViewDao {
                 + "WHERE SCARD.TRANS_DATE between TO_DATE(:startDate, 'DD/MM/YYYY') and (TO_DATE(:endDate, 'DD/MM/YYYY')+1) "
                 + "AND SCARD.ITEM_CODE LIKE :itemCode "
                 + "AND CD_WAREHOUSE LIKE :cdWarehouse "
-                + "ORDER BY SCARD.ITEM_CODE ASC ";
+                + "AND MITEM.FLAG_STOCK = 'Y' "
+                + "AND  MGLB.COND = " + city
+                + "ORDER BY SCARD.ITEM_CODE ASC, SCARD.TRANS_DATE ASC ";
         Map param = new HashMap();
         param.put("startDate", ref.get("startDate"));
         param.put("endDate", ref.get("endDate"));
         param.put("itemCode", "%" + ref.get("itemCode") + "%");
         param.put("cdWarehouse", "%" + ref.get("cdWarehouse") + "%");
-        System.err.println("q :" + query);
 
         List<Map<String, Object>> queryStockCardlist = jdbcTemplate.query(query, param, new RowMapper<Map<String, Object>>() {
             @Override
