@@ -3076,4 +3076,46 @@ public class IndexController {
         }
         return rm;
     }
+    
+    // Get List MPCS Group by Dani 4 Januari 2024
+    @RequestMapping(value = "/list-mpcs-group", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view master mpcs group", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listMpcsGroup(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> data = gsn.fromJson(param, new TypeToken<Map<String, String>>() {
+        }.getType());
+        List<Map<String, Object>> list = viewServices.listMpcsGroup(data);
+        Response res = new Response();
+        res.setData(list);
+        res.setRecordsTotal(list.size());
+        res.setRecordsFiltered(list.size());
+        return res;
+    }
+
+    // Get List MPCS Query result by Dani 4 Januari 2024
+    @RequestMapping(value = "/mpcs-query-result", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view master mpcs group", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listMpcsQueryResult(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> data = gsn.fromJson(param, new TypeToken<Map<String, String>>() {
+        }.getType());
+        List<Object> list = new ArrayList<>();
+        list.add(viewServices.listMpcsQueryResult(data));
+        Response res = new Response();
+        res.setData(list);
+        res.setRecordsTotal(list.size());
+        res.setRecordsFiltered(list.size());
+        return res;
+    }
+
 }

@@ -274,4 +274,10 @@ public interface ViewDao {
     
     //////// NEW METHOD to get list daftar menu report by Rafi 29 Des 2023
     public List<Map<String, Object>> getListDaftarMenuReport();
+
+    /////// NEW METHOD to get list mpcs group by Dani 4 Januari 2024
+    public List<Map<String, Object>> listMpcsGroup(Map<String, String> mapping);
+
+    /////// NEW METHOD to get list mpcs query result by Dani 4 Januari 2024
+    public  Map<String, Object>  listMpcsQueryResult(Map<String, String> mapping);
 }

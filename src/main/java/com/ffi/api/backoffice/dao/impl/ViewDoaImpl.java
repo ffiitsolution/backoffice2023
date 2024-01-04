@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -3707,5 +3708,100 @@ public class ViewDoaImpl implements ViewDao {
 
         return jdbcTemplate.query(query, new HashMap(), new DynamicRowMapper());
     }
+
+
+    /////// NEW METHOD to get list mpcs group by Dani 4 Januari 2024
+    @Override
+    public List<Map<String, Object>> listMpcsGroup(Map<String, String> mapping) {
+        String query = "SELECT MMH.MPCS_GROUP , MMH.DESCRIPTION , MMH.QTY_CONV, MMH.STATUS FROM M_MPCS_HEADER mmh "+
+        " WHERE MMH.status = 'A' AND OUTLET_CODE = :outletCode ORDER BY MMH.MPCS_GROUP ASC";
+        return jdbcTemplate.query(query, mapping, new DynamicRowMapper());
+    }
+
+    /////// NEW METHOD to get mpcs query result by Dani 4 Januari 2024
+    @Override
+    public Map<String, Object> listMpcsQueryResult(Map<String, String> mapping) {
+        Map<String, Object> response = new HashMap<>(); 
+        String query = "SELECT * FROM T_SUMM_MPCS WHERE OUTLET_CODE = :outletCode AND DATE_MPCS = :dateMpcs AND MPCS_GROUP = :mpcsGroup ORDER BY SEQ_MPCS ASC";
+        List<Map<String, Object>> mpcsQuery = jdbcTemplate.query(query, mapping, new RowMapper() {
+            @Override
+            @Nullable
+            public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Map<String, Object> map = new HashMap<>();
+                map.put("outletCode", rs.getString("OUTLET_CODE") );
+                map.put("mpcsGroup", rs.getString("MPCS_GROUP"));
+                map.put("dateMpcs", rs.getObject("DATE_MPCS", LocalDateTime.class));
+                map.put("seqMpcs", rs.getInt("SEQ_MPCS"));
+                map.put("timeMpcs", rs.getString("TIME_MPCS"));
+                map.put("qtyProjConv", rs.getBigDecimal("QTY_PROJ_CONV").setScale(4));
+                map.put("uomProjConv", rs.getString("UOM_PROJ_CONV"));
+                map.put("qtyProj", rs.getBigDecimal("QTY_PROJ").setScale(4));
+                map.put("uomProj", rs.getString("UOM_PROJ"));
+                map.put("qtyAccProj", rs.getBigDecimal("QTY_ACC_PROJ").setScale(4));
+                map.put("uomAccProj", rs.getString("UOM_ACC_PROJ"));
+                map.put("descProd", rs.getString("DESC_PROD"));
+                map.put("qtyProd", rs.getBigDecimal("QTY_PROD").setScale(4));
+                map.put("uomProd", rs.getString("UOM_PROD"));
+                map.put("qtyAccProd", rs.getBigDecimal("QTY_ACC_PROD").setScale(4));
+                map.put("uomAccProd", rs.getString("UOM_ACC_PROD"));
+                map.put("prodBy", rs.getString("PROD_BY"));
+                map.put("qtySold", rs.getBigDecimal("QTY_SOLD").setScale(4));
+                map.put("uomSold", rs.getString("UOM_SOLD"));
+                map.put("qtyAccSold", rs.getBigDecimal("QTY_ACC_SOLD").setScale(4));
+                map.put("uomAccSold", rs.getString("UOM_ACC_SOLD"));
+                map.put("qtyReject", rs.getBigDecimal("QTY_REJECT").setScale(4));
+                map.put("uomReject", rs.getString("UOM_REJECT"));
+                map.put("qtyAccReject", rs.getBigDecimal("QTY_ACC_REJECT").setScale(4));
+                map.put("uomAccReject", rs.getString("UOM_ACC_REJECT"));
+                map.put("qtyWastage", rs.getBigDecimal("QTY_WASTAGE").setScale(4));
+                map.put("uomWastage", rs.getString("UOM_WASTAGE"));
+                map.put("qtyAccWastage", rs.getBigDecimal("QTY_ACC_WASTAGE").setScale(4));
+                map.put("uomAccWastage", rs.getString("UOM_ACC_WASTAGE"));
+                map.put("qtyOnhand", rs.getBigDecimal("QTY_ONHAND").setScale(4));
+                map.put("uomOnhand", rs.getString("UOM_ONHAND"));
+                map.put("qtyAccOnhand", rs.getBigDecimal("QTY_ACC_ONHAND").setScale(4));
+                map.put("uomAccOnhand", rs.getString("UOM_ACC_ONHAND"));
+                map.put("qtyVariance", rs.getBigDecimal("QTY_VARIANCE").setScale(4));
+                map.put("uomVariance", rs.getString("UOM_VARIANCE"));
+                map.put("qtyAccVariance", rs.getBigDecimal("QTY_ACC_VARIANCE").setScale(4));
+                map.put("uomAccVariance", rs.getString("UOM_ACC_VARIANCE"));
+                map.put("userUpd", rs.getString("USER_UPD"));
+                map.put("dateUpd", rs.getObject("DATE_UPD", LocalDateTime.class));
+                map.put("timeUpd", rs.getString("TIME_UPD"));
+                map.put("qtyIn", rs.getBigDecimal("QTY_IN").setScale(4));
+                map.put("qtyOut", rs.getBigDecimal("QTY_OUT").setScale(4));
+                return map;
+            }
+        }); 
+        
+        response.put("mpcsQueryResult", mpcsQuery);
+        if (mpcsQuery.size() > 1) {
+            Map<String, Object> summaryDay = new HashMap();
+            Map<String, Object> lastData = mpcsQuery.get(mpcsQuery.size()-1);
+            Map<String, Object> summaryDel = jdbcTemplate.queryForObject("SELECT count(1) AS COUNT_DELETE, COALESCE(sum(tmh.QUANTITY), 0) AS QTY_DELETE FROM T_MPCS_HIST tmh WHERE MPCS_GROUP =:mpcsGroup AND MPCS_DATE =:dateMpcs", mapping, new DynamicRowMapper());
+            summaryDay.put("summaryProjection", ((BigDecimal) lastData.get("qtyAccProj")).setScale(2));
+            summaryDay.put("summaryOnHand",  ((BigDecimal) lastData.get("qtyOnhand")).setScale(2));
+            summaryDay.put("summaryVariance",  ((BigDecimal) lastData.get("qtyAccVariance")).setScale(2));
+            summaryDay.put("summaryCooked", ((BigDecimal) lastData.get("qtyAccProd")).setScale(2));
+            summaryDay.put("summarySold", ((BigDecimal) lastData.get("qtyAccSold")).setScale(2));
+            summaryDay.put("summaryReject", ((BigDecimal) lastData.get("qtyAccReject")).setScale(2));
+            summaryDay.put("qtyDelete",  ((BigDecimal) summaryDel.get("qtyDelete")).setScale(2));
+            summaryDay.put("countDelete", ((BigDecimal) summaryDel.get("countDelete")));
+            response.put("mpcsSummary", summaryDay);
+        } else {
+            Map<String, Object> summaryDay = new HashMap();
+            summaryDay.put("summaryProjection", BigDecimal.ZERO.setScale(2));
+            summaryDay.put("summaryOnHand", BigDecimal.ZERO.setScale(2));
+            summaryDay.put("summaryVariance", BigDecimal.ZERO.setScale(2));
+            summaryDay.put("summaryCooked", BigDecimal.ZERO.setScale(2));
+            summaryDay.put("summarySold", BigDecimal.ZERO.setScale(2));
+            summaryDay.put("summaryReject", BigDecimal.ZERO.setScale(2));
+            summaryDay.put("qtyDelete", BigDecimal.ZERO.setScale(2));
+            summaryDay.put("countDelete", BigDecimal.ZERO);
+            response.put("mpcsSummary", summaryDay);
+        }
+        return response;
+    }
+    
 }
  

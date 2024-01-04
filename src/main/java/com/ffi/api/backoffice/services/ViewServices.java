@@ -484,4 +484,14 @@ public class ViewServices {
     public Map<String, Object> getOrderEntryStatusFromInv(Map<String, String> mapping) {
         return viewDao.getOrderEntryStatusFromInv(mapping);
     }
+
+    /////// NEW METHOD to get list mpcs group by Dani 4 Januari 2024
+    public List<Map<String, Object>> listMpcsGroup(Map<String, String> mapping) {
+        return viewDao.listMpcsGroup(mapping);
+    }
+
+    /////// NEW METHOD to get mpcs query result by Dani 4 Januari 2024
+    public Map<String, Object> listMpcsQueryResult(Map<String, String> mapping) {
+        return viewDao.listMpcsQueryResult(mapping);
+    }
 }
