@@ -484,4 +484,9 @@ public class ViewServices {
     public Map<String, Object> getOrderEntryStatusFromInv(Map<String, String> mapping) {
         return viewDao.getOrderEntryStatusFromInv(mapping);
     }
+    
+    //////// NEW METHOD Digunakan untuk ambil data outlet di halaman login by M Joko - 4 Jan 2024
+    public List<Map<String, Object>> outletInfo(String outletCode) {
+        return viewDao.outletInfo(outletCode);
+    }
 }

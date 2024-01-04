@@ -274,4 +274,7 @@ public interface ViewDao {
     
     //////// NEW METHOD to get list daftar menu report by Rafi 29 Des 2023
     public List<Map<String, Object>> getListDaftarMenuReport();
+    
+    //////// NEW METHOD Digunakan untuk ambil data outlet di halaman login by M Joko - 4 Jan 2024
+    public List<Map<String, Object>> outletInfo(String outletCode);
 }

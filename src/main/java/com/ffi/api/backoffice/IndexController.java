@@ -3068,4 +3068,32 @@ public class IndexController {
         }
         return rm;
     }
+
+    @RequestMapping(value = "/get-outlet-info", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk ambil data outlet di halaman login by M Joko - 4 Jan 2024", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage outletInfo(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        ResponseMessage rm = new ResponseMessage();
+        if(!balance.containsKey("outletCode")){
+            rm.setSuccess(false);
+            rm.setMessage("Get Failed: outletCode required");
+            return rm;
+        }
+        try {
+            rm.setItem(viewServices.outletInfo(balance.get("outletCode")));
+            rm.setSuccess(true);
+            rm.setMessage("Get Success");
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Get Failed: " + e.getMessage());
+        }
+        return rm;
+    }
 }

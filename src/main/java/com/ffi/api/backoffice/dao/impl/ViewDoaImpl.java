@@ -3702,12 +3702,43 @@ public class ViewDoaImpl implements ViewDao {
 
 
     //////// NEW METHOD to get list daftar menu by Rafi 29 DEC 2023
+    @Override
     public List<Map<String, Object>> getListDaftarMenuReport() {
         String query = "SELECT DISTINCT (mmgl.ORDER_TYPE) AS ORDER_TYPE, mg.DESCRIPTION  FROM M_MENU_GROUP_LIMIT mmgl " + 
                 "LEFT JOIN M_GLOBAL mg ON mmgl.ORDER_TYPE = mg.CODE AND mg.COND = 'ORDER_TYPE' " + 
                 "ORDER BY ORDER_TYPE ASC ";
 
         return jdbcTemplate.query(query, new HashMap(), new DynamicRowMapper());
+    }
+
+    //////// NEW METHOD Digunakan untuk ambil data outlet di halaman login by M Joko - 4 Jan 2024
+    @Override
+    public List<Map<String, Object>> outletInfo(String outletCode) {
+        String qry = """
+                     SELECT 
+                         region_code, 
+                         outlet_code, 
+                         outlet_name, 
+                         type, 
+                         address_1, 
+                         address_2, 
+                         city, 
+                         post_code, 
+                         phone, 
+                         fax, 
+                         TO_CHAR(TRANS_DATE, 'DD-MM-YYYY') AS TRANS_DATE,
+                         CASE 
+                             WHEN outlet_name LIKE '%TACOBELL%' THEN 'TACOBELL'
+                             ELSE 'KFC'
+                         END AS brand
+                     FROM M_OUTLET 
+                     WHERE outlet_code = :outletcode
+                     """;
+        Map prm = new HashMap();
+        prm.put("outletcode", outletCode);
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new DynamicRowMapper());
+        return list;
     }
 }
  
