@@ -198,4 +198,8 @@ public class ReportServices {
     public JasperPrint jasperReportDaftarMenu(Map<String, Object> param, Connection connection) throws JRException, IOException {
         return dao.jasperReportDaftarMenu(param, connection);
     }
+
+    public JasperPrint jasperReportSalesVoid(Map<String, Object> param, Connection connection) throws  JRException, IOException {
+        return dao.jasperReportSalesVoid(param, connection);
+    }
 }

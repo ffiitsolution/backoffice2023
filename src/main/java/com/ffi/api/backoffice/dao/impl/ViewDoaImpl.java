@@ -2518,13 +2518,14 @@ public class ViewDoaImpl implements ViewDao {
                 prm.put("deliveryNo", param.get("deliveryNo"));
             }
             case "salesVoid" -> {
-                // todo: m joko
-                query = "SELECT COUNT(*) FROM t_pos_bill_item WHERE TRANS_DATE BETWEEN :fromDate AND :toDate AND" +
-                        " OUTLET_CODE = :outletCode AND MENU_ITEM_CODE = :kodeItem";
+                param.putIfAbsent("canceled", "Item");
+                query = "SELECT COUNT(*) FROM t_pos_item_void iv WHERE iv.OUTLET_CODE = :outletCode AND iv.VOID_TYPE = 'CAN' AND iv.TRANS_DATE BETWEEN :fromDate AND :toDate";
+                if(param.get("canceled").toString().equalsIgnoreCase("Order")){
+                    query = "SELECT COUNT(*) FROM t_pos_bill pb WHERE pb.OUTLET_CODE = :outletCode AND pb.DELIVERY_STATUS <> 'CLS' AND pb.TRANS_DATE BETWEEN :fromDate AND :toDate";
+                }
                 prm.put("outletCode", param.get("outletCode"));
                 prm.put("fromDate", param.get("fromDate"));
                 prm.put("toDate", param.get("toDate"));
-                prm.put("kodeItem", param.get("kodeItem"));
             }
             case "daftarMenu" -> {
                 query = "SELECT COUNT (*) from" + 
@@ -2552,6 +2553,8 @@ public class ViewDoaImpl implements ViewDao {
             }
         }
         assert query != null;
+        System.err.println("q :" + query);
+        System.err.println("prm :" + prm);
         return Integer.valueOf(Objects.requireNonNull(jdbcTemplate.queryForObject(query, prm, new RowMapper<String>() {
             @Override
             public String mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -2643,12 +2646,10 @@ public class ViewDoaImpl implements ViewDao {
     }
 
     // tambah fungsi untuk validasi nilai param by M Joko - 14 Dec 23
-    private boolean isValidParamKey(Object key){
-        if(key != null){
+    private boolean isValidParamKey(String value){
+        if(value == null || "".equals(value)){
             return false;
-        } else if(key != ""){
-            return false;
-        } else return key == " ";
+        } else return !" ".equals(value);
     }
     
 /////////////////////////////List Stock Opname 7 AUG 2023///////////////////////////////////////////    
@@ -2679,28 +2680,28 @@ public class ViewDoaImpl implements ViewDao {
         if(isValidParamKey(balance.get("limit")) ){
             prm.put("limit", balance.get("limit"));
         } else {
-            prm.put("limit", "501");
+            prm.put("limit", "1001");
         }
         qry += " order by a.date_upd desc, a.time_upd desc) where rownum < :limit";
         
+        System.err.println("balance : " + balance);
+        System.err.println("status : " + balance.get("status"));
+        System.err.println("isValidParamKey : " + isValidParamKey(balance.get("status")));
         System.err.println("p : " + prm);
-        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
-            @Override
-            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
-                Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("outletCode", rs.getString("OUTLET_CODE"));
-                rt.put("cdTemplate", rs.getString("CD_TEMPLATE"));
-                rt.put("opnanameNo", rs.getString("OPNAME_NO"));
-                rt.put("opnameDate", rs.getString("OPNAME_DATE"));
-                rt.put("remark", rs.getString("remark"));
-                rt.put("type", rs.getString("TYPE"));
-                rt.put("status", rs.getString("STATUS"));
-                rt.put("userUpd", rs.getString("USER_UPD"));
-                rt.put("dateUpd", rs.getString("DATE_UPD"));
-                rt.put("timeUpd", rs.getString("TIME_UPD"));
-                rt.put("templateName", rs.getString("TEMPLATE_NAME"));
-                return rt;
-            }
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, (ResultSet rs, int i) -> {
+            Map<String, Object> rt = new HashMap<>();
+            rt.put("outletCode", rs.getString("OUTLET_CODE"));
+            rt.put("cdTemplate", rs.getString("CD_TEMPLATE"));
+            rt.put("opnanameNo", rs.getString("OPNAME_NO"));
+            rt.put("opnameDate", rs.getString("OPNAME_DATE"));
+            rt.put("remark", rs.getString("remark"));
+            rt.put("type", rs.getString("TYPE"));
+            rt.put("status", rs.getString("STATUS"));
+            rt.put("userUpd", rs.getString("USER_UPD"));
+            rt.put("dateUpd", rs.getString("DATE_UPD"));
+            rt.put("timeUpd", rs.getString("TIME_UPD"));
+            rt.put("templateName", rs.getString("TEMPLATE_NAME"));
+            return rt;
         });
         return list;
     }
@@ -2903,9 +2904,9 @@ public class ViewDoaImpl implements ViewDao {
     /////////////////////////////List Detail Order by No 9-11-2023///////////////////////////////////////////
     @Override
     public List<Map<String, Object>> listDetailOderbyOrderno(Map<String, String> ref) {
-        String qry = "SELECT   A.*,B.item_description  "
+        String qry = "SELECT   A.*,B.item_description, B.UOM_STOCK  "
                 + " FROM T_ORDER_DETAIL A  "
-                + " left join (select item_code,item_description from m_item ) B  "
+                + " left join (select item_code,item_description, uom_stock from m_item ) B  "
                 + " on A.ITEM_CODE=b.item_code  "
                 + "WHERE ORDER_NO IN   "
                 + "(SELECT ORDER_NO   "
@@ -2932,6 +2933,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("cdUom1", rs.getString("CD_UOM_1"));
                 rt.put("qty2", rs.getString("QTY_2"));
                 rt.put("cdUom2", rs.getString("CD_UOM_2"));
+                rt.put("uomStock", rs.getString("uom_stock"));
                 rt.put("totalQtyStock", rs.getString("TOTAL_QTY_STOCK"));
                 rt.put("unitPrice", rs.getString("UNIT_PRICE"));
                 rt.put("userUpd", rs.getString("USER_UPD"));
@@ -3701,12 +3703,43 @@ public class ViewDoaImpl implements ViewDao {
 
 
     //////// NEW METHOD to get list daftar menu by Rafi 29 DEC 2023
+    @Override
     public List<Map<String, Object>> getListDaftarMenuReport() {
         String query = "SELECT DISTINCT (mmgl.ORDER_TYPE) AS ORDER_TYPE, mg.DESCRIPTION  FROM M_MENU_GROUP_LIMIT mmgl " + 
                 "LEFT JOIN M_GLOBAL mg ON mmgl.ORDER_TYPE = mg.CODE AND mg.COND = 'ORDER_TYPE' " + 
                 "ORDER BY ORDER_TYPE ASC ";
 
         return jdbcTemplate.query(query, new HashMap(), new DynamicRowMapper());
+    }
+
+    //////// NEW METHOD Digunakan untuk ambil data outlet di halaman login by M Joko - 4 Jan 2024
+    @Override
+    public List<Map<String, Object>> outletInfo(String outletCode) {
+        String qry = """
+                     SELECT 
+                         region_code, 
+                         outlet_code, 
+                         outlet_name, 
+                         type, 
+                         address_1, 
+                         address_2, 
+                         city, 
+                         post_code, 
+                         phone, 
+                         fax, 
+                         TO_CHAR(TRANS_DATE, 'DD-MM-YYYY') AS TRANS_DATE,
+                         CASE 
+                             WHEN outlet_name LIKE '%TACOBELL%' THEN 'TACOBELL'
+                             ELSE 'KFC'
+                         END AS brand
+                     FROM M_OUTLET 
+                     WHERE outlet_code = :outletcode
+                     """;
+        Map prm = new HashMap();
+        prm.put("outletcode", outletCode);
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new DynamicRowMapper());
+        return list;
     }
 
 

@@ -1938,7 +1938,6 @@ public class ReportDaoImpl implements ReportDao {
         if (param.containsKey("firstShift") && param.containsKey("lastShift")) {
             whereCashier = " AND SHIFT_CODE >= :firstShift AND SHIFT_CODE <= :lastShift ";
         }
-
         query = "SELECT TRANS_DATE AS TANGGAL, "
         + "    SUM(SLS) AS PENJUALAN, "
         + "    SUM(RFD) AS REFUND, "
@@ -2030,7 +2029,7 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportTransactionByPaymentType(Map<String, Object> param, Connection connection) throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
-
+        hashMap.put("brand", param.get("outletBrand"));
         hashMap.put("transDate1", param.get("fromDate"));
         hashMap.put("transDate2", param.get("toDate"));
         hashMap.put("outletCode", param.get("outletCode"));
@@ -2140,7 +2139,7 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportPemakaianBySales(Map<String, Object> param, Connection connection) throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
-
+        hashMap.put("brand", param.get("outletBrand"));
         hashMap.put("fromDate", param.get("fromDate"));
         hashMap.put("toDate", param.get("toDate"));
         hashMap.put("outletCode", param.get("outletCode"));
@@ -2153,7 +2152,7 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportProduksiAktual(Map<String, Object> param, Connection connection) throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
-
+        hashMap.put("brand", param.get("outletBrand"));
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("date", param.get("date"));
         hashMap.put("time1", param.get("startTime"));
@@ -2168,7 +2167,7 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportInventoryMovement(Map<String, Object> param, Connection connection) throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
-
+        hashMap.put("brand", param.get("outletBrand"));
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("fromDate", param.get("fromDate"));
         hashMap.put("toDate", param.get("toDate"));
@@ -2192,7 +2191,7 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportStockOpname(Map<String, Object> param, Connection connection) throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
-
+        hashMap.put("brand", param.get("outletBrand"));
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("user", param.get("user"));
         hashMap.put("opnameNo", param.get("opnameNo"));
@@ -2205,7 +2204,7 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportOrderEntryTransactions(Map<String, Object> param, Connection connection) throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
-
+        hashMap.put("brand", param.get("outletBrand"));
         hashMap.put("typeOrderEntry", param.get("typeOrderEntry"));
         hashMap.put("user", param.get("user"));
         hashMap.put("orderNo", param.get("orderNo"));
@@ -2219,7 +2218,7 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportReceivingTransactions(Map<String, Object> param, Connection connection) throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
-
+        hashMap.put("brand", param.get("outletBrand"));
         hashMap.put("user", param.get("user"));
         hashMap.put("city", "X_" + param.get("city"));
         hashMap.put("recvNo", param.get("recvNo"));       
@@ -2234,7 +2233,7 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportWastageTransactions(Map<String, Object> param, Connection connection) throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
-
+        hashMap.put("brand", param.get("outletBrand"));
         hashMap.put("user", param.get("user"));
         hashMap.put("wastageNo", param.get("wastageNo"));
         hashMap.put("outletCode", param.get("outletCode"));
@@ -2247,7 +2246,7 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportReturnOrderTransactions(Map<String, Object> param, Connection connection) throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
-
+        hashMap.put("brand", param.get("outletBrand"));
         hashMap.put("user", param.get("user"));
         hashMap.put("city", "X_" + param.get("city"));
         hashMap.put("returnNo", param.get("returnNo"));
@@ -2261,7 +2260,7 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportItemSelectedByTime(Map<String, Object> param, Connection connection) throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
-
+        hashMap.put("brand", param.get("outletBrand"));
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("kodeItem", param.get("kodeItem"));
         hashMap.put("fromDate", param.get("fromDate"));
@@ -2276,7 +2275,7 @@ public class ReportDaoImpl implements ReportDao {
     public JasperPrint jasperReportDeliveryOrderTransactions(Map<String, Object> param, Connection connection)
             throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
-
+        hashMap.put("brand", param.get("outletBrand"));
         hashMap.put("user", param.get("user"));
         hashMap.put("city", "X_" + param.get("city"));
         hashMap.put("deliveryNo", param.get("deliveryNo"));
@@ -2293,12 +2292,88 @@ public class ReportDaoImpl implements ReportDao {
      @Override
     public JasperPrint jasperReportDaftarMenu(Map<String, Object> param, Connection connection) throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
-
+        hashMap.put("brand", param.get("outletBrand"));
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("orderType", param.get("orderType"));
         hashMap.put("status", param.get("status"));
 
         ClassPathResource classPathResource = new ClassPathResource("report/reportDaftarMenu.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
+
+    @Override
+    public JasperPrint jasperReportSalesVoid(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        Map<String, Object> hashMap = new HashMap<>();
+        hashMap.put("brand", param.get("outletBrand"));
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("fromDate", param.get("fromDate"));
+        hashMap.put("toDate", param.get("toDate"));
+        hashMap.put("userUpd", param.get("userUpd"));
+        hashMap.put("detail", param.containsKey("detail") ? param.get("detail").toString() : "0");
+        hashMap.put("canceled", param.containsKey("canceled") ? param.get("canceled") : "Item");
+        hashMap.put("canceledType", param.containsKey("canceledType") ? param.get("canceledType") : "Semua");
+
+        List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
+        StringBuilder posCode = new StringBuilder();
+        if (listPos.size() == 1 && listPos.contains("Semua")) {
+            hashMap.put("posCode", "Semua");
+            hashMap.put("posCode1", "000");
+            hashMap.put("posCode2", "zzz");
+        } else {
+            for (Map<String, Object> object : listPos) {
+                if (object.containsKey("posCode1")) {
+                    hashMap.put("posCode1", object.get("posCode1"));
+                    posCode.append(object.get("posName1")).append(" s/d ");
+                } else {
+                    hashMap.put("posCode2", object.get("posCode2"));
+                    posCode.append(object.get("posName2"));
+                }
+                hashMap.put("posCode", posCode.toString());
+            }
+        }
+
+        List<Map<String, Object>> listCashier = (List<Map<String, Object>>) param.get("cashier");
+        StringBuilder cashierCode = new StringBuilder();
+        if (listCashier.size() == 1) {
+            hashMap.put("cashierCode", "Semua");
+            hashMap.put("cashierCode1", "000");
+            hashMap.put("cashierCode2", "zzz");
+        } else {
+            for (Map<String, Object> object : listCashier) {
+                if (object.containsKey("cashierCode1")) {
+                    hashMap.put("cashierCode1", object.get("cashierCode1"));
+                    cashierCode.append(object.get("cashierName1")).append(" s/d ");
+                } else {
+                    hashMap.put("cashierCode2", object.get("cashierCode2"));
+                    cashierCode.append(object.get("cashierName2"));
+                }
+                hashMap.put("cashierCode", cashierCode.toString());
+            }
+        }
+
+        List<Map<String, Object>> listShift = (List<Map<String, Object>>) param.get("shift");
+        StringBuilder shiftCode = new StringBuilder();
+        if (listShift.size() == 1) {
+            hashMap.put("shiftCode", "Semua");
+            hashMap.put("shiftCode1", "000");
+            hashMap.put("shiftCode2", "zzz");
+        } else {
+            for (Map<String, Object> object : listShift) {
+                if (object.containsKey("shiftCode1")) {
+                    hashMap.put("shiftCode1", object.get("shiftCode1"));
+                    shiftCode.append(object.get("shiftName1")).append(" s/d ");
+                } else {
+                    hashMap.put("shiftCode2", object.get("shiftCode2"));
+                    shiftCode.append(object.get("shiftName2"));
+                }
+                hashMap.put("shiftCode", shiftCode.toString());
+            }
+        }
+
+        System.err.println("jasperReportSalesVoid prm :" + hashMap);
+        System.err.println("Order :" + hashMap.get("canceled").toString().equalsIgnoreCase("Order"));
+        ClassPathResource classPathResource = new ClassPathResource(hashMap.get("canceled").toString().equalsIgnoreCase("Order") ? "report/salesVoidOrder.jrxml" : "report/salesVoidItem.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }

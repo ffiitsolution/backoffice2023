@@ -2446,14 +2446,12 @@ public class IndexController {
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-
         Response res = new Response();
         res.setData(viewServices.listDetailOderbyOrderno(balance));
         return res;
     }
-
     ///////////////done  
+    
     ////////////New method for query stock card - Fathur 29-Nov-2023////////////
     @RequestMapping(value = "/stock-card", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view data query stock card", response = Object.class)
@@ -2467,8 +2465,6 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 
         Response res = new Response();
         res.setData(viewServices.listQueryStockCard(balance));
@@ -2489,8 +2485,6 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 
         Response res = new Response();
         res.setData(viewServices.listQueryStockCardDetail(balance));
@@ -2655,8 +2649,6 @@ public class IndexController {
             res.setData(data);
             return res;
         }
-
-        // todo
             try {
                 processServices.insertTStockCard(balance);
             } catch (Exception e){
@@ -3073,6 +3065,34 @@ public class IndexController {
             e.printStackTrace();
             rm.setSuccess(false);
             rm.setMessage("Failed: " + e.getMessage());
+        }
+        return rm;
+    }
+
+    @RequestMapping(value = "/get-outlet-info", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk ambil data outlet di halaman login by M Joko - 4 Jan 2024", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage outletInfo(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        ResponseMessage rm = new ResponseMessage();
+        if(!balance.containsKey("outletCode")){
+            rm.setSuccess(false);
+            rm.setMessage("Get Failed: outletCode required");
+            return rm;
+        }
+        try {
+            rm.setItem(viewServices.outletInfo(balance.get("outletCode")));
+            rm.setSuccess(true);
+            rm.setMessage("Get Success");
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Get Failed: " + e.getMessage());
         }
         return rm;
     }

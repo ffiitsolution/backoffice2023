@@ -1,246 +1,243 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="recipe" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="819b0d3b-1f68-4cd2-bdcb-872b4047ba83">
-    <property name="ireport.zoom" value="1.3310000000000028"/>
-    <property name="ireport.x" value="0"/>
-    <property name="ireport.y" value="0"/>
-    <parameter name="outletCode" class="java.lang.String">
-        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
-    </parameter>
-    <parameter name="status" class="java.lang.String">
-        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
-    </parameter>
-    <parameter name="user" class="java.lang.String"/>
-    <parameter name="labelStatus" class="java.lang.String"/>
-    <queryString>
-        <![CDATA[SELECT a.RECIPE_CODE, a.RECIPE_REMARK, b.ITEM_CODE, d.ITEM_DESCRIPTION, b.QTY_STOCK, b.UOM_STOCK, c.PRODUCT_CODE,
-c.PRODUCT_REMARK, c.QTY_STOCK AS qyt_product, c.UOM_STOCK AS uom_product, e.OUTLET_NAME, e."TYPE", e.ADDRESS_1, e.ADDRESS_2 FROM M_RECIPE_HEADER a
-LEFT JOIN M_RECIPE_DETAIL b ON a.RECIPE_CODE = b.RECIPE_CODE
-LEFT JOIN M_RECIPE_PRODUCT c ON a.RECIPE_CODE = c.RECIPE_CODE
-LEFT JOIN  M_ITEM d ON b.ITEM_CODE = d.ITEM_CODE
-JOIN M_OUTLET e ON e.OUTLET_CODE = $P{outletCode}
-WHERE a.STATUS = $P{status} ORDER BY a.RECIPE_CODE, c.PRODUCT_CODE, b.ITEM_CODE ASC]]>
-    </queryString>
-    <field name="RECIPE_CODE" class="java.lang.String"/>
-    <field name="RECIPE_REMARK" class="java.lang.String"/>
-    <field name="ITEM_CODE" class="java.lang.String"/>
-    <field name="ITEM_DESCRIPTION" class="java.lang.String"/>
-    <field name="QTY_STOCK" class="java.math.BigDecimal"/>
-    <field name="UOM_STOCK" class="java.lang.String"/>
-    <field name="PRODUCT_CODE" class="java.lang.String"/>
-    <field name="PRODUCT_REMARK" class="java.lang.String"/>
-    <field name="QYT_PRODUCT" class="java.math.BigDecimal"/>
-    <field name="UOM_PRODUCT" class="java.lang.String"/>
-    <field name="OUTLET_NAME" class="java.lang.String"/>
-    <field name="TYPE" class="java.lang.String"/>
-    <field name="ADDRESS_1" class="java.lang.String"/>
-    <field name="ADDRESS_2" class="java.lang.String"/>
-    <group name="header">
-        <groupExpression><![CDATA[$F{RECIPE_CODE}]]></groupExpression>
-        <groupHeader>
-            <band height="18">
-                <textField isBlankWhenNull="true">
-                    <reportElement isPrintRepeatedValues="false" x="0" y="0" width="77" height="15" uuid="3a0dd286-acbd-45f0-baf4-68e21977927e"/>
-                    <textElement textAlignment="Center">
-                        <font size="8" isBold="true"/>
-                    </textElement>
-                    <textFieldExpression><![CDATA[$F{RECIPE_CODE}]]></textFieldExpression>
-                </textField>
-                <textField isBlankWhenNull="true">
-                    <reportElement isPrintRepeatedValues="false" x="76" y="0" width="159" height="15" uuid="8a29a308-47af-4ddb-b9df-1f6ad4b4e062"/>
-                    <textElement>
-                        <font size="8" isBold="true"/>
-                    </textElement>
-                    <textFieldExpression><![CDATA[$F{RECIPE_REMARK}]]></textFieldExpression>
-                </textField>
-            </band>
-        </groupHeader>
-    </group>
-    <group name="product">
-        <groupExpression><![CDATA[$F{PRODUCT_CODE}]]></groupExpression>
-        <groupFooter>
-            <band height="18">
-                <textField>
-                    <reportElement isPrintRepeatedValues="false" x="140" y="0" width="84" height="15" uuid="6902e52d-ac0c-416d-b6c5-4a696aa8840c"/>
-                    <textElement textAlignment="Right">
-                        <font size="8"/>
-                    </textElement>
-                    <textFieldExpression><![CDATA["+  " + $F{PRODUCT_CODE} + "    "]]></textFieldExpression>
-                </textField>
-                <textField>
-                    <reportElement isPrintRepeatedValues="false" x="228" y="0" width="231" height="15" uuid="ba3f0796-073d-4d64-a863-a8b0c8787bca"/>
-                    <textElement>
-                        <font size="8"/>
-                    </textElement>
-                    <textFieldExpression><![CDATA[$F{PRODUCT_REMARK}]]></textFieldExpression>
-                </textField>
-                <textField>
-                    <reportElement isPrintRepeatedValues="false" x="479" y="0" width="74" height="15" uuid="46b84a1e-579a-4c83-a640-7db4921cfbe2">
-                        <printWhenExpression><![CDATA[(!$F{QYT_PRODUCT}.equals(null))]]></printWhenExpression>
-                    </reportElement>
-                    <textElement textAlignment="Center">
-                        <font size="8"/>
-                    </textElement>
-                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.0000").format($F{QYT_PRODUCT}) + " " + $F{UOM_PRODUCT}]]></textFieldExpression>
-                </textField>
-            </band>
-        </groupFooter>
-    </group>
-    <group name="recipe">
-        <groupExpression><![CDATA[$F{ITEM_CODE}]]></groupExpression>
-        <groupHeader>
-            <band height="18">
-                <textField isBlankWhenNull="true">
-                    <reportElement isPrintRepeatedValues="false" x="76" y="0" width="77" height="15" uuid="09582712-b4ea-490c-b1cc-7ba656729047"/>
-                    <textElement textAlignment="Center">
-                        <font size="8"/>
-                    </textElement>
-                    <textFieldExpression><![CDATA[$F{ITEM_CODE}]]></textFieldExpression>
-                </textField>
-                <textField isBlankWhenNull="true">
-                    <reportElement isPrintRepeatedValues="false" x="152" y="0" width="219" height="15" uuid="b1140e14-33d1-418c-9a3c-c2f145857981"/>
-                    <textElement>
-                        <font size="8"/>
-                    </textElement>
-                    <textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
-                </textField>
-                <textField isBlankWhenNull="true">
-                    <reportElement isPrintRepeatedValues="false" x="406" y="0" width="74" height="15" uuid="88c85f51-53d1-4310-b2f5-e9a008361c08">
-                        <printWhenExpression><![CDATA[(!$F{QTY_STOCK}.equals( null ))]]></printWhenExpression>
-                    </reportElement>
-                    <textElement textAlignment="Center">
-                        <font size="8"/>
-                    </textElement>
-                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.0000").format($F{QTY_STOCK}) + " " + $F{UOM_STOCK}]]></textFieldExpression>
-                </textField>
-            </band>
-        </groupHeader>
-    </group>
-    <background>
-        <band splitType="Stretch"/>
-    </background>
-    <columnHeader>
-        <band height="98">
-            <textField>
-                <reportElement x="433" y="21" width="114" height="11" isPrintWhenDetailOverflows="true" uuid="162cd50d-0412-47ba-bb3a-5ece308094e2"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <textFieldExpression><![CDATA["Tanggal Cetak : " + new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
-            </textField>
-            <staticText>
-                <reportElement x="69" y="0" width="112" height="11" uuid="43adaef0-010b-4e65-a6c1-a9378cb38acb"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
-            </staticText>
-            <textField>
-                <reportElement x="433" y="1" width="114" height="11" isPrintWhenDetailOverflows="true" uuid="5837eecf-bcda-4130-a722-ac53355ef0c0"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <textFieldExpression><![CDATA["Halaman : " + $V{PAGE_NUMBER}]]></textFieldExpression>
-            </textField>
-            <textField>
-                <reportElement x="69" y="20" width="122" height="11" isPrintWhenDetailOverflows="true" uuid="b25b584a-6059-4497-87b3-a55a90d9d0f9"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <textFieldExpression><![CDATA[$F{ADDRESS_1}]]></textFieldExpression>
-            </textField>
-            <textField>
-                <reportElement x="433" y="11" width="114" height="11" isPrintWhenDetailOverflows="true" uuid="b6e74a7a-c66a-4210-bc1a-5257cd945c08"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <textFieldExpression><![CDATA["User Cetak : " + $P{user}]]></textFieldExpression>
-            </textField>
-            <image>
-                <reportElement x="10" y="1" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="b4b752b4-a368-425d-908b-6cb1ee097235"/>
-                <imageExpression><![CDATA["logo/logoKfc.png"]]></imageExpression>
-            </image>
-            <textField>
-                <reportElement x="69" y="10" width="122" height="11" uuid="b923d394-a5bf-475d-b796-295a5adb2bc7"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <textFieldExpression><![CDATA[$F{OUTLET_NAME} + "-" + $F{TYPE}]]></textFieldExpression>
-            </textField>
-            <textField>
-                <reportElement x="433" y="31" width="114" height="11" isPrintWhenDetailOverflows="true" uuid="6691e25b-1133-45b9-9c0f-a4a4b0bb2a37"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <textFieldExpression><![CDATA["Jam Cetak : " + new SimpleDateFormat("hh:mm:ss").format(new Date())]]></textFieldExpression>
-            </textField>
-            <textField>
-                <reportElement x="69" y="30" width="122" height="11" isPrintWhenDetailOverflows="true" uuid="1e61694c-77f1-4299-a6a8-34ac3890def7"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <textFieldExpression><![CDATA[$F{ADDRESS_2}]]></textFieldExpression>
-            </textField>
-            <line>
-                <reportElement x="1" y="97" width="552" height="1" uuid="59ea3a16-0366-49bc-9be4-39daa3bf3dfb"/>
-            </line>
-            <line>
-                <reportElement x="1" y="82" width="552" height="1" uuid="93fafdcc-cb32-4ac4-834d-6d9eaf89a7cf"/>
-            </line>
-            <staticText>
-                <reportElement x="0" y="83" width="77" height="15" uuid="a1d979a2-dd98-459c-b501-e283e73b15fb"/>
-                <textElement textAlignment="Center">
-                    <font size="8" isBold="true"/>
-                </textElement>
-                <text><![CDATA[Code]]></text>
-            </staticText>
-            <staticText>
-                <reportElement x="76" y="83" width="77" height="15" uuid="19b16726-783d-43cc-a077-d4fd79e7092f"/>
-                <textElement textAlignment="Center">
-                    <font size="8" isBold="true"/>
-                </textElement>
-                <text><![CDATA[Recipe]]></text>
-            </staticText>
-            <staticText>
-                <reportElement x="152" y="83" width="97" height="15" uuid="ba71da50-e8e8-471b-b791-cf05ff7894aa"/>
-                <textElement textAlignment="Center">
-                    <font size="8" isBold="true"/>
-                </textElement>
-                <text><![CDATA[Material]]></text>
-            </staticText>
-            <staticText>
-                <reportElement x="248" y="83" width="159" height="15" uuid="d0cf34eb-8709-4d98-812e-ebb2e144c34a"/>
-                <textElement>
-                    <font size="8" isBold="true"/>
-                </textElement>
-                <text><![CDATA[Product Result]]></text>
-            </staticText>
-            <staticText>
-                <reportElement x="406" y="83" width="74" height="15" uuid="b987482b-c4b0-4ad3-a449-0dd10d6f8aa8"/>
-                <textElement textAlignment="Center">
-                    <font size="8" isBold="true"/>
-                </textElement>
-                <text><![CDATA[Qty Recipe]]></text>
-            </staticText>
-            <staticText>
-                <reportElement x="479" y="83" width="74" height="15" uuid="f596dbc8-b5bc-4bd4-a103-984fffa80688"/>
-                <textElement textAlignment="Center">
-                    <font size="8" isBold="true"/>
-                </textElement>
-                <text><![CDATA[Qty Recipe]]></text>
-            </staticText>
-            <textField>
-                <reportElement x="220" y="29" width="119" height="37" uuid="ea853665-a21f-4895-a4fd-8905489265ee"/>
-                <textElement textAlignment="Center">
-                    <font size="12" isBold="true"/>
-                </textElement>
-                <textFieldExpression><![CDATA["LISTING RECIPE " + $P{labelStatus}]]></textFieldExpression>
-            </textField>
-        </band>
-    </columnHeader>
-    <pageFooter>
-        <band height="18" splitType="Stretch"/>
-    </pageFooter>
-    <summary>
-        <band height="18" splitType="Stretch"/>
-    </summary>
+	<property name="ireport.zoom" value="1.3310000000000028"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="outletCode" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="status" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="user" class="java.lang.String"/>
+	<parameter name="labelStatus" class="java.lang.String"/>
+	<parameter name="brand" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT rh.RECIPE_CODE, rh.RECIPE_REMARK, rd.ITEM_CODE, mi.ITEM_DESCRIPTION, rd.QTY_STOCK, rd.UOM_STOCK, rp.PRODUCT_CODE, CASE WHEN rp.PRODUCT_REMARK IS NULL OR rp.PRODUCT_REMARK = ' ' THEN mmi.ITEM_DESCRIPTION ELSE rp.PRODUCT_REMARK END AS PRODUCT_REMARK, rp.QTY_STOCK AS qyt_product, rp.UOM_STOCK AS uom_product, mo.OUTLET_NAME, mo."TYPE", mo.ADDRESS_1, mo.ADDRESS_2 FROM M_RECIPE_HEADER rh LEFT JOIN M_RECIPE_DETAIL rd ON rh.RECIPE_CODE = rd.RECIPE_CODE LEFT JOIN M_RECIPE_PRODUCT rp ON rh.RECIPE_CODE = rp.RECIPE_CODE LEFT JOIN M_ITEM mi ON rd.ITEM_CODE = mi.ITEM_CODE LEFT JOIN M_ITEM mmi ON rp.PRODUCT_CODE = mmi.ITEM_CODE JOIN M_OUTLET mo ON mo.OUTLET_CODE = $P{outletCode} WHERE rh.STATUS = $P{status} ORDER BY rh.RECIPE_CODE, rp.PRODUCT_CODE, rd.ITEM_CODE ASC]]>
+	</queryString>
+	<field name="RECIPE_CODE" class="java.lang.String"/>
+	<field name="RECIPE_REMARK" class="java.lang.String"/>
+	<field name="ITEM_CODE" class="java.lang.String"/>
+	<field name="ITEM_DESCRIPTION" class="java.lang.String"/>
+	<field name="QTY_STOCK" class="java.math.BigDecimal"/>
+	<field name="UOM_STOCK" class="java.lang.String"/>
+	<field name="PRODUCT_CODE" class="java.lang.String"/>
+	<field name="PRODUCT_REMARK" class="java.lang.String"/>
+	<field name="QYT_PRODUCT" class="java.math.BigDecimal"/>
+	<field name="UOM_PRODUCT" class="java.lang.String"/>
+	<field name="OUTLET_NAME" class="java.lang.String"/>
+	<field name="TYPE" class="java.lang.String"/>
+	<field name="ADDRESS_1" class="java.lang.String"/>
+	<field name="ADDRESS_2" class="java.lang.String"/>
+	<group name="header">
+		<groupExpression><![CDATA[$F{RECIPE_CODE}]]></groupExpression>
+		<groupHeader>
+			<band height="18">
+				<textField isBlankWhenNull="true">
+					<reportElement isPrintRepeatedValues="false" x="0" y="0" width="77" height="15" uuid="3a0dd286-acbd-45f0-baf4-68e21977927e"/>
+					<textElement textAlignment="Center">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{RECIPE_CODE}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement isPrintRepeatedValues="false" x="76" y="0" width="159" height="15" uuid="8a29a308-47af-4ddb-b9df-1f6ad4b4e062"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{RECIPE_REMARK}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="product">
+		<groupExpression><![CDATA[$F{PRODUCT_CODE}]]></groupExpression>
+		<groupFooter>
+			<band height="18">
+				<textField>
+					<reportElement isPrintRepeatedValues="false" x="140" y="0" width="84" height="15" uuid="6902e52d-ac0c-416d-b6c5-4a696aa8840c"/>
+					<textElement textAlignment="Right">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA["+  " + $F{PRODUCT_CODE} + "    "]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement isPrintRepeatedValues="false" x="228" y="0" width="231" height="15" uuid="ba3f0796-073d-4d64-a863-a8b0c8787bca"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{PRODUCT_REMARK}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement isPrintRepeatedValues="false" x="479" y="0" width="74" height="15" uuid="46b84a1e-579a-4c83-a640-7db4921cfbe2">
+						<printWhenExpression><![CDATA[(!$F{QYT_PRODUCT}.equals(null))]]></printWhenExpression>
+					</reportElement>
+					<textElement textAlignment="Center">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new DecimalFormat("#,##0.0000").format($F{QYT_PRODUCT}) + " " + $F{UOM_PRODUCT}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<group name="recipe">
+		<groupExpression><![CDATA[$F{ITEM_CODE}]]></groupExpression>
+		<groupHeader>
+			<band height="18">
+				<textField isBlankWhenNull="true">
+					<reportElement isPrintRepeatedValues="false" x="76" y="0" width="77" height="15" uuid="09582712-b4ea-490c-b1cc-7ba656729047"/>
+					<textElement textAlignment="Center">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{ITEM_CODE}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement isPrintRepeatedValues="false" x="152" y="0" width="219" height="15" uuid="b1140e14-33d1-418c-9a3c-c2f145857981"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement isPrintRepeatedValues="false" x="406" y="0" width="74" height="15" uuid="88c85f51-53d1-4310-b2f5-e9a008361c08">
+						<printWhenExpression><![CDATA[(!$F{QTY_STOCK}.equals( null ))]]></printWhenExpression>
+					</reportElement>
+					<textElement textAlignment="Center">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new DecimalFormat("#,##0.0000").format($F{QTY_STOCK}) + " " + $F{UOM_STOCK}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="98">
+			<textField>
+				<reportElement x="433" y="21" width="114" height="11" isPrintWhenDetailOverflows="true" uuid="162cd50d-0412-47ba-bb3a-5ece308094e2"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Tanggal Cetak : " + new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="69" y="0" width="112" height="11" uuid="43adaef0-010b-4e65-a6c1-a9378cb38acb"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="433" y="1" width="114" height="11" isPrintWhenDetailOverflows="true" uuid="5837eecf-bcda-4130-a722-ac53355ef0c0"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Halaman : " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="69" y="20" width="122" height="11" isPrintWhenDetailOverflows="true" uuid="b25b584a-6059-4497-87b3-a55a90d9d0f9"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ADDRESS_1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="433" y="11" width="114" height="11" isPrintWhenDetailOverflows="true" uuid="b6e74a7a-c66a-4210-bc1a-5257cd945c08"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["User Cetak : " + $P{user}]]></textFieldExpression>
+			</textField>
+			<image scaleImage="FillFrame">
+				<reportElement x="10" y="1" width="48" height="48" isPrintWhenDetailOverflows="true" uuid="b4b752b4-a368-425d-908b-6cb1ee097235"/>
+				<imageExpression><![CDATA[$P{brand} != null && !$P{brand}.isEmpty() ? "logo/logo" + $P{brand}.toLowerCase().substring(0, 1).toUpperCase() + $P{brand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="69" y="10" width="122" height="11" uuid="b923d394-a5bf-475d-b796-295a5adb2bc7"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OUTLET_NAME} + "-" + $F{TYPE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="433" y="31" width="114" height="11" isPrintWhenDetailOverflows="true" uuid="6691e25b-1133-45b9-9c0f-a4a4b0bb2a37"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Jam Cetak : " + new SimpleDateFormat("hh:mm:ss").format(new Date())]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="69" y="30" width="122" height="11" isPrintWhenDetailOverflows="true" uuid="1e61694c-77f1-4299-a6a8-34ac3890def7"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ADDRESS_2}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="1" y="97" width="552" height="1" uuid="59ea3a16-0366-49bc-9be4-39daa3bf3dfb"/>
+			</line>
+			<line>
+				<reportElement x="1" y="82" width="552" height="1" uuid="93fafdcc-cb32-4ac4-834d-6d9eaf89a7cf"/>
+			</line>
+			<staticText>
+				<reportElement x="0" y="83" width="77" height="15" uuid="a1d979a2-dd98-459c-b501-e283e73b15fb"/>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Code]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="76" y="83" width="77" height="15" uuid="19b16726-783d-43cc-a077-d4fd79e7092f"/>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Recipe]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="152" y="83" width="97" height="15" uuid="ba71da50-e8e8-471b-b791-cf05ff7894aa"/>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Material]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="248" y="83" width="159" height="15" uuid="d0cf34eb-8709-4d98-812e-ebb2e144c34a"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Product Result]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="406" y="83" width="74" height="15" uuid="b987482b-c4b0-4ad3-a449-0dd10d6f8aa8"/>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Qty Recipe]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="479" y="83" width="74" height="15" uuid="f596dbc8-b5bc-4bd4-a103-984fffa80688"/>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Qty Recipe]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="220" y="29" width="119" height="37" uuid="ea853665-a21f-4895-a4fd-8905489265ee"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["LISTING RECIPE " + $P{labelStatus}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<pageFooter>
+		<band height="18" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="18" splitType="Stretch"/>
+	</summary>
 </jasperReport>
