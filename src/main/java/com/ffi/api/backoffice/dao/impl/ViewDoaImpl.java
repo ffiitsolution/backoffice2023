@@ -3472,30 +3472,21 @@ public class ViewDoaImpl implements ViewDao {
 
     ///////// NEW METHOD get HO Outlet List - Dani 22 Des 2023
     public List<Map<String, Object>> listOutletHo(Map<String, String> mapping) {
-        String qry = "SELECT a.region_code,b.description region_name,a.outlet_code,a.area_code,c.description area_name, a.initial_outlet, a.outlet_name, a.type,d.description type_store, a.status "
+        String qry = "SELECT a.region_code, a.outlet_code, a.area_code, a.initial_outlet, a.outlet_name, a.type, a.status "
                 + "FROM M_OUTLET a "
-                + "join m_global b on a.region_code=b.code and b.cond='REG_OUTLET'"
-                + "join m_global c on a.area_code=c.code  and c.cond='AREACODE'"
-                + "join m_global d on a.type=d.code  and d.cond='OUTLET_TP'"
-                + "where a.type = 'HO' and a.status='A' and  a.REGION_CODE LIKE :region AND a.AREA_CODE LIKE :area AND a.TYPE LIKE :type";
+                + "where a.type = 'HO' and a.INITIAL_OUTLET != 'HO' and a.status='A' ORDER BY a.OUTLET_NAME ASC";
         Map prm = new HashMap();
         System.err.println("q :" + qry);
-        prm.put("region", "%" + mapping.get("region") + "%");
-        prm.put("area", "%" + mapping.get("area") + "%");
-        prm.put("type", "%" + mapping.get("type") + "%");
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
                 rt.put("region", rs.getString("region_code"));
-                rt.put("regionname", rs.getString("region_name"));
                 rt.put("area", rs.getString("area_code"));
-                rt.put("areaname", rs.getString("area_name"));
                 rt.put("outlet", rs.getString("outlet_code"));
                 rt.put("Initial", rs.getString("initial_outlet"));
                 rt.put("Name", rs.getString("outlet_name"));
                 rt.put("Type", rs.getString("type"));
-                rt.put("typename", rs.getString("type_store"));
                 rt.put("Status", rs.getString("status"));
                 return rt;
             }
