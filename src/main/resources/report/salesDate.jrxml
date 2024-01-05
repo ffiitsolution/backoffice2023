@@ -50,7 +50,7 @@
 	<parameter name="orderType2" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
-	<parameter name="brand" class="java.lang.String">
+	<parameter name="outletBrand" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
@@ -463,8 +463,8 @@ U]]>
 				<text><![CDATA[Daily Sales Report]]></text>
 			</staticText>
 			<image scaleImage="FillFrame">
-				<reportElement x="21" y="0" width="48" height="48" isPrintWhenDetailOverflows="true" uuid="6b7f9666-f046-4f4c-be14-b871ba198ca5"/>
-				<imageExpression><![CDATA[$P{brand} != null && !$P{brand}.isEmpty() ? "logo/logo" + $P{brand}.toLowerCase().substring(0, 1).toUpperCase() + $P{brand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
+				<reportElement x="21" y="0" width="42" height="42" isPrintWhenDetailOverflows="true" uuid="6b7f9666-f046-4f4c-be14-b871ba198ca5"/>
+				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
 			</image>
 			<staticText>
 				<reportElement x="78" y="0" width="112" height="11" uuid="500b4672-efad-4caa-9a0b-1da5628e7662"/>

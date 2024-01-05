@@ -52,6 +52,9 @@
 	</parameter>
 	<parameter name="brand1" class="java.lang.String"/>
 	<parameter name="brand" class="java.lang.String"/>
+	<parameter name="outletBrand" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[SELECT
 	v.MENU_ITEM_CODE,
@@ -488,7 +491,7 @@ WHERE g.description IN ($P{brand1}, $P{brand2})]]>
 			</textField>
 			<image scaleImage="FillFrame">
 				<reportElement x="23" y="0" width="48" height="48" isPrintWhenDetailOverflows="true" uuid="8e7e45c0-65fa-492c-a92f-470e3265a787"/>
-				<imageExpression><![CDATA[$P{brand} != null && !$P{brand}.isEmpty() ? "logo/logo" + $P{brand}.toLowerCase().substring(0, 1).toUpperCase() + $P{brand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
+				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
 			</image>
 		</band>
 	</columnHeader>
