@@ -208,4 +208,8 @@ public class ReportServices {
     public JasperPrint jasperReportSalesVoid(Map<String, Object> param, Connection connection) throws  JRException, IOException {
         return dao.jasperReportSalesVoid(param, connection);
     }
+
+    public JasperPrint jasperReportRefund(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        return dao.jasperReportRefund(param, connection);
+    }
 }
