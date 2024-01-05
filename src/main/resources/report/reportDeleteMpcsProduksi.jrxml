@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="deliveryOrder" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="1356944a-c454-4393-99ee-8392e8ce3866">
+	<property name="ireport.zoom" value="2.196150000000001"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="city" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="outletCode" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="fromDate" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="toDate" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="user" class="java.lang.String"/>
+	<parameter name="detail" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[select TO_CHAR(A.MPCS_DATE, 'DD/MM/YYYY') AS MPCS_DATE, A.MPCS_GROUP,B.RECIPE_REMARK,A.SEQ_MPCS,
+A.USER_UPD,C.STAFF_NAME ,A.DATE_UPD, TO_CHAR(TO_DATE(A.TIME_UPD, 'HH24MISS'), 'HH24:MI:SS') AS TIME_UPD, C.STAFF_NAME, count(*) AS SUB_TOTAL,
+  sum(A.QUANTITY) AS QUANTITY, D.OUTLET_NAME, D.OUTLET_CODE, D.ADDRESS_1, D.ADDRESS_2, D.PHONE from t_mpcs_hist a
+join m_recipe_header b
+  on A.MPCS_GROUP=B.MPCS_GROUP
+  and A.MPCS_DATE between $P{fromDate} and $P{toDate}
+  and fryer_type='D'
+join m_staff c
+  on A.USER_UPD=C.STAFF_CODE
+JOIN M_OUTLET d
+  ON A.OUTLET_CODE = D.OUTLET_CODE
+  GROUP BY A.MPCS_DATE, A.MPCS_GROUP, B.RECIPE_REMARK, A.SEQ_MPCS, A.USER_UPD, A.DATE_UPD,A.TIME_UPD, C.STAFF_NAME, D.OUTLET_NAME, D.OUTLET_CODE, D.ADDRESS_1, D.ADDRESS_2, D.PHONE
+order by A.MPCS_DATE,A.SEQ_MPCS,A.TIME_UPD]]>
+	</queryString>
+	<field name="MPCS_DATE" class="java.lang.String"/>
+	<field name="MPCS_GROUP" class="java.lang.String"/>
+	<field name="RECIPE_REMARK" class="java.lang.String"/>
+	<field name="SEQ_MPCS" class="java.math.BigDecimal"/>
+	<field name="USER_UPD" class="java.lang.String"/>
+	<field name="STAFF_NAME" class="java.lang.String"/>
+	<field name="DATE_UPD" class="java.sql.Timestamp"/>
+	<field name="TIME_UPD" class="java.lang.String"/>
+	<field name="SUB_TOTAL" class="java.math.BigDecimal"/>
+	<field name="QUANTITY" class="java.math.BigDecimal"/>
+	<field name="OUTLET_NAME" class="java.lang.String"/>
+	<field name="OUTLET_CODE" class="java.lang.String"/>
+	<field name="ADDRESS_1" class="java.lang.String"/>
+	<field name="ADDRESS_2" class="java.lang.String"/>
+	<field name="PHONE" class="java.lang.String"/>
+	<group name="detail">
+		<groupExpression><![CDATA[$F{MPCS_DATE}]]></groupExpression>
+		<groupHeader>
+			<band/>
+		</groupHeader>
+		<groupFooter>
+			<band height="20">
+				<textField>
+					<reportElement x="437" y="1" width="40" height="16" uuid="fd62135f-5801-44f7-8b6c-fb6897385948"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{SUB_TOTAL}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="322" y="1" width="114" height="16" uuid="a0dc63b7-50a7-4669-b4ee-50afee7fbe91"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Sub Total : "]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="77" y="-1" width="476" height="1" uuid="172adf04-7fd9-4557-a9ee-3ae293675bd6"/>
+				</line>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="98" splitType="Stretch">
+			<image>
+				<reportElement x="22" y="1" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="e97813fe-6bdd-4579-8fc4-915ca01dc9f1"/>
+				<imageExpression><![CDATA["logo/logoKfc.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="81" y="0" width="112" height="11" uuid="01f34372-348f-4fd9-b8ad-4573af9f8ec9"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="81" y="10" width="122" height="11" uuid="abbc81ca-ac76-4c2d-a1d7-b16bce5f33fa"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OUTLET_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="81" y="20" width="122" height="11" uuid="944aade3-f718-4dee-826e-c97bb0132c53"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ADDRESS_1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="81" y="30" width="122" height="11" uuid="4b6193bf-341a-491e-8b7a-4820dfaffb6c"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ADDRESS_2}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="172" y="44" width="221" height="18" uuid="ea455947-ace1-498b-b577-d4d4c599c247"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[REPORT DELETE MPCS PRODUKSI]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="68" width="22" height="11" uuid="1fd47466-5b3f-47a4-a4de-93e2c65c45d3"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Date : ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="24" y="68" width="287" height="11" uuid="ceb8922b-cf0d-42a7-9c2b-ed64ad7cb7ac"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{fromDate}))
++ " To " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{toDate}))]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="437" y="0" width="114" height="11" uuid="fbc60455-869e-469f-8d2e-6daadf1e7e4a"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Halaman : " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="437" y="10" width="114" height="11" uuid="151278d0-c013-402f-8b12-9fb307dde65a"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["User Cetak : " + $P{user}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="437" y="20" width="114" height="11" uuid="f2a5250d-945a-4ddc-badc-4c6bfa40ce73"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Tanggal Cetak : " + new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="437" y="30" width="114" height="11" uuid="59538c26-b8c7-43fa-ad2a-2b6ae8bcb442"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Jam Cetak : " + new SimpleDateFormat("hh:mm:ss").format(new Date())]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="1" y="82" width="552" height="1" uuid="acca77af-7fde-4636-a431-7c763e07e2fc"/>
+			</line>
+			<line>
+				<reportElement x="1" y="97" width="552" height="1" uuid="bf86da33-f3e7-4902-adf9-3bf028fc428a"/>
+			</line>
+			<staticText>
+				<reportElement mode="Transparent" x="498" y="83" width="56" height="15" uuid="db768710-72cf-413f-8f7d-93da6d977a0a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Quantity]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="435" y="83" width="62" height="15" uuid="e1e69c01-9f78-457c-9639-f1e5149fa8a2"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Delete]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="0" y="83" width="78" height="15" uuid="ce7fa785-d473-4d03-8576-672d0a17b1c8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date MPCS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="150" y="83" width="182" height="15" uuid="34ab1602-7b76-489d-a10f-6090801bf16d"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Group Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="334" y="83" width="101" height="15" uuid="154f3bf7-7886-4f78-84c9-b7162e6b5c79"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Staff Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="79" y="83" width="71" height="15" uuid="d8f1484c-186b-4585-82e6-5370fb310cf5"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[MPCS Group]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="16">
+			<textField>
+				<reportElement x="436" y="0" width="41" height="15" uuid="10dd12ff-26b0-440b-a664-42fcfc19cb1e"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SEQ_MPCS}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="80" y="0" width="69" height="15" uuid="88e70e99-7a79-41d3-9186-3e8e011b2eac"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{MPCS_GROUP}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="149" y="0" width="186" height="15" uuid="e5dc015b-34f3-4d8c-9e4b-7e727f17be49"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{RECIPE_REMARK}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="499" y="0" width="52" height="15" uuid="225893bc-a502-4fc3-9519-7d894cb40277"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{QUANTITY}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="336" y="0" width="99" height="15" uuid="29559b52-572e-4149-8ec6-98c1da500352"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{STAFF_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="1" width="77" height="15" uuid="27b230b3-e595-48a7-8560-366f182cd364"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{MPCS_DATE}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="18" splitType="Stretch"/>
+	</summary>
+</jasperReport>

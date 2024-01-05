@@ -50,6 +50,11 @@ public interface ReportDao {
     JasperPrint jasperReportDaftarMenu (Map<String, Object> param, Connection connection) throws IOException, JRException;
 
     /////////////////////////////////DONE///////////////////////////////////////
+    
+    /////////////////////// new method Delete MPCS produksi adit 04-01-2024
+    JasperPrint jesperReportDeleteMpcsProduksi (Map<String, Object> param, Connection connection) throws IOException, JRException;
+    /////////////////////// done adit 04-01-2024
+    
     ///////////////NEW METHOD REPORT receive BY PASCA 10 July 2023////
     JasperPrint jasperReportRecipe (Map<String, Object> param, Connection connection) throws IOException, JRException;
     /////////////////////////////////DONE///////////////////////////////////////

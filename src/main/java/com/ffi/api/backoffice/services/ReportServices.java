@@ -75,6 +75,12 @@ public class ReportServices {
     public JasperPrint jesperReportDeliveryOrder(Map<String, Object> param, Connection connection) throws JRException, SQLException, IOException {
         return dao.jasperReportDeliveryOrder(param, connection);
     }
+    
+    /////////////////////// new method Delete MPCS produksi adit 04-01-2024
+    public JasperPrint jesperReportDeleteMpcsProduksi(Map<String, Object> param, Connection connection) throws JRException, SQLException, IOException {
+        return dao.jesperReportDeleteMpcsProduksi(param, connection);
+    }
+    /////////////////////// done adit 04-01-2024
 
     public JasperPrint jasperReportItem(Map<String, Object> param, Connection connection) throws JRException, IOException {
         return dao.jesperReportItem(param, connection);
