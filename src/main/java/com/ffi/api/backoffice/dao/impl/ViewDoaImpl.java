@@ -2155,6 +2155,15 @@ public class ViewDoaImpl implements ViewDao {
                 prm.put("fromDate", param.get("fromDate"));
                 prm.put("toDate", param.get("toDate"));
             }
+            //////////////////////// new method case Delete MPCS Produksi adit 04-01-2024
+            case "deleteMpcsProduksi" -> {
+                query = "SELECT COUNT(*) FROM t_mpcs_hist a WHERE a.OUTLET_CODE =:outletCode AND a.MPCS_DATE BETWEEN "
+                        + ":fromDate AND :toDate";
+                prm.put("outletCode", param.get("outletCode"));
+                prm.put("fromDate", param.get("fromDate"));
+                prm.put("toDate", param.get("toDate"));
+            }
+            /////////////////////// done adit 04-01-2024
             case "item" -> {
                 StringBuilder queryBuilder = new StringBuilder();
 

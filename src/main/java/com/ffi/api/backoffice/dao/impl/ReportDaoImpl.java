@@ -757,7 +757,7 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportStock(Map<String, Object> param, Connection connection) throws IOException, JRException {
         Map<String, Object> hashMap = new HashMap<String, Object>();
-
+        hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("fromDate", param.get("fromDate"));
         hashMap.put("toDate", param.get("toDate"));
@@ -798,7 +798,7 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportRecipe(Map<String, Object> param, Connection connection) throws IOException, JRException {
         Map<String, Object> hashMap = new HashMap<>();
-
+        hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("user", param.get("user"));
 
@@ -818,7 +818,7 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportFreeMeal(Map<String, Object> param, Connection connection) throws IOException, JRException {
         Map<String, Object> hashMap = new HashMap<>();
-
+        hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("user", param.get("user"));
         hashMap.put("fromDate", param.get("fromDate"));
         hashMap.put("toDate", param.get("toDate"));
@@ -848,7 +848,8 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportSalesByTime(Map<String, Object> param, Connection connection) throws IOException, JRException {
         Map<String, Object> hashMap = new HashMap<>();
-
+        
+        hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("fromDate", param.get("fromDate"));
         hashMap.put("toDate", param.get("toDate"));
         hashMap.put("outletCode", param.get("outletCode"));
@@ -1218,7 +1219,7 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportSalesByDate(Map<String, Object> param, Connection connection) throws IOException, JRException {
         Map<String, Object> hashMap = new HashMap<>();
-
+        hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("fromDate", param.get("fromDate"));
         hashMap.put("toDate", param.get("toDate"));
         hashMap.put("outletCode", param.get("outletCode"));
@@ -1300,6 +1301,7 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportSalesByItem(Map<String, Object> param, Connection connection) throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
+        hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("user", param.get("user"));
         hashMap.put("fromDate", param.get("fromDate"));
         hashMap.put("toDate", param.get("toDate"));
@@ -1313,7 +1315,6 @@ public class ReportDaoImpl implements ReportDao {
             hashMap.put("brand1", "KFC");
             hashMap.put("brand2", "BB");
         } else {
-            hashMap.put("brand", param.get("brand"));
             hashMap.put("brand1", param.get("brand").toString().toUpperCase());
             hashMap.put("brand2", param.get("brand").toString().toUpperCase());
         }
@@ -1383,6 +1384,7 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportMenuVsDetail(Map<String, Object> param, Connection connection) throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
+        hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("user", param.get("user"));
         hashMap.put("fromDate", param.get("fromDate"));
         hashMap.put("toDate", param.get("toDate"));
@@ -1396,7 +1398,7 @@ public class ReportDaoImpl implements ReportDao {
             hashMap.put("brand1", "KFC");
             hashMap.put("brand2", "BB");
         } else {
-            hashMap.put("brand", param.get("brand"));
+            hashMap.put("outletBrand", param.get("brand"));
             hashMap.put("brand1", param.get("brand").toString().toUpperCase());
             hashMap.put("brand2", param.get("brand").toString().toUpperCase());
         }
@@ -1466,6 +1468,8 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportSummarySalesByItemCode(Map<String, Object> param, Connection connection) throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
+        
+        hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("user", param.get("user"));
         hashMap.put("fromDate", param.get("fromDate"));
         hashMap.put("toDate", param.get("toDate"));
@@ -1479,7 +1483,6 @@ public class ReportDaoImpl implements ReportDao {
             hashMap.put("brand1", "KFC");
             hashMap.put("brand2", "BB");
         } else {
-            hashMap.put("brand", param.get("brand"));
             hashMap.put("brand1", param.get("brand").toString().toUpperCase());
             hashMap.put("brand2", param.get("brand").toString().toUpperCase());
         }
@@ -1554,6 +1557,7 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportStockCard(Map<String, Object> param, Connection connection) throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
+        hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("fromDate", param.get("fromDate"));
         hashMap.put("toDate", param.get("toDate"));
@@ -1608,7 +1612,7 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportTransaksiKasir(Map<String, Object> param, Connection connection) throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
-
+        hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("fromDate", param.get("fromDate"));
         hashMap.put("toDate", param.get("toDate"));
@@ -1706,6 +1710,7 @@ public class ReportDaoImpl implements ReportDao {
                         "ORDER BY UTM.POS_CODE_NOW ASC");
 
         Map<String, Object> hashMap = new HashMap<>();
+        hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("query", queryDataReceipt.toString());
         hashMap.put("dateNow", param.get("periode"));
         hashMap.put("dateAgo", yesterdayDateString);
@@ -1739,6 +1744,7 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportSalesMixDepartment(Map<String, Object> param, Connection connection) throws JRException, IOException, ParseException {
         Map<String, Object> hashMap = new HashMap<>();
+        hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("user", param.get("user"));
         hashMap.put("fromDate", param.get("fromDate"));
         hashMap.put("toDate", param.get("toDate"));
@@ -1810,6 +1816,7 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportQueryBill(Map<String, Object> param, Connection connection) throws JRException, IOException, ParseException {
         Map<String, Object> hashMap = new HashMap<>();
+        hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("billNo", param.get("billNo"));
         hashMap.put("transDate", param.get("billDate"));
         hashMap.put("outletCode", param.get("outletCode"));
@@ -2029,7 +2036,7 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportTransactionByPaymentType(Map<String, Object> param, Connection connection) throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
-        hashMap.put("brand", param.get("outletBrand"));
+        hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("transDate1", param.get("fromDate"));
         hashMap.put("transDate2", param.get("toDate"));
         hashMap.put("outletCode", param.get("outletCode"));
@@ -2139,7 +2146,7 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportPemakaianBySales(Map<String, Object> param, Connection connection) throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
-        hashMap.put("brand", param.get("outletBrand"));
+        hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("fromDate", param.get("fromDate"));
         hashMap.put("toDate", param.get("toDate"));
         hashMap.put("outletCode", param.get("outletCode"));
@@ -2152,7 +2159,7 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportProduksiAktual(Map<String, Object> param, Connection connection) throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
-        hashMap.put("brand", param.get("outletBrand"));
+        hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("date", param.get("date"));
         hashMap.put("time1", param.get("startTime"));
@@ -2167,7 +2174,7 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportInventoryMovement(Map<String, Object> param, Connection connection) throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
-        hashMap.put("brand", param.get("outletBrand"));
+        hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("fromDate", param.get("fromDate"));
         hashMap.put("toDate", param.get("toDate"));
@@ -2191,7 +2198,7 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportStockOpname(Map<String, Object> param, Connection connection) throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
-        hashMap.put("brand", param.get("outletBrand"));
+        hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("user", param.get("user"));
         hashMap.put("opnameNo", param.get("opnameNo"));
@@ -2204,7 +2211,7 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportOrderEntryTransactions(Map<String, Object> param, Connection connection) throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
-        hashMap.put("brand", param.get("outletBrand"));
+        hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("typeOrderEntry", param.get("typeOrderEntry"));
         hashMap.put("user", param.get("user"));
         hashMap.put("orderNo", param.get("orderNo"));
@@ -2218,7 +2225,7 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportReceivingTransactions(Map<String, Object> param, Connection connection) throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
-        hashMap.put("brand", param.get("outletBrand"));
+        hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("user", param.get("user"));
         hashMap.put("city", "X_" + param.get("city"));
         hashMap.put("recvNo", param.get("recvNo"));       
@@ -2233,7 +2240,7 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportWastageTransactions(Map<String, Object> param, Connection connection) throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
-        hashMap.put("brand", param.get("outletBrand"));
+        hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("user", param.get("user"));
         hashMap.put("wastageNo", param.get("wastageNo"));
         hashMap.put("outletCode", param.get("outletCode"));
@@ -2246,7 +2253,7 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportReturnOrderTransactions(Map<String, Object> param, Connection connection) throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
-        hashMap.put("brand", param.get("outletBrand"));
+        hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("user", param.get("user"));
         hashMap.put("city", "X_" + param.get("city"));
         hashMap.put("returnNo", param.get("returnNo"));
@@ -2260,7 +2267,7 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportItemSelectedByTime(Map<String, Object> param, Connection connection) throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
-        hashMap.put("brand", param.get("outletBrand"));
+        hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("kodeItem", param.get("kodeItem"));
         hashMap.put("fromDate", param.get("fromDate"));
@@ -2275,7 +2282,7 @@ public class ReportDaoImpl implements ReportDao {
     public JasperPrint jasperReportDeliveryOrderTransactions(Map<String, Object> param, Connection connection)
             throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
-        hashMap.put("brand", param.get("outletBrand"));
+        hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("user", param.get("user"));
         hashMap.put("city", "X_" + param.get("city"));
         hashMap.put("deliveryNo", param.get("deliveryNo"));
@@ -2292,7 +2299,7 @@ public class ReportDaoImpl implements ReportDao {
      @Override
     public JasperPrint jasperReportDaftarMenu(Map<String, Object> param, Connection connection) throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
-        hashMap.put("brand", param.get("outletBrand"));
+        hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("orderType", param.get("orderType"));
         hashMap.put("status", param.get("status"));
@@ -2305,7 +2312,7 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportSalesVoid(Map<String, Object> param, Connection connection) throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
-        hashMap.put("brand", param.get("outletBrand"));
+        hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("fromDate", param.get("fromDate"));
         hashMap.put("toDate", param.get("toDate"));
@@ -2377,4 +2384,22 @@ public class ReportDaoImpl implements ReportDao {
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }
+    
+    /////////////////////// new method Delete MPCS produksi adit 04-01-2024
+    @Override
+    public JasperPrint jesperReportDeleteMpcsProduksi(Map<String, Object> param, Connection connection) throws IOException, JRException {
+        Map<String, Object> hashMap = new HashMap<String, Object>();
+        hashMap.put("outletBrand", param.get("outletBrand"));
+        hashMap.put("city", "X_" + param.get("city"));
+        hashMap.put("fromDate", param.get("fromDate"));
+        hashMap.put("toDate", param.get("toDate"));
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("user", param.get("user"));
+        hashMap.put("typeReport", param.get("typeReport"));
+
+        ClassPathResource classPathResource = new ClassPathResource(param.get("typeReport").equals("1") ? "report/reportDeleteMpcsProduksi.jrxml" : "report/reportDeleteMpcsProduksiDetail.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
+    /////////////////////// done adit 04-01-2024
 }

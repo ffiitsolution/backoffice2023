@@ -31,7 +31,7 @@
 	<parameter name="shiftCode2" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
-	<parameter name="brand" class="java.lang.String">
+	<parameter name="outletBrand" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
@@ -242,7 +242,7 @@ ORDER BY
 			</line>
 			<image scaleImage="FillFrame">
 				<reportElement x="3" y="0" width="48" height="48" isPrintWhenDetailOverflows="true" uuid="d57b8dd5-3560-4426-a5e5-75b2f9a5d033"/>
-				<imageExpression><![CDATA[$P{brand} != null && !$P{brand}.isEmpty() ? "logo/logo" + $P{brand}.toLowerCase().substring(0, 1).toUpperCase() + $P{brand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
+				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
 			</image>
 			<staticText>
 				<reportElement x="60" y="0" width="112" height="11" uuid="9bf5e79b-b493-4c86-9f74-de4663f441cf"/>

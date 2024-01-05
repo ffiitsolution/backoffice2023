@@ -11,7 +11,7 @@
 	</parameter>
 	<parameter name="user" class="java.lang.String"/>
 	<parameter name="labelStatus" class="java.lang.String"/>
-	<parameter name="brand" class="java.lang.String">
+	<parameter name="outletBrand" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
@@ -154,7 +154,7 @@
 			</textField>
 			<image scaleImage="FillFrame">
 				<reportElement x="10" y="1" width="48" height="48" isPrintWhenDetailOverflows="true" uuid="b4b752b4-a368-425d-908b-6cb1ee097235"/>
-				<imageExpression><![CDATA[$P{brand} != null && !$P{brand}.isEmpty() ? "logo/logo" + $P{brand}.toLowerCase().substring(0, 1).toUpperCase() + $P{brand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
+				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
 			</image>
 			<textField>
 				<reportElement x="69" y="10" width="122" height="11" uuid="b923d394-a5bf-475d-b796-295a5adb2bc7"/>

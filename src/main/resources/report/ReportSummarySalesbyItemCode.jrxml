@@ -50,6 +50,9 @@
 	<parameter name="brand2" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
+	<parameter name="outletBrand" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[SELECT END.*,END.EI+END.TA AS SUMETA FROM(
 SELECT A.*,M.ITEM_DESCRIPTION,M.uom_stock FROM( SELECT   a.ITEM, SUM (a.TOTAL_EI) AS ei, SUM (a.TOTAL_TA) AS ta
@@ -466,9 +469,9 @@ SELECT A.*,M.ITEM_DESCRIPTION,M.uom_stock FROM( SELECT   a.ITEM, SUM (a.TOTAL_EI
 				</textElement>
 				<textFieldExpression><![CDATA[" : " + $P{brand}]]></textFieldExpression>
 			</textField>
-			<image>
-				<reportElement x="8" y="1" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="f999b9e5-65c8-4601-88a6-8dcc16dd60ae"/>
-				<imageExpression><![CDATA["logo/logoKfc.png"]]></imageExpression>
+			<image scaleImage="FillFrame">
+				<reportElement x="8" y="1" width="48" height="48" isPrintWhenDetailOverflows="true" uuid="f999b9e5-65c8-4601-88a6-8dcc16dd60ae"/>
+				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
 			</image>
 		</band>
 	</pageHeader>
