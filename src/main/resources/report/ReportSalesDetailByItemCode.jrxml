@@ -347,7 +347,7 @@ ORDER BY
 					</textElement>
 					<textFieldExpression><![CDATA[$F{ITEM}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true">
+				<textField textAdjust="StretchHeight">
 					<reportElement x="48" y="8" width="147" height="24" uuid="7e570d3c-d10d-4626-aa20-86b874fe196b"/>
 					<textElement verticalAlignment="Middle">
 						<font size="8"/>
@@ -624,7 +624,7 @@ ORDER BY
 				</textElement>
 				<textFieldExpression><![CDATA[$F{MENU}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
+			<textField textAdjust="StretchHeight">
 				<reportElement x="231" y="1" width="97" height="12" uuid="d7f6d4fa-fd8f-4300-a34a-5597e038da9b"/>
 				<textElement>
 					<font size="8"/>

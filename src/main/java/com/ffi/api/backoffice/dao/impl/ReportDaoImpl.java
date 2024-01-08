@@ -1398,7 +1398,7 @@ public class ReportDaoImpl implements ReportDao {
             hashMap.put("brand1", "KFC");
             hashMap.put("brand2", "BB");
         } else {
-            hashMap.put("outletBrand", param.get("brand"));
+            hashMap.put("brand", param.get("brand"));
             hashMap.put("brand1", param.get("brand").toString().toUpperCase());
             hashMap.put("brand2", param.get("brand").toString().toUpperCase());
         }

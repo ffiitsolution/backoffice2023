@@ -111,7 +111,7 @@ ORDER BY
 		<groupExpression><![CDATA[$F{BILL_NO}]]></groupExpression>
 		<groupHeader>
 			<band height="25">
-				<textField isStretchWithOverflow="true">
+				<textField textAdjust="StretchHeight">
 					<reportElement x="0" y="8" width="94" height="15" uuid="75388658-2157-4739-ad2b-88419d455c9d"/>
 					<textElement>
 						<font size="8"/>
@@ -139,7 +139,7 @@ ORDER BY
 					</textElement>
 					<textFieldExpression><![CDATA[$F{BILL_NO}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true">
+				<textField textAdjust="StretchHeight">
 					<reportElement x="285" y="8" width="144" height="15" uuid="ce41151b-188a-4be3-9021-fa96012876b2"/>
 					<textElement>
 						<font size="8"/>
@@ -403,7 +403,7 @@ ORDER BY
 	<detail>
 		<band height="17" splitType="Stretch">
 			<printWhenExpression><![CDATA[$P{detail}.toString().equals("1") && !$F{ITEM_DESCRIPTION}.equalsIgnoreCase("-")]]></printWhenExpression>
-			<textField isStretchWithOverflow="true">
+			<textField textAdjust="StretchHeight">
 				<reportElement x="285" y="0" width="144" height="15" uuid="611f0c55-1e6b-4be2-ad56-4889b09640af"/>
 				<textElement>
 					<font size="8"/>

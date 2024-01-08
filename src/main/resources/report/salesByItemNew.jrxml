@@ -803,7 +803,7 @@ ORDER BY menu_item_code ASC]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{MENU_ITEM_CODE}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
+			<textField textAdjust="StretchHeight">
 				<reportElement x="36" y="0" width="165" height="17" uuid="18065201-838e-44f7-8e59-b7e799d4b52d"/>
 				<textElement>
 					<font size="8"/>
