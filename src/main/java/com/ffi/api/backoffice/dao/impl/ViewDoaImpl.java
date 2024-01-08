@@ -3316,27 +3316,21 @@ public class ViewDoaImpl implements ViewDao {
     // Done Method List MPCS Production //
 
     // New Method MPCS Production Recipe - Fathur 13 Dec 2023 //
+    // Update table source 8 Jan 2024
     @Override
     public List<Map<String, Object>> mpcsProductionRecipe(Map<String, String> balance) {
-        String qry = "SELECT mpcs.ITEM_CODE, m.item_description, ABS(MPCS.QTY1) AS QTY1, MPCS.UOM1 "
-                + "FROM T_MPCS_DETAIL mpcs "
-                + "join m_item m on m.item_code = mpcs.item_code "
-                + "where mpcs.date_mpcs = :dateMpcs "
-                + "AND mpcs.TYPE_MPCS = :mpcsGroup ";
-        Map prm = new HashMap();
-        prm.put("mpcsGroup", balance.get("mpcsGroup"));
-        prm.put("dateMpcs", balance.get("dateMpcs"));
-
-        System.err.println("q :" + qry);
-        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+        String qry = "SELECT mpcs.ITEM_CODE, m.item_description, MPCS.QTY_STOCK, MPCS.UOM_STOCK "
+                + "FROM M_RECIPE_DETAIL mpcs "
+                + "left join m_item m on m.item_code = mpcs.item_code "
+                + "WHERE mpcs.recipe_code = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup) ";
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, balance, new DynamicRowMapper() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
-                Map<String, Object> rt = new HashMap<String, Object>();
+                Map<String, Object> rt = new HashMap<>();
                 rt.put("itemCode", rs.getString("ITEM_CODE"));
                 rt.put("itemDescription", rs.getString("item_description"));
-                rt.put("qty1", rs.getString("QTY1"));
-                rt.put("uom1", rs.getString("UOM1"));
-
+                rt.put("qty1", rs.getString("QTY_STOCK"));
+                rt.put("uom1", rs.getString("UOM_STOCK"));
                 return rt;
             }
         });
