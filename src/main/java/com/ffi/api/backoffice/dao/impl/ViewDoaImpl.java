@@ -3326,16 +3326,13 @@ public class ViewDoaImpl implements ViewDao {
                 + "FROM M_RECIPE_DETAIL mpcs "
                 + "left join m_item m on m.item_code = mpcs.item_code "
                 + "WHERE mpcs.recipe_code = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup) ";
-        List<Map<String, Object>> list = jdbcTemplate.query(qry, balance, new DynamicRowMapper() {
-            @Override
-            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
-                Map<String, Object> rt = new HashMap<>();
-                rt.put("itemCode", rs.getString("ITEM_CODE"));
-                rt.put("itemDescription", rs.getString("item_description"));
-                rt.put("qty1", rs.getString("QTY_STOCK"));
-                rt.put("uom1", rs.getString("UOM_STOCK"));
-                return rt;
-            }
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, balance, (ResultSet rs, int i) -> {
+            Map<String, Object> rt = new HashMap<>();
+            rt.put("itemCode", rs.getString("ITEM_CODE"));
+            rt.put("itemDescription", rs.getString("item_description"));
+            rt.put("qty1", rs.getString("QTY_STOCK"));
+            rt.put("uom1", rs.getString("UOM_STOCK"));
+            return rt;
         });
         return list;
     }
@@ -3345,25 +3342,23 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> mpcsProductionProductResult(Map<String, String> balance) {
 
-        String qry = "select PRODUCT_CODE, QTY_STOCK, UOM_STOCK, PRODUCT_REMARK "
-                + "from m_recipe_product "
+        String qry = "select p.PRODUCT_CODE, p.QTY_STOCK, p.UOM_STOCK, m.ITEM_DESCRIPTION "
+                + "from m_recipe_product p "
+                + "LEFT JOIN M_ITEM m ON m.item_code = p.product_code "
                 + "where recipe_code = :recipeCode ";
 
         Map prm = new HashMap();
         prm.put("recipeCode", balance.get("recipeCode"));
 
         System.err.println("q :" + qry);
-        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
-            @Override
-            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
-                Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("productCode", rs.getString("PRODUCT_CODE"));
-                rt.put("qtyStock", rs.getString("QTY_STOCK"));
-                rt.put("uomStock", rs.getString("UOM_STOCK"));
-                rt.put("productRemark", rs.getString("PRODUCT_REMARK"));
-
-                return rt;
-            }
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, (ResultSet rs, int i) -> {
+            Map<String, Object> rt = new HashMap<String, Object>();
+            rt.put("productCode", rs.getString("PRODUCT_CODE"));
+            rt.put("qtyStock", rs.getString("QTY_STOCK"));
+            rt.put("uomStock", rs.getString("UOM_STOCK"));
+            rt.put("productRemark", rs.getString("ITEM_DESCRIPTION"));
+            
+            return rt;
         });
         return list;
     }

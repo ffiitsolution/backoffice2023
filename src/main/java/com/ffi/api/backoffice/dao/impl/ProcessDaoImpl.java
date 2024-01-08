@@ -2283,6 +2283,7 @@ public class ProcessDaoImpl implements ProcessDao {
     }
 
     ///////////////New method from Fathur 11-Dec-2023////////////////////////////
+    @Override
     public void sendDataOutletToWarehouse(Map<String, String> balance) {
         String json = "";
         Gson gson = new Gson();
@@ -2297,7 +2298,7 @@ public class ProcessDaoImpl implements ProcessDao {
                     + "CD_SUPPLIER,  "
                     + "TO_CHAR(DT_DUE, 'DD-MON-YY') AS DT_DUE, "
                     + "TO_CHAR(DT_EXPIRED, 'DD-MON-YY') AS DT_EXPIRED, "
-                    + "REMARK,        "
+                    + "CASE WHEN REMARK IS NULL THEN ' ' ELSE REMARK END AS REMARK, "
                     + "NO_OF_PRINT,  "
                     + "STATUS,       "
                     + "USER_UPD,     "

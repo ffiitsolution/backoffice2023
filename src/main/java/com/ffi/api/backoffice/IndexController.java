@@ -2778,8 +2778,6 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        Map<String, Object> map = new LinkedHashMap<String, Object>();
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         Response res = new Response();
         res.setData(viewServices.mpcsProductionRecipe(balance));
         return res;
@@ -2800,8 +2798,6 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        Map<String, Object> map = new LinkedHashMap<String, Object>();
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         Response res = new Response();
         res.setData(viewServices.mpcsProductionProductResult(balance));
         return res;
