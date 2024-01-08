@@ -3138,4 +3138,25 @@ public class IndexController {
         return res;
     }
 
+    @RequestMapping(value = "/insert-mpcs-production", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk menambah mpcs produksi bedasarkan waktu, update akumulasi kuantitas dan menambah data MPCS history by Fathur 8 Jan 2024", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage insertMpcsProduction(@RequestBody String params) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> data = gsn.fromJson(params, new TypeToken<Map<String, String>>() {
+        }.getType());
+        ResponseMessage rm = new ResponseMessage();
+        if (processServices.insertMpcsProduction(data)) {
+            rm.setSuccess(true);
+            rm.setMessage("Insert Successfuly");
+        } else {
+            rm.setSuccess(false);
+            rm.setMessage("Insert  Failed");
+        }
+        return rm;
+    }
 }
