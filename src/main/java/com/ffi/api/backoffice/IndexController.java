@@ -1212,7 +1212,7 @@ public class IndexController {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 
         Response res = new Response();
-        res.setData(viewServices.listGlobal(balance));
+            res.setData(viewServices.listGlobal(balance));
         return res;
     }
 
@@ -3158,5 +3158,25 @@ public class IndexController {
             rm.setMessage("Insert  Failed");
         }
         return rm;
+    }
+
+    /////// NEW METHOD to get list Menu Aplikasi by M Joko 8 Januari 2024
+    @RequestMapping(value = "/list-menu-application", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk list Menu Aplikasi", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listMenuApplication(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> data = gsn.fromJson(param, new TypeToken<Map<String, String>>() {
+        }.getType());
+        List<Map<String,Object>> list = viewServices.listMenuApplication(data);
+        Response res = new Response();
+        res.setData(list);
+        res.setRecordsTotal(list.size());
+        res.setRecordsFiltered(list.size());
+        return res;
     }
 }
