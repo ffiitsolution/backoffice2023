@@ -2767,11 +2767,12 @@ public class ProcessDaoImpl implements ProcessDao {
         var isInsertProductionSuccess = false;
         var isUpdateQuantityAccSuccess = false;
         var isInsertHistorySuccess = false;
+        var isInsertMpcsDetailSuccess = false;
         Map prm = new HashMap();
         prm.put("userUpd", params.get("userUpd"));
         prm.put("dateUpd", params.get("dateUpd"));
         prm.put("timeUpd", params.get("timeUpd"));
-        
+
         prm.put("remark", params.get("remark"));
         prm.put("recipeCode", params.get("recipeCode"));
         prm.put("qtyMpcs", params.get("qtyMpcs"));
@@ -2829,7 +2830,22 @@ public class ProcessDaoImpl implements ProcessDao {
                 e.printStackTrace();
             }
         }
-        return isInsertProductionSuccess && isUpdateQuantityAccSuccess && isInsertHistorySuccess;
+
+        if (isInsertProductionSuccess && isUpdateQuantityAccSuccess && isInsertHistorySuccess) {
+            try {
+                String insertHistoryQuery = "INSERT INTO T_MPCS_DETAIL (OUTLET_CODE,DATE_MPCS,TIME_MPCS,RECIPE_CODE,TYPE_MPCS,ITEM_CODE,QTY1,UOM1,QTY2,UOM2,STATUS,USER_UPD,DATE_UPD,TIME_UPD) ("
+                        + "	SELECT :outletCode AS OUTLET_CODE, :mpcsDate AS DATE_MPCS, :timeUpd AS TIME_MPCS, RECIPE_CODE, :mpcsGroup AS TYPE_MPCS, ITEM_CODE, -(QTY_STOCK * :qtyMpcs) AS QTY1, UOM_STOCK AS UOM1, -(QTY_STOCK * :qtyMpcs) AS QTY2, UOM_STOCK AS UOM2, '1' AS STATUS,  :userUpd AS USER_UPD, :dateUpd AS DATE_UPD, :timeUpd AS TIME_UPD FROM M_RECIPE_DETAIL where RECIPE_CODE = :recipeCode "
+                        + "	UNION "
+                        + "	SELECT :outletCode AS OUTLET_CODE, :mpcsDate  AS DATE_MPCS, :timeUpd AS TIME_MPCS, RECIPE_CODE, :mpcsGroup AS TYPE_MPCS, PRODUCT_CODE as ITEM_CODE,  (QTY_STOCK * :qtyMpcs) AS QTY1, UOM_STOCK AS UOM1, (QTY_STOCK * :qtyMpcs) AS QTY2, UOM_STOCK AS UOM2, '1' AS STATUS, :userUpd AS USER_UPD, :dateUpd AS DATE_UPD, :timeUpd AS TIME_UPD  FROM m_recipe_product where recipe_code = :recipeCode "
+                        + ") ";
+                jdbcTemplate.update(insertHistoryQuery, prm);
+                isInsertMpcsDetailSuccess = true;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return isInsertProductionSuccess && isUpdateQuantityAccSuccess && isInsertHistorySuccess && isInsertMpcsDetailSuccess;
     }
     // Done insert MPCS Production // 
 }
