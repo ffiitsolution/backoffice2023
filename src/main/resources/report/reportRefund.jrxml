@@ -3,6 +3,9 @@
 	<property name="ireport.zoom" value="2.052632472922828"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="122"/>
+	<parameter name="posCode" class="java.lang.String"/>
+	<parameter name="cashierCode" class="java.lang.String"/>
+	<parameter name="shiftCode" class="java.lang.String"/>
 	<parameter name="fromDate" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
@@ -29,39 +32,57 @@
     </parameter>
 	<queryString>
 		<![CDATA[SELECT
-    tpb.OUTLET_CODE,
-    tpb.POS_CODE,
-    tpb.BILL_NO,
-    tpb.SHIFT_CODE,
-    tpb.CASHIER_CODE,
-    tpb.REFUND_MANAGER_CODE,
-    tpb.TOTAL_REFUND,
-    tpb.TRANS_DATE,
-    tpb.ORDER_TIME,
-    tpb.DATE_UPD,
-    mps_cashier.STAFF_NAME AS CASHIER_NAME,
-    mps_manager.STAFF_NAME AS REFUND_MANAGER_NAME,
-    mg.DESCRIPTION ,
-    mo.ADDRESS_1,
-    mo.ADDRESS_2
-FROM
-    T_POS_BILL tpb
-LEFT JOIN
-    M_POS_STAFF mps_cashier ON tpb.CASHIER_CODE = mps_cashier.STAFF_POS_CODE
-LEFT JOIN
-    M_POS_STAFF mps_manager ON tpb.REFUND_MANAGER_CODE = mps_manager.STAFF_POS_CODE
-LEFT JOIN
-    M_GLOBAL mg ON tpb.REFUND_REASON_CODE = mg.CODE AND mg.COND = 'REFUND'
-LEFT JOIN
-	M_OUTLET mo  ON tpb.OUTLET_CODE = mo.OUTLET_CODE
-WHERE
-    (mps_cashier.STAFF_POS_CODE IN (tpb.CASHIER_CODE) OR mps_manager.STAFF_POS_CODE IN (tpb.REFUND_MANAGER_CODE))
-    AND tpb.TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
-    AND tpb.POS_CODE BETWEEN $P{posCode1} AND $P{posCode2}
-    AND tpb.CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
-    AND tpb.SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
-    AND tpb.TOTAL_REFUND IS NOT NULL
-    AND tpb.TOTAL_REFUND <> 0]]>
+			tpb.OUTLET_CODE,
+			tpb.POS_CODE,
+			tpb.BILL_NO,
+			tpb.SHIFT_CODE,
+			tpb.CASHIER_CODE,
+			tpb.REFUND_MANAGER_CODE,
+			tpb.TOTAL_REFUND,
+			SUM(tpb.TOTAL_REFUND) AS TOTAL_REFUND_SUM,
+			tpb.TRANS_DATE,
+			tpb.ORDER_TIME,
+			tpb.DATE_UPD,
+			mps_cashier.STAFF_NAME AS CASHIER_NAME,
+			mps_manager.STAFF_NAME AS REFUND_MANAGER_NAME,
+			mg.DESCRIPTION ,
+			mo.ADDRESS_1,
+			mo.ADDRESS_2
+		FROM
+			T_POS_BILL tpb
+		LEFT JOIN
+			M_POS_STAFF mps_cashier ON tpb.CASHIER_CODE = mps_cashier.STAFF_POS_CODE
+		LEFT JOIN
+			M_POS_STAFF mps_manager ON tpb.REFUND_MANAGER_CODE = mps_manager.STAFF_POS_CODE
+		LEFT JOIN
+			M_GLOBAL mg ON tpb.REFUND_REASON_CODE = mg.CODE AND mg.COND = 'REFUND'
+		LEFT JOIN
+			M_OUTLET mo  ON tpb.OUTLET_CODE = mo.OUTLET_CODE
+		WHERE
+			(mps_cashier.STAFF_POS_CODE IN (tpb.CASHIER_CODE) OR mps_manager.STAFF_POS_CODE IN (tpb.REFUND_MANAGER_CODE))
+			AND tpb.TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
+			AND tpb.POS_CODE BETWEEN $P{posCode1} AND $P{posCode2}
+			AND tpb.CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+			AND tpb.SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
+			AND tpb.TOTAL_REFUND IS NOT NULL
+			AND tpb.TOTAL_REFUND <> 0	
+		GROUP BY
+			tpb.OUTLET_CODE,
+			tpb.POS_CODE,
+			tpb.BILL_NO,
+			tpb.SHIFT_CODE,
+			tpb.CASHIER_CODE,
+			tpb.REFUND_MANAGER_CODE,
+			tpb.TOTAL_REFUND ,
+			tpb.TRANS_DATE,
+			tpb.ORDER_TIME,
+			tpb.DATE_UPD,
+			mps_cashier.STAFF_NAME,
+			mps_manager.STAFF_NAME,
+			mg.DESCRIPTION,
+			mo.ADDRESS_1,
+			mo.ADDRESS_2
+		]]>
 	</queryString>
 	<field name="OUTLET_CODE" class="java.lang.String"/>
 	<field name="POS_CODE" class="java.lang.String"/>
@@ -70,6 +91,7 @@ WHERE
 	<field name="CASHIER_CODE" class="java.lang.String"/>
 	<field name="REFUND_MANAGER_CODE" class="java.lang.String"/>
 	<field name="TOTAL_REFUND" class="java.math.BigDecimal"/>
+	<field name="TOTAL_REFUND_SUM" class="java.math.BigDecimal"/>
 	<field name="TRANS_DATE" class="java.sql.Timestamp"/>
 	<field name="ORDER_TIME" class="java.lang.String"/>
 	<field name="DATE_UPD" class="java.sql.Timestamp"/>
@@ -166,11 +188,11 @@ WHERE
 				<text><![CDATA[Periode]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="69" y="88" width="68" height="15" uuid="5ef0b6ce-d815-41e2-9f95-f7a1cb2cccd0"/>
+				<reportElement x="55" y="88" width="283" height="15" uuid="02a8871a-cc53-45f9-a1aa-af9540abc936"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($F{TRANS_DATE})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{fromDate})) + " s/d " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{toDate}))]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="0" y="105" width="69" height="15" uuid="236f06fe-8db4-454e-a4e9-d0f353ace779"/>
@@ -179,6 +201,13 @@ WHERE
 				</textElement>
 				<text><![CDATA[Pos]]></text>
 			</staticText>
+			<textField>
+				<reportElement x="55" y="105" width="283" height="11" uuid="4271d8dc-6bb2-433b-baee-58b4c57882bb"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" : " + $P{posCode}]]></textFieldExpression>
+			</textField>
 			<staticText>
 				<reportElement x="0" y="122" width="69" height="15" uuid="9e93090d-1468-4878-816e-e0cada2ffb6e"/>
 				<textElement verticalAlignment="Middle">
@@ -186,6 +215,13 @@ WHERE
 				</textElement>
 				<text><![CDATA[Cashier]]></text>
 			</staticText>
+			<textField>
+				<reportElement x="55" y="122" width="283" height="11" uuid="4271d8dc-6bb2-433b-baee-58b4c57882bb"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" : " + $P{cashierCode}]]></textFieldExpression>
+			</textField>
 			<staticText>
 				<reportElement x="0" y="139" width="69" height="15" uuid="b3b506f2-8a1f-44cc-8b61-e92ce7109ba8"/>
 				<textElement verticalAlignment="Middle">
@@ -193,6 +229,13 @@ WHERE
 				</textElement>
 				<text><![CDATA[Shift]]></text>
 			</staticText>
+			<textField>
+				<reportElement x="55" y="139" width="283" height="11" uuid="4271d8dc-6bb2-433b-baee-58b4c57882bb"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" : " + $P{shiftCode}]]></textFieldExpression>
+			</textField>
 			<staticText>
 				<reportElement x="74" y="9" width="117" height="15" uuid="2802e355-f74a-4260-9403-c1db767d6a67"/>
 				<textElement>
@@ -290,8 +333,14 @@ WHERE
 			</textField>
 		</band>
 	</detail>
+	<columnFooter>
+		<band height="22" splitType="Stretch"/>
+	</columnFooter>
 	<pageFooter>
-		<band height="22" splitType="Stretch">
+		<band height="22" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch">
 			<line>
 				<reportElement x="0" y="18" width="555" height="1" uuid="d5ede944-5cb8-4479-bcac-600ae7a70ba0"/>
 			</line>
@@ -300,11 +349,15 @@ WHERE
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Total Refund           :]]></text>
+				<text><![CDATA[Total Refund]]></text>
 			</staticText>
+			<textField>
+				<reportElement x="447" y="2" width="80" height="15" uuid="d3cf4da8-16e2-4871-b41f-25d4941c63f4"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" : " + $F{TOTAL_REFUND_SUM}]]></textFieldExpression>
+			</textField>
 		</band>
-	</pageFooter>
-	<summary>
-		<band height="42" splitType="Stretch"/>
 	</summary>
 </jasperReport>
