@@ -1067,4 +1067,27 @@ public class ReportController {
 
     }
     ///////////////////////////////// done adit 04-01-2024 ///////////////////////////////////////
+
+    ///////////////NEW METHOD Report Product Efficiency by Pasca 9 Januari 2024////
+    @CrossOrigin
+    @RequestMapping(value = "/report-product-efficiency-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Mepampilkan report product efficiency", response = Object.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    public ResponseEntity<byte[]> jesperReportProductEfficiency(@RequestBody String param) throws SQLException, JRException, IOException {
+        Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
+        Gson gsn = new Gson();
+        Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        Integer cekDataReport = viewServices.cekDataReport(prm, "productEfficiency");
+        if (cekDataReport > 0) {
+            JasperPrint jasperPrint = reportServices.jasperReportProductEfficiency(prm, conn);
+            conn.close();
+            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "inline; filename=productEfficiency.pdf");
+            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        } else
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+    }
 }

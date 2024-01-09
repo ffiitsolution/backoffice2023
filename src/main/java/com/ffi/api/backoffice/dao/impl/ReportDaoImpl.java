@@ -1310,13 +1310,15 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("outletName", param.get("outletName"));
 
-        if (param.get("brand").toString().equalsIgnoreCase("SEMUA")) {
-            hashMap.put("brand", "Semua");
-            hashMap.put("brand1", "KFC");
-            hashMap.put("brand2", "BB");
-        } else {
-            hashMap.put("brand1", param.get("brand").toString().toUpperCase());
-            hashMap.put("brand2", param.get("brand").toString().toUpperCase());
+        if (!param.get("outletBrand").toString().equalsIgnoreCase("TACOBELL")){
+            if (param.get("brand").toString().equalsIgnoreCase("SEMUA")) {
+                hashMap.put("brand", "Semua");
+                hashMap.put("brand1", "KFC");
+                hashMap.put("brand2", "BB");
+            } else {
+                hashMap.put("brand1", param.get("brand").toString().toUpperCase());
+                hashMap.put("brand2", param.get("brand").toString().toUpperCase());
+            }
         }
 
         List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
@@ -1376,7 +1378,7 @@ public class ReportDaoImpl implements ReportDao {
             }
         }
 
-        ClassPathResource classPathResource = new ClassPathResource("report/salesByItemNew.jrxml");
+        ClassPathResource classPathResource = new ClassPathResource(param.get("outletBrand").toString().equalsIgnoreCase("TACOBELL") ? "report/salesByItemTaco.jrxml" : "report/salesByItemNew.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }
@@ -1393,14 +1395,16 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("outletName", param.get("outletName"));
 
-        if (param.get("brand").toString().equalsIgnoreCase("SEMUA")) {
-            hashMap.put("brand", "Semua");
-            hashMap.put("brand1", "KFC");
-            hashMap.put("brand2", "BB");
-        } else {
-            hashMap.put("brand", param.get("brand"));
-            hashMap.put("brand1", param.get("brand").toString().toUpperCase());
-            hashMap.put("brand2", param.get("brand").toString().toUpperCase());
+        if (!param.get("outletBrand").toString().equalsIgnoreCase("TACOBELL")) {
+            if (param.get("brand").toString().equalsIgnoreCase("SEMUA")) {
+                hashMap.put("brand", "Semua");
+                hashMap.put("brand1", "KFC");
+                hashMap.put("brand2", "BB");
+            } else {
+                hashMap.put("brand", param.get("brand"));
+                hashMap.put("brand1", param.get("brand").toString().toUpperCase());
+                hashMap.put("brand2", param.get("brand").toString().toUpperCase());
+            }
         }
 
         List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
@@ -1460,7 +1464,7 @@ public class ReportDaoImpl implements ReportDao {
             }
         }
 
-        ClassPathResource classPathResource = new ClassPathResource("report/menuVsDetail.jrxml");
+        ClassPathResource classPathResource = new ClassPathResource(param.get("outletBrand").toString().equalsIgnoreCase("TACOBELL") ? "report/menuVsDetailTaco.jrxml" : "report/menuVsDetail.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }
@@ -1478,13 +1482,15 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("outletName", param.get("outletName"));
 
-        if (param.get("brand").toString().equalsIgnoreCase("SEMUA")) {
-            hashMap.put("brand", "Semua");
-            hashMap.put("brand1", "KFC");
-            hashMap.put("brand2", "BB");
-        } else {
-            hashMap.put("brand1", param.get("brand").toString().toUpperCase());
-            hashMap.put("brand2", param.get("brand").toString().toUpperCase());
+        if (!param.get("outletBrand").toString().equalsIgnoreCase("TACOBELL")) {
+            if (param.get("brand").toString().equalsIgnoreCase("SEMUA")) {
+                hashMap.put("brand", "Semua");
+                hashMap.put("brand1", "KFC");
+                hashMap.put("brand2", "BB");
+            } else {
+                hashMap.put("brand1", param.get("brand").toString().toUpperCase());
+                hashMap.put("brand2", param.get("brand").toString().toUpperCase());
+            }
         }
 
         List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
@@ -1544,11 +1550,11 @@ public class ReportDaoImpl implements ReportDao {
             }
         }
         if (param.get("detail").equals(0.0)) {
-            ClassPathResource classPathResource = new ClassPathResource("report/ReportSummarySalesbyItemCode.jrxml");
+            ClassPathResource classPathResource = new ClassPathResource(param.get("outletBrand").toString().equalsIgnoreCase("TACOBELL") ? "report/ReportSummarySalesbyItemCodeTaco.jrxml" : "report/ReportSummarySalesbyItemCode.jrxml");
             JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
             return JasperFillManager.fillReport(jasperReport, hashMap, connection);
         } else {
-            ClassPathResource classPathResource = new ClassPathResource("report/ReportSalesDetailByItemCode.jrxml");
+            ClassPathResource classPathResource = new ClassPathResource(param.get("outletBrand").toString().equalsIgnoreCase("TACOBELL") ? "report/ReportSalesDetailByItemCodeTaco.jrxml" : "report/ReportSalesDetailByItemCode.jrxml");
             JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
             return JasperFillManager.fillReport(jasperReport, hashMap, connection);
         }
@@ -2470,6 +2476,18 @@ public class ReportDaoImpl implements ReportDao {
         }
 
         ClassPathResource classPathResource = new ClassPathResource("report/reportRefund.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
+
+    @Override
+    public JasperPrint jasperReportProductEfficiency(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        Map<String, Object> hashMap = new HashMap<>();
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("fromDate", param.get("fromDate"));
+        hashMap.put("toDate", param.get("toDate"));
+
+        ClassPathResource classPathResource = new ClassPathResource("report/reportProductEfficiency.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }

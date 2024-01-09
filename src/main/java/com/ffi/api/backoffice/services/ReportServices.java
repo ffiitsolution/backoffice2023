@@ -226,4 +226,8 @@ public class ReportServices {
     public JasperPrint jasperReportRefund(Map<String, Object> param, Connection connection) throws JRException, IOException {
         return dao.jasperReportRefund(param, connection);
     }
+
+    public JasperPrint jasperReportProductEfficiency(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        return dao.jasperReportProductEfficiency(param, connection);
+    }
 }

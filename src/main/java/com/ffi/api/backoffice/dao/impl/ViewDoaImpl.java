@@ -2570,6 +2570,14 @@ public class ViewDoaImpl implements ViewDao {
                 prm.put("fromDate", param.get("fromDate"));
                 prm.put("toDate", param.get("toDate"));
             }
+            case "productEfficiency" -> {
+                query = "SELECT COUNT(*) FROM T_POS_BILL A JOIN T_POS_BILL_ITEM B ON A.REGION_CODE =" +
+                        " B.REGION_CODE AND A.OUTLET_CODE = B.OUTLET_CODE AND A.POS_CODE = B.POS_CODE AND A.DAY_SEQ =" +
+                        " B.DAY_SEQ AND A.BILL_NO = B.BILL_NO WHERE A.TRANS_DATE BETWEEN :fromDate AND :toDate AND " +
+                        "A.DELIVERY_STATUS IN ('CLS', '')";
+                prm.put("fromDate", param.get("fromDate"));
+                prm.put("toDate", param.get("toDate"));
+            }
         }
         assert query != null;
         System.err.println("q :" + query);
