@@ -1985,6 +1985,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "                    JUMLAH_SATUAN_KECIL, "
                 + "                    UOM_PURCHASE, "
                 + "                    (CONV_WAREHOUSE * CONV_STOCK) CONV_WAREHOUSE, "
+                + "                    CONV_STOCK, "
                 + "                    (JUMLAH_SATUAN_BESAR * CONV_WAREHOUSE) + JUMLAH_SATUAN_KECIL TOTAL_JUMLAH, "
                 + "                    UOM_STOCK AS TOTAL "
                 + "                FROM ( "
@@ -2017,6 +2018,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("convWarehouse", rs.getString("CONV_WAREHOUSE"));
                 rt.put("totalJumlah", rs.getString("TOTAL_JUMLAH"));
                 rt.put("total", rs.getString("TOTAL"));
+                rt.put("convStock", rs.getString("CONV_STOCK"));
 
                 return rt;
             }
@@ -2036,6 +2038,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "           SATUAN_BESAR, "
                 + "           JUMLAH_SATUAN_KECIL, "
                 + "           UOM_PURCHASE, "
+                + "           CONV_STOCK, "
                 + "           (CONV_WAREHOUSE * CONV_STOCK) CONV_WAREHOUSE, "
                 + "           (JUMLAH_SATUAN_BESAR * CONV_WAREHOUSE) + JUMLAH_SATUAN_KECIL TOTAL_JUMLAH, "
                 + "           UOM_STOCK AS TOTAL "
@@ -2070,7 +2073,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("convWarehouse", rs.getString("CONV_WAREHOUSE"));
                 rt.put("totalJumlah", rs.getString("TOTAL_JUMLAH"));
                 rt.put("total", rs.getString("TOTAL"));
-
+                rt.put("convStock", rs.getString("CONV_STOCK"));
                 return rt;
             }
         });
