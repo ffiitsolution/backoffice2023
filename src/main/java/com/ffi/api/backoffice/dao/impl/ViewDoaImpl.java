@@ -29,10 +29,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.tomcat.jni.Local;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.lang.Nullable;
@@ -1309,8 +1307,12 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listGlobal(Map<String, String> balance) {
-        String qry = "select DESCRIPTION, TYPE_MENU AS CODE from m_menudtl where type_menu=:cond and status=:status AND APLIKASI"
-                + " =:aplikasi";
+        String qry = "SELECT DESCRIPTION, TYPE_MENU AS CODE FROM m_menudtl WHERE TYPE_MENU = :cond AND STATUS = :status AND APLIKASI = :aplikasi";
+        if (balance.containsKey("outletBrand") && balance.get("outletBrand").equalsIgnoreCase("TACOBELL") && balance.get("aplikasi").equalsIgnoreCase("POS")) {
+            qry = "SELECT DESCRIPTION, TYPE_MENU AS CODE FROM m_menudtl WHERE TYPE_MENU = 'REPORT' AND STATUS = 'A' AND APLIKASI = 'POS' AND DESCRIPTION IN ('Report Menu & Detail Modifier', 'Sales by Date', 'Sales by Item', 'Sales by Time', 'Summary Sales by Item Code')";
+        } else if (balance.containsKey("outletBrand") && balance.get("outletBrand").equalsIgnoreCase("TACOBELL") && balance.get("aplikasi").equalsIgnoreCase("INV")) {
+            qry = "SELECT DESCRIPTION, TYPE_MENU AS CODE FROM m_menudtl WHERE TYPE_MENU = 'REPORT' AND STATUS = 'A' AND APLIKASI = 'INV' AND DESCRIPTION IN ('Report Stock Card')";
+        }
         Map prm = new HashMap();
         prm.put("cond", balance.get("cond"));
         prm.put("status", balance.get("status"));
@@ -3357,7 +3359,7 @@ public class ViewDoaImpl implements ViewDao {
             rt.put("qtyStock", rs.getString("QTY_STOCK"));
             rt.put("uomStock", rs.getString("UOM_STOCK"));
             rt.put("productRemark", rs.getString("ITEM_DESCRIPTION"));
-            
+
             return rt;
         });
         return list;
