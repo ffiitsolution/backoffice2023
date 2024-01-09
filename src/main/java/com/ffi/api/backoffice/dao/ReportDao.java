@@ -92,4 +92,6 @@ public interface ReportDao {
     JasperPrint jasperReportDeliveryOrderTransactions (Map<String, Object> param, Connection connection) throws  JRException,IOException;
     JasperPrint jasperReportItemSelectedByTime (Map<String, Object> param, Connection connection) throws  JRException,IOException;
     JasperPrint jasperReportSalesVoid (Map<String, Object> param, Connection connection) throws  JRException,IOException;
+    JasperPrint jasperReportDownPayment (Map<String, Object> param, Connection connection) throws  JRException,IOException;
+
 }

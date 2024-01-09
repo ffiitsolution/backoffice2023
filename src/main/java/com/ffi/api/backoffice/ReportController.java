@@ -979,4 +979,30 @@ public class ReportController {
         } else
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
     }
+
+    ///////////////NEW METHOD REPORT down payment by Dani 9 Januari 2024////
+    @CrossOrigin
+    @RequestMapping(value = "/report-down-payment-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Menampilkan report Down Payment", response = Object.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    public ResponseEntity<byte[]> jesperReportDownPayment(@RequestBody String param) throws SQLException, JRException, IOException {
+        Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
+        Gson gsn = new Gson();
+        Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        prm.put("customerName", "%"+ prm.get("customerName")+"%");                
+        prm.put("orderType", "%"+prm.get("orderType")+"%");                
+        prm.put("bookStatus", "%"+prm.get("bookStatus")+"%");  
+        Integer cekDataReport = viewServices.cekDataReport(prm, "DownPayment");
+        if (cekDataReport > 0) {
+            JasperPrint jasperPrint = reportServices.jasperReportDownPayment(prm, conn);
+            conn.close();
+            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "inline; filename=DownPayment.pdf");
+            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        } else
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
+    }
 }

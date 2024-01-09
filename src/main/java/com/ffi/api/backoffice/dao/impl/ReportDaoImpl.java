@@ -2402,4 +2402,14 @@ public class ReportDaoImpl implements ReportDao {
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }
     /////////////////////// done adit 04-01-2024
+
+    //////////////// New Method Report Down Payment by Dani 9 Januari 2024
+    @Override
+    public JasperPrint jasperReportDownPayment(Map<String, Object> param, Connection connection)
+            throws JRException, IOException {
+        ClassPathResource classPathResource = new ClassPathResource("report/laporanDownPayment.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, param, connection);
+    }
+    
 }

@@ -2560,6 +2560,28 @@ public class ViewDoaImpl implements ViewDao {
                 prm.put("orderType", param.get("orderType"));
                 prm.put("status", param.get("status"));
             }
+            case "DownPayment" -> {
+                query = "SELECT count(*)  " +
+                "FROM " +
+                "	T_POS_BOOK a " +
+                "LEFT JOIN T_POS_BILL h ON  " +
+                "	a.BOOK_NO  = h.BOOK_NO  " +
+                "LEFT JOIN M_OUTLET i ON " +
+                "	a.OUTLET_CODE = i.OUTLET_CODE " +
+                "WHERE " +
+                "	a.BOOK_DATE >= :startDate " +
+                "	AND a.BOOK_DATE <= :endDate " +
+                "	AND a.OUTLET_CODE = :outletCode " +
+                "	AND a.CUSTOMER_NAME LIKE :customerName " +
+                "	AND a.ORDER_TYPE LIKE :orderType " +
+                "	AND a.BOOK_STATUS LIKE :bookStatus " ;
+                prm.put("startDate", param.get("startDate"));                
+                prm.put("endDate", param.get("endDate"));                
+                prm.put("outletCode", param.get("outletCode"));                
+                prm.put("customerName", param.get("customerName"));                
+                prm.put("orderType", param.get("orderType"));                
+                prm.put("bookStatus", param.get("bookStatus"));                
+            }
         }
         assert query != null;
         System.err.println("q :" + query);
