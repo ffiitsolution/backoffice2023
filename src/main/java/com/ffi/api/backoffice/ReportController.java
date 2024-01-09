@@ -958,6 +958,7 @@ public class ReportController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
     }
     
+    ///////////////NEW METHOD REPORT delete mpcs produksi by adit 3 Januari 2024////
     @CrossOrigin
     @RequestMapping(value = "/report-delete-mpcs-produksi-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan report DELETE MPCS Produksi", response = Object.class)
@@ -979,6 +980,7 @@ public class ReportController {
         } else
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
     }
+    ///////////////////////////////// done adit 04-01-2024 ///////////////////////////////////////
 
     ///////////////NEW METHOD REPORT REFUND by Rafi 4 Januari 2024////
     @CrossOrigin
@@ -1002,4 +1004,67 @@ public class ReportController {
         } else
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
     }
+    
+    ///////////////NEW METHOD REPORT +++ by adit 8 Januari 2024////
+    ////////////////// Actual Stock Opname
+    @CrossOrigin
+    @RequestMapping(value = "/report-actual-stock-opname-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Menampilkan report actual stock opname", response = Object.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    public ResponseEntity<byte[]> jesperReportaActualStockOpname(@RequestBody String param) throws SQLException, JRException, IOException {
+        Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
+        Gson gsn = new Gson();
+        Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        
+            JasperPrint jasperPrint = reportServices.jesperReportaActualStockOpname(prm, conn);
+            conn.close();
+            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "inline; filename=ActualStockOpname.pdf");
+            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        
+    }
+    ////////////////// performance rider HD
+    @CrossOrigin
+    @RequestMapping(value = "/report-performance-rider-hd-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Menampilkan report performance rider hd", response = Object.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    public ResponseEntity<byte[]> jesperReportPerformanceRiderHd(@RequestBody String param) throws SQLException, JRException, IOException {
+        Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
+        Gson gsn = new Gson();
+        Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        Integer cekDataReport = viewServices.cekDataReport(prm, "performanceRiderHd");
+        if (cekDataReport > 0) {
+            JasperPrint jasperPrint = reportServices.jesperReportPerformanceRiderHd(prm, conn);
+            conn.close();
+            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "inline; filename=PerformanceRiderHd.pdf");
+            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        } else
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
+    }
+    ////////////////// pajak
+    @CrossOrigin
+    @RequestMapping(value = "/report-pajak-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Menampilkan report pajak", response = Object.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    public ResponseEntity<byte[]> jesperReportPajak(@RequestBody String param) throws SQLException, JRException, IOException {
+        Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
+        Gson gsn = new Gson();
+        Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+            JasperPrint jasperPrint = reportServices.jesperReportPajak(prm, conn);
+            conn.close();
+            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "inline; filename=Pajak.pdf");
+            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+
+    }
+    ///////////////////////////////// done adit 04-01-2024 ///////////////////////////////////////
 }

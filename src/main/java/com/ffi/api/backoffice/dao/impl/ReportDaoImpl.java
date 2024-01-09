@@ -2473,4 +2473,51 @@ public class ReportDaoImpl implements ReportDao {
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }
+
+    /////////////////////// new method report +++ adit 08 Januari 2024
+    @Override
+    public JasperPrint jesperReportaActualStockOpname(Map<String, Object> param, Connection connection) throws IOException, JRException {
+        Map<String, Object> hashMap = new HashMap<String, Object>();
+        hashMap.put("outletBrand", param.get("outletBrand"));
+        hashMap.put("fromDate", param.get("fromDate"));
+        hashMap.put("toDate", param.get("toDate"));
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("user", param.get("user"));
+
+        ClassPathResource classPathResource = new ClassPathResource("report/reportActualStockOpname.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
+    
+        @Override
+    public JasperPrint jesperReportPerformanceRiderHd(Map<String, Object> param, Connection connection) throws IOException, JRException {
+        Map<String, Object> hashMap = new HashMap<String, Object>();
+        hashMap.put("outletBrand", param.get("outletBrand"));
+        hashMap.put("city", "X_" + param.get("city"));
+        hashMap.put("fromDate", param.get("fromDate"));
+        hashMap.put("toDate", param.get("toDate"));
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("user", param.get("user"));
+        hashMap.put("typeReport", param.get("typeReport"));
+
+        ClassPathResource classPathResource = new ClassPathResource(param.get("typeReport").equals("1") ? "report/reportDeleteMpcsProduksi.jrxml" : "report/reportDeleteMpcsProduksiDetail.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
+    
+            @Override
+    public JasperPrint jesperReportPajak(Map<String, Object> param, Connection connection) throws IOException, JRException {
+        Map<String, Object> hashMap = new HashMap<String, Object>();
+        hashMap.put("outletBrand", param.get("outletBrand"));
+        hashMap.put("fromDate", param.get("fromDate"));
+        hashMap.put("toDate", param.get("toDate"));
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("user", param.get("user"));
+        hashMap.put("typePos", param.get("typePos"));
+
+        ClassPathResource classPathResource = new ClassPathResource("report/reportPajak.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
+    /////////////////////// done adit 04-01-2024
 }
