@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reportRefund" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="1a88ee7a-e7e8-426d-94d3-d99acddc9739">
+	<property name="ireport.zoom" value="2.052632472922828"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="122"/>
+	<parameter name="posCode" class="java.lang.String"/>
+	<parameter name="cashierCode" class="java.lang.String"/>
+	<parameter name="shiftCode" class="java.lang.String"/>
+	<parameter name="fromDate" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="toDate" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+    <parameter name="posCode1" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="posCode2" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="cashierCode1" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="cashierCode2" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="shiftCode1" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="shiftCode2" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+	<queryString>
+		<![CDATA[SELECT
+			tpb.OUTLET_CODE,
+			tpb.POS_CODE,
+			tpb.BILL_NO,
+			tpb.SHIFT_CODE,
+			tpb.CASHIER_CODE,
+			tpb.REFUND_MANAGER_CODE,
+			tpb.TOTAL_REFUND,
+			SUM(tpb.TOTAL_REFUND) AS TOTAL_REFUND_SUM,
+			tpb.TRANS_DATE,
+			tpb.ORDER_TIME,
+			tpb.DATE_UPD,
+			mps_cashier.STAFF_NAME AS CASHIER_NAME,
+			mps_manager.STAFF_NAME AS REFUND_MANAGER_NAME,
+			mg.DESCRIPTION ,
+			mo.ADDRESS_1,
+			mo.ADDRESS_2
+		FROM
+			T_POS_BILL tpb
+		LEFT JOIN
+			M_POS_STAFF mps_cashier ON tpb.CASHIER_CODE = mps_cashier.STAFF_POS_CODE
+		LEFT JOIN
+			M_POS_STAFF mps_manager ON tpb.REFUND_MANAGER_CODE = mps_manager.STAFF_POS_CODE
+		LEFT JOIN
+			M_GLOBAL mg ON tpb.REFUND_REASON_CODE = mg.CODE AND mg.COND = 'REFUND'
+		LEFT JOIN
+			M_OUTLET mo  ON tpb.OUTLET_CODE = mo.OUTLET_CODE
+		WHERE
+			(mps_cashier.STAFF_POS_CODE IN (tpb.CASHIER_CODE) OR mps_manager.STAFF_POS_CODE IN (tpb.REFUND_MANAGER_CODE))
+			AND tpb.TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
+			AND tpb.POS_CODE BETWEEN $P{posCode1} AND $P{posCode2}
+			AND tpb.CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+			AND tpb.SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
+			AND tpb.TOTAL_REFUND IS NOT NULL
+			AND tpb.TOTAL_REFUND <> 0	
+		GROUP BY
+			tpb.OUTLET_CODE,
+			tpb.POS_CODE,
+			tpb.BILL_NO,
+			tpb.SHIFT_CODE,
+			tpb.CASHIER_CODE,
+			tpb.REFUND_MANAGER_CODE,
+			tpb.TOTAL_REFUND ,
+			tpb.TRANS_DATE,
+			tpb.ORDER_TIME,
+			tpb.DATE_UPD,
+			mps_cashier.STAFF_NAME,
+			mps_manager.STAFF_NAME,
+			mg.DESCRIPTION,
+			mo.ADDRESS_1,
+			mo.ADDRESS_2
+		]]>
+	</queryString>
+	<field name="OUTLET_CODE" class="java.lang.String"/>
+	<field name="POS_CODE" class="java.lang.String"/>
+	<field name="BILL_NO" class="java.lang.String"/>
+	<field name="SHIFT_CODE" class="java.lang.String"/>
+	<field name="CASHIER_CODE" class="java.lang.String"/>
+	<field name="REFUND_MANAGER_CODE" class="java.lang.String"/>
+	<field name="TOTAL_REFUND" class="java.math.BigDecimal"/>
+	<field name="TOTAL_REFUND_SUM" class="java.math.BigDecimal"/>
+	<field name="TRANS_DATE" class="java.sql.Timestamp"/>
+	<field name="ORDER_TIME" class="java.lang.String"/>
+	<field name="DATE_UPD" class="java.sql.Timestamp"/>
+	<field name="CASHIER_NAME" class="java.lang.String"/>
+	<field name="REFUND_MANAGER_NAME" class="java.lang.String"/>
+	<field name="DESCRIPTION" class="java.lang.String"/>
+	<field name="ADDRESS_1" class="java.lang.String"/>
+	<field name="ADDRESS_2" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="2" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="187" splitType="Stretch">
+			<staticText>
+				<reportElement x="6" y="160" width="80" height="15" uuid="957e4697-0173-4668-a82a-8ede3f5f3afb"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cashier]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="88" y="160" width="80" height="15" uuid="8c8501fa-7033-42ae-9c5d-e0d7d4692a6d"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Manager]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="168" y="160" width="65" height="15" uuid="79acebd1-c06c-4ac5-bcd4-233414812b48"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="234" y="160" width="64" height="15" uuid="16d003aa-3edf-4760-90ab-51ee7ea4530e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Order Time]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="298" y="160" width="80" height="15" uuid="64e14609-3d26-4323-88a3-8f7dbe27afb1"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Refund Time]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="378" y="160" width="45" height="15" uuid="b0f98118-55ab-458a-9187-e20cb45c6df2"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[#POS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="424" y="160" width="75" height="15" uuid="5a6a4e54-3a8f-4907-af39-7e1cc5b0ed15"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Bill No]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="156" width="555" height="1" uuid="e2ac8237-719f-42a2-b5fe-caa0b7feb5e1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="178" width="555" height="1" uuid="72ec9039-ca1e-4127-b022-c2372bd3b0be"/>
+			</line>
+			<staticText>
+				<reportElement x="500" y="160" width="50" height="15" uuid="845d698f-609f-4c85-835b-c8a4ed5dd3cd"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Refund]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="64" width="555" height="20" uuid="b4bdc133-33d6-447c-a6b2-a2c8106b4e53"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Sales Refund Report]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="88" width="69" height="15" uuid="b40028d1-8939-4e9c-be04-fedf45ff7df6"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Periode]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="55" y="88" width="283" height="15" uuid="02a8871a-cc53-45f9-a1aa-af9540abc936"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{fromDate})) + " s/d " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{toDate}))]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="105" width="69" height="15" uuid="236f06fe-8db4-454e-a4e9-d0f353ace779"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Pos]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="55" y="105" width="283" height="11" uuid="4271d8dc-6bb2-433b-baee-58b4c57882bb"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" : " + $P{posCode}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="122" width="69" height="15" uuid="9e93090d-1468-4878-816e-e0cada2ffb6e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Cashier]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="55" y="122" width="283" height="11" uuid="4271d8dc-6bb2-433b-baee-58b4c57882bb"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" : " + $P{cashierCode}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="139" width="69" height="15" uuid="b3b506f2-8a1f-44cc-8b61-e92ce7109ba8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Shift]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="55" y="139" width="283" height="11" uuid="4271d8dc-6bb2-433b-baee-58b4c57882bb"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" : " + $P{shiftCode}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="74" y="9" width="117" height="15" uuid="2802e355-f74a-4260-9403-c1db767d6a67"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[PT Fast Food Indonesia]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="74" y="26" width="117" height="12" uuid="d07ead09-9a82-414f-a7e7-d5548c070e7f"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ADDRESS_1}]]></textFieldExpression>
+			</textField>
+             <image>
+                <reportElement x="0" y="1" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="274ab445-e757-4120-aa23-840cf589c9fc"/>
+                <imageExpression><![CDATA["logo/logoKfc.png"]]></imageExpression>
+            </image>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="50" splitType="Stretch">
+			<textField>
+				<reportElement x="6" y="3" width="80" height="17" uuid="13d3d88a-67fc-401a-8a9d-7173d137a3b0"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CASHIER_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="88" y="3" width="80" height="17" uuid="408b3257-9d01-4941-98b0-dfdb2032f12d"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isStrikeThrough="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{REFUND_MANAGER_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="168" y="3" width="65" height="17" uuid="1cfc6b3c-47c9-4481-b374-a09b2cf687a2"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($F{TRANS_DATE})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="234" y="3" width="64" height="17" uuid="3f1df1c7-0bbe-4fa5-8e83-64aecebf02f9"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ORDER_TIME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="378" y="3" width="45" height="17" uuid="0b448aa1-6d7d-4584-842e-613126ec13d7"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{POS_CODE}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="49" width="555" height="1" uuid="dd808a18-1783-4883-aeee-fde6b04ca0fa"/>
+			</line>
+			<staticText>
+				<reportElement x="378" y="26" width="83" height="15" uuid="f46d803d-0bd1-4ba1-8ea5-9be793f68a42"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Refund Reason       :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="461" y="26" width="85" height="15" uuid="0e811006-b621-445f-83f4-49aea0438485"/>
+                <textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DESCRIPTION} != null && !$F{DESCRIPTION}.isEmpty() ? $F{DESCRIPTION} : "-"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="425" y="3" width="74" height="17" uuid="4091fe2f-d8d7-4cb8-bb60-7c3db76131a0"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{BILL_NO}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="500" y="3" width="50" height="17" uuid="12914ef7-c9e7-447f-975c-580357e1fe1e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{TOTAL_REFUND}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="298" y="3" width="80" height="17" uuid="d3cf4da8-16e2-4871-b41f-25d4941c63f4"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DATE_UPD}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="22" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="22" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="18" width="555" height="1" uuid="d5ede944-5cb8-4479-bcac-600ae7a70ba0"/>
+			</line>
+			<staticText>
+				<reportElement x="378" y="2" width="83" height="15" uuid="ee67970b-ccab-4e47-81be-ff04bbfbc504"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Refund]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="447" y="2" width="80" height="15" uuid="d3cf4da8-16e2-4871-b41f-25d4941c63f4"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" : " + $F{TOTAL_REFUND_SUM}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

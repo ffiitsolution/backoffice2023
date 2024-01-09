@@ -499,4 +499,9 @@ public class ViewServices {
     public Map<String, Object> listMpcsQueryResult(Map<String, String> mapping) {
         return viewDao.listMpcsQueryResult(mapping);
     }
+
+    /////// NEW METHOD to get list Menu Aplikasi by M Joko 8 Januari 2024
+    public List<Map<String, Object>> listMenuApplication(Map<String, String> mapping) {
+        return viewDao.listMenuApplication(mapping);
+    }
 }

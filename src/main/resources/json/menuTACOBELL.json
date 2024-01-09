@@ -1,0 +1,21 @@
+[
+  {
+    "title": true,
+    "name": "Back Office"
+  },
+  {
+    "name": "Reports",
+    "url": "/report",
+    "icon": "fa fa-file-pdf-o",
+    "children": [
+      {
+        "name": "Inventory",
+        "url": "/report/report"
+      },
+      {
+        "name": "Pos Report",
+        "url": "/report/pos-report"
+      }
+    ]
+  }
+]

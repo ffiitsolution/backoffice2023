@@ -71,6 +71,11 @@ public interface ReportDao {
     ///////////////NEW METHOD REPORT receive BY PASCA 28 August 2023////
     JasperPrint jasperReportSalesByItem (Map<String, Object> param, Connection connection) throws JRException, IOException;
     JasperPrint jasperReportMenuVsDetail (Map<String, Object> param, Connection connection) throws JRException, IOException;
+    ///////////// new method report +++ by adit 08 Januari 2024
+    JasperPrint jesperReportaActualStockOpname (Map<String, Object> param, Connection connection) throws JRException, IOException;
+    JasperPrint jesperReportPerformanceRiderHd (Map<String, Object> param, Connection connection) throws JRException, IOException;
+    JasperPrint jesperReportPajak (Map<String, Object> param, Connection connection) throws JRException, IOException;
+    /////////// done adit 08-01-2024
     JasperPrint jasperReportSummarySalesByItemCode (Map<String, Object> param, Connection connection) throws JRException, IOException;
     JasperPrint jasperReportStockCard (Map<String, Object> param, Connection connection) throws JRException, IOException;
     Page<Map<String, Object>> getTestPagination(Pageable pageable);
@@ -91,7 +96,9 @@ public interface ReportDao {
     JasperPrint jasperReportReturnOrderTransactions (Map<String, Object> param, Connection connection) throws  JRException,IOException;
     JasperPrint jasperReportDeliveryOrderTransactions (Map<String, Object> param, Connection connection) throws  JRException,IOException;
     JasperPrint jasperReportItemSelectedByTime (Map<String, Object> param, Connection connection) throws  JRException,IOException;
-    JasperPrint jasperReportSalesVoid (Map<String, Object> param, Connection connection) throws  JRException,IOException;
+    JasperPrint jasperReportSalesVoid (Map<String, Object> param, Connection connection) throws  JRException,IOException;    
+    JasperPrint jasperReportRefund (Map<String, Object> param, Connection connection) throws  JRException,IOException;
+    JasperPrint jasperReportProductEfficiency (Map<String, Object> param, Connection connection) throws  JRException,IOException;
     JasperPrint jasperReportDownPayment (Map<String, Object> param, Connection connection) throws  JRException,IOException;
 
 }

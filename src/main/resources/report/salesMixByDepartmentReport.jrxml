@@ -410,7 +410,7 @@ ORDER BY
 				</textElement>
 				<textFieldExpression><![CDATA[$F{ITEM_CODE}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
+			<textField textAdjust="StretchHeight">
 				<reportElement x="106" y="0" width="165" height="15" uuid="fecc7f33-2503-45be-aa63-fbc47f6822ce"/>
 				<textElement>
 					<font size="8"/>

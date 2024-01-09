@@ -4,6 +4,7 @@
  */
 package com.ffi.api.backoffice;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ffi.api.backoffice.model.DetailOpname;
 import com.ffi.api.backoffice.model.HeaderOpname;
 import com.ffi.api.backoffice.model.ParameterLogin;
@@ -20,25 +21,21 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import static java.util.Collections.list;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import net.sf.jasperreports.engine.JRException;
-//import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -2241,10 +2238,10 @@ public class IndexController {
         JsonObject balance = gsn.fromJson(param, JsonObject.class);
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         ResponseMessage rm = new ResponseMessage();
-        if(balance.has("kirim") && balance.has("returnNo")){
+        if (balance.has("kirim") && balance.has("returnNo")) {
             // kirim 
             // todo:
-            if(processServices.sendReturnOrderToWH(balance)){
+            if (processServices.sendReturnOrderToWH(balance)) {
                 rm.setSuccess(true);
                 rm.setMessage("Send Return Order Successfuly");
             } else {
@@ -2451,7 +2448,7 @@ public class IndexController {
         return res;
     }
     ///////////////done  
-    
+
     ////////////New method for query stock card - Fathur 29-Nov-2023////////////
     @RequestMapping(value = "/stock-card", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view data query stock card", response = Object.class)
@@ -2625,9 +2622,9 @@ public class IndexController {
                     newParams.put("processEod", "N");
                     newParams.put("notes", " ");
                     newParams.put("userUpd", balance.getOrDefault("userUpd", "SYSTEM"));
-                    try{
+                    try {
                         processServices.insertEodPosN(newParams);
-                    } catch (Exception e){
+                    } catch (Exception e) {
                         errors.add("insertEodPosN failed: " + e.getMessage());
                     }
                     posOpen.add(newParams);
@@ -2649,37 +2646,37 @@ public class IndexController {
             res.setData(data);
             return res;
         }
-            try {
-                processServices.insertTStockCard(balance);
-            } catch (Exception e){
-                errors.add("insertTStockCard failed: " + e.getMessage());
-            }
-            try {
-                processServices.insertTEodHist(balance);
-            } catch (Exception e){
-                errors.add("insertTEodHist failed: " + e.getMessage());
-            }
-            try {
-                processServices.insertTSummMpcs(balance);
-            } catch (Exception e){
-                errors.add("insertTSummMpcs failed: " + e.getMessage());
-            }
-            try {
-                processServices.updateOrderEntryExpired(balance);
-            } catch (Exception e){
-                errors.add("updateOrderEntryExpired failed: " + e.getMessage());
-            }
-            try {
-                processServices.increaseTransDateMOutlet(balance);
-            } catch (Exception e){
-                errors.add("increaseTransDateMOutlet failed: " + e.getMessage());
-            }
+        try {
+            processServices.insertTStockCard(balance);
+        } catch (Exception e) {
+            errors.add("insertTStockCard failed: " + e.getMessage());
+        }
+        try {
+            processServices.insertTEodHist(balance);
+        } catch (Exception e) {
+            errors.add("insertTEodHist failed: " + e.getMessage());
+        }
+        try {
+            processServices.insertTSummMpcs(balance);
+        } catch (Exception e) {
+            errors.add("insertTSummMpcs failed: " + e.getMessage());
+        }
+        try {
+            processServices.updateOrderEntryExpired(balance);
+        } catch (Exception e) {
+            errors.add("updateOrderEntryExpired failed: " + e.getMessage());
+        }
+        try {
+            processServices.increaseTransDateMOutlet(balance);
+        } catch (Exception e) {
+            errors.add("increaseTransDateMOutlet failed: " + e.getMessage());
+        }
 
         data.add(d);
         res.setData(data);
         double elapsedTimeSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
         System.err.println("Finished End of Day Process after: " + elapsedTimeSeconds + " seconds");
-        res.setDraw((int) elapsedTimeSeconds );
+        res.setDraw((int) elapsedTimeSeconds);
         return res;
     }
     ////////////Done method for process Last Eod///////////
@@ -2781,8 +2778,6 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        Map<String, Object> map = new LinkedHashMap<String, Object>();
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         Response res = new Response();
         res.setData(viewServices.mpcsProductionRecipe(balance));
         return res;
@@ -2803,8 +2798,6 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        Map<String, Object> map = new LinkedHashMap<String, Object>();
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         Response res = new Response();
         res.setData(viewServices.mpcsProductionProductResult(balance));
         return res;
@@ -3081,7 +3074,7 @@ public class IndexController {
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
         ResponseMessage rm = new ResponseMessage();
-        if(!balance.containsKey("outletCode")){
+        if (!balance.containsKey("outletCode")) {
             rm.setSuccess(false);
             rm.setMessage("Get Failed: outletCode required");
             return rm;
@@ -3096,7 +3089,7 @@ public class IndexController {
         }
         return rm;
     }
-    
+
     // Get List MPCS Group by Dani 4 Januari 2024
     @RequestMapping(value = "/list-mpcs-group", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view master mpcs group", response = Object.class)
@@ -3138,4 +3131,61 @@ public class IndexController {
         return res;
     }
 
+    @RequestMapping(value = "/insert-mpcs-production", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk menambah mpcs produksi bedasarkan waktu, update akumulasi kuantitas dan menambah data MPCS history by Fathur 8 Jan 2024", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage insertMpcsProduction(@RequestBody String params) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> data = gsn.fromJson(params, new TypeToken<Map<String, String>>() {
+        }.getType());
+        ResponseMessage rm = new ResponseMessage();
+        if (processServices.insertMpcsProduction(data)) {
+            rm.setSuccess(true);
+            rm.setMessage("Insert Successfuly");
+        } else {
+            rm.setSuccess(false);
+            rm.setMessage("Insert  Failed");
+        }
+        return rm;
+    }
+
+    /////// NEW METHOD to get list Menu Aplikasi by M Joko 8 Januari 2024
+    @RequestMapping(value = "/list-menu-application", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk list Menu Aplikasi", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listMenuApplication(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, Object> data = gsn.fromJson(param, new TypeToken<Map<String, String>>() {
+        }.getType());
+        // List<Map<String, Object>> list = viewServices.listMenuApplication(data);
+        Response res = new Response();
+        String filepath = "json/menuKFC.json";
+        if(data.containsKey("outletBrand") && data.get("outletBrand").toString().equalsIgnoreCase("TACOBELL")){
+            filepath = "json/menuTACOBELL.json";
+        }
+        try{
+            ClassPathResource resource = new ClassPathResource(filepath);
+            byte[] bytes = FileCopyUtils.copyToByteArray(resource.getInputStream());
+            String jsonString = new String(bytes, StandardCharsets.UTF_8);
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<Map<String, Object>> menuList = objectMapper.readValue(jsonString, new ArrayList<LinkedHashMap<String, Object>>().getClass());
+            res.setData(menuList);
+        } catch (IOException e){
+            System.err.println("e: " + e.getMessage());
+            List<Map<String, Object>> menuList = new ArrayList();
+            data.put("success", false);
+            data.put("message", e.getMessage());
+            menuList.add(data);
+            res.setData(menuList);
+        }
+        return res;
+    }
 }

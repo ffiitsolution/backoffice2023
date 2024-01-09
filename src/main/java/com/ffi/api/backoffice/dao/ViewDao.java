@@ -283,4 +283,7 @@ public interface ViewDao {
 
     /////// NEW METHOD to get list mpcs query result by Dani 4 Januari 2024
     public  Map<String, Object>  listMpcsQueryResult(Map<String, String> mapping);
+
+    /////// NEW METHOD to get list Menu Aplikasi by M Joko 8 Januari 2024
+    public  List<Map<String, Object>>  listMenuApplication(Map<String, String> mapping);
 }

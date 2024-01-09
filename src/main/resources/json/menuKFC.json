@@ -1,0 +1,147 @@
+[
+  {
+    "title": true,
+    "name": "Back Office"
+  },
+  {
+    "name": "Dashboard",
+    "url": "/dashboard",
+    "icon": "fa fa-bar-chart"
+  },
+  {
+    "name": "Masters",
+    "url": "/master",
+    "icon": "fa fa-database",
+    "children": [
+      {
+        "name": "User",
+        "url": "/master/user"
+      },
+      {
+        "name": "Outlet",
+        "url": "/master/outlet"
+      },
+      {
+        "name": "Menu",
+        "url": "/master/menu"
+      },
+      {
+        "name": "Price",
+        "url": "/master/price"
+      },
+      {
+        "name": "Frayer Type",
+        "url": "/master/frayer"
+      },
+      {
+        "name": "Group Item",
+        "url": "/master/group-item"
+      },
+      {
+        "name": "Supplier",
+        "url": "/master/supplier"
+      },
+      {
+        "name": "Item",
+        "url": "/master/item"
+      },
+      {
+        "name": "Recipe",
+        "url": "/master/recipe"
+      },
+      {
+        "name": "MPCS",
+        "url": "/master/mpcs"
+      },
+      {
+        "name": "Item Cost",
+        "url": "/master/item-cost"
+      },
+      {
+        "name": "Sales Recipe",
+        "url": "/master/sales-recipe"
+      },
+      {
+        "name": "Global",
+        "url": "/master/global"
+      },
+      {
+        "name": "Kirim Terima Data",
+        "url": "/master/kirim-terima-data"
+      }
+    ]
+  },
+  {
+    "name": "Transactions",
+    "url": "/transaction",
+    "icon": "fa fa-exchange",
+    "children": [
+      {
+        "name": "Stock Opname",
+        "url": "/transaction/stock-opname"
+      },
+      {
+        "name": "Order Entry",
+        "url": "/transaction/order-entry"
+      },
+      {
+        "name": "Receiving",
+        "url": "/transaction/receiving"
+      },
+      {
+        "name": "Delivery Order",
+        "url": "/transaction/delivery-order"
+      },
+      {
+        "name": "Wastage",
+        "url": "/transaction/wastage"
+      },
+      {
+        "name": "Return Order",
+        "url": "/transaction/return-order"
+      },
+      {
+        "name": "MPCS",
+        "url": "/transaction/mpcs"
+      }
+    ]
+  },
+  {
+    "name": "Reports",
+    "url": "/report",
+    "icon": "fa fa-file-pdf-o",
+    "children": [
+      {
+        "name": "Inventory",
+        "url": "/report/report"
+      },
+      {
+        "name": "Mpcs Query",
+        "url": "/report/mpcs-query"
+      },
+      {
+        "name": "Pos Report",
+        "url": "/report/pos-report"
+      },
+      {
+        "name": "Query Stock Card",
+        "url": "/report/query-stock-card"
+      }
+    ]
+  },
+  {
+    "name": "Point Of Sales",
+    "url": "/pos",
+    "icon": "fa fa-television",
+    "children": [
+      {
+        "name": "Query Bill & Sales",
+        "url": "/pos/query-bill"
+      },
+      {
+        "name": "End Of Day",
+        "url": "/pos/end-of-day"
+      }
+    ]
+  }
+]

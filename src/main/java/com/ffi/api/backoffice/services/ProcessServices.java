@@ -263,4 +263,10 @@ public class ProcessServices {
     public boolean sendReturnOrderToWH(JsonObject object) {
         return dao.sendReturnOrderToWH(object);
     }
+
+    // Insert MPCS Production - Fathur 8 Jan 2024 //   
+    public boolean insertMpcsProduction(Map<String, String> params) throws Exception {
+        return dao.insertMpcsProduction(params);
+    }
+    // Done Insert MPCS Production //   
 }

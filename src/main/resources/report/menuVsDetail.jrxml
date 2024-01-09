@@ -56,6 +56,9 @@
 	<parameter name="brand2" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
+	<parameter name="outletBrand" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[SELECT   a.*,
          b.total_amount,
@@ -433,7 +436,7 @@
 					</textElement>
 					<textFieldExpression><![CDATA[$F{MENU}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true">
+				<textField textAdjust="StretchHeight">
 					<reportElement x="53" y="2" width="85" height="12" uuid="eb222a1d-76dc-4760-bbc3-d14ddfde8def"/>
 					<textElement>
 						<font size="8"/>
@@ -674,7 +677,7 @@
 	</pageHeader>
 	<detail>
 		<band height="14" splitType="Stretch">
-			<textField isStretchWithOverflow="true">
+			<textField textAdjust="StretchHeight">
 				<reportElement x="298" y="0" width="163" height="12" uuid="2add6e1f-9c92-4129-8ab0-d67439eba102"/>
 				<textElement>
 					<font size="8"/>

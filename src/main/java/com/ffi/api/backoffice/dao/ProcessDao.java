@@ -151,4 +151,7 @@ public interface ProcessDao {
 
     public void kirimDeloveryOrder(Map<String, String> mapping) throws Exception;
 
+    // Insert MPCS Production - Fathur 8 Jan 2024 // 
+    public boolean insertMpcsProduction(Map<String, String> params) throws Exception;
+
 }

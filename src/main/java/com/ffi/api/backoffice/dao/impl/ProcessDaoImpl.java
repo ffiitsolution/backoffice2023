@@ -2283,6 +2283,7 @@ public class ProcessDaoImpl implements ProcessDao {
     }
 
     ///////////////New method from Fathur 11-Dec-2023////////////////////////////
+    @Override
     public void sendDataOutletToWarehouse(Map<String, String> balance) {
         String json = "";
         Gson gson = new Gson();
@@ -2297,7 +2298,7 @@ public class ProcessDaoImpl implements ProcessDao {
                     + "CD_SUPPLIER,  "
                     + "TO_CHAR(DT_DUE, 'DD-MON-YY') AS DT_DUE, "
                     + "TO_CHAR(DT_EXPIRED, 'DD-MON-YY') AS DT_EXPIRED, "
-                    + "REMARK,        "
+                    + "CASE WHEN REMARK IS NULL THEN ' ' ELSE REMARK END AS REMARK, "
                     + "NO_OF_PRINT,  "
                     + "STATUS,       "
                     + "USER_UPD,     "
@@ -2761,4 +2762,91 @@ public class ProcessDaoImpl implements ProcessDao {
         }
     }
 
+    // Insert MPCS Production - Fathur 8 Jan 2024 // 
+    @Override
+    public boolean insertMpcsProduction(Map<String, String> params) {
+        var isInsertProductionSuccess = false;
+        var isUpdateQuantityAccSuccess = false;
+        var isInsertHistorySuccess = false;
+        var isInsertMpcsDetailSuccess = false;
+        Map prm = new HashMap();
+        prm.put("userUpd", params.get("userUpd"));
+        prm.put("dateUpd", params.get("dateUpd"));
+        prm.put("timeUpd", params.get("timeUpd"));
+
+        prm.put("remark", params.get("remark"));
+        prm.put("recipeCode", params.get("recipeCode"));
+        prm.put("qtyMpcs", params.get("qtyMpcs"));
+        prm.put("mpcsGroup", params.get("mpcsGroup"));
+        prm.put("mpcsDate", params.get("mpcsDate"));
+        prm.put("outletCode", params.get("outletCode"));
+        try {
+            String insertProductionQuery = "UPDATE T_SUMM_MPCS SET "
+                    + "QTY_PROD = (QTY_PROD + (SELECT (sum(QTY_STOCK) * :qtyMpcs) FROM m_recipe_product WHERE RECIPE_CODE = :recipeCode)), "
+                    + "DESC_PROD = :remark, "
+                    + "PROD_BY = :userUpd, "
+                    + "USER_UPD = :userUpd "
+                    + "WHERE DATE_MPCS = :mpcsDate AND MPCS_GROUP = :mpcsGroup "
+                    + "AND SEQ_MPCS = (SELECT tsm.SEQ_MPCS FROM T_SUMM_MPCS tsm WHERE DATE_MPCS = :mpcsDate AND MPCS_GROUP = :mpcsGroup "
+                    + "AND TIME_MPCS > :timeUpd AND ROWNUM = 1) ";
+            jdbcTemplate.update(insertProductionQuery, prm);
+            isInsertProductionSuccess = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (isInsertProductionSuccess) {
+            try {
+                String updateQuantityAccQuery = "MERGE INTO T_SUMM_MPCS tsm "
+                        + "USING ("
+                        + "	SELECT SEQ_MPCS, QTY_ACC_PROD, sum(QTY_PROD) OVER (ORDER BY seq_mpcs) AS UPDATED_QTY_ACC_PROD "
+                        + "		FROM T_SUMM_MPCS tsm "
+                        + "		WHERE tsm.MPCS_GROUP =:mpcsGroup AND tsm.DATE_MPCS = :mpcsDate "
+                        + "	) up "
+                        + "ON (tsm.SEQ_MPCS = up.SEQ_MPCS AND tsm.DATE_MPCS = :mpcsDate AND tsm.MPCS_GROUP = :mpcsGroup) "
+                        + "WHEN MATCHED THEN "
+                        + "	UPDATE SET "
+                        + "		tsm.QTY_ACC_PROD = up.UPDATED_QTY_ACC_PROD, "
+                        + "		tsm.USER_UPD = :userUpd,"
+                        + "		tsm.DATE_UPD = :dateUpd,"
+                        + "		tsm.TIME_UPD = :timeUpd ";
+                jdbcTemplate.update(updateQuantityAccQuery, prm);
+                isUpdateQuantityAccSuccess = true;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (isInsertProductionSuccess && isUpdateQuantityAccSuccess) {
+            try {
+                String insertHistoryQuery = "INSERT INTO T_MPCS_HIST (HIST_SEQ,HIST_TYPE,OUTLET_CODE,MPCS_DATE,MPCS_GROUP,RECIPE_CODE,FRYER_TYPE,FRYER_TYPE_SEQ,SEQ_MPCS,QUANTITY,USER_UPD,DATE_UPD,TIME_UPD) "
+                        + "VALUES ((SELECT (max(tmh.HIST_SEQ) + 1)  FROM T_MPCS_HIST tmh),'C',:outletCode, :mpcsDate,:mpcsGroup,:recipeCode,' ',' ',(SELECT tsm.SEQ_MPCS FROM T_SUMM_MPCS tsm WHERE DATE_MPCS = :mpcsDate AND MPCS_GROUP = :mpcsGroup "
+                        + "AND TIME_MPCS > :timeUpd "
+                        + "AND ROWNUM = 1),:qtyMpcs,:userUpd, :dateUpd, :timeUpd) ";
+                jdbcTemplate.update(insertHistoryQuery, prm);
+                isInsertHistorySuccess = true;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (isInsertProductionSuccess && isUpdateQuantityAccSuccess && isInsertHistorySuccess) {
+            try {
+                String insertHistoryQuery = "INSERT INTO T_MPCS_DETAIL (OUTLET_CODE,DATE_MPCS,TIME_MPCS,RECIPE_CODE,TYPE_MPCS,ITEM_CODE,QTY1,UOM1,QTY2,UOM2,STATUS,USER_UPD,DATE_UPD,TIME_UPD) ("
+                        + "	SELECT :outletCode AS OUTLET_CODE, :mpcsDate AS DATE_MPCS, :timeUpd AS TIME_MPCS, RECIPE_CODE, :mpcsGroup AS TYPE_MPCS, ITEM_CODE, -(QTY_STOCK * :qtyMpcs) AS QTY1, UOM_STOCK AS UOM1, -(QTY_STOCK * :qtyMpcs) AS QTY2, UOM_STOCK AS UOM2, '1' AS STATUS,  :userUpd AS USER_UPD, :dateUpd AS DATE_UPD, :timeUpd AS TIME_UPD FROM M_RECIPE_DETAIL where RECIPE_CODE = :recipeCode "
+                        + "	UNION "
+                        + "	SELECT :outletCode AS OUTLET_CODE, :mpcsDate  AS DATE_MPCS, :timeUpd AS TIME_MPCS, RECIPE_CODE, :mpcsGroup AS TYPE_MPCS, PRODUCT_CODE as ITEM_CODE,  (QTY_STOCK * :qtyMpcs) AS QTY1, UOM_STOCK AS UOM1, (QTY_STOCK * :qtyMpcs) AS QTY2, UOM_STOCK AS UOM2, '1' AS STATUS, :userUpd AS USER_UPD, :dateUpd AS DATE_UPD, :timeUpd AS TIME_UPD  FROM m_recipe_product where recipe_code = :recipeCode "
+                        + ") ";
+                jdbcTemplate.update(insertHistoryQuery, prm);
+                isInsertMpcsDetailSuccess = true;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return isInsertProductionSuccess && isUpdateQuantityAccSuccess && isInsertHistorySuccess && isInsertMpcsDetailSuccess;
+    }
+    // Done insert MPCS Production // 
 }

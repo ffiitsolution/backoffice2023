@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reportActualStockOpname" pageWidth="595" pageHeight="840" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="341841ad-479a-4fd4-b008-afc4dd840486">
+	<property name="ireport.zoom" value="1.610510000000015"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="outletCode" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="fromDate" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="toDate" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select trim(to_char(sum(TOTAL_AMOUNT),'999,999,999,999')) as total_sales, b.OUTLET_NAME, b.ADDRESS_1, b.PHONE from t_pos_bill a
+JOIN M_OUTLET b ON a.OUTLET_CODE = b.OUTLET_CODE
+where a.outlet_code='0936' and 
+a.trans_date between '01-Jul-2023' and '01-Jul-2023' and a.delivery_status='CLS'
+GROUP BY b.OUTLET_NAME, b.ADDRESS_1, b.PHONE]]>
+	</queryString>
+	<field name="total_sales" class="java.lang.String"/>
+	<field name="OUTLET_NAME" class="java.lang.String"/>
+	<field name="ADDRESS_1" class="java.lang.String"/>
+	<field name="PHONE" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="102" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="82" width="555" height="1" uuid="646b9ea6-8fe0-4179-9481-1bd831cd8f04"/>
+			</line>
+			<line>
+				<reportElement x="0" y="101" width="555" height="1" uuid="9b4d6d14-cf2e-439c-b05a-8d96be9a55db"/>
+			</line>
+			<staticText>
+				<reportElement x="5" y="83" width="39" height="18" uuid="2ca99acf-c14d-4fc0-a86f-93d01961953c"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Code]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="47" y="83" width="183" height="18" uuid="9324eae0-eb3a-4cec-80fe-05b194865441"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Outlet Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="229" y="83" width="83" height="18" uuid="a1d7f151-0761-47c1-83da-1f9dff65c070"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Quantity]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="312" y="83" width="32" height="18" uuid="10e8d854-2e49-4cb8-924a-6416547dc2bc"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[UOM]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="344" y="83" width="58" height="18" uuid="e8126b50-83b9-4fd0-97a3-c108991637e2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Unit Cost]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="402" y="83" width="92" height="18" uuid="2652d4b8-9ef8-4b2d-934d-eeaeafa5cb35"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Unit Cost]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="494" y="83" width="61" height="18" uuid="d6099b12-d73e-44e1-8f6b-975e37918901"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[%]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="58" width="555" height="18" uuid="054637d1-cf41-4251-aceb-8cd4520c2bc6"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Report Actual Stock Opname]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="378" y="6" width="48" height="13" uuid="09ab45a6-7d62-4bdd-9a03-8874f57a926e"/>
+				<textElement>
+					<font size="9" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Page]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="64" y="11" width="165" height="11" uuid="d49f8a33-7c2d-4bd9-8a0c-a3da0cdb2399"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OUTLET_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="64" y="21" width="165" height="11" uuid="1d413335-f769-4619-9d46-990fa2821fd7"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ADDRESS_1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="426" y="6" width="92" height="13" uuid="8e69df69-52bc-4437-ae07-c8e8e307815e"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="7" y="0" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="a74f4b64-21cf-43c4-b134-dc4525922b36"/>
+				<imageExpression><![CDATA["logo/logoKfc.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="64" y="0" width="112" height="11" uuid="b6175580-26b7-4d24-a0da-c1a98b446e71"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="426" y="18" width="213" height="13" uuid="2dd056d2-fcc5-4330-98c4-54bee8799ca3"/>
+				<textElement>
+					<font size="9" isUnderline="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{fromDate})) + " s/d " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{toDate}))]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="378" y="18" width="48" height="13" uuid="ed381e3f-3e0a-4c99-a674-2ef8e1556303"/>
+				<textElement>
+					<font size="9" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Periode]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="14" splitType="Stretch"/>
+	</detail>
+	<summary>
+		<band height="85" splitType="Stretch">
+			<staticText>
+				<reportElement x="347" y="12" width="42" height="15" uuid="00df59e5-def2-4916-80c2-34e2c6dafdf1"/>
+				<textElement textAlignment="Right">
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[TOTAL :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="299" y="27" width="90" height="15" uuid="299db8e9-faba-4cc0-a93e-51d1d5b3fb5d"/>
+				<textElement textAlignment="Right">
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[TOTAL NET SALES :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="299" y="42" width="90" height="15" uuid="3c6f62f4-c512-481e-b171-e7ec352e8b3d"/>
+				<textElement textAlignment="Right">
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[% :]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="5" width="555" height="1" uuid="85478894-6f62-452a-aa12-5d9347d31547"/>
+			</line>
+			<textField>
+				<reportElement x="394" y="27" width="100" height="14" uuid="ed14a587-7907-483a-a487-dbe7a7ae5eed"/>
+				<textFieldExpression><![CDATA[$F{total_sales}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

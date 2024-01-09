@@ -402,14 +402,14 @@ Freeze]]></text>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{ITEM_CODE}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
+			<textField textAdjust="StretchHeight">
 				<reportElement x="41" y="0" width="174" height="15" uuid="5336bcb7-7c98-4cc5-be15-5d3a1af082d5"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
+			<textField textAdjust="StretchHeight">
 				<reportElement x="215" y="0" width="79" height="15" uuid="ad8ba623-8710-4523-a836-6826d501f400"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>

@@ -120,6 +120,20 @@ public class ReportServices {
     public JasperPrint jasperReportMenuVsDetail(Map<String, Object> param, Connection connection) throws JRException, IOException {
         return dao.jasperReportMenuVsDetail(param, connection);
     }
+    
+    ////////////// new method +++ by adit 8 Januari 2024 /////////////
+    public JasperPrint jesperReportaActualStockOpname(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        return dao.jesperReportaActualStockOpname(param, connection);
+    }
+    
+    public JasperPrint jesperReportPerformanceRiderHd(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        return dao.jesperReportPerformanceRiderHd(param, connection);
+    }
+    
+    public JasperPrint jesperReportPajak(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        return dao.jesperReportPajak(param, connection);
+    }
+    ////////////// done adit 08-01-2024
 
     public JasperPrint jasperReportSummarySalesByItemCode(Map<String, Object> param, Connection connection) throws JRException, IOException {
         return dao.jasperReportSummarySalesByItemCode(param, connection);
@@ -207,6 +221,14 @@ public class ReportServices {
 
     public JasperPrint jasperReportSalesVoid(Map<String, Object> param, Connection connection) throws  JRException, IOException {
         return dao.jasperReportSalesVoid(param, connection);
+    }
+
+    public JasperPrint jasperReportRefund(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        return dao.jasperReportRefund(param, connection);
+    }
+
+    public JasperPrint jasperReportProductEfficiency(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        return dao.jasperReportProductEfficiency(param, connection);
     }
 
     public JasperPrint jasperReportDownPayment(Map<String, Object> param, Connection connection) throws  JRException, IOException {
