@@ -27,7 +27,8 @@
 	</parameter>
 	<parameter name="user" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[SELECT a.BOOK_DATE, a.CUSTOMER_NAME, a.BOOK_NO, a.ORDER_TYPE, a.BOOK_STATUS, a.TOTAL_SALES,
+		<![CDATA[SELECT a.BOOK_DATE, a.CUSTOMER_NAME, a.BOOK_NO, a.ORDER_TYPE, mg.description,
+		CASE WHEN a.BOOK_STATUS = 'CLS' THEN 'Lunas' ELSE 'Belum' END AS BOOK_STATUS, a.BOOK_STATUS, a.TOTAL_SALES,
 		a.TOTAL_DP_PAID, i.OUTLET_NAME AS OUTLET_CODE_NAME, i.ADDRESS_1 AS OUTLET_CODE_ADDR_1, i.ADDRESS_2 AS OUTLET_CODE_ADDR_2,
 		i.PHONE AS OUTLET_CODE_PHONE, h.bill_no
 	FROM
@@ -36,6 +37,8 @@
 		a.BOOK_NO  = h.BOOK_NO 
 	LEFT JOIN M_OUTLET i ON
 		a.OUTLET_CODE = i.OUTLET_CODE
+	LEFT JOIN ( SELECT CODE, description FROM M_GLOBAL WHERE COND = 'ORDER_TYPE' ) mg ON
+		a.ORDER_TYPE = mg.CODE
 	WHERE
 		a.BOOK_DATE  >= $P{startDate}
 		AND a.BOOK_DATE <= $P{endDate}
@@ -58,6 +61,7 @@
 	<field name="BILL_NO" class="java.lang.String"/>
 	<field name="BOOK_NO" class="java.lang.String"/>
 	<field name="ORDER_TYPE" class="java.lang.String"/>
+	<field name="DESCRIPTION" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -225,14 +229,14 @@
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[": " + (("%%".equals($P{customerName})) ? "ALL" :  $P{customerName})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[": " + (("%%".equals($P{customerName})) ? "Semua" :  $P{customerName})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="94" y="94" width="270" height="11" uuid="58f958f8-5458-45cb-8261-13a49b88b23a"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[": " + (("%%".equals($P{orderType})) ? "ALL" :  $P{orderType})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[": " + (("%%".equals($P{orderType})) ? "Semua" :  $F{DESCRIPTION})]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="5" y="74" width="90" height="11" uuid="6e514215-c7e6-4c77-9bd3-a6c3ee1854cf"/>
@@ -243,7 +247,7 @@
 			</staticText>
 			<staticText>
 				<reportElement x="348" y="124" width="80" height="30" uuid="abd597f8-32d3-43d1-abe7-5f327e7c634f"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Total Sales]]></text>
@@ -274,7 +278,7 @@
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[": " + (("%%".equals($P{bookStatus}) ) ? "ALL" :  $P{bookStatus})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[": " + (("%%".equals($P{bookStatus}) ) ? "Semua" :  $F{BOOK_STATUS})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="480" y="5" width="88" height="30" uuid="47ae32a0-b7e3-430f-a25a-b0cfb8027e7b"/>
@@ -283,7 +287,7 @@
 			</textField>
 			<staticText>
 				<reportElement x="430" y="124" width="78" height="30" uuid="358b1cbd-7af6-42be-8686-206c2a49d1a5"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Total DP Paid]]></text>
@@ -294,7 +298,7 @@
 		<band height="26" splitType="Stretch">
 			<textField>
 				<reportElement x="0" y="1" width="58" height="15" uuid="75388658-2157-4739-ad2b-88419d455c9d"/>
-				<textElement>
+				<textElement textAlignment="Center">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($F{BOOK_DATE})]]></textFieldExpression>
@@ -335,14 +339,14 @@
 				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.0000").format($F{TOTAL_SALES})]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="193" y="16" width="96" height="10" uuid="6fadfab0-ba04-461f-a822-3226aa368b3f">
+				<reportElement x="193" y="14" width="96" height="10" uuid="6fadfab0-ba04-461f-a822-3226aa368b3f">
 					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement>
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{ORDER_TYPE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{DESCRIPTION}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="431" y="1" width="77" height="15" uuid="25ad915a-74dc-41a8-893e-26173b800003"/>
