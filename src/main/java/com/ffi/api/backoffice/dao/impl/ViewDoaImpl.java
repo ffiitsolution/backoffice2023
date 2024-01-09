@@ -1308,10 +1308,8 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> listGlobal(Map<String, String> balance) {
         String qry = "SELECT DESCRIPTION, TYPE_MENU AS CODE FROM m_menudtl WHERE TYPE_MENU = :cond AND STATUS = :status AND APLIKASI = :aplikasi";
-        if (balance.containsKey("outletBrand") && balance.get("outletBrand").equalsIgnoreCase("TACOBELL") && balance.get("aplikasi").equalsIgnoreCase("POS")) {
-            qry = "SELECT DESCRIPTION, TYPE_MENU AS CODE FROM m_menudtl WHERE TYPE_MENU = 'REPORT' AND STATUS = 'A' AND APLIKASI = 'POS' AND DESCRIPTION IN ('Report Menu & Detail Modifier', 'Sales by Date', 'Sales by Item', 'Sales by Time', 'Summary Sales by Item Code')";
-        } else if (balance.containsKey("outletBrand") && balance.get("outletBrand").equalsIgnoreCase("TACOBELL") && balance.get("aplikasi").equalsIgnoreCase("INV")) {
-            qry = "SELECT DESCRIPTION, TYPE_MENU AS CODE FROM m_menudtl WHERE TYPE_MENU = 'REPORT' AND STATUS = 'A' AND APLIKASI = 'INV' AND DESCRIPTION IN ('Report Stock Card')";
+        if (balance.containsKey("outletBrand") && balance.get("outletBrand").equalsIgnoreCase("TACOBELL")) {
+            qry += " AND DESCRIPTION IN ('Report Menu & Detail Modifier', 'Sales by Date', 'Sales by Item', 'Sales by Time', 'Summary Sales by Item Code', 'Report Stock Card')";
         }
         Map prm = new HashMap();
         prm.put("cond", balance.get("cond"));
