@@ -3921,4 +3921,18 @@ public class ViewDoaImpl implements ViewDao {
         }
         return jdbcTemplate.query(query, mapping, new DynamicRowMapper());
     }
+
+    /////// NEW METHOD to get list Customer Name report DP by Dani 9 Januari 2024
+    @Override
+    public List<Map<String, Object>> listCustomerNameReportDp() {
+        String query = "SELECT CUSTOMER_NAME, MAX(BOOK_DATE) AS MX FROM T_POS_BOOK GROUP BY CUSTOMER_NAME ORDER BY MX ASC";
+        return jdbcTemplate.query(query, new HashMap(), new DynamicRowMapper());
+    }
+
+    /////// NEW METHOD to get list order type report DP by Dani 9 Januari 2024
+    @Override
+    public List<Map<String, Object>> listOrderTypeReportDp() {
+        String query = "SELECT DISTINCT (TPB.ORDER_TYPE) , MG.DESCRIPTION  FROM T_POS_BOOK tpb LEFT JOIN M_GLOBAL mg ON MG.COND  = 'ORDER_TYPE' AND MG.CODE = TPB.ORDER_TYPE ";
+        return jdbcTemplate.query(query, new HashMap(), new DynamicRowMapper());
+    }
 }

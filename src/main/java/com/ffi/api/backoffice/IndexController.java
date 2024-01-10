@@ -3188,4 +3188,30 @@ public class IndexController {
         }
         return res;
     }
+
+    /////// NEW METHOD to get list Customer Name report DP by Dani 9 Januari 2024
+    @RequestMapping(value = "/list-cust-name-dp-report", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk list customer name di DP Report", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody Response listCustomerNameReportDp(@RequestBody String param) throws IOException, Exception {
+        Response res = new Response();
+        res.setData(viewServices.listCustomerNameReportDp());
+        return res;
+    }
+
+    /////// NEW METHOD to get list Customer Name report DP by Dani 9 Januari 2024
+    @RequestMapping(value = "/list-ordertype-dp-report", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk list order type di DP Report", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody Response listOrderTypeReportDp(@RequestBody String param) throws IOException, Exception {
+        Response res = new Response();
+        res.setData(viewServices.listOrderTypeReportDp());
+        return res;
+    }
 }
