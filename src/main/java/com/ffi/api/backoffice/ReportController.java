@@ -1116,4 +1116,27 @@ public class ReportController {
         } else
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
     }
+
+    ///////////////NEW METHOD REPORT SELECTED ITEM BY DETAIL by Rafi 9 Januari 2024////
+    @CrossOrigin
+    @RequestMapping(value = "/report-selected-item-by-detail-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Menampilkan report selected item by detail", response = Object.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    public ResponseEntity<byte[]> jesperReportSelectedItemByDetail(@RequestBody String param) throws SQLException, JRException, IOException {
+        Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
+        Gson gsn = new Gson();
+        Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        // Integer cekDataReport = viewServices.cekDataReport(prm, "selectedItemByDetail");
+        // if (cekDataReport > 0) {
+            JasperPrint jasperPrint = reportServices.jesperReportSelectedItemByDetail(prm, conn);
+            conn.close();
+            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "inline; filename=ReportSelectedItemByDetail.pdf");
+            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        // } else
+        //     return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
+    }
 }

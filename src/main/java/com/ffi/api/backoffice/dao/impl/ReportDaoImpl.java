@@ -2594,5 +2594,29 @@ public class ReportDaoImpl implements ReportDao {
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, param, connection);
     }
+
+    @Override
+    public JasperPrint jesperReportSelectedItemByDetail(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        Map<String, Object> hashMap = new HashMap<>();
+        hashMap.put("outletBrand", param.get("outletBrand"));
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("fromDate", param.get("fromDate"));
+        hashMap.put("toDate", param.get("toDate"));
+
+        List<String> test = (List<String>) param.get("menuItemCodes");
+        StringBuilder item = new StringBuilder();
+        item.append("'").append(test.get(0)).append("'");
+
+        for (int i = 1; i < test.size(); i++) {
+            item.append(", '").append(test.get(i)).append("'");
+        }
+
+        hashMap.put("menuItemCodes", item.toString());
+        System.out.println(hashMap);
+
+        ClassPathResource classPathResource = new ClassPathResource("report/reportSelectedItemByDetail.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
     
 }

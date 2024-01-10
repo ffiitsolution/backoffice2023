@@ -293,4 +293,7 @@ public interface ViewDao {
     /////// NEW METHOD to get list order type report DP by Dani 9 Januari 2024
     public List<Map<String, Object>> listOrderTypeReportDp();
 
+
+     //////// NEW METHOD to get list daftar menu report by Rafi 9 Jan 2024
+    public List<Map<String, Object>> getListItemDetailReport();
 }

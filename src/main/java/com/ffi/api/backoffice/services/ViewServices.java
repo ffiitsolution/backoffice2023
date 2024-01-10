@@ -509,4 +509,9 @@ public class ViewServices {
     public List<Map<String, Object>> listOrderTypeReportDp() {
         return viewDao.listOrderTypeReportDp();
     }
+
+    //////// NEW METHOD to get list report daftar menu  by Rafi 9 Jan 2024
+    public List<Map<String, Object>> getListItemDetailReport() {
+        return viewDao.getListItemDetailReport();
+    }
 }
