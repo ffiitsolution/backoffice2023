@@ -3189,6 +3189,29 @@ public class IndexController {
         return res;
     }
 
+    // Get List Daftar Menu Report  By Rafi 9 Jan 2024
+    @RequestMapping(value = "/get-list-item-detail-report", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan get list report selected by item detail", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage getListItemDetailReport() throws JRException, IOException, Exception {
+
+        var rm = new ResponseMessage();
+        try {
+            rm.setSuccess(true);
+            rm.setMessage("Success Successfuly");
+            rm.setItem(viewServices.getListItemDetailReport());
+        } catch (Exception e) {
+            e.printStackTrace();
+            rm.setSuccess(false);
+            rm.setMessage("Failed: " + e.getMessage());
+        }
+        return rm;
+    }
+
     /////// NEW METHOD to get list Customer Name report DP by Dani 9 Januari 2024
     @RequestMapping(value = "/list-cust-name-dp-report", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk list customer name di DP Report", response = Object.class)
