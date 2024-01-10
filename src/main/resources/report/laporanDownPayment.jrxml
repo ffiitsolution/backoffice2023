@@ -25,14 +25,17 @@
 	<parameter name="customerName" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
+	<parameter name="detail" class="java.lang.Double"/>
 	<parameter name="user" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT a.BOOK_DATE, a.CUSTOMER_NAME, a.BOOK_NO, a.ORDER_TYPE, mg.description,
-		CASE WHEN a.BOOK_STATUS = 'CLS' THEN 'Lunas' ELSE 'Belum' END AS BOOK_STATUS, a.BOOK_STATUS, a.TOTAL_SALES,
+		CASE WHEN a.BOOK_STATUS = 'CLS' THEN 'Lunas' WHEN a.BOOK_STATUS = 'CAN' THEN 'CANCEL' ELSE 'Belum Lunas' END AS BOOK_STATUS, a.BOOK_STATUS, a.TOTAL_SALES,
 		a.TOTAL_DP_PAID, i.OUTLET_NAME AS OUTLET_CODE_NAME, i.ADDRESS_1 AS OUTLET_CODE_ADDR_1, i.ADDRESS_2 AS OUTLET_CODE_ADDR_2,
-		i.PHONE AS OUTLET_CODE_PHONE, h.bill_no
+		i.PHONE AS OUTLET_CODE_PHONE, h.BILL_NO,b.DP_SEQ, b.PAYMENT_DATE, b.TOTAL_AMOUNT
 	FROM
 		T_POS_BOOK a
+	LEFT JOIN T_POS_BOOK_DP_DETAIL b ON 
+		a.BOOK_NO = b.BOOK_NO
 	LEFT JOIN T_POS_BILL h ON
 		a.BOOK_NO  = h.BOOK_NO 
 	LEFT JOIN M_OUTLET i ON
@@ -47,7 +50,7 @@
 		AND a.ORDER_TYPE LIKE $P{orderType}
 		AND a.BOOK_STATUS LIKE $P{bookStatus}
 	ORDER BY
-		a.BOOK_DATE ASC]]>
+		a.BOOK_DATE, a.BOOK_NO ASC, b.DP_SEQ ASC]]>
 	</queryString>
 	<field name="BOOK_DATE" class="java.sql.Timestamp"/>
 	<field name="CUSTOMER_NAME" class="java.lang.String"/>
@@ -62,6 +65,139 @@
 	<field name="BOOK_NO" class="java.lang.String"/>
 	<field name="ORDER_TYPE" class="java.lang.String"/>
 	<field name="DESCRIPTION" class="java.lang.String"/>
+	<field name="DP_SEQ" class="java.lang.String"/>
+	<field name="PAYMENT_DATE" class="java.sql.Timestamp"/>
+	<field name="TOTAL_AMOUNT" class="java.math.BigDecimal"/>
+	<group name="Group1">
+		<groupExpression><![CDATA[$F{BOOK_NO}]]></groupExpression>
+		<groupHeader>
+			<band height="22">
+				<textField>
+					<reportElement x="431" y="0" width="77" height="15" uuid="25ad915a-74dc-41a8-893e-26173b800003"/>
+					<textElement textAlignment="Right">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{TOTAL_DP_PAID})]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="292" y="0" width="52" height="15" uuid="ea2d5769-f157-4464-8797-b36348e0fa99"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{BOOK_STATUS}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="193" y="0" width="96" height="15" uuid="a363a400-de3a-4366-9bb5-18c94dd33224"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{BOOK_NO}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="0" width="58" height="15" uuid="75388658-2157-4739-ad2b-88419d455c9d"/>
+					<textElement textAlignment="Center">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($F{BOOK_DATE})]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="511" y="0" width="64" height="15" uuid="0a307191-be3c-438b-9466-7bf4ca29d335"/>
+					<textElement textAlignment="Right">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{BILL_NO}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="60" y="0" width="130" height="15" uuid="70d2a9a8-9291-44bf-9be2-d6d697ed0b24"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{CUSTOMER_NAME}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="193" y="12" width="96" height="10" uuid="6fadfab0-ba04-461f-a822-3226aa368b3f">
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{DESCRIPTION}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="348" y="0" width="80" height="15" uuid="1675f625-fc87-4c13-992f-9e0ab38a8728"/>
+					<textElement textAlignment="Right">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{TOTAL_SALES})]]></textFieldExpression>
+				</textField>
+			</band>
+			<band height="12">
+				<printWhenExpression><![CDATA[$P{detail}.equals(1.0)]]></printWhenExpression>
+				<line>
+					<reportElement x="140" y="0" width="202" height="1" uuid="268ed902-42a9-40e6-b709-a8b1776568eb"/>
+				</line>
+				<line>
+					<reportElement x="140" y="11" width="202" height="1" uuid="358ec80f-7a04-46b1-87e8-17020880dd72"/>
+				</line>
+				<staticText>
+					<reportElement x="140" y="2" width="70" height="10" uuid="70595a0f-cbc5-4643-bb56-abff170b5f60">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement textAlignment="Center">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Pembayaran ke]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="210" y="2" width="57" height="10" uuid="0bf17b60-c454-4268-a094-123cf2d0702d">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement textAlignment="Right">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Tanggal]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="269" y="2" width="72" height="10" uuid="c383a92f-872e-4a76-9f77-f152dfe783f6">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement textAlignment="Right">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Jumlah Pembayaran]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="15">
+				<printWhenExpression><![CDATA[$P{detail}.equals(1.0)]]></printWhenExpression>
+				<textField>
+					<reportElement x="193" y="0" width="74" height="15" uuid="ef843161-618e-4263-b2e8-3bad21df8679">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<textElement textAlignment="Right">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($F{PAYMENT_DATE})]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="270" y="0" width="74" height="14" uuid="b051d31b-1e4a-48a3-ba6a-29cd4ea8a71b"/>
+					<textElement textAlignment="Right">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{TOTAL_AMOUNT})]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="150" y="-1" width="40" height="15" uuid="187695f9-b73d-4767-986a-0f4e23f7539f"/>
+					<textElement textAlignment="Center">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{DP_SEQ}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -229,7 +365,7 @@
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[": " + (("%%".equals($P{customerName})) ? "Semua" :  $P{customerName})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[": " + (("%%".equals($P{customerName})) ? "Semua" :  $F{CUSTOMER_NAME})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="94" y="94" width="270" height="11" uuid="58f958f8-5458-45cb-8261-13a49b88b23a"/>
@@ -294,71 +430,8 @@
 			</staticText>
 		</band>
 	</columnHeader>
-	<detail>
-		<band height="26" splitType="Stretch">
-			<textField>
-				<reportElement x="0" y="1" width="58" height="15" uuid="75388658-2157-4739-ad2b-88419d455c9d"/>
-				<textElement textAlignment="Center">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($F{BOOK_DATE})]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="60" y="1" width="130" height="15" uuid="70d2a9a8-9291-44bf-9be2-d6d697ed0b24"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{CUSTOMER_NAME}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="511" y="1" width="64" height="15" uuid="0a307191-be3c-438b-9466-7bf4ca29d335"/>
-				<textElement textAlignment="Right">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{BILL_NO}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="193" y="1" width="96" height="15" uuid="a363a400-de3a-4366-9bb5-18c94dd33224"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{BOOK_NO}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="292" y="1" width="52" height="15" uuid="ea2d5769-f157-4464-8797-b36348e0fa99"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{BOOK_STATUS}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="348" y="1" width="80" height="15" uuid="1675f625-fc87-4c13-992f-9e0ab38a8728"/>
-				<textElement textAlignment="Right">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.0000").format($F{TOTAL_SALES})]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="193" y="14" width="96" height="10" uuid="6fadfab0-ba04-461f-a822-3226aa368b3f">
-					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<textElement>
-					<font size="6"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{DESCRIPTION}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="431" y="1" width="77" height="15" uuid="25ad915a-74dc-41a8-893e-26173b800003"/>
-				<textElement textAlignment="Right">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.0000").format($F{TOTAL_DP_PAID})]]></textFieldExpression>
-			</textField>
-		</band>
-	</detail>
 	<summary>
-		<band height="2" splitType="Stretch">
+		<band height="15" splitType="Stretch">
 			<line>
 				<reportElement x="0" y="1" width="576" height="1" uuid="99cb9094-7798-44c9-881d-aa843a94d53d"/>
 			</line>
