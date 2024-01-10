@@ -1068,10 +1068,12 @@ public class ProcessDaoImpl implements ProcessDao {
             List<Map<String, Object>> list = jdbcTemplate.query(qry1, prm, new RowMapper<Map<String, Object>>() {
                 public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                     Map<String, Object> rh = new HashMap<String, Object>();
-                    String qry2 = "SELECT ITEM_CODE as KODE_BARANG,(TOTAL_QTY_STOCK/QTY_1) AS KONVERSI,CD_UOM_2 AS SATUAN_KECIL,"
-                            + " CD_UOM_1 AS SATUAN_BESAR,QTY_1 AS QTY_PESAN_BESAR,QTY_2 AS QTY_PESAN_KECIL,"
-                            + "  TOTAL_QTY_STOCK AS TOTAL_QTY_PESAN,'' AS TOTAL_QTY_KIRIM,UNIT_PRICE AS HARGA_UNIT,'000000' AS TIME_COUNTER,'N' AS SEND_FLAG"
-                            + "  FROM T_ORDER_DETAIL WHERE ORDER_NO =:orderNo";
+                    String qry2 = "SELECT d.ITEM_CODE as KODE_BARANG, M.CONV_WAREHOUSE AS KONVERSI, CD_UOM_2 AS SATUAN_KECIL,"
+                            + " CD_UOM_1 AS SATUAN_BESAR,QTY_1 AS QTY_PESAN_BESAR, QTY_2 AS QTY_PESAN_KECIL,"
+                            + " (TOTAL_QTY_STOCK / m.CONV_STOCK) AS TOTAL_QTY_PESAN,'' AS TOTAL_QTY_KIRIM,UNIT_PRICE AS HARGA_UNIT,'000000' AS TIME_COUNTER,'N' AS SEND_FLAG"
+                            + " FROM T_ORDER_DETAIL d"
+                            + " LEFT JOIN M_ITEM m ON d.ITEM_CODE = m.ITEM_CODE "
+                            + " WHERE ORDER_NO =:orderNo ";
                     System.err.println("q2 :" + qry2);
                     List<Map<String, Object>> list2 = jdbcTemplate.query(qry2, prm, new RowMapper<Map<String, Object>>() {
                         @Override
@@ -1122,7 +1124,7 @@ public class ProcessDaoImpl implements ProcessDao {
                 post.setHeader("Accept", "*/*");
                 post.setHeader("Content-Type", "application/json");
 
-                Map<String, Object> param = new HashMap<String, Object>();
+                Map<String, Object> param = new HashMap<>();
                 param.put("kodePemesan", dtl.get("kodePemesan"));
                 param.put("kodeTujuan", dtl.get("kodeTujuan"));
                 param.put("tipePesanan", dtl.get("tipePesanan"));
