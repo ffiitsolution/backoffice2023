@@ -911,7 +911,6 @@ public class ReportController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
     }
 
-    // todo:
     /// report sales void by M Joko 29/12/23
     @CrossOrigin
     @RequestMapping(value = "/report-sales-void-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -923,10 +922,9 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        Integer cekDataReport = viewServices.cekDataReport(prm, "salesVoid");
-        if (cekDataReport > 0) {
-            JasperPrint jasperPrint = reportServices.jasperReportSalesVoid(prm, conn);
-            conn.close();
+        JasperPrint jasperPrint = reportServices.jasperReportSalesVoid(prm, conn);
+        conn.close();
+        if (!jasperPrint.getPages().isEmpty()) {
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=salesVoid.pdf");
@@ -946,12 +944,9 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-//        Integer cekDataReport = viewServices.cekDataReport(prm, "itemSelectedByProduct");
-//      todo: ganti query cek report - m joko
-        Integer cekDataReport = 1;
-        if (cekDataReport > 0) {
-            JasperPrint jasperPrint = reportServices.jasperReportItemSelectedByProduct(prm, conn);
-            conn.close();
+        JasperPrint jasperPrint = reportServices.jasperReportItemSelectedByProduct(prm, conn);
+        conn.close();
+        if (!jasperPrint.getPages().isEmpty()) {
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=itemSelectedByProduct.pdf");

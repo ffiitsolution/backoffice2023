@@ -2543,16 +2543,6 @@ public class ViewDoaImpl implements ViewDao {
                 prm.put("requestNo", param.get("requestNo"));
                 prm.put("deliveryNo", param.get("deliveryNo"));
             }
-            case "salesVoid" -> {
-                param.putIfAbsent("canceled", "Item");
-                query = "SELECT COUNT(*) FROM t_pos_item_void iv WHERE iv.OUTLET_CODE = :outletCode AND iv.VOID_TYPE = 'CAN' AND iv.TRANS_DATE BETWEEN :fromDate AND :toDate";
-                if (param.get("canceled").toString().equalsIgnoreCase("Order")) {
-                    query = "SELECT COUNT(*) FROM t_pos_bill pb WHERE pb.OUTLET_CODE = :outletCode AND pb.DELIVERY_STATUS <> 'CLS' AND pb.TRANS_DATE BETWEEN :fromDate AND :toDate";
-                }
-                prm.put("outletCode", param.get("outletCode"));
-                prm.put("fromDate", param.get("fromDate"));
-                prm.put("toDate", param.get("toDate"));
-            }
             case "daftarMenu" -> {
                 query = "SELECT COUNT (*) from"
                         + "(select mmi.menu_group_code,mmi.menu_item_code, mg.description, mp.price, "
@@ -2661,14 +2651,6 @@ public class ViewDoaImpl implements ViewDao {
                 prm.put("toDate", param.get("toDate"));
                 prm.put("outletCode", param.get("outletCode"));
                 prm.put("menuItemCodes", param.get("menuItemCodes"));     
-            }
-            case "itemSelectedByProduct" -> {
-                // todo: m joko - perlu rubah query
-                query = "SELECT Count(*) FROM T_POS_BILL tpb WHERE tpb.OUTLET_CODE = :outletCode AND tpb.TRANS_DATE BETWEEN :fromDate AND :toDate "
-                        + "AND TOTAL_REFUND  IS NOT NULL AND TOTAL_REFUND <> 0";
-                prm.put("outletCode", param.get("outletCode"));
-                prm.put("fromDate", param.get("fromDate"));
-                prm.put("toDate", param.get("toDate"));
             }
         }
         assert query != null;
