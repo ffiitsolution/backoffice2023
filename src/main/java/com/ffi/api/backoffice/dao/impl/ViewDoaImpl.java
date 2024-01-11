@@ -1328,8 +1328,8 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
-
     ///////////////////done
+    
     ///////////////NEW METHOD LIST COND AND DATA GLOBAL BY LANI 4 APRIL 2023////
     @Override
     public List<Map<String, Object>> listGlobalCond(Map<String, String> balance) {
@@ -2167,6 +2167,14 @@ public class ViewDoaImpl implements ViewDao {
             //////////////////////// new method case Delete MPCS Produksi adit 04-01-2024
             case "deleteMpcsProduksi" -> {
                 query = "SELECT COUNT(*) FROM t_mpcs_hist a WHERE a.OUTLET_CODE =:outletCode AND a.MPCS_DATE BETWEEN "
+                        + ":fromDate AND :toDate";
+                prm.put("outletCode", param.get("outletCode"));
+                prm.put("fromDate", param.get("fromDate"));
+                prm.put("toDate", param.get("toDate"));
+            }
+            
+             case "pajak" -> {
+                query = "SELECT COUNT(*) FROM t_pos_bill a WHERE a.OUTLET_CODE =:outletCode AND a.trans_date BETWEEN "
                         + ":fromDate AND :toDate";
                 prm.put("outletCode", param.get("outletCode"));
                 prm.put("fromDate", param.get("fromDate"));
@@ -3382,11 +3390,12 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> mpcsProductionDetail(Map<String, String> balance) {
 
-        String qry = "SELECT MPCS_GROUP, RECIPE_CODE, SEQ_MPCS, QUANTITY, to_char(to_date(TIME_UPD, 'hh24miss'), 'hh24:mi') AS TIME_UPD, "
+        String qry = "SELECT HIST_SEQ, MPCS_GROUP, RECIPE_CODE, SEQ_MPCS, QUANTITY, to_char(to_date(TIME_UPD, 'hh24miss'), 'hh24:mi') AS TIME_UPD, "
                 + "(to_char(DATE_UPD, 'YYYY-MM-dd') ||' ' || to_char(to_date(TIME_UPD, 'hh24miss'), 'hh24:mi:ss')) AS DATE_UPD "
                 + "FROM T_MPCS_HIST WHERE MPCS_GROUP = :mpcsGroup AND MPCS_DATE = :dateMpcs "
                 + "AND TIME_UPD <= replace(:maxTime, ':' , '')||'00' "
-                + "AND TIME_UPD >= replace(:minTime, ':' , '')||'00' ";
+                + "AND TIME_UPD >= replace(:minTime, ':' , '')||'00' "
+                + "AND FRYER_TYPE != 'D'";
 
         Map prm = new HashMap();
         prm.put("mpcsGroup", balance.get("mpcsGroup"));
@@ -3405,6 +3414,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("quantity", rs.getString("QUANTITY"));
                 rt.put("timeUpd", rs.getString("TIME_UPD"));
                 rt.put("dateUpd", rs.getString("DATE_UPD"));
+                rt.put("histSeq", rs.getString("HIST_SEQ"));
                 return rt;
             }
         });
