@@ -3814,24 +3814,31 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> outletInfo(String outletCode) {
         String qry = """
-                     SELECT 
-                         region_code, 
-                         outlet_code, 
-                         outlet_name, 
-                         type, 
-                         address_1, 
-                         address_2, 
-                         city, 
-                         post_code, 
-                         phone, 
-                         fax, 
-                         TO_CHAR(TRANS_DATE, 'DD-MM-YYYY') AS TRANS_DATE,
-                         CASE 
-                             WHEN outlet_name LIKE '%TACOBELL%' THEN 'TACOBELL'
-                             ELSE 'KFC'
-                         END AS brand
-                     FROM M_OUTLET 
-                     WHERE outlet_code = :outletcode
+                    SELECT 
+                        region_code, 
+                        outlet_code, 
+                        outlet_name, 
+                        type, 
+                        address_1, 
+                        address_2, 
+                        city, 
+                        post_code, 
+                        phone, 
+                        fax, 
+                        TO_CHAR(TRANS_DATE, 'DD-MM-YYYY') AS TRANS_DATE,
+                        area_code,
+                        mg.description as area_description,
+                        initial_outlet,
+                        rsc_code,
+                        tax_charge,
+                        outlet_24_hour,
+                        CASE 
+                            WHEN outlet_name LIKE '%TACOBELL%' THEN 'TACOBELL'
+                            ELSE 'KFC'
+                        END AS brand
+                    FROM M_OUTLET mo
+                    JOIN M_GLOBAL mg ON mo.area_code = mg.code AND mg.cond = 'AREACODE'
+                    WHERE outlet_code = :outletcode
                      """;
         Map prm = new HashMap();
         prm.put("outletcode", outletCode);

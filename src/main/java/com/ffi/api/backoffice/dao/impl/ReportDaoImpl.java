@@ -1163,6 +1163,11 @@ public class ReportDaoImpl implements ReportDao {
             hashMap.put("toDate", param.get("toDate"));
             hashMap.put("fromTime", param.get("fromTime"));
             hashMap.put("toTime", param.get("toTime"));
+        } else if (param.get("typeReport").equals("Report Pajak") && param.get("typeParam").equals("Pos")) {
+            query = "SELECT DISTINCT b.POS_TYPE, d.DESCRIPTION FROM T_POS_BILL a JOIN M_POS b ON a.POS_CODE = b.POS_CODE JOIN M_OUTLET c ON a.OUTLET_CODE = c.OUTLET_CODE JOIN M_GLOBAL d ON b.POS_TYPE = d.CODE AND COND = 'POS_TYPE' WHERE (a.DELIVERY_STATUS  IN (' ','CLS') OR a.DELIVERY_STATUS IS NULL) AND a.OUTLET_CODE =:outletCode AND a.trans_date BETWEEN :fromDate AND :toDate";
+            hashMap.put("outletCode", param.get("outletCode"));
+            hashMap.put("fromDate", param.get("fromDate"));
+            hashMap.put("toDate", param.get("toDate"));
         }
 
         assert query != null;
@@ -1255,7 +1260,11 @@ public class ReportDaoImpl implements ReportDao {
                 } else if (param.get("typeReport").equals("Sales Void") && param.get("typeParam").equals("Shift")) {
                     rt.put("shiftCode", rs.getString("SHIFT_CODE"));
                     rt.put("shiftName", rs.getString("SHIFT_NAME"));
+                } else if (param.get("typeReport").equals("Report Pajak") && param.get("typeParam").equals("Pos")) {
+                    rt.put("posCode", rs.getString("POS_TYPE"));
+                    rt.put("posDescription", rs.getString("DESCRIPTION"));
                 }
+                System.err.println("rt prm: " + rt);
                 return rt;
             }
         });
@@ -2547,7 +2556,6 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("fromDate", param.get("fromDate"));
         hashMap.put("toDate", param.get("toDate"));
         hashMap.put("outletCode", param.get("outletCode"));
-        hashMap.put("user", param.get("user"));
 
         ClassPathResource classPathResource = new ClassPathResource("report/reportActualStockOpname.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
