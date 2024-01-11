@@ -167,10 +167,10 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        Integer cekDataReport = viewServices.cekDataReport(prm, "orderEntry");
-        if (cekDataReport > 0) {
-            JasperPrint jasperPrint = reportServices.jesperReportOrderEntry(prm, conn);
-            conn.close();
+//        Integer cekDataReport = viewServices.cekDataReport(prm, "orderEntry");
+        JasperPrint jasperPrint = reportServices.jesperReportOrderEntry(prm, conn);
+        conn.close();
+        if (!jasperPrint.getPages().isEmpty()) {
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=OrderEntryReport.pdf");
@@ -210,10 +210,10 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        Integer cekDataReport = viewServices.cekDataReport(prm, "receiving");
-        if (cekDataReport > 0) {
-            JasperPrint jasperPrint = reportServices.jesperReportReceiving(prm, conn);
-            conn.close();
+//        Integer cekDataReport = viewServices.cekDataReport(prm, "receiving");
+        JasperPrint jasperPrint = reportServices.jesperReportReceiving(prm, conn);
+        conn.close();
+        if (!jasperPrint.getPages().isEmpty()) {
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=ReceivingReport.pdf");
@@ -232,10 +232,10 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        Integer cekDataReport = viewServices.cekDataReport(prm, "returnOrder");
-        if (cekDataReport > 0) {
-            JasperPrint jasperPrint = reportServices.jesperReportReturnOrder(prm, conn);
-            conn.close();
+//        Integer cekDataReport = viewServices.cekDataReport(prm, "returnOrder");
+        JasperPrint jasperPrint = reportServices.jesperReportReturnOrder(prm, conn);
+        conn.close();
+        if (!jasperPrint.getPages().isEmpty()) {
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=ReturnOrderReport.pdf");
@@ -254,10 +254,10 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        Integer cekDataReport = viewServices.cekDataReport(prm, "wastage");
-        if (cekDataReport > 0) {
-            JasperPrint jasperPrint = reportServices.jesperReportWastage(prm, conn);
-            conn.close();
+//        Integer cekDataReport = viewServices.cekDataReport(prm, "wastage");
+        JasperPrint jasperPrint = reportServices.jesperReportWastage(prm, conn);
+        conn.close();
+        if (!jasperPrint.getPages().isEmpty()) {
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=Wastage.pdf");
@@ -276,10 +276,10 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        Integer cekDataReport = viewServices.cekDataReport(prm, "deliveryOrder");
-        if (cekDataReport > 0) {
-            JasperPrint jasperPrint = reportServices.jesperReportDeliveryOrder(prm, conn);
-            conn.close();
+//        Integer cekDataReport = viewServices.cekDataReport(prm, "deliveryOrder");
+        JasperPrint jasperPrint = reportServices.jesperReportDeliveryOrder(prm, conn);
+        conn.close();
+        if (!jasperPrint.getPages().isEmpty()) {
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=DeliveryOrder.pdf");
@@ -298,10 +298,10 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        Integer cekDataReport = viewServices.cekDataReport(prm, "item");
-        if (cekDataReport > 0) {
-            JasperPrint jasperPrint = reportServices.jasperReportItem(prm, conn);
-            conn.close();
+//        Integer cekDataReport = viewServices.cekDataReport(prm, "item");
+        JasperPrint jasperPrint = reportServices.jasperReportItem(prm, conn);
+        conn.close();
+        if (!jasperPrint.getPages().isEmpty()) {
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=item.pdf");
@@ -320,10 +320,10 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        Integer cekDataReport = viewServices.cekDataReport(prm, "stock");
-        if (cekDataReport > 0) {
-            JasperPrint jasperPrint = reportServices.jasperReportStock(prm, conn);
-            conn.close();
+//        Integer cekDataReport = viewServices.cekDataReport(prm, "stock");
+        JasperPrint jasperPrint = reportServices.jasperReportStock(prm, conn);
+        conn.close();
+        if (!jasperPrint.getPages().isEmpty()) {
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=stock.pdf");
@@ -344,10 +344,10 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        Integer cekDataReport = viewServices.cekDataReport(prm, "recipe");
-        if (cekDataReport > 0) {
-            JasperPrint jasperPrint = reportServices.jasperReportRecipe(prm, conn);
-            conn.close();
+//        Integer cekDataReport = viewServices.cekDataReport(prm, "recipe");
+        JasperPrint jasperPrint = reportServices.jasperReportRecipe(prm, conn);
+        conn.close();
+        if (!jasperPrint.getPages().isEmpty()) {
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=recipe.pdf");
@@ -368,10 +368,10 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        Integer cekDataReport = viewServices.cekDataReport(prm, "freeMeal");
-        if (cekDataReport > 0) {
-            JasperPrint jasperPrint = reportServices.jasperReportFreeMeal(prm, conn);
-            conn.close();
+//        Integer cekDataReport = viewServices.cekDataReport(prm, "freeMeal");
+        JasperPrint jasperPrint = reportServices.jasperReportFreeMeal(prm, conn);
+        conn.close();
+        if (!jasperPrint.getPages().isEmpty()) {
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=freeMeal.pdf");
@@ -935,6 +935,31 @@ public class ReportController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
     }
 
+    //////////////// New Method Report Item Selected By Product by M Joko 10 Januari 2024
+    @CrossOrigin
+    @RequestMapping(value = "/report-item-selected-by-product-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Menampilkan report item selected by product", response = Object.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    public ResponseEntity<byte[]> jesperReportItemSelectedByProduct(@RequestBody String param) throws SQLException, JRException, IOException {
+        Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
+        Gson gsn = new Gson();
+        Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+//        Integer cekDataReport = viewServices.cekDataReport(prm, "itemSelectedByProduct");
+//      todo: ganti query cek report - m joko
+        Integer cekDataReport = 1;
+        if (cekDataReport > 0) {
+            JasperPrint jasperPrint = reportServices.jasperReportItemSelectedByProduct(prm, conn);
+            conn.close();
+            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "inline; filename=itemSelectedByProduct.pdf");
+            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        } else
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+    }
+
     ///////////////NEW METHOD REPORT daftar menu by Rafi 29 Desember 2023////
     @CrossOrigin
     @RequestMapping(value = "/report-daftar-menu-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -1079,10 +1104,9 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        Integer cekDataReport = viewServices.cekDataReport(prm, "productEfficiency");
-        if (cekDataReport > 0) {
-            JasperPrint jasperPrint = reportServices.jasperReportProductEfficiency(prm, conn);
-            conn.close();
+        JasperPrint jasperPrint = reportServices.jasperReportProductEfficiency(prm, conn);
+        conn.close();
+        if (!jasperPrint.getPages().isEmpty()) {
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=productEfficiency.pdf");

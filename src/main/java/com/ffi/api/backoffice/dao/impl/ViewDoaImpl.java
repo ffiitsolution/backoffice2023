@@ -2652,6 +2652,14 @@ public class ViewDoaImpl implements ViewDao {
                 prm.put("outletCode", param.get("outletCode"));
                 prm.put("menuItemCodes", param.get("menuItemCodes"));     
             }
+            case "itemSelectedByProduct" -> {
+                // todo: m joko - perlu rubah query
+                query = "SELECT Count(*) FROM T_POS_BILL tpb WHERE tpb.OUTLET_CODE = :outletCode AND tpb.TRANS_DATE BETWEEN :fromDate AND :toDate "
+                        + "AND TOTAL_REFUND  IS NOT NULL AND TOTAL_REFUND <> 0";
+                prm.put("outletCode", param.get("outletCode"));
+                prm.put("fromDate", param.get("fromDate"));
+                prm.put("toDate", param.get("toDate"));
+            }
         }
         assert query != null;
         System.err.println("q :" + query);

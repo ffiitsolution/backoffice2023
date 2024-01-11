@@ -1,0 +1,566 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="receivingTransactions" pageWidth="616" pageHeight="842" columnWidth="576" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="1c5f4ca8-2023-497c-927a-a1037d8f6343">
+	<property name="ireport.zoom" value="3.0"/>
+	<property name="ireport.x" value="352"/>
+	<property name="ireport.y" value="460"/>
+	<parameter name="fromDate" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="toDate" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="outletCode" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="userUpd" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="itemCode" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="itemName" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="detail" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="outletBrand" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+    mi.ITEM_DESCRIPTION AS DESCRIPTION,
+    S.*,
+    CASE WHEN $P{fromDate} = $P{toDate} THEN $P{fromDate} ELSE $P{fromDate} || ' - ' || $P{toDate} END AS PERIODE,
+    mo.OUTLET_CODE,
+    mo.OUTLET_NAME,
+    mo.ADDRESS_1,
+    mo.ADDRESS_2,
+    mo.PHONE,
+    ms.STAFF_NAME AS PRINT_NAME,
+    SUM(S.TOT_STOCK) OVER (PARTITION BY S.MENU_ITEM_CODE) AS GROUP_TOT_STOCK
+FROM (
+    SELECT
+        T.TRANS_DATE,
+        T.ITEM_CODE,
+        T.MENU_ITEM_CODE,
+        T.ITEM_DESCRIPTION,
+        T.MENU_CODE,
+        T.MENU_DESCRIPTION,
+        SUM(T.STOCK_TA + T.STOCK_EI) AS TOT_STOCK
+    FROM (
+        -- Query 1
+        SELECT
+            A.TRANS_DATE,
+            A.MENU_ITEM_CODE,
+            D.ITEM_CODE,
+            D.ITEM_DESCRIPTION,
+            E.ITEM_CODE AS MENU_CODE,
+            E.ITEM_DESCRIPTION AS MENU_DESCRIPTION ,
+            SUM(A.ITEM_QTY * D.QTY_STOCK_E) AS STOCK_EI,
+            0 AS STOCK_TA,
+            0 AS STOCK_DETAIL
+        FROM
+            T_POS_BILL_ITEM_DETAIL A
+            JOIN T_POS_BILL B ON A.BILL_NO = B.BILL_NO
+                AND A.TRANS_DATE = B.TRANS_DATE
+                AND A.DAY_SEQ = B.DAY_SEQ
+                AND A.POS_CODE = B.POS_CODE
+                AND A.OUTLET_CODE = B.OUTLET_CODE
+                AND B.DELIVERY_STATUS = 'CLS'
+            JOIN T_POS_BILL_ITEM C ON A.BILL_NO = C.BILL_NO
+                AND A.TRANS_DATE = C.TRANS_DATE
+                AND A.DAY_SEQ = C.DAY_SEQ
+                AND A.POS_CODE = C.POS_CODE
+                AND A.OUTLET_CODE = C.OUTLET_CODE
+                AND A.ITEM_SEQ = C.ITEM_SEQ
+                AND C.TRANS_TYPE = 'EI'
+            JOIN M_GROUP_ITEM D ON A.MENU_ITEM_CODE = D.GROUP_ITEM_CODE
+                AND D.STATUS = 'A'
+            JOIN M_ITEM E ON E.ITEM_CODE = C.MENU_ITEM_CODE
+        WHERE
+            A.TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
+            AND A.OUTLET_CODE = $P{outletCode}
+            AND D.ITEM_CODE = $P{itemCode}
+		GROUP BY
+		    A.TRANS_DATE,
+		    A.MENU_ITEM_CODE,
+		    D.ITEM_CODE,
+		    D.ITEM_DESCRIPTION,
+		    E.ITEM_CODE,
+		    E.ITEM_DESCRIPTION
+
+        UNION ALL
+
+        -- Query 2
+        SELECT
+            A.TRANS_DATE,
+            A.MENU_ITEM_CODE,
+            D.ITEM_CODE,
+            D.ITEM_DESCRIPTION,
+            E.ITEM_CODE AS MENU_CODE,
+            E.ITEM_DESCRIPTION AS MENU_DESCRIPTION ,
+            0 AS STOCK_EI,
+            SUM(A.ITEM_QTY * D.QTY_STOCK_T) AS STOCK_TA,
+            0 AS STOCK_DETAIL
+        FROM
+            T_POS_BILL_ITEM_DETAIL A
+            JOIN T_POS_BILL B ON A.BILL_NO = B.BILL_NO
+                AND A.TRANS_DATE = B.TRANS_DATE
+                AND A.DAY_SEQ = B.DAY_SEQ
+                AND A.POS_CODE = B.POS_CODE
+                AND A.OUTLET_CODE = B.OUTLET_CODE
+                AND B.DELIVERY_STATUS = 'CLS'
+            JOIN T_POS_BILL_ITEM C ON A.BILL_NO = C.BILL_NO
+                AND A.TRANS_DATE = C.TRANS_DATE
+                AND A.DAY_SEQ = C.DAY_SEQ
+                AND A.POS_CODE = C.POS_CODE
+                AND A.OUTLET_CODE = C.OUTLET_CODE
+                AND A.ITEM_SEQ = C.ITEM_SEQ
+                AND (C.TRANS_TYPE = 'TA' OR C.TRANS_TYPE = ' ' OR C.TRANS_TYPE IS NULL)
+            JOIN M_GROUP_ITEM D ON A.MENU_ITEM_CODE = D.GROUP_ITEM_CODE
+                AND D.STATUS = 'A'
+            JOIN M_ITEM E ON E.ITEM_CODE = C.MENU_ITEM_CODE
+        WHERE
+            A.TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
+            AND A.OUTLET_CODE = $P{outletCode}
+            AND D.ITEM_CODE = $P{itemCode}
+		GROUP BY
+		    A.TRANS_DATE,
+		    A.MENU_ITEM_CODE,
+		    D.ITEM_CODE,
+		    D.ITEM_DESCRIPTION,
+		    E.ITEM_CODE,
+		    E.ITEM_DESCRIPTION
+
+        UNION ALL
+
+        -- Query 3
+        SELECT
+            A.TRANS_DATE,
+            A.MENU_ITEM_CODE,
+            D.ITEM_CODE,
+            D.ITEM_DESCRIPTION,
+            E.ITEM_CODE AS MENU_CODE,
+            E.ITEM_DESCRIPTION AS MENU_DESCRIPTION ,
+            SUM(A.ITEM_QTY * D.QTY_STOCK_E) AS STOCK_EI,
+            0 AS STOCK_TA,
+            0 AS STOCK_DETAIL
+        FROM
+            T_POS_BILL_ITEM A
+            JOIN T_POS_BILL B ON A.TRANS_DATE = B.TRANS_DATE
+                AND A.POS_CODE = B.POS_CODE
+                AND A.OUTLET_CODE = B.OUTLET_CODE
+                AND A.DAY_SEQ = B.DAY_SEQ
+                AND A.BILL_NO = B.BILL_NO
+                AND B.DELIVERY_STATUS = 'CLS'
+                AND A.TRANS_TYPE = 'EI'
+            JOIN M_MENU_ITEM C ON A.MENU_ITEM_CODE = C.MENU_ITEM_CODE
+                AND C.MENU_SET = 'Y'
+            JOIN M_GROUP_ITEM D ON C.MENU_ITEM_CODE = D.GROUP_ITEM_CODE
+                AND D.STATUS = 'A'
+            JOIN M_ITEM E ON E.ITEM_CODE = C.MENU_ITEM_CODE
+        WHERE
+            A.TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
+            AND A.OUTLET_CODE = $P{outletCode}
+            AND D.ITEM_CODE = $P{itemCode}
+		GROUP BY
+		    A.TRANS_DATE,
+		    A.MENU_ITEM_CODE,
+		    D.ITEM_CODE,
+		    D.ITEM_DESCRIPTION,
+		    E.ITEM_CODE,
+		    E.ITEM_DESCRIPTION
+
+        UNION ALL
+
+        -- Query 4
+        SELECT
+            A.TRANS_DATE,
+            A.MENU_ITEM_CODE,
+            D.ITEM_CODE,
+            D.ITEM_DESCRIPTION,
+            E.ITEM_CODE AS MENU_CODE,
+            E.ITEM_DESCRIPTION AS MENU_DESCRIPTION ,
+            0 AS STOCK_EI,
+            SUM(A.ITEM_QTY * D.QTY_STOCK_T) AS STOCK_TA,
+            0 AS STOCK_DETAIL
+        FROM
+            T_POS_BILL_ITEM A
+            JOIN T_POS_BILL B ON A.TRANS_DATE = B.TRANS_DATE
+                AND A.POS_CODE = B.POS_CODE
+                AND A.OUTLET_CODE = B.OUTLET_CODE
+                AND A.DAY_SEQ = B.DAY_SEQ
+                AND A.BILL_NO = B.BILL_NO
+                AND B.DELIVERY_STATUS = 'CLS'
+                AND (A.TRANS_TYPE = 'TA' OR A.TRANS_TYPE = ' ' OR A.TRANS_TYPE IS NULL)
+            JOIN M_MENU_ITEM C ON A.MENU_ITEM_CODE = C.MENU_ITEM_CODE
+                AND C.MENU_SET = 'Y'
+            JOIN M_GROUP_ITEM D ON C.MENU_ITEM_CODE = D.GROUP_ITEM_CODE
+                AND D.STATUS = 'A'
+            JOIN M_ITEM E ON E.ITEM_CODE = C.MENU_ITEM_CODE
+        WHERE
+            A.TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
+            AND A.OUTLET_CODE = $P{outletCode}
+            AND D.ITEM_CODE = $P{itemCode}
+		GROUP BY
+		    A.TRANS_DATE,
+		    A.MENU_ITEM_CODE,
+		    D.ITEM_CODE,
+		    D.ITEM_DESCRIPTION,
+		    E.ITEM_CODE,
+		    E.ITEM_DESCRIPTION
+    ) T
+    GROUP BY
+        T.TRANS_DATE,
+        T.ITEM_CODE,
+        T.MENU_ITEM_CODE,
+        T.ITEM_DESCRIPTION,
+        T.MENU_CODE,
+        T.MENU_DESCRIPTION
+) S
+LEFT JOIN M_ITEM mi ON S.ITEM_CODE = mi.ITEM_CODE
+LEFT JOIN M_STAFF ms ON ms.STAFF_CODE = $P{userUpd}
+LEFT JOIN M_OUTLET mo ON mo.OUTLET_CODE = $P{outletCode}
+ORDER BY S.MENU_ITEM_CODE, S.MENU_CODE, S.TOT_STOCK]]>
+	</queryString>
+	<field name="DESCRIPTION" class="java.lang.String"/>
+	<field name="TRANS_DATE" class="java.sql.Timestamp"/>
+	<field name="ITEM_CODE" class="java.lang.String"/>
+	<field name="MENU_ITEM_CODE" class="java.lang.String"/>
+	<field name="ITEM_DESCRIPTION" class="java.lang.String"/>
+	<field name="MENU_CODE" class="java.lang.String"/>
+	<field name="MENU_DESCRIPTION" class="java.lang.String"/>
+	<field name="TOT_STOCK" class="java.math.BigDecimal"/>
+	<field name="PERIODE" class="java.lang.String"/>
+	<field name="OUTLET_CODE" class="java.lang.String"/>
+	<field name="OUTLET_NAME" class="java.lang.String"/>
+	<field name="ADDRESS_1" class="java.lang.String"/>
+	<field name="ADDRESS_2" class="java.lang.String"/>
+	<field name="PHONE" class="java.lang.String"/>
+	<field name="PRINT_NAME" class="java.lang.String"/>
+	<field name="GROUP_TOT_STOCK" class="java.math.BigDecimal"/>
+	<variable name="grandTotalStock" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{TOT_STOCK}]]></variableExpression>
+	</variable>
+	<variable name="groupTotal" class="java.math.BigDecimal" resetType="Group" resetGroup="detail" calculation="Sum">
+		<variableExpression><![CDATA[$F{TOT_STOCK}]]></variableExpression>
+	</variable>
+	<group name="detail">
+		<groupExpression><![CDATA[$F{MENU_ITEM_CODE}]]></groupExpression>
+		<groupHeader>
+			<band height="20">
+				<textField>
+					<reportElement x="0" y="4" width="59" height="15" uuid="75388658-2157-4739-ad2b-88419d455c9d"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{ITEM_CODE}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="59" y="4" width="71" height="15" uuid="70d2a9a8-9291-44bf-9be2-d6d697ed0b24"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{MENU_ITEM_CODE}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="141" y="4" width="97" height="15" uuid="0595bed3-0eac-4213-8d9a-928320ff0068"/>
+					<textElement verticalAlignment="Top">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="484" y="2" width="90" height="17" uuid="e87ed04b-3b9d-4d3f-b570-45d213e629da"/>
+					<textElement textAlignment="Right">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{GROUP_TOT_STOCK}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="19">
+				<printWhenExpression><![CDATA[$P{detail}]]></printWhenExpression>
+				<textField>
+					<reportElement x="493" y="3" width="81" height="15" uuid="0f310224-21ec-44db-a2ed-6aa89175a8cf"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{groupTotal}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="443" y="3" width="50" height="15" uuid="fdd6ff5e-b047-40a1-9d37-5feb2c5fba89"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Subtotal :]]></text>
+				</staticText>
+				<line>
+					<reportElement x="285" y="2" width="289" height="1" uuid="e86288dd-f13e-4aaf-b433-75f137a6498f"/>
+				</line>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="159" splitType="Stretch">
+			<textField>
+				<reportElement x="59" y="10" width="122" height="11" uuid="dc10479a-d1a9-447d-a601-31f855317c75"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OUTLET_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="59" y="40" width="122" height="11" isPrintWhenDetailOverflows="true" uuid="3dd5bce2-246d-4308-9d03-bf5693e9ae03"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Phone : " + $F{PHONE}]]></textFieldExpression>
+			</textField>
+			<image scaleImage="FillFrame">
+				<reportElement x="0" y="1" width="48" height="48" isPrintWhenDetailOverflows="true" uuid="ef6033a2-82d5-4fcd-adc8-2da175b9a26c"/>
+				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="59" y="20" width="122" height="11" isPrintWhenDetailOverflows="true" uuid="297f1e9f-6971-452c-99d0-0baba7798a65"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ADDRESS_1}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="59" y="0" width="112" height="11" uuid="013e94ac-b496-49a1-b08c-86374d2dc450"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="59" y="30" width="122" height="11" isPrintWhenDetailOverflows="true" uuid="437529e3-b03d-4cbb-ac47-54c4f389ec9f"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ADDRESS_2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="455" y="22" width="119" height="11" uuid="3f148db7-608d-486e-a8b1-16d11b34a4c3"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="372" y="2" width="84" height="11" uuid="f13316a1-ffad-42f6-ac39-cad93c1374af"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Halaman]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="372" y="32" width="84" height="11" uuid="97c73347-6237-48db-a592-dd43da29b39a"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Jam Cetak]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="372" y="12" width="84" height="11" uuid="170bf558-ddc8-4af5-8090-fb3135928e1e"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[User Cetak]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="455" y="12" width="119" height="11" uuid="b24b80c1-6aae-46d4-8048-8cb347a4c02f"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + $F{PRINT_NAME}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="372" y="22" width="84" height="11" uuid="0a36322d-e036-4df9-9693-f85fa631b3fb"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Tanggal Cetak]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="455" y="32" width="119" height="11" uuid="d755b18f-f159-430e-9d73-773a456afb7f"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("hh:mm:ss a").format(new Date())]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="455" y="2" width="119" height="11" uuid="d45bfdb2-a045-40a3-a678-8841f1856bd9"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="59" y="123" width="71" height="30" uuid="59ba1b97-a441-40dc-92d5-74a9801ca623"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[MENU ITEM CODE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="123" width="59" height="30" uuid="6a5b4320-bc50-4b37-8a6d-d92355d1db8d"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ITEM CODE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="141" y="123" width="97" height="30" uuid="7d45a69e-a9e6-4abf-8067-756882d1ca09"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DESCRIPTION]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="122" width="574" height="1" uuid="302961e6-b0d0-455b-900f-77f4bbcc553b"/>
+			</line>
+			<line>
+				<reportElement x="0" y="153" width="574" height="1" uuid="212cc8ec-b373-4dcf-aa71-4b7879427ee9"/>
+			</line>
+			<staticText>
+				<reportElement x="1" y="53" width="575" height="20" uuid="5b646da8-e747-4f19-b784-8da872718399"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Item Selected by Product]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="87" width="90" height="11" uuid="4fcaea03-c409-4586-a3f8-be296ca6f35e"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Item Code]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="94" y="87" width="270" height="11" uuid="c2fc7cf0-5ee1-4b24-9daf-0c39ea513dc9"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + $P{itemCode}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="5" y="77" width="90" height="11" uuid="e4abf6ef-7c51-4f96-9149-c9648267816e"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Periode]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="94" y="77" width="270" height="11" uuid="15a7d08b-d08a-4566-a9e5-f482029946d8"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + $F{PERIODE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="94" y="97" width="270" height="11" uuid="fdcac1a2-44ac-4ec7-9d38-75826fe12b29"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["  " + $F{DESCRIPTION}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="544" y="123" width="30" height="30" uuid="9c20706a-3439-44e6-ac87-d6619b33c863"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[QTY]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="275" y="123" width="59" height="30" uuid="0e9ec1d5-895a-42cb-8758-14538d6cc243"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[MENU CODE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="337" y="123" width="147" height="30" uuid="48916951-3faf-406f-b714-fda64b4a2a9c"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[MENU NAME]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="17" splitType="Stretch">
+			<printWhenExpression><![CDATA[$P{detail}]]></printWhenExpression>
+			<textField>
+				<reportElement x="295" y="0" width="39" height="16" uuid="d525f3a8-3e16-4410-a9e2-b828b246de7b"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{MENU_CODE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="484" y="0" width="90" height="17" uuid="ceb8462a-69f9-46bc-9711-9c59b3b18480"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{TOT_STOCK}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="337" y="0" width="147" height="16" uuid="7d18f380-ccc9-4405-933e-e9b65a9e9fc2"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{MENU_DESCRIPTION}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="21"/>
+	</pageFooter>
+	<summary>
+		<band height="44" splitType="Stretch">
+			<staticText>
+				<reportElement x="428" y="6" width="65" height="12" uuid="e1f7c4b0-bf18-4e9d-b661-6e5697866156"/>
+				<textElement textAlignment="Right">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[GRAND TOTAL :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="493" y="6" width="81" height="12" uuid="b21294ba-8af1-4b9a-b13a-627296cbc471"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{grandTotalStock}.toPlainString()]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="3" width="574" height="1" uuid="5c3ea783-f43b-400b-b31f-0695ef8836b0"/>
+			</line>
+		</band>
+	</summary>
+	<noData>
+		<band height="50">
+			<staticText>
+				<reportElement x="0" y="0" width="575" height="20" uuid="2b7bceed-2725-462e-8cde-6c49976cbb85"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Item Selected by Product]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="20" width="575" height="20" uuid="ec1f4fe8-2a37-4e2f-b089-8499acb3fa9f"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[No Data]]></text>
+			</staticText>
+		</band>
+	</noData>
+</jasperReport>
