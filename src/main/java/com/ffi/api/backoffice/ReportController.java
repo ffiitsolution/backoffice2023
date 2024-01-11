@@ -1183,7 +1183,7 @@ public class ReportController {
         conn.close();
         byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=DeliveryOrder.pdf");
+        headers.add("Content-Disposition", "inline; filename=ReportProduction.pdf");
         return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
     }
 }
