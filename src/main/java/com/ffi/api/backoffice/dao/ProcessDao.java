@@ -156,5 +156,8 @@ public interface ProcessDao {
     
     // Delete MPCS Production - Fathur 11 Jan 2024 // 
     public boolean deleteMpcsProduction(Map<String, String> params) throws Exception;
+
+    // Add Counter Print Receiving Dani 11 Jan 2024
+    public void addCounterPrintReceiving(Map<String, Object> params);
     
 }

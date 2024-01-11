@@ -816,6 +816,10 @@ public class ReportController {
             JasperPrint jasperPrint = reportServices.jasperReportReceivingTransactions(prm, conn);
             conn.close();
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+            String isCetak = (String) prm.get("action");
+            if (isCetak != null && isCetak.equals("Download")) {
+                processServices.addCounterPrintReceiving(prm);
+            }
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=receivingTransactions.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);

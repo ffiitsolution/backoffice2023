@@ -275,4 +275,9 @@ public class ProcessServices {
         return dao.deleteMpcsProduction(params);
     }
     // Done Insert MPCS Production //   
+
+    // Add Counter Print Receiving Dani 11 Jan 2024
+    public void addCounterPrintReceiving(Map<String, Object> param) {
+        dao.addCounterPrintReceiving(param);
+    }
 }
