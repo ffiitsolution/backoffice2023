@@ -1102,6 +1102,8 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
+        prm.put("startDate", prm.get("fromDate"));
+        prm.put("endDate", prm.get("toDate"));
         prm.put("customerName", "%"+ prm.get("customerName")+"%");                
         prm.put("orderType", "%"+prm.get("orderType")+"%");                
         prm.put("bookStatus", "%"+prm.get("bookStatus")+"%");  
