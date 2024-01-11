@@ -1127,13 +1127,15 @@ public class ReportDaoImpl implements ReportDao {
             hashMap.put("fromDate", param.get("fromDate"));
             hashMap.put("toDate", param.get("toDate"));
         } else if (param.get("typeReport").equals("Sales Void") && param.get("typeParam").equals("Pos")) {
-            query = "SELECT DISTINCT(pb.pos_code) AS POST_CODE, CASE WHEN mp.pos_description IS NULL THEN ' ' ELSE mp.pos_description END AS POS_DESCRIPTION FROM t_pos_bill pb LEFT JOIN M_POS mp ON pb.POS_CODE = mp.POS_CODE AND mp.OUTLET_CODE = pb.OUTLET_CODE LEFT JOIN M_GLOBAL mg ON mp.POS_TYPE = mg.CODE AND mg.cond = 'POS_TYPE' WHERE pb.OUTLET_CODE = :outletCode AND pb.TRANS_DATE BETWEEN :fromDate AND :toDate";
+            query = "SELECT DISTINCT(pb.pos_code) AS POS_CODE, CASE WHEN mp.pos_description IS NULL THEN ' ' ELSE mp.pos_description END AS POS_DESCRIPTION FROM t_pos_bill pb LEFT JOIN M_POS mp ON pb.POS_CODE = mp.POS_CODE AND mp.OUTLET_CODE = pb.OUTLET_CODE LEFT JOIN M_GLOBAL mg ON mp.POS_TYPE = mg.CODE AND mg.cond = 'POS_TYPE' WHERE pb.OUTLET_CODE = :outletCode AND pb.TRANS_DATE BETWEEN :fromDate AND :toDate";
             if(param.get("canceled").equalsIgnoreCase("Order") && param.get("canceledType").equalsIgnoreCase("Cancel")) {
                 query += " AND pb.DELIVERY_STATUS = 'CAN'";
+            } else if(param.get("canceled").equalsIgnoreCase("Order") && param.get("canceledType").equalsIgnoreCase("Bad Order")) {
+                query += " AND pb.DELIVERY_STATUS = 'BAD'";
             } else {
-                hashMap.put("canceledType", param.get("canceledType"));
                 query += " AND pb.DELIVERY_STATUS <> 'CLS'";
             }
+            query += " ORDER BY pb.pos_code";
             hashMap.put("outletCode", param.get("outletCode"));
             hashMap.put("fromDate", param.get("fromDate"));
             hashMap.put("toDate", param.get("toDate"));
@@ -1141,28 +1143,39 @@ public class ReportDaoImpl implements ReportDao {
             query = "SELECT distinct(pb.cashier_code), CASE WHEN ms.STAFF_NAME IS NULL THEN ' ' ELSE ms.STAFF_NAME END AS STAFF_NAME FROM t_pos_bill pb LEFT JOIN M_POS_STAFF ms ON pb.CASHIER_CODE = ms.STAFF_POS_CODE WHERE pb.OUTLET_CODE = :outletCode AND pb.TRANS_DATE BETWEEN :fromDate AND :toDate";
             if(param.get("canceled").equalsIgnoreCase("Order") && param.get("canceledType").equalsIgnoreCase("Cancel")) {
                 query += " AND pb.DELIVERY_STATUS = 'CAN'";
+            } else if(param.get("canceled").equalsIgnoreCase("Order") && param.get("canceledType").equalsIgnoreCase("Bad Order")) {
+                query += " AND pb.DELIVERY_STATUS = 'BAD'";
             } else {
                 hashMap.put("canceledType", param.get("canceledType"));
                 query += " AND pb.DELIVERY_STATUS <> 'CLS'";
             }
+            query += " ORDER BY cashier_code";
             hashMap.put("outletCode", param.get("outletCode"));
             hashMap.put("fromDate", param.get("fromDate"));
             hashMap.put("toDate", param.get("toDate"));
             hashMap.put("fromTime", param.get("fromTime"));
             hashMap.put("toTime", param.get("toTime"));
         } else if (param.get("typeReport").equals("Sales Void") && param.get("typeParam").equals("Shift")) {
-            query = "SELECT DISTINCT(pb.SHIFT_CODE), CASE WHEN a.SHIFT_CODE = 'S1' THEN 'Shift 1' WHEN SHIFT_CODE = 'S2' THEN 'Shift 2' ELSE 'Shift 3' END AS SHIFT_NAME FROM t_pos_bill pb WHERE pb.OUTLET_CODE = :outletCode AND pb.TRANS_DATE BETWEEN :fromDate AND :toDate";
+            query = "SELECT DISTINCT(pb.SHIFT_CODE), CASE WHEN SHIFT_CODE = 'S1' THEN 'Shift 1' WHEN SHIFT_CODE = 'S2' THEN 'Shift 2' ELSE 'Shift 3' END AS SHIFT_NAME FROM t_pos_bill pb WHERE pb.OUTLET_CODE = :outletCode AND pb.TRANS_DATE BETWEEN :fromDate AND :toDate";
             if(param.get("canceled").equalsIgnoreCase("Order") && param.get("canceledType").equalsIgnoreCase("Cancel")) {
                 query += " AND pb.DELIVERY_STATUS = 'CAN'";
+            } else if(param.get("canceled").equalsIgnoreCase("Order") && param.get("canceledType").equalsIgnoreCase("Bad Order")) {
+                query += " AND pb.DELIVERY_STATUS = 'BAD'";
             } else {
                 hashMap.put("canceledType", param.get("canceledType"));
                 query += " AND pb.DELIVERY_STATUS <> 'CLS'";
             }
+            query += " ORDER BY SHIFT_CODE";
             hashMap.put("outletCode", param.get("outletCode"));
             hashMap.put("fromDate", param.get("fromDate"));
             hashMap.put("toDate", param.get("toDate"));
             hashMap.put("fromTime", param.get("fromTime"));
             hashMap.put("toTime", param.get("toTime"));
+        } else if (param.get("typeReport").equals("Item Selected By Product") && param.get("typeParam").equals("Kode Item")) {
+            query = "SELECT DISTINCT(D.ITEM_CODE), mi.ITEM_DESCRIPTION FROM T_POS_BILL_ITEM_DETAIL A JOIN M_GROUP_ITEM D ON A.MENU_ITEM_CODE = D.GROUP_ITEM_CODE AND D.STATUS = 'A' JOIN M_ITEM mi ON mi.ITEM_CODE =D.ITEM_CODE WHERE A.TRANS_DATE BETWEEN :fromDate AND :toDate AND A.OUTLET_CODE = :outletCode ORDER BY D.ITEM_CODE ASC";
+            hashMap.put("outletCode", param.get("outletCode"));
+            hashMap.put("fromDate", param.get("fromDate"));
+            hashMap.put("toDate", param.get("toDate"));
         }
 
         assert query != null;
@@ -1255,6 +1268,9 @@ public class ReportDaoImpl implements ReportDao {
                 } else if (param.get("typeReport").equals("Sales Void") && param.get("typeParam").equals("Shift")) {
                     rt.put("shiftCode", rs.getString("SHIFT_CODE"));
                     rt.put("shiftName", rs.getString("SHIFT_NAME"));
+                } else if (param.get("typeReport").equals("Item Selected By Product") && param.get("typeParam").equals("Kode Item")) {
+                    rt.put("code", rs.getString("ITEM_CODE"));
+                    rt.put("description", rs.getString("ITEM_DESCRIPTION"));
                 }
                 return rt;
             }
