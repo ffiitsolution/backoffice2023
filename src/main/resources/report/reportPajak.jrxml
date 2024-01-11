@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="PemakaianBySalesReport" pageWidth="595" pageHeight="840" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="341841ad-479a-4fd4-b008-afc4dd840486">
+	<property name="ireport.zoom" value="1.610510000000015"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Localhost"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="fromDate" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="outletCode" class="java.lang.String"/>
+	<parameter name="toDate" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="posType" class="java.lang.String"/>
+	<parameter name="outletBrand" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT a.TRANS_DATE,
+b.POS_TYPE ,
+d.DESCRIPTION,
+a.OUTLET_CODE,
+c.OUTLET_NAME,
+c.ADDRESS_1 ,
+c.ADDRESS_2,
+c.PHONE,
+SUM(a.TOTAL_AMOUNT) AS PENJUALAN,
+SUM(a.TOTAL_DISCOUNT) AS DISCOUNT,
+SUM(a.TOTAL_CHARGE) AS PENDAPATAN_NON_TAX,
+SUM(a.TOTAL_AMOUNT) AS PENDAPATAN,
+SUM(a.TOTAL_AMOUNT) * (c.TAX/100) AS PAJAK_10,
+SUM(a.TOTAL_TAX_CHARGE) AS PAJAK_BIAYA,
+SUM(a.TOTAL_CHARGE) AS BIAYA_ANTAR,
+(SUM(a.TOTAL_AMOUNT) * (c.TAX/100)) + SUM(a.TOTAL_AMOUNT) AS TOTAL
+FROM T_POS_BILL a
+JOIN M_POS b ON a.POS_CODE = b.POS_CODE
+JOIN M_OUTLET c ON a.OUTLET_CODE = c.OUTLET_CODE
+JOIN M_GLOBAL d ON b.POS_TYPE = d.CODE AND COND = 'POS_TYPE'
+WHERE (a.DELIVERY_STATUS  IN (' ','CLS') OR a.DELIVERY_STATUS IS NULL) AND
+a.OUTLET_CODE = $P{outletCode} AND
+b.POS_TYPE =  $P{posType} 
+AND a.trans_date BETWEEN $P{fromDate} AND  $P{toDate} 
+GROUP BY a.TRANS_DATE,b.POS_TYPE,d.DESCRIPTION, a.OUTLET_CODE, c.OUTLET_NAME, c.ADDRESS_1 , c.ADDRESS_2, c.PHONE, c.TAX
+ORDER BY a.TRANS_DATE ASC
+
+
+]]>
+	</queryString>
+	<field name="TRANS_DATE" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="TRANS_DATE"/>
+		<property name="com.jaspersoft.studio.field.label" value="TRANS_DATE"/>
+	</field>
+	<field name="POS_TYPE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="POS_TYPE"/>
+		<property name="com.jaspersoft.studio.field.label" value="POS_TYPE"/>
+	</field>
+	<field name="DESCRIPTION" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="DESCRIPTION"/>
+		<property name="com.jaspersoft.studio.field.label" value="DESCRIPTION"/>
+	</field>
+	<field name="OUTLET_CODE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="OUTLET_CODE"/>
+		<property name="com.jaspersoft.studio.field.label" value="OUTLET_CODE"/>
+	</field>
+	<field name="OUTLET_NAME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="OUTLET_NAME"/>
+		<property name="com.jaspersoft.studio.field.label" value="OUTLET_NAME"/>
+	</field>
+	<field name="ADDRESS_1" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADDRESS_1"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADDRESS_1"/>
+	</field>
+	<field name="ADDRESS_2" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADDRESS_2"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADDRESS_2"/>
+	</field>
+	<field name="PHONE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="PHONE"/>
+		<property name="com.jaspersoft.studio.field.label" value="PHONE"/>
+	</field>
+	<field name="PENJUALAN" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="PENJUALAN"/>
+		<property name="com.jaspersoft.studio.field.label" value="PENJUALAN"/>
+	</field>
+	<field name="DISCOUNT" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="DISCOUNT"/>
+		<property name="com.jaspersoft.studio.field.label" value="DISCOUNT"/>
+	</field>
+	<field name="PENDAPATAN_NON_TAX" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="PENDAPATAN_NON_TAX"/>
+		<property name="com.jaspersoft.studio.field.label" value="PENDAPATAN_NON_TAX"/>
+	</field>
+	<field name="PENDAPATAN" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="PENDAPATAN"/>
+		<property name="com.jaspersoft.studio.field.label" value="PENDAPATAN"/>
+	</field>
+	<field name="PAJAK_10" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="PAJAK_10"/>
+		<property name="com.jaspersoft.studio.field.label" value="PAJAK_10"/>
+	</field>
+	<field name="PAJAK_BIAYA" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="PAJAK_BIAYA"/>
+		<property name="com.jaspersoft.studio.field.label" value="PAJAK_BIAYA"/>
+	</field>
+	<field name="BIAYA_ANTAR" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="BIAYA_ANTAR"/>
+		<property name="com.jaspersoft.studio.field.label" value="BIAYA_ANTAR"/>
+	</field>
+	<field name="TOTAL" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="TOTAL"/>
+		<property name="com.jaspersoft.studio.field.label" value="TOTAL"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="106" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="82" width="555" height="1" uuid="646b9ea6-8fe0-4179-9481-1bd831cd8f04"/>
+			</line>
+			<line>
+				<reportElement x="0" y="101" width="555" height="1" uuid="9b4d6d14-cf2e-439c-b05a-8d96be9a55db"/>
+			</line>
+			<staticText>
+				<reportElement x="5" y="83" width="15" height="18" uuid="2ca99acf-c14d-4fc0-a86f-93d01961953c"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="20" y="83" width="50" height="18" uuid="9324eae0-eb3a-4cec-80fe-05b194865441"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tanggal]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="70" y="83" width="60" height="18" uuid="a1d7f151-0761-47c1-83da-1f9dff65c070"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Penjualan]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="130" y="83" width="50" height="18" uuid="10e8d854-2e49-4cb8-924a-6416547dc2bc"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Discount]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="180" y="83" width="90" height="18" uuid="e8126b50-83b9-4fd0-97a3-c108991637e2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Pendapatan Non Tax]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="270" y="83" width="60" height="18" uuid="2652d4b8-9ef8-4b2d-934d-eeaeafa5cb35"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Pendapatan]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="330" y="83" width="50" height="18" uuid="d6099b12-d73e-44e1-8f6b-975e37918901"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PB1 10%]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="56" width="555" height="18" uuid="054637d1-cf41-4251-aceb-8cd4520c2bc6"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Laporan Rekapitulasi & Pajak Pembangunan]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="378" y="6" width="48" height="13" uuid="09ab45a6-7d62-4bdd-9a03-8874f57a926e"/>
+				<textElement>
+					<font size="9" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Page]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="64" y="11" width="165" height="11" uuid="d49f8a33-7c2d-4bd9-8a0c-a3da0cdb2399"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OUTLET_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="64" y="21" width="165" height="11" uuid="1d413335-f769-4619-9d46-990fa2821fd7"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ADDRESS_1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="426" y="6" width="92" height="13" uuid="8e69df69-52bc-4437-ae07-c8e8e307815e"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<image scaleImage="FillFrame">
+				<reportElement x="7" y="1" width="48" height="48" isPrintWhenDetailOverflows="true" uuid="a74f4b64-21cf-43c4-b134-dc4525922b36">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="64" y="0" width="112" height="11" uuid="b6175580-26b7-4d24-a0da-c1a98b446e71"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="426" y="18" width="213" height="13" uuid="2dd056d2-fcc5-4330-98c4-54bee8799ca3"/>
+				<textElement>
+					<font size="9" isUnderline="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{fromDate})) + " s/d " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{toDate}))]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="378" y="18" width="48" height="13" uuid="ed381e3f-3e0a-4c99-a674-2ef8e1556303"/>
+				<textElement>
+					<font size="9" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Periode]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="378" y="83" width="62" height="18" uuid="b0e59991-218e-4dd2-a64c-33d4cb2da786"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Biaya Antar]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="440" y="83" width="62" height="18" uuid="e2abbc89-2ff9-4505-bbe4-5caffa387290"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Pajak Biaya]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="502" y="83" width="53" height="18" uuid="c970cc4e-8414-438a-aebf-19a4af96b83e"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="378" y="32" width="48" height="13" uuid="5efa05a5-8608-40f9-9ceb-69c9e827eafd"/>
+				<textElement>
+					<font size="9" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Pos Type]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="426" y="32" width="92" height="13" uuid="a4ff79dc-6b22-440c-9ec3-0cde6c92a2e0"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + $P{posType}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="19" splitType="Stretch">
+			<textField>
+				<reportElement x="70" y="1" width="60" height="13" uuid="cbd619ec-7431-40de-b66e-d151dd279bf4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PENJUALAN}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="130" y="1" width="50" height="13" uuid="b079ea5a-01c1-45a6-af18-5282bd5d60c0"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DISCOUNT}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="270" y="1" width="60" height="13" uuid="f4709026-762f-41d8-b3d7-c6e246399495"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PENDAPATAN}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="330" y="1" width="48" height="13" uuid="1bcc76fa-4950-4a9c-8917-2ab0350a3875"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PAJAK_10}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="20" y="1" width="50" height="13" uuid="0000c94e-b813-4861-8c84-aff0fdaea48c"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{TRANS_DATE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="180" y="1" width="90" height="13" uuid="9d984a25-39cd-43bc-abc8-f25f9537c4ff"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PENDAPATAN_NON_TAX}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="378" y="1" width="62" height="13" uuid="0fd63b61-8e3e-4f42-ba99-b22b050a6fac"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{BIAYA_ANTAR}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="441" y="1" width="61" height="13" uuid="1919f280-08ab-45ae-8f6f-4907c82ac903"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PAJAK_BIAYA}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="502" y="1" width="53" height="13" uuid="075e7dc8-9e7c-4ed2-818b-c46682e3ca2c"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{TOTAL}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="5" y="1" width="14" height="13" uuid="c8f147df-1b9a-47bc-bcf9-8232dfd9417f"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{COLUMN_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="33" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="5" width="555" height="1" uuid="85478894-6f62-452a-aa12-5d9347d31547"/>
+			</line>
+		</band>
+	</summary>
+</jasperReport>

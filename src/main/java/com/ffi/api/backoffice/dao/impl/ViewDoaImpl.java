@@ -2170,6 +2170,14 @@ public class ViewDoaImpl implements ViewDao {
                 prm.put("fromDate", param.get("fromDate"));
                 prm.put("toDate", param.get("toDate"));
             }
+            
+             case "pajak" -> {
+                query = "SELECT COUNT(*) FROM t_pos_bill a WHERE a.OUTLET_CODE =:outletCode AND a.trans_date BETWEEN "
+                        + ":fromDate AND :toDate";
+                prm.put("outletCode", param.get("outletCode"));
+                prm.put("fromDate", param.get("fromDate"));
+                prm.put("toDate", param.get("toDate"));
+            }
             /////////////////////// done adit 04-01-2024
             case "item" -> {
                 StringBuilder queryBuilder = new StringBuilder();

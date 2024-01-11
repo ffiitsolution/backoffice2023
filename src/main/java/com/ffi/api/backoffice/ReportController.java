@@ -1058,12 +1058,16 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
+        Integer cekDataReport = viewServices.cekDataReport(prm, "pajak");
+        if (cekDataReport > 0) {
             JasperPrint jasperPrint = reportServices.jesperReportPajak(prm, conn);
             conn.close();
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=Pajak.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+            } else
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
 
     }
     ///////////////////////////////// done adit 04-01-2024 ///////////////////////////////////////
