@@ -27,10 +27,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.transaction.Transactional;
 
@@ -2944,4 +2940,11 @@ public class ProcessDaoImpl implements ProcessDao {
         return isUpdQtySuccess && isUpdQtyAccSuccess && isUpdHistorySuccess && isInsertMpcsDetailSuccess;
     }
     // Done delete MPCS Production //
+
+    // Add Counter Print Receiving Dani 11 Jan 2024
+    @Override
+    public void addCounterPrintReceiving(Map<String, Object> param) {
+        String query = "UPDATE T_RECV_HEADER a SET a.NO_OF_PRINT  = NO_OF_PRINT+1 WHERE a.ORDER_NO = :noOrder AND a.RECV_NO = :recvNo";
+        jdbcTemplate.update(query, param); 
+    }
 }
