@@ -1153,15 +1153,15 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        // Integer cekDataReport = viewServices.cekDataReport(prm, "selectedItemByDetail");
-        // if (cekDataReport > 0) {
             JasperPrint jasperPrint = reportServices.jesperReportSelectedItemByDetail(prm, conn);
             conn.close();
+
+        if (!jasperPrint.getPages().isEmpty()) {
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=ReportSelectedItemByDetail.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        // } else
-        //     return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
+        } else
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
     }
 }
