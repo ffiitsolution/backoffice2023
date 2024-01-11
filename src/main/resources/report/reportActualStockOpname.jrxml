@@ -4,6 +4,8 @@
 	<property name="ireport.zoom" value="1.610510000000015"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Localhost"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<parameter name="outletCode" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
@@ -13,22 +15,130 @@
 	<parameter name="toDate" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
+	<parameter name="outletBrand" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[select trim(to_char(sum(TOTAL_AMOUNT),'999,999,999,999')) as total_sales, b.OUTLET_NAME, b.ADDRESS_1, b.PHONE from t_pos_bill a
-JOIN M_OUTLET b ON a.OUTLET_CODE = b.OUTLET_CODE
-where a.outlet_code='0936' and 
-a.trans_date between '01-Jul-2023' and '01-Jul-2023' and a.delivery_status='CLS'
-GROUP BY b.OUTLET_NAME, b.ADDRESS_1, b.PHONE]]>
+		<![CDATA[SELECT Q.*, mo.outlet_name, mo.ADDRESS_1, 
+ROUND((Q.TOT_UCOST / Q.GRAND_TOT_UCOST * 100), 2) AS PERCENT,
+ROUND(Q.GRAND_TOT_UCOST / Q.TOTAL_SALES * 100, 
+3) AS summary_persen
+FROM (
+  SELECT
+    p.OUTLET_CODE,
+    p.ITEM_CODE,
+    p.ITEM_DESCRIPTION,
+    p.STOCK_QTY,
+    p.UOM_STOCK,
+    p.ITEM_COST,
+    p.TOT_UCOST,
+    p.GRAND_TOT_UCOST,
+    p.TOTAL_SALES
+  FROM (
+    SELECT
+      A.OUTLET_CODE,
+      A.ITEM_CODE,
+      B.ITEM_DESCRIPTION,
+      SUM(A.QTY_BEGINNING + A.QTY_IN - QTY_OUT) AS STOCK_QTY,
+      B.UOM_STOCK,
+      C.ITEM_COST,
+      ROUND(SUM((A.QTY_BEGINNING + A.QTY_IN - A.QTY_OUT) * C.ITEM_COST), 3) AS TOT_UCOST,
+      (
+        SELECT ROUND(SUM((A.QTY_BEGINNING + A.QTY_IN - A.QTY_OUT) * C.ITEM_COST), 3)
+        FROM T_STOCK_CARD A
+        JOIN M_ITEM B ON A.ITEM_CODE = B.ITEM_CODE AND A.OUTLET_CODE = $P{outletCode}
+          AND A.TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
+          AND A.REMARK LIKE 'SOP-%'
+        JOIN M_ITEM_COST C ON C.ITEM_CODE = A.ITEM_CODE AND C.OUTLET_CODE = A.OUTLET_CODE
+      ) AS GRAND_TOT_UCOST,
+      (
+        SELECT SUM(TOTAL_AMOUNT) FROM T_POS_BILL
+        WHERE OUTLET_CODE=$P{outletCode} AND TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate} AND DELIVERY_STATUS='CLS'
+      ) AS TOTAL_SALES
+    FROM T_STOCK_CARD A
+    JOIN M_ITEM B ON A.ITEM_CODE = B.ITEM_CODE AND A.OUTLET_CODE = $P{outletCode}
+      AND A.TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
+      AND A.REMARK LIKE 'SOP-%'
+    JOIN M_ITEM_COST C ON C.ITEM_CODE = A.ITEM_CODE AND C.OUTLET_CODE = A.OUTLET_CODE
+    GROUP BY A.OUTLET_CODE,
+      A.ITEM_CODE,
+      B.ITEM_DESCRIPTION,
+      B.UOM_STOCK,
+      C.ITEM_COST
+    ORDER BY A.OUTLET_CODE, A.ITEM_CODE, B.ITEM_DESCRIPTION
+  ) P
+  WHERE p.TOT_UCOST > 0
+  GROUP BY P.OUTLET_CODE,
+    P.ITEM_CODE,
+    P.ITEM_DESCRIPTION,
+    P.STOCK_QTY,
+    P.UOM_STOCK,
+    P.ITEM_COST,
+    P.TOT_UCOST,
+    P.TOTAL_SALES,
+    P.GRAND_TOT_UCOST
+) Q 
+JOIN M_OUTLET mo ON mo.outlet_code =  $P{outletCode} 
+ORDER BY Q.ITEM_CODE]]>
 	</queryString>
-	<field name="total_sales" class="java.lang.String"/>
-	<field name="OUTLET_NAME" class="java.lang.String"/>
-	<field name="ADDRESS_1" class="java.lang.String"/>
-	<field name="PHONE" class="java.lang.String"/>
+	<field name="OUTLET_CODE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="OUTLET_CODE"/>
+		<property name="com.jaspersoft.studio.field.label" value="OUTLET_CODE"/>
+	</field>
+	<field name="ITEM_CODE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ITEM_CODE"/>
+		<property name="com.jaspersoft.studio.field.label" value="ITEM_CODE"/>
+	</field>
+	<field name="ITEM_DESCRIPTION" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ITEM_DESCRIPTION"/>
+		<property name="com.jaspersoft.studio.field.label" value="ITEM_DESCRIPTION"/>
+	</field>
+	<field name="STOCK_QTY" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="STOCK_QTY"/>
+		<property name="com.jaspersoft.studio.field.label" value="STOCK_QTY"/>
+	</field>
+	<field name="UOM_STOCK" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="UOM_STOCK"/>
+		<property name="com.jaspersoft.studio.field.label" value="UOM_STOCK"/>
+	</field>
+	<field name="ITEM_COST" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="ITEM_COST"/>
+		<property name="com.jaspersoft.studio.field.label" value="ITEM_COST"/>
+	</field>
+	<field name="TOT_UCOST" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="TOT_UCOST"/>
+		<property name="com.jaspersoft.studio.field.label" value="TOT_UCOST"/>
+	</field>
+	<field name="GRAND_TOT_UCOST" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="GRAND_TOT_UCOST"/>
+		<property name="com.jaspersoft.studio.field.label" value="GRAND_TOT_UCOST"/>
+	</field>
+	<field name="TOTAL_SALES" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="TOTAL_SALES"/>
+		<property name="com.jaspersoft.studio.field.label" value="TOTAL_SALES"/>
+	</field>
+	<field name="OUTLET_NAME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="OUTLET_NAME"/>
+		<property name="com.jaspersoft.studio.field.label" value="OUTLET_NAME"/>
+	</field>
+	<field name="ADDRESS_1" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADDRESS_1"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADDRESS_1"/>
+	</field>
+	<field name="PERCENT" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="PERCENT"/>
+		<property name="com.jaspersoft.studio.field.label" value="PERCENT"/>
+	</field>
+	<field name="SUMMARY_PERSEN" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="SUMMARY_PERSEN"/>
+		<property name="com.jaspersoft.studio.field.label" value="SUMMARY_PERSEN"/>
+	</field>
+	<variable name="total_persen" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{PERCENT}]]></variableExpression>
+	</variable>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
 	<pageHeader>
-		<band height="102" splitType="Stretch">
+		<band height="110" splitType="Stretch">
 			<line>
 				<reportElement x="0" y="82" width="555" height="1" uuid="646b9ea6-8fe0-4179-9481-1bd831cd8f04"/>
 			</line>
@@ -36,29 +146,31 @@ GROUP BY b.OUTLET_NAME, b.ADDRESS_1, b.PHONE]]>
 				<reportElement x="0" y="101" width="555" height="1" uuid="9b4d6d14-cf2e-439c-b05a-8d96be9a55db"/>
 			</line>
 			<staticText>
-				<reportElement x="5" y="83" width="39" height="18" uuid="2ca99acf-c14d-4fc0-a86f-93d01961953c"/>
+				<reportElement x="0" y="83" width="44" height="18" uuid="2ca99acf-c14d-4fc0-a86f-93d01961953c"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Code]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="47" y="83" width="183" height="18" uuid="9324eae0-eb3a-4cec-80fe-05b194865441"/>
+				<reportElement x="44" y="83" width="186" height="18" uuid="9324eae0-eb3a-4cec-80fe-05b194865441"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Outlet Name]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="229" y="83" width="83" height="18" uuid="a1d7f151-0761-47c1-83da-1f9dff65c070"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<reportElement x="229" y="83" width="80" height="18" uuid="a1d7f151-0761-47c1-83da-1f9dff65c070">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Total Quantity]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="312" y="83" width="32" height="18" uuid="10e8d854-2e49-4cb8-924a-6416547dc2bc"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
+				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[UOM]]></text>
@@ -147,37 +259,113 @@ GROUP BY b.OUTLET_NAME, b.ADDRESS_1, b.PHONE]]>
 		</band>
 	</pageHeader>
 	<detail>
-		<band height="14" splitType="Stretch"/>
+		<band height="14" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="-1" width="46" height="14" uuid="18e5c05c-88e4-4989-bb20-b3853c4ae32a"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ITEM_CODE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="46" y="-1" width="184" height="14" uuid="de5ce1e6-b238-47b5-8de1-b9de8c29bf5c"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,###.###;#,###.###-">
+				<reportElement x="230" y="-1" width="80" height="14" uuid="bd751e55-be43-4bba-8119-cc1a3a9ad6f7">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{STOCK_QTY}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="312" y="-1" width="32" height="14" uuid="caba4ab2-1ac8-485e-9864-104a3ffc5afc"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{UOM_STOCK}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,###.###;#,###.###-">
+				<reportElement x="344" y="0" width="58" height="14" uuid="469ba032-f8a6-4a5f-a8a0-3d519f0a3676"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ITEM_COST}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,###.###;#,###.###-">
+				<reportElement x="402" y="0" width="92" height="14" uuid="6fa9a5d6-eacd-4211-97e2-19d99dc86967"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{TOT_UCOST}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="494" y="0" width="60" height="14" uuid="3e2ccfa1-a6b5-4a8a-8ce0-b30307152ca2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PERCENT}]]></textFieldExpression>
+			</textField>
+		</band>
 	</detail>
 	<summary>
-		<band height="85" splitType="Stretch">
+		<band height="64" splitType="Stretch">
 			<staticText>
 				<reportElement x="347" y="12" width="42" height="15" uuid="00df59e5-def2-4916-80c2-34e2c6dafdf1"/>
-				<textElement textAlignment="Right">
-					<font size="9"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
 				</textElement>
 				<text><![CDATA[TOTAL :]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="299" y="27" width="90" height="15" uuid="299db8e9-faba-4cc0-a93e-51d1d5b3fb5d"/>
-				<textElement textAlignment="Right">
-					<font size="9"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
 				</textElement>
 				<text><![CDATA[TOTAL NET SALES :]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="299" y="42" width="90" height="15" uuid="3c6f62f4-c512-481e-b171-e7ec352e8b3d"/>
-				<textElement textAlignment="Right">
-					<font size="9"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
 				</textElement>
 				<text><![CDATA[% :]]></text>
 			</staticText>
 			<line>
 				<reportElement x="0" y="5" width="555" height="1" uuid="85478894-6f62-452a-aa12-5d9347d31547"/>
 			</line>
-			<textField>
+			<textField pattern="#,###.###;#,###.###-">
 				<reportElement x="394" y="27" width="100" height="14" uuid="ed14a587-7907-483a-a487-dbe7a7ae5eed"/>
-				<textFieldExpression><![CDATA[$F{total_sales}]]></textFieldExpression>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{TOTAL_SALES}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,###.###;#,###.###-">
+				<reportElement x="394" y="13" width="100" height="14" uuid="1afd7213-2246-4815-83d8-370153b41142"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{GRAND_TOT_UCOST}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="494" y="12" width="60" height="14" uuid="77b6dfbc-0ed1-4b4a-97fb-86c2ea844c28"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{total_persen}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="394" y="42" width="100" height="14" uuid="7782dbd2-1ed3-453b-bf23-b594587f9e76"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SUMMARY_PERSEN}]]></textFieldExpression>
 			</textField>
 		</band>
 	</summary>
