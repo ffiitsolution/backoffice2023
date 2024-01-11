@@ -234,4 +234,12 @@ public class ReportServices {
     public JasperPrint jasperReportDownPayment(Map<String, Object> param, Connection connection) throws  JRException, IOException {
         return dao.jasperReportDownPayment(param, connection);
     }
+
+    public JasperPrint jesperReportSelectedItemByDetail(Map<String, Object> param, Connection connection) throws  JRException, IOException {
+        return dao.jesperReportSelectedItemByDetail(param, connection);
+    }
+    
+    public JasperPrint jasperReportItemSelectedByProduct(Map<String, Object> param, Connection connection) throws  JRException, IOException {
+        return dao.jasperReportItemSelectedByProduct(param, connection);
+    }
 }

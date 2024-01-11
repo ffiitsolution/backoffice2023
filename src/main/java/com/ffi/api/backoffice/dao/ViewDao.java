@@ -286,4 +286,14 @@ public interface ViewDao {
 
     /////// NEW METHOD to get list Menu Aplikasi by M Joko 8 Januari 2024
     public  List<Map<String, Object>>  listMenuApplication(Map<String, String> mapping);
+
+    /////// NEW METHOD to get list Customer Name report by Dani 9 Januari 2024
+    public List<Map<String, Object>> listCustomerNameReportDp();
+
+    /////// NEW METHOD to get list order type report DP by Dani 9 Januari 2024
+    public List<Map<String, Object>> listOrderTypeReportDp();
+
+
+     //////// NEW METHOD to get list daftar menu report by Rafi 9 Jan 2024
+    public List<Map<String, Object>> getListItemDetailReport();
 }

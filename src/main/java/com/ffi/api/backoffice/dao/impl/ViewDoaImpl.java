@@ -2612,6 +2612,62 @@ public class ViewDoaImpl implements ViewDao {
                 prm.put("orderType", param.get("orderType"));                
                 prm.put("bookStatus", param.get("bookStatus"));                
             }
+            case "selectedItemByDetail" -> {
+                query = "SELECT " + 
+                        "   COUNT(*) " + 
+                        "FROM " +
+                        "    t_pos_bill_item a " + 
+                        "JOIN " + 
+                        "    t_pos_bill_item_detail b " + 
+                        "    ON a.bill_no = b.bill_no " + 
+                        "    AND a.pos_code = b.pos_code " + 
+                        "    AND a.trans_date = b.trans_date " + 
+                        "    AND a.outlet_code = b.outlet_code " + 
+                        "    AND a.region_code = b.region_code " + 
+                        "    AND a.day_seq = b.day_seq " + 
+                        "    AND a.item_seq = b.item_seq " + 
+                        "    AND b.menu_item_code IN (:menuItemCodes) " + 
+                        "    AND b.trans_Date BETWEEN :fromDate AND :toDate " +
+                        "    AND b.outlet_code = :outletCode " + 
+                        "JOIN " + 
+                        "    t_pos_bill c " + 
+                        "    ON a.bill_no = c.bill_no " + 
+                        "    AND a.pos_code = c.pos_code " + 
+                        "    AND a.trans_date = c.trans_date " + 
+                        "    AND a.outlet_code = c.outlet_code " + 
+                        "    AND a.region_code = c.region_code " + 
+                        "    AND a.day_seq = c.day_seq " + 
+                        "    AND c.delivery_status = 'CLS' " + 
+                        "    AND c.trans_Date BETWEEN :fromDate AND :toDate " + 
+                        "    AND c.outlet_code = :outletCode " + 
+                        "JOIN " + 
+                        "    m_item c " + 
+                        "    ON b.menu_item_code = c.item_code " + 
+                        "JOIN " + 
+                        "    m_item d " + 
+                        "    ON a.menu_item_code = d.item_code " + 
+                        "JOIN " + 
+                        " m_outlet e " + 
+                        " ON a.outlet_code = e.outlet_code " + 
+                        "WHERE " + 
+                        "b.trans_Date BETWEEN :fromDate AND :toDate AND c.trans_Date BETWEEN :fromDate AND :toDate " + 
+                        "GROUP BY " + 
+                        "    b.menu_item_code, c.item_description, a.menu_item_code, d.item_description, e.outlet_name, e.address_1, e.address_2 " + 
+                        "ORDER BY " + 
+                        "    b.menu_item_code DESC, a.menu_item_code DESC ";
+                prm.put("fromDate", param.get("fromDate"));
+                prm.put("toDate", param.get("toDate"));
+                prm.put("outletCode", param.get("outletCode"));
+                prm.put("menuItemCodes", param.get("menuItemCodes"));     
+            }
+            case "itemSelectedByProduct" -> {
+                // todo: m joko - perlu rubah query
+                query = "SELECT Count(*) FROM T_POS_BILL tpb WHERE tpb.OUTLET_CODE = :outletCode AND tpb.TRANS_DATE BETWEEN :fromDate AND :toDate "
+                        + "AND TOTAL_REFUND  IS NOT NULL AND TOTAL_REFUND <> 0";
+                prm.put("outletCode", param.get("outletCode"));
+                prm.put("fromDate", param.get("fromDate"));
+                prm.put("toDate", param.get("toDate"));
+            }
         }
         assert query != null;
         System.err.println("q :" + query);
@@ -3932,5 +3988,27 @@ public class ViewDoaImpl implements ViewDao {
                     """;
         }
         return jdbcTemplate.query(query, mapping, new DynamicRowMapper());
+    }
+
+    /////// NEW METHOD to get list Customer Name report DP by Dani 9 Januari 2024
+    @Override
+    public List<Map<String, Object>> listCustomerNameReportDp() {
+        String query = "SELECT CUSTOMER_NAME, MAX(BOOK_DATE) AS MX FROM T_POS_BOOK GROUP BY CUSTOMER_NAME ORDER BY MX ASC";
+        return jdbcTemplate.query(query, new HashMap(), new DynamicRowMapper());
+    }
+
+    /////// NEW METHOD to get list order type report DP by Dani 9 Januari 2024
+    @Override
+    public List<Map<String, Object>> listOrderTypeReportDp() {
+        String query = "SELECT DISTINCT (TPB.ORDER_TYPE) , MG.DESCRIPTION  FROM T_POS_BOOK tpb LEFT JOIN M_GLOBAL mg ON MG.COND  = 'ORDER_TYPE' AND MG.CODE = TPB.ORDER_TYPE ";
+        return jdbcTemplate.query(query, new HashMap(), new DynamicRowMapper());
+    }
+
+    //////// NEW METHOD to get list daftar menu by Rafi 9 Jan 2024
+    @Override
+    public List<Map<String, Object>> getListItemDetailReport() {
+        String query = "SELECT mg.CODE, mg.DESCRIPTION FROM M_GLOBAL mg WHERE mg.COND = 'ITEM' ORDER BY mg.CODE ASC ";
+
+        return jdbcTemplate.query(query, new HashMap(), new DynamicRowMapper());
     }
 }

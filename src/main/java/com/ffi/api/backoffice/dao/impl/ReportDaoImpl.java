@@ -1128,7 +1128,7 @@ public class ReportDaoImpl implements ReportDao {
             hashMap.put("toDate", param.get("toDate"));
         } else if (param.get("typeReport").equals("Sales Void") && param.get("typeParam").equals("Pos")) {
             query = "SELECT DISTINCT(pb.pos_code) AS POST_CODE, CASE WHEN mp.pos_description IS NULL THEN ' ' ELSE mp.pos_description END AS POS_DESCRIPTION FROM t_pos_bill pb LEFT JOIN M_POS mp ON pb.POS_CODE = mp.POS_CODE AND mp.OUTLET_CODE = pb.OUTLET_CODE LEFT JOIN M_GLOBAL mg ON mp.POS_TYPE = mg.CODE AND mg.cond = 'POS_TYPE' WHERE pb.OUTLET_CODE = :outletCode AND pb.TRANS_DATE BETWEEN :fromDate AND :toDate";
-            if(param.get("canceledType").equalsIgnoreCase("Cancel")) {
+            if(param.get("canceled").equalsIgnoreCase("Order") && param.get("canceledType").equalsIgnoreCase("Cancel")) {
                 query += " AND pb.DELIVERY_STATUS = 'CAN'";
             } else {
                 hashMap.put("canceledType", param.get("canceledType"));
@@ -1139,7 +1139,7 @@ public class ReportDaoImpl implements ReportDao {
             hashMap.put("toDate", param.get("toDate"));
         } else if (param.get("typeReport").equals("Sales Void") && param.get("typeParam").equals("Cashier")) {
             query = "SELECT distinct(pb.cashier_code), CASE WHEN ms.STAFF_NAME IS NULL THEN ' ' ELSE ms.STAFF_NAME END AS STAFF_NAME FROM t_pos_bill pb LEFT JOIN M_POS_STAFF ms ON pb.CASHIER_CODE = ms.STAFF_POS_CODE WHERE pb.OUTLET_CODE = :outletCode AND pb.TRANS_DATE BETWEEN :fromDate AND :toDate";
-            if(param.get("canceledType").equalsIgnoreCase("Cancel")) {
+            if(param.get("canceled").equalsIgnoreCase("Order") && param.get("canceledType").equalsIgnoreCase("Cancel")) {
                 query += " AND pb.DELIVERY_STATUS = 'CAN'";
             } else {
                 hashMap.put("canceledType", param.get("canceledType"));
@@ -1152,7 +1152,7 @@ public class ReportDaoImpl implements ReportDao {
             hashMap.put("toTime", param.get("toTime"));
         } else if (param.get("typeReport").equals("Sales Void") && param.get("typeParam").equals("Shift")) {
             query = "SELECT DISTINCT(pb.SHIFT_CODE), CASE WHEN a.SHIFT_CODE = 'S1' THEN 'Shift 1' WHEN SHIFT_CODE = 'S2' THEN 'Shift 2' ELSE 'Shift 3' END AS SHIFT_NAME FROM t_pos_bill pb WHERE pb.OUTLET_CODE = :outletCode AND pb.TRANS_DATE BETWEEN :fromDate AND :toDate";
-            if(param.get("canceledType").equalsIgnoreCase("Cancel")) {
+            if(param.get("canceled").equalsIgnoreCase("Order") && param.get("canceledType").equalsIgnoreCase("Cancel")) {
                 query += " AND pb.DELIVERY_STATUS = 'CAN'";
             } else {
                 hashMap.put("canceledType", param.get("canceledType"));
@@ -2593,5 +2593,46 @@ public class ReportDaoImpl implements ReportDao {
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, param, connection);
     }
+
+    @Override
+    public JasperPrint jesperReportSelectedItemByDetail(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        Map<String, Object> hashMap = new HashMap<>();
+        hashMap.put("outletBrand", param.get("outletBrand"));
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("fromDate", param.get("fromDate"));
+        hashMap.put("toDate", param.get("toDate"));
+
+        List<String> test = (List<String>) param.get("menuItemCodes");
+        StringBuilder item = new StringBuilder();
+        item.append("'").append(test.get(0)).append("'");
+
+        for (int i = 1; i < test.size(); i++) {
+            item.append(", '").append(test.get(i)).append("'");
+        }
+
+        hashMap.put("menuItemCodes", item.toString());
+        System.out.println(hashMap);
+
+        ClassPathResource classPathResource = new ClassPathResource("report/reportSelectedItemByDetail.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
     
+    //////////////// New Method Report Item Selected By Product by M Joko 10 Januari 2024
+    @Override
+    public JasperPrint jasperReportItemSelectedByProduct(Map<String, Object> param, Connection connection)
+            throws JRException, IOException {
+        Map<String, Object> hashMap = new HashMap<>();
+        hashMap.put("outletBrand", param.get("outletBrand"));
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("itemCode", param.get("itemCode"));
+        hashMap.put("fromDate", param.get("fromDate"));
+        hashMap.put("toDate", param.get("toDate"));
+        hashMap.put("userUpd", param.get("userUpd"));
+        hashMap.put("detail", param.containsKey("detail") && param.get("detail").equals(true) );
+        System.err.println("hashMap: " + hashMap);
+        ClassPathResource classPathResource = new ClassPathResource("report/itemSelectedByProduct.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
 }

@@ -499,9 +499,19 @@ public class ViewServices {
     public Map<String, Object> listMpcsQueryResult(Map<String, String> mapping) {
         return viewDao.listMpcsQueryResult(mapping);
     }
+    
+    /////// NEW METHOD to get list Customer Name report DP by Dani 9 Januari 2024
+    public List<Map<String, Object>> listCustomerNameReportDp() {
+        return viewDao.listCustomerNameReportDp();
+    }
 
-    /////// NEW METHOD to get list Menu Aplikasi by M Joko 8 Januari 2024
-    public List<Map<String, Object>> listMenuApplication(Map<String, String> mapping) {
-        return viewDao.listMenuApplication(mapping);
+    /////// NEW METHOD to get list order type report DP by Dani 9 Januari 2024
+    public List<Map<String, Object>> listOrderTypeReportDp() {
+        return viewDao.listOrderTypeReportDp();
+    }
+
+    //////// NEW METHOD to get list report daftar menu  by Rafi 9 Jan 2024
+    public List<Map<String, Object>> getListItemDetailReport() {
+        return viewDao.getListItemDetailReport();
     }
 }

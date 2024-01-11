@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ReportStockCard" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="bc2569fc-c73d-4766-969a-fad451531a1c">
 	<property name="ireport.zoom" value="1.6105100000000068"/>
-	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.x" value="9"/>
+	<property name="ireport.y" value="96"/>
 	<parameter name="outletCode" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
@@ -490,82 +491,82 @@ FROM
 	<field name="SOPIN" class="java.math.BigDecimal"/>
 	<field name="SOPOUT" class="java.math.BigDecimal"/>
 	<field name="SAL" class="java.math.BigDecimal"/>
-	<variable name="TOTALIN" class="java.lang.Double" calculation="Sum">
+	<variable name="TOTALIN" class="java.lang.Double" resetType="Group" resetGroup="itemCode" calculation="Sum">
 		<variableExpression><![CDATA[$F{QTY_IN}]]></variableExpression>
 	</variable>
-	<variable name="TOTALOUT" class="java.lang.Double" calculation="Sum">
+	<variable name="TOTALOUT" class="java.lang.Double" resetType="Group" resetGroup="itemCode" calculation="Sum">
 		<variableExpression><![CDATA[$F{QTY_OUT}]]></variableExpression>
 	</variable>
-	<variable name="RCVIN" class="java.lang.Double" calculation="Sum">
+	<variable name="RCVIN" class="java.lang.Double" resetType="Group" resetGroup="itemCode" calculation="Sum">
 		<variableExpression><![CDATA[$F{RCVIN}]]></variableExpression>
 	</variable>
-	<variable name="RCVOUT" class="java.lang.Double" calculation="Sum">
+	<variable name="RCVOUT" class="java.lang.Double" resetType="Group" resetGroup="itemCode" calculation="Sum">
 		<variableExpression><![CDATA[$F{RCVOUT}]]></variableExpression>
 	</variable>
-	<variable name="SALESIN" class="java.lang.Double" calculation="Sum">
+	<variable name="SALESIN" class="java.lang.Double" resetType="Group" resetGroup="itemCode" calculation="Sum">
 		<variableExpression><![CDATA[$F{SLSIN}]]></variableExpression>
 	</variable>
-	<variable name="SALESOUT" class="java.lang.Double" calculation="Sum">
+	<variable name="SALESOUT" class="java.lang.Double" resetType="Group" resetGroup="itemCode" calculation="Sum">
 		<variableExpression><![CDATA[$F{SLSOUT}]]></variableExpression>
 	</variable>
-	<variable name="PRODIN" class="java.lang.Double" calculation="Sum">
+	<variable name="PRODIN" class="java.lang.Double" resetType="Group" resetGroup="itemCode" calculation="Sum">
 		<variableExpression><![CDATA[$F{PRDIN}]]></variableExpression>
 	</variable>
-	<variable name="PRODOUT" class="java.lang.Double" calculation="Sum">
+	<variable name="PRODOUT" class="java.lang.Double" resetType="Group" resetGroup="itemCode" calculation="Sum">
 		<variableExpression><![CDATA[$F{PRDOUT}]]></variableExpression>
 	</variable>
-	<variable name="DELIN" class="java.lang.Double" calculation="Sum">
+	<variable name="DELIN" class="java.lang.Double" resetType="Group" resetGroup="itemCode" calculation="Sum">
 		<variableExpression><![CDATA[$F{DELIN}]]></variableExpression>
 	</variable>
-	<variable name="DELOUT" class="java.lang.Double" calculation="Sum">
+	<variable name="DELOUT" class="java.lang.Double" resetType="Group" resetGroup="itemCode" calculation="Sum">
 		<variableExpression><![CDATA[$F{DELOUT}]]></variableExpression>
 	</variable>
-	<variable name="DLVIN" class="java.lang.Double" calculation="Sum">
+	<variable name="DLVIN" class="java.lang.Double" resetType="Group" resetGroup="itemCode" calculation="Sum">
 		<variableExpression><![CDATA[$F{DLVIN}]]></variableExpression>
 	</variable>
-	<variable name="DLVOUT" class="java.lang.Double" calculation="Sum">
+	<variable name="DLVOUT" class="java.lang.Double" resetType="Group" resetGroup="itemCode" calculation="Sum">
 		<variableExpression><![CDATA[$F{DLVOUT}]]></variableExpression>
 	</variable>
-	<variable name="FMLIN" class="java.lang.Double" calculation="Sum">
+	<variable name="FMLIN" class="java.lang.Double" resetType="Group" resetGroup="itemCode" calculation="Sum">
 		<variableExpression><![CDATA[$F{FMLIN}]]></variableExpression>
 	</variable>
-	<variable name="FMLOUT" class="java.lang.Double" calculation="Sum">
+	<variable name="FMLOUT" class="java.lang.Double" resetType="Group" resetGroup="itemCode" calculation="Sum">
 		<variableExpression><![CDATA[$F{FMLOUT}]]></variableExpression>
 	</variable>
-	<variable name="WSTOUT" class="java.lang.Double" calculation="Sum">
+	<variable name="WSTOUT" class="java.lang.Double" resetType="Group" resetGroup="itemCode" calculation="Sum">
 		<variableExpression><![CDATA[$F{WSTOUT}]]></variableExpression>
 	</variable>
-	<variable name="WSTIN" class="java.lang.Double" calculation="Sum">
+	<variable name="WSTIN" class="java.lang.Double" resetType="Group" resetGroup="itemCode" calculation="Sum">
 		<variableExpression><![CDATA[$F{WSTIN}]]></variableExpression>
 	</variable>
-	<variable name="LOVIN" class="java.lang.Double" calculation="Sum">
+	<variable name="LOVIN" class="java.lang.Double" resetType="Group" resetGroup="itemCode" calculation="Sum">
 		<variableExpression><![CDATA[$F{LOVIN}]]></variableExpression>
 	</variable>
-	<variable name="LOVOUT" class="java.lang.Double" calculation="Sum">
+	<variable name="LOVOUT" class="java.lang.Double" resetType="Group" resetGroup="itemCode" calculation="Sum">
 		<variableExpression><![CDATA[$F{LOVOUT}]]></variableExpression>
 	</variable>
-	<variable name="RTROUT" class="java.lang.Double" calculation="Sum">
+	<variable name="RTROUT" class="java.lang.Double" resetType="Group" resetGroup="itemCode" calculation="Sum">
 		<variableExpression><![CDATA[$F{RTROUT}]]></variableExpression>
 	</variable>
-	<variable name="RTRIN" class="java.lang.Double" calculation="Sum">
+	<variable name="RTRIN" class="java.lang.Double" resetType="Group" resetGroup="itemCode" calculation="Sum">
 		<variableExpression><![CDATA[$F{RTRIN}]]></variableExpression>
 	</variable>
-	<variable name="SOPIN" class="java.lang.Double" calculation="Sum">
+	<variable name="SOPIN" class="java.lang.Double" resetType="Group" resetGroup="itemCode" calculation="Sum">
 		<variableExpression><![CDATA[$F{SOPIN}]]></variableExpression>
 	</variable>
-	<variable name="SOPOUT" class="java.lang.Double" calculation="Sum">
+	<variable name="SOPOUT" class="java.lang.Double" resetType="Group" resetGroup="itemCode" calculation="Sum">
 		<variableExpression><![CDATA[$F{SOPOUT}]]></variableExpression>
 	</variable>
-	<variable name="LOCOUT" class="java.lang.Double" calculation="Sum">
+	<variable name="LOCOUT" class="java.lang.Double" resetType="Group" resetGroup="itemCode" calculation="Sum">
 		<variableExpression><![CDATA[$F{LOCOUT}]]></variableExpression>
 	</variable>
-	<variable name="LOCIN" class="java.lang.Double" calculation="Sum">
+	<variable name="LOCIN" class="java.lang.Double" resetType="Group" resetGroup="itemCode" calculation="Sum">
 		<variableExpression><![CDATA[$F{LOCIN}]]></variableExpression>
 	</variable>
-	<variable name="sumSaldoAwal" class="java.math.BigDecimal" calculation="Sum">
+	<variable name="sumSaldoAwal" class="java.math.BigDecimal" resetType="Group" resetGroup="itemCode" calculation="Sum">
 		<variableExpression><![CDATA[$F{SALDO_AWAL}]]></variableExpression>
 	</variable>
-	<variable name="sumSal" class="java.lang.Integer" resetType="Group" resetGroup="itemCode" calculation="Sum">
+	<variable name="sumSal" class="java.lang.Double" resetType="Group" resetGroup="itemCode" calculation="Sum">
 		<variableExpression><![CDATA[$F{SAL}]]></variableExpression>
 	</variable>
 	<group name="itemCode" isStartNewPage="true">
@@ -608,7 +609,7 @@ FROM
 					<text><![CDATA[DESKRIPSI]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="399" y="45" width="75" height="15" uuid="31154a03-18a6-477f-a95d-5857f022b831"/>
+					<reportElement x="400" y="45" width="75" height="15" uuid="31154a03-18a6-477f-a95d-5857f022b831"/>
 					<textElement textAlignment="Right">
 						<font size="10" isBold="true"/>
 					</textElement>
@@ -713,7 +714,7 @@ FROM
 					<reportElement x="474" y="195" width="75" height="15" uuid="60eb5a40-47fe-4abe-8697-02a47efe1660"/>
 				</rectangle>
 				<rectangle>
-					<reportElement x="399" y="195" width="76" height="15" uuid="d639579e-9f7e-4516-ae46-37b86eed2815"/>
+					<reportElement x="399" y="195" width="75" height="15" uuid="d639579e-9f7e-4516-ae46-37b86eed2815"/>
 				</rectangle>
 				<rectangle>
 					<reportElement x="324" y="195" width="75" height="15" uuid="8fefb6d7-7fce-4719-a409-4be84cfe7422"/>
@@ -779,7 +780,8 @@ FROM
 					<reportElement x="198" y="15" width="126" height="15" uuid="c1328a44-4b1e-4c7b-baf7-6cf3b492fa16"/>
 				</rectangle>
 				<staticText>
-					<reportElement x="477" y="0" width="70" height="15" uuid="585cde8d-11d9-4a94-9fa6-222756851efd"/>
+					<reportElement x="475" y="0" width="72" height="15" uuid="585cde8d-11d9-4a94-9fa6-222756851efd"/>
+					<textElement textAlignment="Center"/>
 					<text><![CDATA[TOTAL]]></text>
 				</staticText>
 				<rectangle>
@@ -789,11 +791,11 @@ FROM
 					<reportElement x="198" y="165" width="126" height="15" uuid="98cd155e-f667-42c1-b30c-ed63cf1a6ab1"/>
 				</rectangle>
 				<staticText>
-					<reportElement x="212" y="180" width="110" height="15" uuid="fb4dde4a-5140-4ae9-aa5b-08ab8ddd7438"/>
+					<reportElement x="205" y="180" width="110" height="15" uuid="fb4dde4a-5140-4ae9-aa5b-08ab8ddd7438"/>
 					<text><![CDATA[STOCK OPNAME]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="212" y="120" width="110" height="15" uuid="7f993bba-e053-47bd-afa0-73ae29af4c4f"/>
+					<reportElement x="205" y="120" width="110" height="15" uuid="7f993bba-e053-47bd-afa0-73ae29af4c4f"/>
 					<text><![CDATA[FREE MEAL]]></text>
 				</staticText>
 				<rectangle>
@@ -806,56 +808,57 @@ FROM
 					<reportElement x="399" y="60" width="75" height="15" uuid="e52c4cdf-6c62-4c6b-ae08-470dc6abfbf5"/>
 				</rectangle>
 				<staticText>
-					<reportElement x="212" y="150" width="110" height="15" uuid="67c36eb5-ccf8-4552-9a6b-458b92bf1687"/>
+					<reportElement x="205" y="150" width="110" height="15" uuid="67c36eb5-ccf8-4552-9a6b-458b92bf1687"/>
 					<text><![CDATA[LEFT OVER]]></text>
 				</staticText>
 				<rectangle>
 					<reportElement x="399" y="30" width="75" height="15" uuid="40539f58-b235-426a-a4b3-8960fdf52fee"/>
 				</rectangle>
 				<staticText>
-					<reportElement x="212" y="15" width="110" height="15" uuid="81d95d87-5c13-4837-982e-f11d588d93eb"/>
+					<reportElement x="205" y="15" width="110" height="15" uuid="81d95d87-5c13-4837-982e-f11d588d93eb"/>
 					<text><![CDATA[STOCK AWAL]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="212" y="90" width="110" height="15" uuid="c482f35d-be2c-4956-aa79-d0b09b544943"/>
+					<reportElement x="205" y="90" width="110" height="15" uuid="c482f35d-be2c-4956-aa79-d0b09b544943"/>
 					<text><![CDATA[DELIVERY]]></text>
 				</staticText>
 				<rectangle>
 					<reportElement x="198" y="105" width="126" height="15" uuid="76df3c93-e3e5-4635-a03d-ab38f147fa00"/>
 				</rectangle>
 				<staticText>
-					<reportElement x="212" y="165" width="110" height="15" uuid="4406a0f0-1ddd-4c8d-9224-3e4448b7cc13"/>
+					<reportElement x="205" y="165" width="110" height="15" uuid="4406a0f0-1ddd-4c8d-9224-3e4448b7cc13"/>
 					<text><![CDATA[RETURN]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="212" y="135" width="110" height="15" uuid="62f08714-aaba-4470-8a80-0ee8ef998843"/>
+					<reportElement x="205" y="135" width="110" height="15" uuid="62f08714-aaba-4470-8a80-0ee8ef998843"/>
 					<text><![CDATA[WASTE]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="212" y="45" width="110" height="15" uuid="58a985c0-1b9a-491a-9b39-253210f1baa5"/>
+					<reportElement x="205" y="45" width="110" height="15" uuid="58a985c0-1b9a-491a-9b39-253210f1baa5"/>
 					<text><![CDATA[SALES ]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="212" y="60" width="110" height="15" uuid="76b35fdc-7052-480c-93df-c83d37c84752"/>
+					<reportElement x="205" y="60" width="110" height="15" uuid="76b35fdc-7052-480c-93df-c83d37c84752"/>
 					<text><![CDATA[PRODUCTION]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="212" y="75" width="110" height="15" uuid="702afb97-651f-45ee-9bf6-0b0f94ca0b23"/>
+					<reportElement x="205" y="75" width="110" height="15" uuid="702afb97-651f-45ee-9bf6-0b0f94ca0b23"/>
 					<text><![CDATA[DELETE PRODUCTION]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="212" y="195" width="110" height="15" uuid="2f8879b0-a5ff-49a9-b581-1764af877325"/>
+					<reportElement x="205" y="195" width="110" height="15" uuid="2f8879b0-a5ff-49a9-b581-1764af877325"/>
 					<text><![CDATA[ TOTAL QTY]]></text>
 				</staticText>
 				<rectangle>
-					<reportElement x="399" y="0" width="76" height="15" uuid="ff3b890d-3cf4-4211-b1af-b88f23bc430a"/>
+					<reportElement x="399" y="0" width="75" height="15" uuid="ff3b890d-3cf4-4211-b1af-b88f23bc430a"/>
 				</rectangle>
 				<staticText>
-					<reportElement x="212" y="30" width="110" height="15" uuid="518c40b1-ad3e-4fb6-ba89-7fc2982b80b7"/>
+					<reportElement x="205" y="30" width="110" height="15" uuid="518c40b1-ad3e-4fb6-ba89-7fc2982b80b7"/>
 					<text><![CDATA[RECEIVE]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="411" y="0" width="58" height="15" uuid="e7acc9af-49a1-4176-83ad-6e219ea092ac"/>
+					<reportElement x="402" y="0" width="69" height="15" uuid="e7acc9af-49a1-4176-83ad-6e219ea092ac"/>
+					<textElement textAlignment="Center"/>
 					<text><![CDATA[TOTAL OUT]]></text>
 				</staticText>
 				<rectangle>
@@ -865,201 +868,203 @@ FROM
 					<reportElement x="198" y="0" width="126" height="15" uuid="f13e69e8-1772-45a8-8a45-8ccf7e1680ad"/>
 				</rectangle>
 				<staticText>
-					<reportElement x="328" y="0" width="61" height="15" uuid="6d9a594f-045f-4597-a05c-b47e5af3877b"/>
+					<reportElement x="328" y="0" width="67" height="15" uuid="6d9a594f-045f-4597-a05c-b47e5af3877b"/>
+					<textElement textAlignment="Center"/>
 					<text><![CDATA[TOTAL IN]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="212" y="105" width="110" height="15" uuid="630eab99-461e-4e23-af1d-7f3c7323872c"/>
+					<reportElement x="205" y="105" width="110" height="15" uuid="630eab99-461e-4e23-af1d-7f3c7323872c"/>
 					<text><![CDATA[TRANS LOCATION]]></text>
 				</staticText>
-				<textField pattern="#,##0.00">
-					<reportElement x="399" y="195" width="70" height="15" uuid="56680b3b-1f2d-4bf4-8b5a-efc890316355"/>
+				<textField>
+					<reportElement x="402" y="195" width="70" height="15" uuid="56680b3b-1f2d-4bf4-8b5a-efc890316355"/>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{TOTALOUT}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{TOTALOUT})]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="327" y="194" width="70" height="16" uuid="ca0c3775-b9ae-4d00-8684-50116f0e94e5"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{TOTALIN})]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="327" y="30" width="70" height="15" uuid="e31ad7b9-92d1-4157-bff1-8e52d682fb83"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{RCVIN})]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="402" y="30" width="70" height="15" uuid="b87a1dbc-20bb-43b8-8097-3aeda810bc29"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{RCVOUT})]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="327" y="45" width="70" height="15" uuid="1285de3a-5ba9-4696-aee8-e9c5cbe9e09f"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{SALESIN})]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="402" y="44" width="70" height="16" uuid="337e9834-e202-44b2-9e6c-527c3450b3ce"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{SALESOUT})]]></textFieldExpression>
 				</textField>
 				<textField pattern="#,##0.00">
-					<reportElement x="331" y="194" width="68" height="16" uuid="ca0c3775-b9ae-4d00-8684-50116f0e94e5"/>
+					<reportElement x="327" y="60" width="70" height="15" uuid="04ab8aa4-e51d-4c68-b302-f3fc73ec6789"/>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{TOTALIN}]]></textFieldExpression>
-				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="331" y="30" width="60" height="15" uuid="e31ad7b9-92d1-4157-bff1-8e52d682fb83"/>
-					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{RCVIN}]]></textFieldExpression>
-				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="399" y="30" width="72" height="15" uuid="b87a1dbc-20bb-43b8-8097-3aeda810bc29"/>
-					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{RCVOUT}]]></textFieldExpression>
-				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="331" y="45" width="60" height="15" uuid="1285de3a-5ba9-4696-aee8-e9c5cbe9e09f"/>
-					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{SALESIN}]]></textFieldExpression>
-				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="401" y="44" width="70" height="16" uuid="337e9834-e202-44b2-9e6c-527c3450b3ce"/>
-					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{SALESOUT}]]></textFieldExpression>
-				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="331" y="60" width="60" height="15" uuid="04ab8aa4-e51d-4c68-b302-f3fc73ec6789"/>
-					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{PRODIN}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{PRODIN})]]></textFieldExpression>
 				</textField>
 				<textField pattern="#,##0.00">
 					<reportElement x="402" y="60" width="70" height="15" uuid="6da91e0a-5807-4c07-a516-6993642e3134"/>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{PRODOUT}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{PRODOUT})]]></textFieldExpression>
 				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="331" y="75" width="60" height="15" uuid="5e9310e0-3c54-488d-b653-57f70b14e75c"/>
+				<textField>
+					<reportElement x="327" y="75" width="70" height="15" uuid="5e9310e0-3c54-488d-b653-57f70b14e75c"/>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{DELIN}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{DELIN})]]></textFieldExpression>
 				</textField>
-				<textField pattern="#,##0.00">
+				<textField>
 					<reportElement x="402" y="75" width="70" height="15" uuid="7bd80c95-07a4-404a-b950-860132f20fef"/>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{DELOUT}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{DELOUT})]]></textFieldExpression>
 				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="331" y="90" width="60" height="15" uuid="a8536eba-977c-43fa-a086-e19a564b1dbf"/>
+				<textField>
+					<reportElement x="327" y="90" width="70" height="15" uuid="a8536eba-977c-43fa-a086-e19a564b1dbf"/>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{DLVIN}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{DLVIN})]]></textFieldExpression>
 				</textField>
-				<textField pattern="#,##0.00">
+				<textField>
 					<reportElement x="402" y="90" width="70" height="15" uuid="d6b264d4-7a2c-4c2b-a4a8-fb2c7316f08e"/>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{DLVOUT}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{DLVOUT})]]></textFieldExpression>
 				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="331" y="120" width="60" height="15" uuid="450a7910-efda-41c5-9892-b14f8f7572be"/>
+				<textField>
+					<reportElement x="327" y="120" width="70" height="15" uuid="450a7910-efda-41c5-9892-b14f8f7572be"/>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{FMLIN}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{FMLIN})]]></textFieldExpression>
 				</textField>
-				<textField pattern="#,##0.00">
+				<textField>
 					<reportElement x="402" y="120" width="70" height="15" uuid="17e088dd-dd5d-4648-97c4-268e2852fcc0"/>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{FMLOUT}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{FMLOUT})]]></textFieldExpression>
 				</textField>
-				<textField pattern="#,##0.00">
+				<textField>
 					<reportElement x="402" y="135" width="70" height="15" uuid="26a97e9b-b34a-4d68-b7eb-fc3c3334b5da"/>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{WSTOUT}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{WSTOUT})]]></textFieldExpression>
 				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="331" y="135" width="60" height="15" uuid="9c1240c2-c560-4fc1-94e4-a7cadda3b4a5"/>
+				<textField>
+					<reportElement x="327" y="135" width="70" height="15" uuid="9c1240c2-c560-4fc1-94e4-a7cadda3b4a5"/>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{WSTIN}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{WSTIN})]]></textFieldExpression>
 				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="331" y="150" width="60" height="15" uuid="cd96773c-f8c0-41a8-bcd7-9e13e3961770"/>
+				<textField>
+					<reportElement x="327" y="150" width="70" height="15" uuid="cd96773c-f8c0-41a8-bcd7-9e13e3961770"/>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{LOVIN}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{LOVIN})]]></textFieldExpression>
 				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="402" y="151" width="70" height="15" uuid="5d6bc389-10ad-49f9-8bd9-c2990ee441fa"/>
+				<textField>
+					<reportElement x="402" y="150" width="70" height="15" uuid="5d6bc389-10ad-49f9-8bd9-c2990ee441fa"/>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{LOVOUT}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{LOVOUT})]]></textFieldExpression>
 				</textField>
-				<textField pattern="#,##0.00">
+				<textField>
 					<reportElement x="402" y="166" width="70" height="15" uuid="b3f9887c-fc0b-4be6-9d24-536a7c981186"/>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{RTROUT}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{RTROUT})]]></textFieldExpression>
 				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="331" y="165" width="60" height="15" uuid="36372464-d3c4-47ee-baac-7d6a652085d2"/>
+				<textField>
+					<reportElement x="327" y="165" width="70" height="15" uuid="36372464-d3c4-47ee-baac-7d6a652085d2"/>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{RTRIN}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{RTRIN})]]></textFieldExpression>
 				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="331" y="179" width="60" height="15" uuid="ae18e91b-8e71-4f53-873b-fb6d9f157023"/>
+				<textField>
+					<reportElement x="327" y="180" width="70" height="15" uuid="ae18e91b-8e71-4f53-873b-fb6d9f157023"/>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{SOPIN}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{SOPIN})]]></textFieldExpression>
 				</textField>
-				<textField pattern="#,##0.00">
+				<textField>
 					<reportElement x="402" y="181" width="70" height="15" uuid="5506301b-8948-4abc-8d34-d7c06549e29b"/>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{SOPOUT}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{SOPOUT})]]></textFieldExpression>
 				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="331" y="105" width="60" height="15" uuid="aa5ef528-bf8d-4f20-88a5-a7e22b6ad20d"/>
+				<textField>
+					<reportElement x="327" y="105" width="70" height="15" uuid="aa5ef528-bf8d-4f20-88a5-a7e22b6ad20d"/>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{LOCIN}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{LOCIN})]]></textFieldExpression>
 				</textField>
-				<textField pattern="#,##0.00">
+				<textField>
 					<reportElement x="402" y="105" width="70" height="15" uuid="5958796f-940c-4d0c-8cf6-10e773f9be42"/>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{LOCOUT}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{LOCOUT})]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="211" y="0" width="110" height="15" uuid="7666b6c1-e914-4772-a6e6-7e296960c476"/>
+					<reportElement x="200" y="0" width="121" height="15" uuid="7666b6c1-e914-4772-a6e6-7e296960c476"/>
+					<textElement textAlignment="Center"/>
 					<text><![CDATA[KETERANGAN TOTAL]]></text>
 				</staticText>
-				<textField pattern="#,##0.00">
-					<reportElement x="477" y="45" width="72" height="15" uuid="1ab4543a-213e-4d2e-8eb3-61b86e6541fe"/>
+				<textField>
+					<reportElement x="475" y="45" width="72" height="15" uuid="1ab4543a-213e-4d2e-8eb3-61b86e6541fe"/>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{SALESIN} - $V{SALESOUT}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{SALESIN} - $V{SALESOUT})]]></textFieldExpression>
+				</textField>
+				<textField pattern="#.00#;#.00#-">
+					<reportElement x="475" y="195" width="72" height="15" uuid="bd46d0b7-ae22-4107-9225-55806c381247"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{TOTALIN} - $V{TOTALOUT} + $V{sumSal})]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="475" y="30" width="72" height="15" uuid="050b9d1e-5682-4645-b429-9442497217bb"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{RCVIN} - $V{RCVOUT})]]></textFieldExpression>
 				</textField>
 				<textField pattern="#,##0.00">
-					<reportElement x="477" y="194" width="72" height="15" uuid="bd46d0b7-ae22-4107-9225-55806c381247"/>
+					<reportElement x="475" y="60" width="72" height="15" uuid="96cebfe0-e8e2-4292-b169-71f87151b328"/>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{TOTALIN} - $V{TOTALOUT} + $V{sumSal}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{PRODIN} - $V{PRODOUT})]]></textFieldExpression>
 				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="477" y="30" width="72" height="15" uuid="050b9d1e-5682-4645-b429-9442497217bb"/>
-					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{RCVIN} - $V{RCVOUT}]]></textFieldExpression>
-				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="476" y="60" width="72" height="15" uuid="96cebfe0-e8e2-4292-b169-71f87151b328"/>
-					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{PRODIN} - $V{PRODOUT}]]></textFieldExpression>
-				</textField>
-				<textField pattern="#,##0.00">
+				<textField>
 					<reportElement x="475" y="75" width="72" height="15" uuid="1205770d-921c-44b6-9694-af348363bcd9"/>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{DELIN} - $V{DELOUT}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{DELIN} - $V{DELOUT})]]></textFieldExpression>
 				</textField>
-				<textField pattern="#,##0.00">
+				<textField>
 					<reportElement x="475" y="90" width="72" height="15" uuid="b0aa1905-cf7c-44fd-a363-0099d7822f6d"/>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{DELIN} - $V{DELOUT}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{DLVIN} - $V{DLVOUT})]]></textFieldExpression>
 				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="476" y="105" width="72" height="15" uuid="8982373d-9641-44e9-b717-2d1bd0c5212d"/>
+				<textField>
+					<reportElement x="475" y="105" width="72" height="15" uuid="8982373d-9641-44e9-b717-2d1bd0c5212d"/>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{LOCIN} - $V{LOCOUT}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{LOCIN} - $V{LOCOUT})]]></textFieldExpression>
 				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="476" y="120" width="72" height="15" uuid="8c697f4c-ac8a-4986-8f01-47f5f07c09c1"/>
+				<textField>
+					<reportElement x="475" y="120" width="72" height="15" uuid="8c697f4c-ac8a-4986-8f01-47f5f07c09c1"/>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{FMLIN} - $V{FMLOUT}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{FMLIN} - $V{FMLOUT})]]></textFieldExpression>
 				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="477" y="135" width="72" height="15" uuid="692cfec9-451b-4895-a99a-d5361b0dd879"/>
+				<textField>
+					<reportElement x="475" y="135" width="72" height="15" uuid="692cfec9-451b-4895-a99a-d5361b0dd879"/>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{WSTIN} - $V{WSTOUT}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{WSTIN} - $V{WSTOUT})]]></textFieldExpression>
 				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="476" y="150" width="72" height="15" uuid="d49c8999-820e-4628-b15f-4ecfe99e99c9"/>
+				<textField>
+					<reportElement x="475" y="150" width="72" height="15" uuid="d49c8999-820e-4628-b15f-4ecfe99e99c9"/>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{LOVIN} - $V{LOVOUT}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{LOVIN} - $V{LOVOUT})]]></textFieldExpression>
 				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="477" y="166" width="72" height="15" uuid="f57dbc03-5d64-4dae-99f0-869e27ce58c8"/>
+				<textField>
+					<reportElement x="475" y="165" width="72" height="15" uuid="f57dbc03-5d64-4dae-99f0-869e27ce58c8"/>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{RTRIN} - $V{RTROUT}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{RTRIN} - $V{RTROUT})]]></textFieldExpression>
 				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="477" y="179" width="72" height="15" uuid="6cc84f06-c99c-4ecb-bee5-856157b0b13a"/>
+				<textField>
+					<reportElement x="475" y="180" width="72" height="15" uuid="6cc84f06-c99c-4ecb-bee5-856157b0b13a"/>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{SOPIN} - $V{SOPOUT}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{SOPIN} - $V{SOPOUT})]]></textFieldExpression>
 				</textField>
-				<textField pattern="#,##0.00">
+				<textField pattern="#.00#;#.00#-">
 					<reportElement x="475" y="15" width="72" height="15" uuid="1967bcab-ec15-4b46-bf7c-6b55abba80cd"/>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[$V{sumSal}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($V{sumSal})]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupFooter>
@@ -1153,33 +1158,33 @@ FROM
 				</textElement>
 				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($F{TRANS_DATE})]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00">
+			<textField pattern="#,##0.####;">
 				<reportElement x="324" y="1" width="75" height="15" uuid="c2f527a2-eab1-4178-a70e-9ae91f9d9a43"/>
 				<textElement textAlignment="Right">
 					<font size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{QTY_IN}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($F{QTY_IN})]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement x="399" y="1" width="75" height="15" uuid="1e9908d2-7af4-4099-be0c-05aa20e55a2b"/>
+			<textField pattern="#,##0.####;">
+				<reportElement x="400" y="1" width="75" height="15" uuid="1e9908d2-7af4-4099-be0c-05aa20e55a2b"/>
 				<textElement textAlignment="Right">
 					<font size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{QTY_OUT}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($F{QTY_OUT})]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00">
+			<textField pattern="#,##0.####;">
 				<reportElement x="247" y="1" width="75" height="15" uuid="5b1e766e-8691-4090-ba85-094588bd224d"/>
 				<textElement textAlignment="Right">
 					<font size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{SALDO_AWAL}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($F{SALDO_AWAL})]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement x="477" y="1" width="70" height="15" uuid="4a9e97bf-3474-4f7d-b79c-d77c10ea01ea"/>
+			<textField pattern="#,##0.####;">
+				<reportElement x="477" y="1" width="78" height="15" uuid="4a9e97bf-3474-4f7d-b79c-d77c10ea01ea"/>
 				<textElement textAlignment="Right">
 					<font size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{SALDO_AKHIR}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new DecimalFormat("###0.0000").format($F{SALDO_AKHIR})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="101" y="1" width="146" height="15" uuid="f67a760c-9dec-442e-ac4d-962af4936038"/>
