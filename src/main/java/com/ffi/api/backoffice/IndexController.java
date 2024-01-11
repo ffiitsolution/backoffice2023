@@ -3237,4 +3237,26 @@ public class IndexController {
         res.setData(viewServices.listOrderTypeReportDp());
         return res;
     }
+    
+    @RequestMapping(value = "/delete-mpcs-production", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk menghapus mpcs produksi detail by Fathur 11 Jan 2024", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage deleteMpcsProduction(@RequestBody String params) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> data = gsn.fromJson(params, new TypeToken<Map<String, String>>() {
+        }.getType());
+        ResponseMessage rm = new ResponseMessage();
+        if (processServices.deleteMpcsProduction(data)) {
+            rm.setSuccess(true);
+            rm.setMessage("Delete Successfuly");
+        } else {
+            rm.setSuccess(false);
+            rm.setMessage("Delete  Failed");
+        }
+        return rm;
+    }
 }

@@ -153,5 +153,8 @@ public interface ProcessDao {
 
     // Insert MPCS Production - Fathur 8 Jan 2024 // 
     public boolean insertMpcsProduction(Map<String, String> params) throws Exception;
-
+    
+    // Delete MPCS Production - Fathur 11 Jan 2024 // 
+    public boolean deleteMpcsProduction(Map<String, String> params) throws Exception;
+    
 }

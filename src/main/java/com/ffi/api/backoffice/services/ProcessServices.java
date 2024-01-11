@@ -269,4 +269,10 @@ public class ProcessServices {
         return dao.insertMpcsProduction(params);
     }
     // Done Insert MPCS Production //   
+
+    // Insert MPCS Production - Fathur 11 Jan 2024 //   
+    public boolean deleteMpcsProduction(Map<String, String> params) throws Exception {
+        return dao.deleteMpcsProduction(params);
+    }
+    // Done Insert MPCS Production //   
 }
