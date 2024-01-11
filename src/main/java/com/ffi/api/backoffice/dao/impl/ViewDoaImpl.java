@@ -1941,7 +1941,7 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listReceivingDetail(Map<String, String> ref) {
-        String qry = "select rd.recv_no, rd.order_no, rd.item_code,  mi.item_description, od.qty_1 ord_qty_1, rd.qty_1 rcv_qty_1, "
+        String qry = "select rd.total_qty, rd.recv_no, rd.order_no, rd.item_code, mi.uom_stock, mi.item_description, od.qty_1 ord_qty_1, rd.qty_1 rcv_qty_1, "
                 + "rd.cd_uom_1, od.qty_2 ord_qty_2, rd.qty_2 rcv_qty_2, rd.cd_uom_2, (rd.qty_1 + rd.qty_2 + rd.qty_bonus) jml_total, total_price "
                 + "from t_recv_detail rd "
                 + "left join t_order_detail od on od.order_no = rd.order_no and od.item_code = rd.item_code "
@@ -1969,6 +1969,8 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("satuan2", rs.getString("cd_uom_2"));
                 rt.put("jmlTotal", rs.getString("jml_total"));
                 rt.put("totalKg", rs.getString("total_price"));
+                rt.put("totalQty", rs.getString("total_qty"));
+                rt.put("total", rs.getString("uom_stock"));
                 return rt;
             }
         });
@@ -3737,12 +3739,12 @@ public class ViewDoaImpl implements ViewDao {
             JsonArray details = elem.getAsJsonArray("details");
             details.forEach(dtl -> {
                 String itemCode = dtl.getAsJsonObject().getAsJsonPrimitive("itemCode").getAsString();
-                String strq = "SELECT CONV_WAREHOUSE, ITEM_DESCRIPTION FROM M_ITEM WHERE ITEM_CODE = :itemCode";
+                String strq = "SELECT CONV_STOCK, ITEM_DESCRIPTION FROM M_ITEM WHERE ITEM_CODE = :itemCode";
                 Map<String, String> map = new HashMap<>();
                 map.put("itemCode", itemCode);
                 Map<String, Object> a = jdbcTemplate.queryForObject(strq, map, new DynamicRowMapper());
                 dtl.getAsJsonObject().addProperty("itemDescription", (String) a.get("itemDescription"));
-                dtl.getAsJsonObject().addProperty("convWarehouse", (BigDecimal) a.get("convWarehouse"));
+                dtl.getAsJsonObject().addProperty("convWarehouse", (BigDecimal) a.get("convStock"));
             });
             list = gson.fromJson(element, new TypeToken<List<Map<String, Object>>>() {
             }.getType());
