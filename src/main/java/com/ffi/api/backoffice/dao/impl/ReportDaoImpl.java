@@ -1177,7 +1177,7 @@ public class ReportDaoImpl implements ReportDao {
             hashMap.put("outletCode", param.get("outletCode"));
             hashMap.put("fromDate", param.get("fromDate"));
             hashMap.put("toDate", param.get("toDate"));
-        } else if (param.get("typeReport").equals("Item Selected By Product") && param.get("typeParam").equals("Kode Item")) {
+        } else if (param.get("typeReport").equals("Laporan Item Selected By Product") && param.get("typeParam").equals("Kode Item")) {
             query = "SELECT DISTINCT(D.ITEM_CODE), mi.ITEM_DESCRIPTION FROM T_POS_BILL_ITEM_DETAIL A JOIN M_GROUP_ITEM D ON A.MENU_ITEM_CODE = D.GROUP_ITEM_CODE AND D.STATUS = 'A' JOIN M_ITEM mi ON mi.ITEM_CODE =D.ITEM_CODE WHERE A.TRANS_DATE BETWEEN :fromDate AND :toDate AND A.OUTLET_CODE = :outletCode ORDER BY D.ITEM_CODE ASC";
             hashMap.put("outletCode", param.get("outletCode"));
             hashMap.put("fromDate", param.get("fromDate"));
@@ -1277,11 +1277,10 @@ public class ReportDaoImpl implements ReportDao {
                 } else if (param.get("typeReport").equals("Report Pajak") && param.get("typeParam").equals("Pos")) {
                     rt.put("posCode", rs.getString("POS_TYPE"));
                     rt.put("posDescription", rs.getString("DESCRIPTION"));
-                } else if (param.get("typeReport").equals("Item Selected By Product") && param.get("typeParam").equals("Kode Item")) {
+                } else if (param.get("typeReport").equals("Laporan Item Selected By Product") && param.get("typeParam").equals("Kode Item")) {
                     rt.put("code", rs.getString("ITEM_CODE"));
                     rt.put("description", rs.getString("ITEM_DESCRIPTION"));
                 }
-                System.err.println("rt prm: " + rt);
                 return rt;
             }
         });
@@ -2643,7 +2642,7 @@ public class ReportDaoImpl implements ReportDao {
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }
     
-    //////////////// New Method Report Item Selected By Product by M Joko 10 Januari 2024
+    //////////////// New Method Laporan Item Selected By Product by M Joko 10 Januari 2024
     @Override
     public JasperPrint jasperReportItemSelectedByProduct(Map<String, Object> param, Connection connection)
             throws JRException, IOException {
