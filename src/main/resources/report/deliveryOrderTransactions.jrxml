@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="receivingTransactions" pageWidth="616" pageHeight="842" columnWidth="576" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="1c5f4ca8-2023-497c-927a-a1037d8f6343">
 	<property name="ireport.zoom" value="1.0000000000000102"/>
 	<property name="ireport.x" value="0"/>
@@ -193,28 +194,28 @@ ORDER BY
 				<textFieldExpression><![CDATA[": " + $F{OUTLET_TO_ADDR_1}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="382" y="94" width="90" height="11" uuid="4f290f4c-686a-466d-b875-0ca90ec8c00f"/>
+				<reportElement x="382" y="87" width="90" height="11" uuid="4f290f4c-686a-466d-b875-0ca90ec8c00f"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Tanggal Pengiriman]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="382" y="104" width="90" height="11" uuid="c0d13528-29cb-40e0-a0e5-4cbde8cb5111"/>
+				<reportElement x="382" y="97" width="90" height="11" uuid="c0d13528-29cb-40e0-a0e5-4cbde8cb5111"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[No Permintaan]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="471" y="94" width="270" height="11" uuid="14be24dd-da47-4fc9-983b-55e5b580b1d9"/>
+				<reportElement x="471" y="87" width="270" height="11" uuid="14be24dd-da47-4fc9-983b-55e5b580b1d9"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("dd/MM/yyyy").format($F{DELIVERY_DATE})]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="471" y="104" width="270" height="11" uuid="9a602ab8-9160-4cfd-93a7-af748db4ebb3"/>
+				<reportElement x="471" y="97" width="270" height="11" uuid="9a602ab8-9160-4cfd-93a7-af748db4ebb3"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -283,23 +284,27 @@ ORDER BY
 				<textFieldExpression><![CDATA[": " + $F{OUTLET_TO_PHONE}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="5" y="84" width="90" height="11" uuid="6e514215-c7e6-4c77-9bd3-a6c3ee1854cf"/>
+				<reportElement x="5" y="74" width="90" height="11" uuid="6e514215-c7e6-4c77-9bd3-a6c3ee1854cf"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Outlet Tujuan]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="471" y="84" width="270" height="11" uuid="b0486fd2-9003-421c-bacc-2d115e4805df"/>
-				<textElement>
-					<font size="8" isBold="true"/>
+				<reportElement x="471" y="74" width="270" height="14" uuid="b0486fd2-9003-421c-bacc-2d115e4805df">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left">
+					<font size="10" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + $F{DELIVERY_NO}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="382" y="84" width="90" height="11" uuid="286fa422-b37a-4c21-93e4-95cf0b13b5f0"/>
+				<reportElement x="382" y="74" width="90" height="14" uuid="286fa422-b37a-4c21-93e4-95cf0b13b5f0">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<textElement>
-					<font size="8" isBold="true"/>
+					<font size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Nomor Kirim]]></text>
 			</staticText>
@@ -310,6 +315,67 @@ ORDER BY
 				</textElement>
 				<text><![CDATA[Kecil                 Jumlah Satuan]]></text>
 			</staticText>
+			<textField>
+				<reportElement x="94" y="74" width="270" height="11" uuid="f9d6f139-4d93-4043-9930-0d4fb43cf140"/>
+				<textElement>
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " +$F{OUTLET_TO_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="471" y="74" width="270" height="14" uuid="0e87b74a-e882-41b4-92b9-3d5ca91543b1">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + $F{DELIVERY_NO}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="382" y="74" width="90" height="14" uuid="75527dc0-74f8-48f5-8450-4073d476e8d9">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nomor Kirim]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="471" y="74" width="270" height="14" uuid="bd503edf-8538-427a-aa15-f624939dd000">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + $F{DELIVERY_NO}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="382" y="74" width="90" height="14" uuid="21d67477-e9d7-4f64-a221-6b7a5b7e0e37">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nomor Kirim]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="382" y="74" width="90" height="14" uuid="dcef8d5b-af76-4c93-a042-4e5b8307dfdf">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nomor Kirim]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="471" y="74" width="270" height="14" uuid="bdaac3e3-a194-497f-b6fe-740851214929">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + $F{DELIVERY_NO}]]></textFieldExpression>
+			</textField>
 		</band>
 	</columnHeader>
 	<detail>
