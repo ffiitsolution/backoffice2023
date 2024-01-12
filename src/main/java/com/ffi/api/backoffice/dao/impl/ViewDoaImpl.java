@@ -3049,49 +3049,43 @@ public class ViewDoaImpl implements ViewDao {
     }
 
     ////////////New method for query stock card - Fathur 29-Nov-2023////////////
-    // Updated query 3-Jan-2024//
+    // Updated query 11-Jan-2024//
     @Override
     public List<Map<String, Object>> listQueryStockCard(Map<String, String> ref) {
-        String city = "'X_" + getCity(ref.get("outletCode")) + "' ";
-        String query = "SELECT SCARD.TRANS_DATE, SCARD.TIME_UPD, NVL(MGLB.CODE, ' ') AS CD_WAREHOUSE, NVL(MGLB.DESCRIPTION, ' ') AS NM_WAREHOUSE, "
+        String where = " ";
+         if (!ref.get("cdWarehouse").equals("")) {
+            where = " AND MITEM.ITEM_CODE IN (SELECT ITEM_CODE FROM M_ITEM WHERE CD_WAREHOUSE LIKE :cdWarehouse) ";
+        }
+        String query = "SELECT SCARD.TRANS_DATE, SCARD.TIME_UPD, "
                 + "SCARD.ITEM_CODE, MITEM.ITEM_DESCRIPTION as ITEM_NAME, "
                 + "SCARD.QTY_BEGINNING, SCARD.QTY_IN, SCARD.QTY_OUT, ((QTY_BEGINNING + QTY_IN) - QTY_OUT) as QTY_ENDING, "
                 + "MITEM.UOM_STOCK AS UNIT, SCARD.REMARK "
                 + "FROM T_STOCK_CARD SCARD "
                 + "LEFT JOIN M_ITEM MITEM ON SCARD.ITEM_CODE = MITEM.ITEM_CODE "
-                + "LEFT JOIN M_GLOBAL MGLB on MGLB.CODE = MITEM.CD_WAREHOUSE "
                 + "WHERE SCARD.TRANS_DATE between TO_DATE(:startDate, 'DD/MM/YYYY') and (TO_DATE(:endDate, 'DD/MM/YYYY')+1) "
                 + "AND SCARD.ITEM_CODE LIKE :itemCode "
-                + "AND CD_WAREHOUSE LIKE :cdWarehouse "
-                + "AND MITEM.FLAG_STOCK = 'Y' "
-                + "AND (MGLB.COND = " + city + " OR MGLB.COND  = 'WAREHOUSE')"
+                + "AND MITEM.FLAG_STOCK = 'Y' " + where
                 + "ORDER BY SCARD.ITEM_CODE ASC, SCARD.TRANS_DATE ASC ";
         Map param = new HashMap();
         param.put("startDate", ref.get("startDate"));
         param.put("endDate", ref.get("endDate"));
         param.put("itemCode", "%" + ref.get("itemCode") + "%");
         param.put("cdWarehouse", "%" + ref.get("cdWarehouse") + "%");
-
-        List<Map<String, Object>> queryStockCardlist = jdbcTemplate.query(query, param, new RowMapper<Map<String, Object>>() {
-            @Override
-            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
-                Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("dateUpd", rs.getString("TRANS_DATE"));
-                rt.put("timeUpd", rs.getString("TIME_UPD"));
-                rt.put("itemCode", rs.getString("ITEM_CODE"));
-                rt.put("itemName", rs.getString("ITEM_NAME"));
-                rt.put("qtyBeginning", rs.getString("QTY_BEGINNING"));
-                rt.put("qtyIn", rs.getString("QTY_IN"));
-                rt.put("qtyOut", rs.getString("QTY_OUT"));
-                rt.put("qtyEnding", rs.getString("QTY_ENDING"));
-                rt.put("unit", rs.getString("UNIT"));
-                rt.put("cdWarehouse", rs.getString("CD_WAREHOUSE"));
-                rt.put("nmWarehouse", rs.getString("NM_WAREHOUSE"));
-                rt.put("remark", rs.getString("REMARK"));
-                return rt;
-            }
+       
+        return jdbcTemplate.query(query, param, (ResultSet rs, int i) -> {
+            Map<String, Object> rt = new HashMap<>();
+            rt.put("dateUpd", rs.getString("TRANS_DATE"));
+            rt.put("timeUpd", rs.getString("TIME_UPD"));
+            rt.put("itemCode", rs.getString("ITEM_CODE"));
+            rt.put("itemName", rs.getString("ITEM_NAME"));
+            rt.put("qtyBeginning", rs.getString("QTY_BEGINNING"));
+            rt.put("qtyIn", rs.getString("QTY_IN"));
+            rt.put("qtyOut", rs.getString("QTY_OUT"));
+            rt.put("qtyEnding", rs.getString("QTY_ENDING"));
+            rt.put("unit", rs.getString("UNIT"));
+            rt.put("remark", rs.getString("REMARK"));
+            return rt;
         });
-        return queryStockCardlist;
     }
     ////////////Done method for query stock card////////////
 
