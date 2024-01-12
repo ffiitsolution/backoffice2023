@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="subReportProductionRecipe" pageWidth="595" pageHeight="420" orientation="Landscape" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="07d2e234-b2e4-42e6-a6ca-365099d8b0f4">
+	<property name="com.jaspersoft.studio.data.sql.tables">
+		<![CDATA[Ik1fUkVDSVBFX1BST0RVQ1QiICwyMDMsMTIwOSwwNWU0Y2FjMy0zYjRkLTQyZDItYjc0NC0wODMz
+NzNkZWZmNTg7Ik1fUkVDSVBFX0hFQURFUiIgLDIwMywxNSxhYWE5NjY0OC0xOTY0LTRhNmYtOGIx
+NS0xYzBiMDUxNWRjY2E7Ik1fSVRFTSIgLDE1LDg5Nyw2YjJiYWRlYy0xY2QwLTQ3ZTYtYTkwNS1k
+NGMwNjliNzU0MDE7Ik1fSVRFTSIgLDIwMywyNjEsZmJhMTdhZTEtY2VhNi00ZmQ1LTljNjctZTY2
+ZGNiZmE4N2E2OyJNX1JFQ0lQRV9ERVRBSUwiICwzOTEsMTIwOSxhNjI5MDQzYy00NmU1LTRhZjEt
+YWQ4Mi05YzkzNGE5ODcwMmM7]]>
+	</property>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter"/>
+	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w1" value="496"/>
+	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w2" value="490"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<parameter name="recipeCode" class="java.lang.String"/>
+	<parameter name="productionQty" class="java.math.BigDecimal"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT mrh."RECIPE_CODE",
+	mrh."RECIPE_REMARK",
+	mrd."QTY_STOCK" AS RECIPE_ITEM_QTY,
+	mrd."UOM_STOCK" AS RECIPE_UOM_STOCK,
+	mi."ITEM_CODE" AS RECIPE_ITEM_CODE,
+	mi."ITEM_DESCRIPTION" AS RECIPE_ITEM_NAME,
+	mi2."ITEM_CODE" AS PRODUCT_ITEM_CODE,
+	mi2."ITEM_DESCRIPTION" AS PRODUCT_ITEM_NAME,
+	mrp."QTY_STOCK" AS PRDUCT_ITEM_STOCK_OUTPUT,
+	mrp."UOM_STOCK" AS PRODUCT_ITEM_UOM_STOCK
+FROM "M_RECIPE_DETAIL" mrd
+	JOIN "M_RECIPE_HEADER" mrh ON 
+	 mrh."RECIPE_CODE" = mrd."RECIPE_CODE" 
+	JOIN "M_ITEM" mi ON 
+	 mi."ITEM_CODE" = mrd."ITEM_CODE" 
+	JOIN "M_RECIPE_PRODUCT" mrp ON 
+	 mrp."RECIPE_CODE" = mrd."RECIPE_CODE" 
+	JOIN "M_ITEM" mi2 ON 
+	 mi2."ITEM_CODE" = mrp."PRODUCT_CODE" 
+WHERE 
+	 mrd."RECIPE_CODE" = $P{recipeCode}]]>
+	</queryString>
+	<field name="RECIPE_CODE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="RECIPE_CODE"/>
+		<property name="com.jaspersoft.studio.field.label" value="RECIPE_CODE"/>
+	</field>
+	<field name="RECIPE_REMARK" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="RECIPE_REMARK"/>
+		<property name="com.jaspersoft.studio.field.label" value="RECIPE_REMARK"/>
+	</field>
+	<field name="RECIPE_ITEM_QTY" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="RECIPE_ITEM_QTY"/>
+		<property name="com.jaspersoft.studio.field.label" value="RECIPE_ITEM_QTY"/>
+	</field>
+	<field name="RECIPE_UOM_STOCK" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="RECIPE_UOM_STOCK"/>
+		<property name="com.jaspersoft.studio.field.label" value="RECIPE_UOM_STOCK"/>
+	</field>
+	<field name="RECIPE_ITEM_CODE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="RECIPE_ITEM_CODE"/>
+		<property name="com.jaspersoft.studio.field.label" value="RECIPE_ITEM_CODE"/>
+	</field>
+	<field name="RECIPE_ITEM_NAME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="RECIPE_ITEM_NAME"/>
+		<property name="com.jaspersoft.studio.field.label" value="RECIPE_ITEM_NAME"/>
+	</field>
+	<field name="PRODUCT_ITEM_CODE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="PRODUCT_ITEM_CODE"/>
+		<property name="com.jaspersoft.studio.field.label" value="PRODUCT_ITEM_CODE"/>
+	</field>
+	<field name="PRODUCT_ITEM_NAME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="PRODUCT_ITEM_NAME"/>
+		<property name="com.jaspersoft.studio.field.label" value="PRODUCT_ITEM_NAME"/>
+	</field>
+	<field name="PRDUCT_ITEM_STOCK_OUTPUT" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="PRDUCT_ITEM_STOCK_OUTPUT"/>
+		<property name="com.jaspersoft.studio.field.label" value="PRDUCT_ITEM_STOCK_OUTPUT"/>
+	</field>
+	<field name="PRODUCT_ITEM_UOM_STOCK" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="PRODUCT_ITEM_UOM_STOCK"/>
+		<property name="com.jaspersoft.studio.field.label" value="PRODUCT_ITEM_UOM_STOCK"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="41" splitType="Stretch">
+			<textField>
+				<reportElement x="141" y="2" width="180" height="20" uuid="69bd3818-8184-4681-9416-b736f24110e4"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{RECIPE_REMARK}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="240" y="22" width="70" height="17" uuid="49e2a3ad-b6c9-4276-8359-6e50a735b47e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Qty]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="20" y="2" width="71" height="20" uuid="08a2a9b8-aaa4-4145-8d7c-93aea520c8fd"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Kode Resep : ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="20" y="22" width="100" height="17" uuid="21930dd0-a908-4c90-b7ab-55e3995275ed"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Bahan yang dipakai]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="91" y="2" width="50" height="20" uuid="58e186a7-842e-4dc0-9775-4ebb97fc5196"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{RECIPE_CODE}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="20" y="39" width="300" height="1" uuid="a2269e3d-0ef2-40d9-9549-72423e209840"/>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="16" splitType="Stretch">
+			<textField>
+				<reportElement x="90" y="0" width="150" height="16" uuid="8d81bdef-2f65-43ef-9f15-831652db2045">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="7e6b0a05-5ce2-4878-bf2a-ae573229c8d1"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{RECIPE_ITEM_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="240" y="0" width="70" height="16" uuid="12b0d10c-bb3f-40c4-a63f-133bc9c76075">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="7e6b0a05-5ce2-4878-bf2a-ae573229c8d1"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new BigDecimal($F{RECIPE_ITEM_QTY}.doubleValue()).divide(new BigDecimal($F{PRDUCT_ITEM_STOCK_OUTPUT}.doubleValue()), 2, RoundingMode.HALF_UP).multiply(new BigDecimal($P{productionQty}.doubleValue())).toString() + " " + $F{RECIPE_UOM_STOCK}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="20" y="0" width="70" height="16" uuid="2c35c594-a4fb-411f-b2e7-88560a771b4d">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="7e6b0a05-5ce2-4878-bf2a-ae573229c8d1"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{RECIPE_ITEM_CODE}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="30" splitType="Stretch">
+			<line>
+				<reportElement x="20" y="16" width="300" height="1" uuid="a81f2855-ce27-4809-bd74-e0a1b3cfc1c1"/>
+			</line>
+			<textField>
+				<reportElement x="20" y="18" width="70" height="12" uuid="f709c2c7-9071-4b2e-90f6-29622bf78043">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="7e6b0a05-5ce2-4878-bf2a-ae573229c8d1"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PRODUCT_ITEM_CODE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="240" y="18" width="70" height="12" uuid="56101edd-ecc4-415e-ae7c-04837acef0e0">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="7e6b0a05-5ce2-4878-bf2a-ae573229c8d1"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{productionQty} + " " + $F{PRODUCT_ITEM_UOM_STOCK}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="20" y="1" width="100" height="15" uuid="2b09cb27-20b1-43aa-bbfe-7e538c4b7ba5"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hasil Produksi]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="240" y="1" width="70" height="15" uuid="cd44fbdd-6c90-44f4-b526-90a05c26e0e9"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Qty]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="90" y="18" width="150" height="12" uuid="af6e62a7-618b-4877-bba3-603c82663260">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="7e6b0a05-5ce2-4878-bf2a-ae573229c8d1"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PRODUCT_ITEM_NAME}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnFooter>
+</jasperReport>
