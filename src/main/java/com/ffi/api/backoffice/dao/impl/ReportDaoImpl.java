@@ -1762,11 +1762,11 @@ public class ReportDaoImpl implements ReportDao {
         queryDataReceipt.append("SELECT UTM.POS_CODE_NOW, JON.POS_DESCRIPTION, UTM.MIN_NOW, UTM.MAX_NOW, UTM.MIN_AGO, " +
                 "UTM.MAX_AGO FROM (");
         queryDataReceipt.append("SELECT * FROM ( SELECT '").append(listPos.get(0).get("posCode")).append("'" +
-                        "AS POS_CODE_NOW , MIN(BILL_NO) AS MIN_NOW, MAX(BILL_NO) AS MAX_NOW FROM T_POS_BILL WHERE TRANS_DATE " +
+                        "AS POS_CODE_NOW , MIN(BILL_NO) AS MIN_NOW, MAX(BILL_NO) AS MAX_NOW FROM T_POS_BILL WHERE BILL_NO LIKE '%-%' AND TRANS_DATE " +
                         "= '").append(param.get("periode")).append("' AND POS_CODE = '").append(listPos.get(0).get("posCode"))
                 .append("' AND OUTLET_CODE = '").append(param.get("outletCode")).append("' " +
                         ")A JOIN ( SELECT '").append(listPos.get(0).get("posCode")).append("' AS " +
-                        "POS_CODE_AGO, MIN(BILL_NO) AS MIN_AGO, MAX(BILL_NO) AS MAX_AGO FROM T_POS_BILL WHERE " +
+                        "POS_CODE_AGO, MIN(BILL_NO) AS MIN_AGO, MAX(BILL_NO) AS MAX_AGO FROM T_POS_BILL WHERE BILL_NO LIKE '%-%' AND " +
                         "TRANS_DATE = '").append(yesterdayDateString).append("' AND POS_CODE = '")
                 .append(listPos.get(0).get("posCode")).append("' AND OUTLET_CODE = '").append(param.get("outletCode"))
                 .append("')B ON A.POS_CODE_NOW = B.POS_CODE_AGO");
@@ -1774,11 +1774,11 @@ public class ReportDaoImpl implements ReportDao {
         for (int i = 1; i < listPos.size(); i++) {
             queryDataReceipt.append(" UNION ALL ");
             queryDataReceipt.append("SELECT * FROM ( SELECT '").append(listPos.get(i).get("posCode")).append("' " +
-                            "AS POS_CODE_NOW , MIN(BILL_NO) AS MIN_NOW, MAX(BILL_NO) AS MAX_NOW FROM T_POS_BILL WHERE TRANS_DATE " +
+                            "AS POS_CODE_NOW , MIN(BILL_NO) AS MIN_NOW, MAX(BILL_NO) AS MAX_NOW FROM T_POS_BILL WHERE BILL_NO LIKE '%-%' AND TRANS_DATE " +
                             "= '").append(param.get("periode")).append("' AND POS_CODE = '").append(listPos.get(i).get("posCode"))
                     .append("' AND OUTLET_CODE = '").append(param.get("outletCode")).append("'" +
                             ")A JOIN ( SELECT '").append(listPos.get(i).get("posCode")).append("' AS " +
-                            "POS_CODE_AGO, MIN(BILL_NO) AS MIN_AGO, MAX(BILL_NO) AS MAX_AGO FROM T_POS_BILL WHERE " +
+                            "POS_CODE_AGO, MIN(BILL_NO) AS MIN_AGO, MAX(BILL_NO) AS MAX_AGO FROM T_POS_BILL WHERE BILL_NO LIKE '%-%' AND " +
                             "TRANS_DATE = '").append(yesterdayDateString).append("' AND POS_CODE = '")
                     .append(listPos.get(i).get("posCode")).append("' AND OUTLET_CODE = '").append(param.get("outletCode"))
                     .append("')B ON A.POS_CODE_NOW = B.POS_CODE_AGO");
@@ -1794,6 +1794,7 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("dateAgo", yesterdayDateString);
         hashMap.put("user", param.get("user"));
         hashMap.put("outletName", param.get("outletName"));
+        System.out.println(queryDataReceipt.toString());
 
         List<Map<String, Object>> listParamPos = (List<Map<String, Object>>) param.get("pos");
         StringBuilder posCode = new StringBuilder();
