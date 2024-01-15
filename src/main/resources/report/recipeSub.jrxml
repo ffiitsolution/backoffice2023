@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="recipeSub" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="0" bottomMargin="0" uuid="f42fc47f-dcd8-4d9b-8deb-d1bfba559d44">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="localhost"/>
+	<parameter name="outletCode" class="java.lang.String"/>
+	<parameter name="status" class="java.lang.String"/>
+	<parameter name="user" class="java.lang.String"/>
+	<parameter name="labelStatus" class="java.lang.String"/>
+	<parameter name="outletBrand" class="java.lang.String"/>
+	<parameter name="recipeCode" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT rh.RECIPE_CODE, rh.RECIPE_REMARK, rd.ITEM_CODE, mi.ITEM_DESCRIPTION, rd.QTY_STOCK, rd.UOM_STOCK, rp.PRODUCT_CODE,
+CASE WHEN rp.PRODUCT_REMARK IS NULL OR rp.PRODUCT_REMARK = ' ' THEN mmi.ITEM_DESCRIPTION ELSE rp.PRODUCT_REMARK END AS PRODUCT_REMARK,
+rp.QTY_STOCK AS qyt_product, rp.UOM_STOCK AS uom_product, mo.OUTLET_NAME, mo."TYPE", mo.ADDRESS_1, mo.ADDRESS_2
+FROM M_RECIPE_HEADER rh
+LEFT JOIN M_RECIPE_DETAIL rd ON rh.RECIPE_CODE = rd.RECIPE_CODE LEFT JOIN M_RECIPE_PRODUCT rp ON rh.RECIPE_CODE = rp.RECIPE_CODE
+LEFT JOIN M_ITEM mi ON rd.ITEM_CODE = mi.ITEM_CODE LEFT JOIN M_ITEM mmi ON rp.PRODUCT_CODE = mmi.ITEM_CODE JOIN M_OUTLET mo ON mo.OUTLET_CODE = $P{outletCode}
+WHERE rh.STATUS = $P{status} AND rh.RECIPE_CODE = $P{recipeCode} ORDER BY rh.RECIPE_CODE ASC, rd.ITEM_CODE ASC, rp.PRODUCT_CODE ASC]]>
+	</queryString>
+	<field name="RECIPE_CODE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="RECIPE_CODE"/>
+		<property name="com.jaspersoft.studio.field.label" value="RECIPE_CODE"/>
+	</field>
+	<field name="RECIPE_REMARK" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="RECIPE_REMARK"/>
+		<property name="com.jaspersoft.studio.field.label" value="RECIPE_REMARK"/>
+	</field>
+	<field name="ITEM_CODE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ITEM_CODE"/>
+		<property name="com.jaspersoft.studio.field.label" value="ITEM_CODE"/>
+	</field>
+	<field name="ITEM_DESCRIPTION" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ITEM_DESCRIPTION"/>
+		<property name="com.jaspersoft.studio.field.label" value="ITEM_DESCRIPTION"/>
+	</field>
+	<field name="QTY_STOCK" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="QTY_STOCK"/>
+		<property name="com.jaspersoft.studio.field.label" value="QTY_STOCK"/>
+	</field>
+	<field name="UOM_STOCK" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="UOM_STOCK"/>
+		<property name="com.jaspersoft.studio.field.label" value="UOM_STOCK"/>
+	</field>
+	<field name="PRODUCT_CODE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="PRODUCT_CODE"/>
+		<property name="com.jaspersoft.studio.field.label" value="PRODUCT_CODE"/>
+	</field>
+	<field name="PRODUCT_REMARK" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="PRODUCT_REMARK"/>
+		<property name="com.jaspersoft.studio.field.label" value="PRODUCT_REMARK"/>
+	</field>
+	<field name="QYT_PRODUCT" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="QYT_PRODUCT"/>
+		<property name="com.jaspersoft.studio.field.label" value="QYT_PRODUCT"/>
+	</field>
+	<field name="UOM_PRODUCT" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="UOM_PRODUCT"/>
+		<property name="com.jaspersoft.studio.field.label" value="UOM_PRODUCT"/>
+	</field>
+	<field name="OUTLET_NAME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="OUTLET_NAME"/>
+		<property name="com.jaspersoft.studio.field.label" value="OUTLET_NAME"/>
+	</field>
+	<field name="TYPE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="TYPE"/>
+		<property name="com.jaspersoft.studio.field.label" value="TYPE"/>
+	</field>
+	<field name="ADDRESS_1" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADDRESS_1"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADDRESS_1"/>
+	</field>
+	<field name="ADDRESS_2" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADDRESS_2"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADDRESS_2"/>
+	</field>
+	<group name="PRODUCT_CODE">
+		<groupExpression><![CDATA[$F{PRODUCT_CODE}]]></groupExpression>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="58" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="10" width="180" height="15" uuid="5451b672-fd58-4fbd-85a4-b9e37a8599d0">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PRODUCT_CODE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="180" y="10" width="370" height="15" uuid="79f026e0-20a7-4e50-9783-4de8060d6af3">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PRODUCT_REMARK}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

@@ -798,10 +798,23 @@ public class ReportDaoImpl implements ReportDao {
 
     @Override
     public JasperPrint jasperReportRecipe(Map<String, Object> param, Connection connection) throws IOException, JRException {
+        String subReportPath = "report/recipeSub.jrxml";
+        JasperReport subReport = null;
+        try {
+            InputStream inputStream = getClass().getClassLoader().getResourceAsStream(subReportPath);
+            if (inputStream == null) {
+                throw new RuntimeException("Subreport file not found: " + subReportPath);
+            }
+            subReport = JasperCompileManager.compileReport(inputStream);
+        } catch (JRException e) {
+            throw new RuntimeException(e);
+        }
+        
         Map<String, Object> hashMap = new HashMap<>();
         hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("user", param.get("user"));
+        hashMap.put("subReport", subReport);
 
         if (param.get("status").equals("Active")) {
             hashMap.put("status", "A");

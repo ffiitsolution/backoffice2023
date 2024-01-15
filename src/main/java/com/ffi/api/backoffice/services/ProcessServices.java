@@ -8,6 +8,7 @@ import com.ffi.api.backoffice.dao.ProcessDao;
 import com.ffi.api.backoffice.model.DetailOpname;
 import com.ffi.api.backoffice.model.HeaderOpname;
 import com.google.gson.JsonObject;
+import java.util.List;
 import java.util.Map;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -135,8 +136,8 @@ public class ProcessServices {
     }
 
     ///////////////new method updateStatusOpname 6-11-2023////////////////////////////
-    public void updateOpnameStatus(Map<String, String> balance) {
-        dao.updateOpnameStatus(balance);
+    public List updateOpnameStatus(Map<String, String> balance) {
+        return dao.updateOpnameStatus(balance);
     }
 
     ///////////////done///////////////

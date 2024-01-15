@@ -11,6 +11,7 @@ import com.ffi.api.backoffice.model.ParameterLogin;
 import com.ffi.api.backoffice.services.ProcessServices;
 import com.ffi.api.backoffice.services.ViewServices;
 import com.ffi.api.backoffice.services.ReportServices;
+import com.ffi.api.backoffice.utils.DynamicRowMapper;
 import com.ffi.paging.Response;
 import com.ffi.paging.ResponseMessage;
 import com.google.gson.Gson;
@@ -21,6 +22,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -1656,8 +1658,18 @@ public class IndexController {
         }.getType());
         DetailOpname opnameDtls = gsn.fromJson(param, new TypeToken<DetailOpname>() {
         }.getType());
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> list = new ArrayList<>();
         ResponseMessage rm = new ResponseMessage();
+        long maxValue = 9999999999L;
+        String qtyPurch = balance.getOrDefault("qtyPurch", "0");
+        String qtyStock = balance.getOrDefault("qtyStock", "0");
+        String totalQty = balance.getOrDefault("totalQty", "0");
+        if (Long.parseLong(qtyPurch) > maxValue || Long.parseLong(qtyStock) > maxValue || Long.parseLong(totalQty) > maxValue || 
+            qtyPurch.length() > 14 || qtyStock.length() > 14 || totalQty.length() > 14) {
+            rm.setSuccess(false);
+            rm.setMessage("Nilai maksimum terlampaui, mohon cek kembali jumlah item.");
+            return rm;
+        }
 
         try {
             processServices.inserOpnameDetail(opnameDtls);
@@ -2411,20 +2423,22 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, String>>() {
         }.getType());
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        List list = new ArrayList();
         ResponseMessage rm = new ResponseMessage();
         try {
-            processServices.updateOpnameStatus(balance);
-            rm.setSuccess(true);
-            rm.setMessage("Update Success Successfuly");
-
+            list = processServices.updateOpnameStatus(balance);
+            if(list.isEmpty()){
+                rm.setSuccess(true);
+                rm.setMessage("Update Success");
+            }else {
+                rm.setSuccess(false);
+                rm.setMessage( list.size() + " item berikut terdeteksi memiliki nilai input total 0");
+            }
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("updateOpnameStatus Failed: " + e.getMessage());
         }
-
         rm.setItem(list);
-
         return rm;
     }
     ///////////////done 

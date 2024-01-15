@@ -696,14 +696,31 @@ public class ProcessDaoImpl implements ProcessDao {
     ///////////////new method updateStatusOpname 6-11-2023////////////////////////////
     /////////////// update menambah item ke t_stock_card_detail by M Joko 18-12-2023////////////////////////////
     @Override
-    public void updateOpnameStatus(Map balance) {
-        System.out.println("updateOpnameStatus balance = " + balance);
+    public List updateOpnameStatus(Map balance) {
         Map param = new HashMap();
         Integer status = Integer.valueOf(balance.get("status").toString());
+        Integer confirmZero = Integer.valueOf(balance.getOrDefault("confirmZero",0).toString());
+        List<Map<String, Object>> list = new ArrayList();
         System.out.println("updateOpnameStatus status = " + status);
         param.put("outletCode", balance.get("outletCode"));
         param.put("opnameNo", balance.get("opnameNo"));
         param.put("status", status);
+        
+        // cek jika ada nilai nol dan belum di confirmZero, kembalikan list
+        if(confirmZero < 1 && (status == 1 || status == '1')){
+            String qry = """
+                select o.opname_no, o.item_code, mi.item_description, o.qty_purch, o.uom_purch, o.qty_stock, o.uom_stock, o.total_qty 
+                from t_opname_detail o
+                JOIN m_item mi ON o.item_code = mi.item_code
+                where o.outlet_code = :outletCode and o.opname_no = :opnameNo and o.qty_purch = 0 and o.qty_stock = 0 and o.total_qty = 0
+            """;
+            list = jdbcTemplate.query(qry, param, new DynamicRowMapper());
+            if( !list.isEmpty()){
+                System.out.println("terdapat nilai semua 0 saat opname");
+                return list;
+            }
+        }
+        
         String qy = "update t_opname_header set status =:status WHERE OPNAME_NO = :opnameNo and OUTLET_CODE= :outletCode";
         jdbcTemplate.update(qy, param);
         if(status == 1 || status == '1'){
@@ -711,43 +728,50 @@ public class ProcessDaoImpl implements ProcessDao {
             // update by M Joko 20-dec-23 
             updateMCounterAfterStockOpname(balance);
         }
+        return list;
     }
     
     public void itemOpnameToStockCard(Map<String, String> balance) {
-            System.out.println("updateOpnameStatus = 1 / Close");
             // update by M Joko 18-12-23
             Map param = new HashMap();
             param.put("opnameNo", balance.get("opnameNo"));
             param.put("userUpd", balance.getOrDefault("userUpd", "SYSTEM"));
             param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
             param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
-            // hanya yg ada nilai di in dan out yg dimasukkan ke stock card
+            // hanya yg ada nilai di in dan out yg dimasukkan ke stock card detail
             String qryListStockOpname = "SELECT * FROM ( SELECT od.OUTLET_CODE, (SELECT trans_date FROM m_outlet WHERE outlet_code = od.outlet_code) AS TRANS_DATE, od.ITEM_CODE, 'SOP' AS CD_TRANS, CASE WHEN od.qty_freeze < od.total_qty THEN od.total_qty - od.qty_freeze ELSE 0 END AS QUANTITY_IN, CASE WHEN od.qty_freeze > od.total_qty THEN od.qty_freeze - od.total_qty ELSE 0 END AS QUANTITY, :userUpd AS USER_UPD, :dateUpd AS DATE_UPD, :timeUpd AS TIME_UPD FROM T_OPNAME_DETAIL od WHERE od.opname_no = :opnameNo ) WHERE QUANTITY_IN NOT IN (0, '0') UNION ALL SELECT * FROM ( SELECT od.OUTLET_CODE, (SELECT trans_date FROM m_outlet WHERE outlet_code = od.outlet_code) AS TRANS_DATE, od.ITEM_CODE, 'SOP' AS CD_TRANS, CASE WHEN od.qty_freeze < od.total_qty THEN od.total_qty - od.qty_freeze ELSE 0 END AS QUANTITY_IN, CASE WHEN od.qty_freeze > od.total_qty THEN od.qty_freeze - od.total_qty ELSE 0 END AS QUANTITY, :userUpd AS USER_UPD, :dateUpd AS DATE_UPD, :timeUpd AS TIME_UPD FROM T_OPNAME_DETAIL od WHERE od.opname_no = :opnameNo ) WHERE QUANTITY NOT IN (0, '0')";
         
         String qryToStockCardDetail = "insert into t_stock_card_detail ( " + qryListStockOpname + " )";
-        jdbcTemplate.update(qryToStockCardDetail, param);
+        try{
+            jdbcTemplate.update(qryToStockCardDetail, param);
+        } catch (DataAccessException e){
+            System.out.println("error insert so to sc detail: " + param);
+        }
         
-        String qryUpdateStockCard = """
-                                    UPDATE t_stock_card sc
-                                    SET 
-                                        sc.QTY_IN = NVL(sc.QTY_IN,0) + NVL(
-                                            (SELECT tsd.QUANTITY_IN
-                                             FROM t_stock_card_detail tsd
-                                             WHERE tsd.ITEM_CODE = sc.ITEM_CODE
-                                               AND tsd.trans_date = sc.trans_date
-                                               AND tsd.CD_TRANS = 'SOP'), 
-                                            0
-                                        ),
-                                        sc.QTY_OUT = NVL(sc.QTY_OUT) + NVL(
-                                            (SELECT tsd.QUANTITY
-                                             FROM t_stock_card_detail tsd
-                                             WHERE tsd.ITEM_CODE = sc.ITEM_CODE
-                                               AND tsd.trans_date = sc.trans_date
-                                               AND tsd.CD_TRANS = 'SOP'), 
-                                            0
-                                        )
-                                    WHERE sc.trans_date = (SELECT trans_date FROM m_outlet WHERE outlet_code = sc.outlet_code)""";
-        jdbcTemplate.update(qryUpdateStockCard,param);
+        // update method update by M Joko 15 Jan 24
+        List<Map<String, Object>> list = jdbcTemplate.query(qryListStockOpname, param, new DynamicRowMapper());
+        
+        if( !list.isEmpty()){
+            for (Map<String, Object> sc : list) {
+                Map paramUpd = new HashMap();
+                param.put("itemCode", sc.get("itemCode"));
+                param.put("outletCode", sc.get("outletCode"));
+                param.put("quantityIn", sc.get("quantityIn"));
+                param.put("quantity", sc.get("quantity"));
+                String qryUpd = """
+                    UPDATE t_stock_card sc
+                    SET 
+                        sc.QTY_IN = NVL(sc.QTY_IN,0) + NVL(:quantityIn,0),
+                        sc.QTY_OUT = NVL(sc.QTY_OUT,0) + NVL(:quantity,0)
+                    WHERE sc.trans_date = (SELECT trans_date FROM m_outlet WHERE outlet_code = :outletCode) AND sc.item_code = :itemCode
+                                            """;
+                try{
+                    jdbcTemplate.update(qryUpd, paramUpd);
+                } catch (DataAccessException e){
+                    System.out.println("error update sc: " + paramUpd);
+                }
+            }
+        }
     }
 ///////////////done///////////////
 
