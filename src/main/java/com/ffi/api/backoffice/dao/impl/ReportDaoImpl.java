@@ -2583,14 +2583,12 @@ public class ReportDaoImpl implements ReportDao {
     public JasperPrint jesperReportPerformanceRiderHd(Map<String, Object> param, Connection connection) throws IOException, JRException {
         Map<String, Object> hashMap = new HashMap<String, Object>();
         hashMap.put("outletBrand", param.get("outletBrand"));
-        hashMap.put("city", "X_" + param.get("city"));
-        hashMap.put("fromDate", param.get("fromDate"));
-        hashMap.put("toDate", param.get("toDate"));
+        hashMap.put("periode", param.get("periode"));
         hashMap.put("outletCode", param.get("outletCode"));
-        hashMap.put("user", param.get("user"));
         hashMap.put("typeReport", param.get("typeReport"));
+        hashMap.put("user", param.get("user"));
 
-        ClassPathResource classPathResource = new ClassPathResource(param.get("typeReport").equals("1") ? "report/reportDeleteMpcsProduksi.jrxml" : "report/reportDeleteMpcsProduksiDetail.jrxml");
+        ClassPathResource classPathResource = new ClassPathResource(param.get("typeReport").equals("1") ? "report/reportPerformanceRiderHd.jrxml" : "report/reportPerformanceRiderHdDetail.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }
