@@ -2683,9 +2683,14 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("mpcsGroup", param.get("mpcsGroup"));
         hashMap.put("user", param.get("user"));
         hashMap.put("subReport", subReport);
-
-        System.err.println("hashMap: " + hashMap);
-        ClassPathResource classPathResource = new ClassPathResource("report/productionReport.jrxml");
+        
+        String reportPath;
+        if ("Jam Aktual".equals(param.get("detail"))) {
+            reportPath = "report/productionReportActualTime.jrxml";
+        } else {
+            reportPath = "report/productionReport.jrxml";
+        }
+        ClassPathResource classPathResource = new ClassPathResource(reportPath);
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }

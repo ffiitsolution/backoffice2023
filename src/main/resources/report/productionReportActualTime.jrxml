@@ -529,7 +529,7 @@ ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS
 				<textElement textAlignment="Center">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<text><![CDATA[LAPORAN PRODUKSI]]></text>
+				<text><![CDATA[LAPORAN PRODUKSI JAM AKTUAL]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="0" y="60" width="50" height="11" uuid="1fd47466-5b3f-47a4-a4de-93e2c65c45d3"/>
