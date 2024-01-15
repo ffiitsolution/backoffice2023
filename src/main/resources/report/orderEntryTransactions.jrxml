@@ -144,9 +144,9 @@ WHERE
 				<text><![CDATA[Nama Outlet]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="5" y="93" width="90" height="15" uuid="ce17e4e2-1076-4b7d-abf8-5323a445878d"/>
+				<reportElement x="5" y="96" width="90" height="15" uuid="ce17e4e2-1076-4b7d-abf8-5323a445878d"/>
 				<textElement>
-					<font size="10" isBold="true"/>
+					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[No Order]]></text>
 			</staticText>
@@ -263,9 +263,9 @@ WHERE
 				<textFieldExpression><![CDATA[": " + $F{NAME_CD}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="94" y="93" width="270" height="15" uuid="37fed315-b8e7-4818-ae34-cbf41b19ea22"/>
+				<reportElement x="94" y="96" width="270" height="15" uuid="37fed315-b8e7-4818-ae34-cbf41b19ea22"/>
 				<textElement>
-					<font size="10" isBold="true"/>
+					<font size="8" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + $P{orderNo}]]></textFieldExpression>
 			</textField>
@@ -274,7 +274,7 @@ WHERE
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[": " + $F{REMARK}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[": " + ($F{REMARK} != null ? $F{REMARK} : "-")]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="0" y="53" width="555" height="20" uuid="5157ca47-f940-422d-be87-ecbaa087459b">
