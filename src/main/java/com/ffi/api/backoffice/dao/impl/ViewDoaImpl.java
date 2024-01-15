@@ -1436,7 +1436,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "AND H.OUTLET_CODE = :outletCode  "
                 + "AND H.Order_to LIKE :orderTo  "
                 + "" + where + ""
-                + " ORDER BY H.ORDER_ID DESC, H.DATE_UPD DESC, H.TIME_UPD DESC "; // ORDER  H.DATE_UPD DESC, H.TIME_UPD DESC by Dani 12 Desc 2023
+                + " ORDER BY H.DATE_UPD DESC, H.TIME_UPD DESC ";
         Map prm = new HashMap();
         prm.put("status", "%" + balance.get("status") + "%");
         prm.put("orderType", "%" + balance.get("orderType") + "%");
@@ -3053,7 +3053,7 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> listQueryStockCard(Map<String, String> ref) {
         String where = " ";
-         if (!ref.get("cdWarehouse").equals("")) {
+        if (!ref.get("cdWarehouse").equals("")) {
             where = " AND MITEM.ITEM_CODE IN (SELECT ITEM_CODE FROM M_ITEM WHERE CD_WAREHOUSE LIKE :cdWarehouse) ";
         }
         String query = "SELECT SCARD.TRANS_DATE, SCARD.TIME_UPD, "
