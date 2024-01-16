@@ -161,4 +161,7 @@ public interface ProcessDao {
     // Add Counter Print Receiving Dani 11 Jan 2024
     public void addCounterPrintReceiving(Map<String, Object> params);
     
+    // Add Counter Print Order Entry adit 16 Jan 2024
+    public void addCounterPrintOrderEntry(Map<String, Object> params);
+    
 }

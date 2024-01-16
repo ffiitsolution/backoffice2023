@@ -2964,11 +2964,18 @@ public class ProcessDaoImpl implements ProcessDao {
         return isUpdQtySuccess && isUpdQtyAccSuccess && isUpdHistorySuccess && isInsertMpcsDetailSuccess;
     }
     // Done delete MPCS Production //
-
+    
     // Add Counter Print Receiving Dani 11 Jan 2024
     @Override
     public void addCounterPrintReceiving(Map<String, Object> param) {
         String query = "UPDATE T_RECV_HEADER a SET a.NO_OF_PRINT  = NO_OF_PRINT+1 WHERE a.ORDER_NO = :noOrder AND a.RECV_NO = :recvNo";
+        jdbcTemplate.update(query, param); 
+    }
+    
+    // Add Counter Print Order Entry adit 16 Jan 2024
+    @Override
+    public void addCounterPrintOrderEntry(Map<String, Object> param) {
+        String query = "UPDATE T_ORDER_HEADER a SET a.NO_OF_PRINT  = a.NO_OF_PRINT+1 WHERE a.ORDER_NO = :orderNo";
         jdbcTemplate.update(query, param); 
     }
 }

@@ -281,4 +281,9 @@ public class ProcessServices {
     public void addCounterPrintReceiving(Map<String, Object> param) {
         dao.addCounterPrintReceiving(param);
     }
+    
+    // Add Counter Print Order Entry Adit 16 Jan 2024
+    public void addCounterPrintOrderEntry(Map<String, Object> param) {
+        dao.addCounterPrintOrderEntry(param);
+    }
 }
