@@ -609,7 +609,7 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("cdTemplate", balance.getCdTemplate());
         param.put("opnameNo", opNo);
         param.put("opnameDate", balance.getOpnameDate());
-        param.put("remark", balance.getRemark());
+        param.put("remark", balance.getRemark() == null || balance.getRemark().length() < 1 ? " " : balance.getRemark());
         param.put("status", balance.getStatus());
         param.put("userUpd", balance.getUserUpd());
         param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
@@ -696,14 +696,31 @@ public class ProcessDaoImpl implements ProcessDao {
     ///////////////new method updateStatusOpname 6-11-2023////////////////////////////
     /////////////// update menambah item ke t_stock_card_detail by M Joko 18-12-2023////////////////////////////
     @Override
-    public void updateOpnameStatus(Map balance) {
-        System.out.println("updateOpnameStatus balance = " + balance);
+    public List updateOpnameStatus(Map balance) {
         Map param = new HashMap();
         Integer status = Integer.valueOf(balance.get("status").toString());
+        Integer confirmZero = Integer.valueOf(balance.getOrDefault("confirmZero",0).toString());
+        List<Map<String, Object>> list = new ArrayList();
         System.out.println("updateOpnameStatus status = " + status);
         param.put("outletCode", balance.get("outletCode"));
         param.put("opnameNo", balance.get("opnameNo"));
         param.put("status", status);
+        
+        // cek jika ada nilai nol dan belum di confirmZero, kembalikan list
+        if(confirmZero < 1 && (status == 1 || status == '1')){
+            String qry = """
+                select o.opname_no, o.item_code, mi.item_description, o.qty_purch, o.uom_purch, o.qty_stock, o.uom_stock, o.total_qty 
+                from t_opname_detail o
+                JOIN m_item mi ON o.item_code = mi.item_code
+                where o.outlet_code = :outletCode and o.opname_no = :opnameNo and o.qty_purch = 0 and o.qty_stock = 0 and o.total_qty = 0
+            """;
+            list = jdbcTemplate.query(qry, param, new DynamicRowMapper());
+            if( !list.isEmpty()){
+                System.out.println("terdapat nilai semua 0 saat opname");
+                return list;
+            }
+        }
+        
         String qy = "update t_opname_header set status =:status WHERE OPNAME_NO = :opnameNo and OUTLET_CODE= :outletCode";
         jdbcTemplate.update(qy, param);
         if(status == 1 || status == '1'){
@@ -711,43 +728,51 @@ public class ProcessDaoImpl implements ProcessDao {
             // update by M Joko 20-dec-23 
             updateMCounterAfterStockOpname(balance);
         }
+        return list;
     }
     
     public void itemOpnameToStockCard(Map<String, String> balance) {
-            System.out.println("updateOpnameStatus = 1 / Close");
             // update by M Joko 18-12-23
             Map param = new HashMap();
             param.put("opnameNo", balance.get("opnameNo"));
             param.put("userUpd", balance.getOrDefault("userUpd", "SYSTEM"));
             param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
             param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
-            // hanya yg ada nilai di in dan out yg dimasukkan ke stock card
+            // hanya yg ada nilai di in dan out yg dimasukkan ke stock card detail
             String qryListStockOpname = "SELECT * FROM ( SELECT od.OUTLET_CODE, (SELECT trans_date FROM m_outlet WHERE outlet_code = od.outlet_code) AS TRANS_DATE, od.ITEM_CODE, 'SOP' AS CD_TRANS, CASE WHEN od.qty_freeze < od.total_qty THEN od.total_qty - od.qty_freeze ELSE 0 END AS QUANTITY_IN, CASE WHEN od.qty_freeze > od.total_qty THEN od.qty_freeze - od.total_qty ELSE 0 END AS QUANTITY, :userUpd AS USER_UPD, :dateUpd AS DATE_UPD, :timeUpd AS TIME_UPD FROM T_OPNAME_DETAIL od WHERE od.opname_no = :opnameNo ) WHERE QUANTITY_IN NOT IN (0, '0') UNION ALL SELECT * FROM ( SELECT od.OUTLET_CODE, (SELECT trans_date FROM m_outlet WHERE outlet_code = od.outlet_code) AS TRANS_DATE, od.ITEM_CODE, 'SOP' AS CD_TRANS, CASE WHEN od.qty_freeze < od.total_qty THEN od.total_qty - od.qty_freeze ELSE 0 END AS QUANTITY_IN, CASE WHEN od.qty_freeze > od.total_qty THEN od.qty_freeze - od.total_qty ELSE 0 END AS QUANTITY, :userUpd AS USER_UPD, :dateUpd AS DATE_UPD, :timeUpd AS TIME_UPD FROM T_OPNAME_DETAIL od WHERE od.opname_no = :opnameNo ) WHERE QUANTITY NOT IN (0, '0')";
         
         String qryToStockCardDetail = "insert into t_stock_card_detail ( " + qryListStockOpname + " )";
-        jdbcTemplate.update(qryToStockCardDetail, param);
+        try{
+            jdbcTemplate.update(qryToStockCardDetail, param);
+        } catch (DataAccessException e){
+            System.out.println("error insert so to sc detail: " + param);
+        }
         
-        String qryUpdateStockCard = """
-                                    UPDATE t_stock_card sc
-                                    SET 
-                                        sc.QTY_IN = NVL(sc.QTY_IN,0) + NVL(
-                                            (SELECT tsd.QUANTITY_IN
-                                             FROM t_stock_card_detail tsd
-                                             WHERE tsd.ITEM_CODE = sc.ITEM_CODE
-                                               AND tsd.trans_date = sc.trans_date
-                                               AND tsd.CD_TRANS = 'SOP'), 
-                                            0
-                                        ),
-                                        sc.QTY_OUT = NVL(sc.QTY_OUT) + NVL(
-                                            (SELECT tsd.QUANTITY
-                                             FROM t_stock_card_detail tsd
-                                             WHERE tsd.ITEM_CODE = sc.ITEM_CODE
-                                               AND tsd.trans_date = sc.trans_date
-                                               AND tsd.CD_TRANS = 'SOP'), 
-                                            0
-                                        )
-                                    WHERE sc.trans_date = (SELECT trans_date FROM m_outlet WHERE outlet_code = sc.outlet_code)""";
-        jdbcTemplate.update(qryUpdateStockCard,param);
+        // update method update by M Joko 15 Jan 24
+        List<Map<String, Object>> list = jdbcTemplate.query(qryListStockOpname, param, new DynamicRowMapper());
+        
+        if( !list.isEmpty()){
+            for (Map<String, Object> sc : list) {
+                Map paramUpd = new HashMap();
+                paramUpd.put("itemCode", sc.get("itemCode"));
+                paramUpd.put("outletCode", sc.get("outletCode"));
+                paramUpd.put("quantityIn", sc.get("quantityIn"));
+                paramUpd.put("quantity", sc.get("quantity"));
+                String qryUpd = """
+                    UPDATE t_stock_card sc
+                    SET 
+                        sc.QTY_IN = NVL(sc.QTY_IN,0) + NVL(:quantityIn,0),
+                        sc.QTY_OUT = NVL(sc.QTY_OUT,0) + NVL(:quantity,0)
+                    WHERE sc.trans_date = (SELECT trans_date FROM m_outlet WHERE outlet_code = :outletCode) AND sc.item_code = :itemCode
+                                            """;
+                try{
+                    System.out.println("akan update so to sc detail: " + paramUpd);
+                    jdbcTemplate.update(qryUpd, paramUpd);
+                } catch (DataAccessException e){
+                    System.out.println("error update sc: " + paramUpd);
+                }
+            }
+        }
     }
 ///////////////done///////////////
 
@@ -2761,12 +2786,10 @@ public class ProcessDaoImpl implements ProcessDao {
     }
 
     // Insert MPCS Production - Fathur 8 Jan 2024 // 
+    @Transactional
     @Override
     public boolean insertMpcsProduction(Map<String, String> params) {
-        var isInsertProductionSuccess = false;
-        var isUpdateQuantityAccSuccess = false;
-        var isInsertHistorySuccess = false;
-        var isInsertMpcsDetailSuccess = false;
+
         Map prm = new HashMap();
         prm.put("userUpd", params.get("userUpd"));
         prm.put("dateUpd", params.get("dateUpd"));
@@ -2778,85 +2801,119 @@ public class ProcessDaoImpl implements ProcessDao {
         prm.put("mpcsGroup", params.get("mpcsGroup"));
         prm.put("mpcsDate", params.get("mpcsDate"));
         prm.put("outletCode", params.get("outletCode"));
-        try {
-            String insertProductionQuery = "UPDATE T_SUMM_MPCS SET "
-                    + "QTY_PROD = (QTY_PROD + (SELECT (sum(QTY_STOCK) * :qtyMpcs) FROM m_recipe_product WHERE RECIPE_CODE = :recipeCode)), "
-                    + "DESC_PROD = :remark, "
-                    + "PROD_BY = :userUpd, "
-                    + "USER_UPD = :userUpd, "
-                    + "TIME_UPD = :timeUpd, "
-                    + "DATE_UPD = :dateUpd "
-                    + "WHERE DATE_MPCS = :mpcsDate AND MPCS_GROUP = :mpcsGroup "
-                    + "AND SEQ_MPCS = (SELECT tsm.SEQ_MPCS FROM T_SUMM_MPCS tsm WHERE DATE_MPCS = :mpcsDate AND MPCS_GROUP = :mpcsGroup "
-                    + "AND TIME_MPCS > :timeUpd AND ROWNUM = 1) ";
-            jdbcTemplate.update(insertProductionQuery, prm);
-            isInsertProductionSuccess = true;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
-        if (isInsertProductionSuccess) {
-            try {
-                String updateQuantityAccQuery = "MERGE INTO T_SUMM_MPCS tsm "
-                        + "USING ("
-                        + "	SELECT SEQ_MPCS, QTY_ACC_PROD, sum(QTY_PROD) OVER (ORDER BY seq_mpcs) AS UPDATED_QTY_ACC_PROD "
-                        + "		FROM T_SUMM_MPCS tsm "
-                        + "		WHERE tsm.MPCS_GROUP =:mpcsGroup AND tsm.DATE_MPCS = :mpcsDate "
-                        + "	) up "
-                        + "ON (tsm.SEQ_MPCS = up.SEQ_MPCS AND tsm.DATE_MPCS = :mpcsDate AND tsm.MPCS_GROUP = :mpcsGroup) "
-                        + "WHEN MATCHED THEN "
-                        + "	UPDATE SET "
-                        + "		tsm.QTY_ACC_PROD = up.UPDATED_QTY_ACC_PROD, "
-                        + "		tsm.USER_UPD = :userUpd,"
-                        + "		tsm.DATE_UPD = :dateUpd,"
-                        + "		tsm.TIME_UPD = :timeUpd ";
-                jdbcTemplate.update(updateQuantityAccQuery, prm);
-                isUpdateQuantityAccSuccess = true;
+        String insertProductionQuery = "UPDATE T_SUMM_MPCS SET "
+                + "QTY_PROD = (QTY_PROD + (SELECT (sum(QTY_STOCK) * :qtyMpcs) FROM m_recipe_product WHERE RECIPE_CODE = :recipeCode)), "
+                + "DESC_PROD = :remark, "
+                + "PROD_BY = :userUpd, "
+                + "USER_UPD = :userUpd, "
+                + "TIME_UPD = :timeUpd, "
+                + "DATE_UPD = :dateUpd "
+                + "WHERE DATE_MPCS = :mpcsDate AND MPCS_GROUP = :mpcsGroup "
+                + "AND SEQ_MPCS = (SELECT tsm.SEQ_MPCS FROM T_SUMM_MPCS tsm WHERE DATE_MPCS = :mpcsDate AND MPCS_GROUP = :mpcsGroup "
+                + "AND TIME_MPCS > :timeUpd AND ROWNUM = 1) ";
+        jdbcTemplate.update(insertProductionQuery, prm);
 
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        String updateQuantityAccQuery = "MERGE INTO T_SUMM_MPCS tsm "
+                + "USING ("
+                + "	SELECT SEQ_MPCS, QTY_ACC_PROD, sum(QTY_PROD) OVER (ORDER BY seq_mpcs) AS UPDATED_QTY_ACC_PROD "
+                + "		FROM T_SUMM_MPCS tsm "
+                + "		WHERE tsm.MPCS_GROUP =:mpcsGroup AND tsm.DATE_MPCS = :mpcsDate "
+                + "	) up "
+                + "ON (tsm.SEQ_MPCS = up.SEQ_MPCS AND tsm.DATE_MPCS = :mpcsDate AND tsm.MPCS_GROUP = :mpcsGroup) "
+                + "WHEN MATCHED THEN "
+                + "	UPDATE SET "
+                + "		tsm.QTY_ACC_PROD = up.UPDATED_QTY_ACC_PROD, "
+                + "		tsm.USER_UPD = :userUpd,"
+                + "		tsm.DATE_UPD = :dateUpd,"
+                + "		tsm.TIME_UPD = :timeUpd ";
 
-        if (isInsertProductionSuccess && isUpdateQuantityAccSuccess) {
-            try {
-                String insertHistoryQuery = "INSERT INTO T_MPCS_HIST (HIST_SEQ,HIST_TYPE,OUTLET_CODE,MPCS_DATE,MPCS_GROUP,RECIPE_CODE,FRYER_TYPE,FRYER_TYPE_SEQ,SEQ_MPCS,QUANTITY,USER_UPD,DATE_UPD,TIME_UPD) "
-                        + "VALUES ((SELECT (max(tmh.HIST_SEQ) + 1)  FROM T_MPCS_HIST tmh),'C',:outletCode, :mpcsDate,:mpcsGroup,:recipeCode,' ',' ',(SELECT tsm.SEQ_MPCS FROM T_SUMM_MPCS tsm WHERE DATE_MPCS = :mpcsDate AND MPCS_GROUP = :mpcsGroup "
-                        + "AND TIME_MPCS > :timeUpd "
-                        + "AND ROWNUM = 1),:qtyMpcs,:userUpd, :dateUpd, :timeUpd) ";
-                jdbcTemplate.update(insertHistoryQuery, prm);
-                isInsertHistorySuccess = true;
+        jdbcTemplate.update(updateQuantityAccQuery, prm);
 
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        String insertHistoryQuery = "INSERT INTO T_MPCS_HIST (HIST_SEQ,HIST_TYPE,OUTLET_CODE,MPCS_DATE,MPCS_GROUP,RECIPE_CODE,FRYER_TYPE,FRYER_TYPE_SEQ,SEQ_MPCS,QUANTITY,USER_UPD,DATE_UPD,TIME_UPD) "
+                + "VALUES ((SELECT (max(tmh.HIST_SEQ) + 1)  FROM T_MPCS_HIST tmh),'C',:outletCode, :mpcsDate,:mpcsGroup,:recipeCode,' ',' ',(SELECT tsm.SEQ_MPCS FROM T_SUMM_MPCS tsm WHERE DATE_MPCS = :mpcsDate AND MPCS_GROUP = :mpcsGroup "
+                + "AND TIME_MPCS > :timeUpd "
+                + "AND ROWNUM = 1),:qtyMpcs,:userUpd, :dateUpd, :timeUpd) ";
+        jdbcTemplate.update(insertHistoryQuery, prm);
 
-        if (isInsertProductionSuccess && isUpdateQuantityAccSuccess && isInsertHistorySuccess) {
-            try {
-                String insertHistoryQuery = "INSERT INTO T_MPCS_DETAIL (OUTLET_CODE,DATE_MPCS,TIME_MPCS,RECIPE_CODE,TYPE_MPCS,ITEM_CODE,QTY1,UOM1,QTY2,UOM2,STATUS,USER_UPD,DATE_UPD,TIME_UPD) ("
-                        + "	SELECT :outletCode AS OUTLET_CODE, :mpcsDate AS DATE_MPCS, :timeUpd AS TIME_MPCS, RECIPE_CODE, :mpcsGroup AS TYPE_MPCS, ITEM_CODE, -(QTY_STOCK * :qtyMpcs) AS QTY1, UOM_STOCK AS UOM1, -(QTY_STOCK * :qtyMpcs) AS QTY2, UOM_STOCK AS UOM2, '1' AS STATUS,  :userUpd AS USER_UPD, :dateUpd AS DATE_UPD, :timeUpd AS TIME_UPD FROM M_RECIPE_DETAIL where RECIPE_CODE = :recipeCode "
-                        + "	UNION "
-                        + "	SELECT :outletCode AS OUTLET_CODE, :mpcsDate  AS DATE_MPCS, :timeUpd AS TIME_MPCS, RECIPE_CODE, :mpcsGroup AS TYPE_MPCS, PRODUCT_CODE as ITEM_CODE,  (QTY_STOCK * :qtyMpcs) AS QTY1, UOM_STOCK AS UOM1, (QTY_STOCK * :qtyMpcs) AS QTY2, UOM_STOCK AS UOM2, '1' AS STATUS, :userUpd AS USER_UPD, :dateUpd AS DATE_UPD, :timeUpd AS TIME_UPD  FROM m_recipe_product where recipe_code = :recipeCode "
-                        + ") ";
-                jdbcTemplate.update(insertHistoryQuery, prm);
-                isInsertMpcsDetailSuccess = true;
+        String insertMpcsDetailQuery = "INSERT INTO T_MPCS_DETAIL (OUTLET_CODE,DATE_MPCS,TIME_MPCS,RECIPE_CODE,TYPE_MPCS,ITEM_CODE,QTY1,UOM1,QTY2,UOM2,STATUS,USER_UPD,DATE_UPD,TIME_UPD) ("
+                + "	SELECT :outletCode AS OUTLET_CODE, :mpcsDate AS DATE_MPCS, :timeUpd AS TIME_MPCS, RECIPE_CODE, :mpcsGroup AS TYPE_MPCS, ITEM_CODE, -(QTY_STOCK * :qtyMpcs) AS QTY1, UOM_STOCK AS UOM1, -(QTY_STOCK * :qtyMpcs) AS QTY2, UOM_STOCK AS UOM2, '1' AS STATUS,  :userUpd AS USER_UPD, :dateUpd AS DATE_UPD, :timeUpd AS TIME_UPD FROM M_RECIPE_DETAIL where RECIPE_CODE = :recipeCode "
+                + "	UNION "
+                + "	SELECT :outletCode AS OUTLET_CODE, :mpcsDate  AS DATE_MPCS, :timeUpd AS TIME_MPCS, RECIPE_CODE, :mpcsGroup AS TYPE_MPCS, PRODUCT_CODE as ITEM_CODE,  (QTY_STOCK * :qtyMpcs) AS QTY1, UOM_STOCK AS UOM1, (QTY_STOCK * :qtyMpcs) AS QTY2, UOM_STOCK AS UOM2, '1' AS STATUS, :userUpd AS USER_UPD, :dateUpd AS DATE_UPD, :timeUpd AS TIME_UPD  FROM m_recipe_product where recipe_code = :recipeCode "
+                + ") ";
+        jdbcTemplate.update(insertMpcsDetailQuery, prm);
 
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return isInsertProductionSuccess && isUpdateQuantityAccSuccess && isInsertHistorySuccess && isInsertMpcsDetailSuccess;
+        String insertStockCardDetail = "MERGE INTO T_STOCK_CARD_DETAIL dtl USING ( "
+                + "SELECT up.*, t.* FROM T_STOCK_CARD_DETAIL t "
+                + "   RIGHT JOIN ( "
+                + "       SELECT 'Y' AS IS_RECIPE, 'N' AS IS_PRODUCT, ITEM_CODE AS PRODUCT_CODE, QTY_STOCK FROM M_RECIPE_DETAIL WHERE RECIPE_CODE = :recipeCode "
+                + "       UNION ALL "
+                + "       SELECT 'N' AS IS_RECIPE, 'Y' AS IS_PRODUCT, PRODUCT_CODE AS PRODUCT_CODE, QTY_STOCK FROM m_recipe_product WHERE RECIPE_CODE = :recipeCode "
+                + ") up ON (t.item_code = up.PRODUCT_CODE) WHERE (t.OUTLET_CODE = :outletCode AND t.CD_TRANS = 'PRD' AND t.TRANS_DATE = :mpcsDate) "
+                + ") src "
+                + "ON (dtl.OUTLET_CODE = :outletCode AND dtl.CD_TRANS = 'PRD' AND dtl.TRANS_DATE = :mpcsDate AND src.PRODUCT_CODE = dtl.ITEM_CODE) "
+                + "WHEN MATCHED THEN "
+                + "UPDATE SET "
+                + "   dtl.QUANTITY = CASE WHEN src.IS_RECIPE = 'Y' THEN (dtl.QUANTITY  + (:qtyMpcs * src.QTY_STOCK)) ELSE  dtl.QUANTITY END, "
+                + "   dtl.QUANTITY_IN = CASE WHEN src.IS_PRODUCT = 'Y' THEN (dtl.QUANTITY_IN  + (:qtyMpcs * src.QTY_STOCK)) ELSE dtl.QUANTITY_IN END, "
+                + "   dtl.USER_UPD = :userUpd, "
+                + "   dtl.DATE_UPD = :dateUpd, "
+                + "   dtl.TIME_UPD = :timeUpd "
+                + "WHEN NOT MATCHED THEN "
+                + "INSERT ( outlet_code, trans_date, item_code, cd_trans, quantity_in, quantity, user_upd, date_upd, time_upd) "
+                + "VALUES ( "
+                + "   :outletCode, "
+                + "   :mpcsDate, "
+                + "   PRODUCT_CODE, "
+                + "   'PRD', "
+                + "   CASE WHEN src.IS_PRODUCT = 'Y' THEN (:qtyMpcs * src.QTY_STOCK) ELSE 0 END, "
+                + "   CASE WHEN src.IS_RECIPE = 'Y' THEN (:qtyMpcs * src.QTY_STOCK) ELSE 0 END, "
+                + "   :userUpd, "
+                + "   :dateUpd, "
+                + "   :timeUpd "
+                + ") ";
+        jdbcTemplate.update(insertStockCardDetail, prm);
+
+        String updateStockCard = "MERGE INTO T_STOCK_CARD tsc USING ( "
+                + "SELECT up.*, t.* FROM T_STOCK_CARD t "
+                + "   RIGHT JOIN ( "
+                + "       SELECT 'Y' AS IS_RECIPE, 'N' AS IS_PRODUCT, ITEM_CODE AS PRODUCT_CODE, QTY_STOCK FROM M_RECIPE_DETAIL WHERE RECIPE_CODE = :recipeCode "
+                + "       UNION ALL "
+                + "       SELECT 'N' AS IS_RECIPE, 'Y' AS IS_PRODUCT, PRODUCT_CODE AS PRODUCT_CODE, QTY_STOCK FROM m_recipe_product WHERE RECIPE_CODE = :recipeCode "
+                + ") up ON (t.item_code = up.PRODUCT_CODE) WHERE (t.OUTLET_CODE = :outletCode AND t.TRANS_DATE = :mpcsDate) "
+                + ") src "
+                + "ON (tsc.OUTLET_CODE = :outletCode AND tsc.TRANS_DATE = :mpcsDate AND tsc.ITEM_CODE = src.PRODUCT_CODE) "
+                + "WHEN MATCHED THEN "
+                + "UPDATE SET "
+                + "   tsc.QTY_IN = CASE WHEN src.IS_PRODUCT = 'Y' THEN (tsc.QTY_IN  + (:qtyMpcs * src.QTY_STOCK)) ELSE tsc.QTY_IN END, "
+                + "   tsc.QTY_OUT= CASE WHEN src.IS_RECIPE = 'Y' THEN (tsc.QTY_OUT  + (:qtyMpcs * src.QTY_STOCK)) ELSE tsc.QTY_OUT END, "
+                + "   tsc.USER_UPD = :userUpd, "
+                + "   tsc.DATE_UPD = :dateUpd, "
+                + "   tsc.TIME_UPD = :timeUpd "
+                + "WHEN NOT MATCHED THEN "
+                + "INSERT (OUTLET_CODE,TRANS_DATE,ITEM_CODE,ITEM_COST,QTY_BEGINNING,QTY_IN,QTY_OUT,REMARK,USER_UPD,DATE_UPD,TIME_UPD) VALUES ( "
+                + "   :outletCode, "
+                + "   :mpcsDate, "
+                + "   PRODUCT_CODE, "
+                + "   0, "
+                + "   0, "
+                + "   CASE WHEN src.IS_PRODUCT = 'Y' THEN (:qtyMpcs * src.QTY_STOCK) ELSE 0 END, "
+                + "   CASE WHEN src.IS_RECIPE = 'Y' THEN (:qtyMpcs * src.QTY_STOCK) ELSE 0 END, "
+                + "   ' ', "
+                + "   :userUpd, "
+                + "   :dateUpd, "
+                + "   :timeUpd "
+                + ")";
+        jdbcTemplate.update(updateStockCard, prm);
+        return true;
     }
     // Done insert MPCS Production // 
 
     // Delete MPCS Production by Fathur 11 Jan 2024 //
+    @Transactional
     @Override
     public boolean deleteMpcsProduction(Map<String, String> params) {
-        var isUpdQtySuccess = false;
-        var isUpdQtyAccSuccess = false;
-        var isUpdHistorySuccess = false;
-        var isInsertMpcsDetailSuccess = false;
+
         Map prm = new HashMap();
         prm.put("userUpd", params.get("userUpd"));
         prm.put("dateUpd", params.get("dateUpd"));
@@ -2869,82 +2926,181 @@ public class ProcessDaoImpl implements ProcessDao {
         prm.put("outletCode", params.get("outletCode"));
         prm.put("seqMpcs", params.get("seqMpcs"));
         prm.put("histSeq", params.get("histSeq"));
-        try {
-            String updateQtyQuery = "UPDATE T_SUMM_MPCS "
-                    + "SET QTY_PROD = (QTY_PROD - (SELECT (sum(QTY_STOCK) * :qtyMpcs) FROM m_recipe_product WHERE RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup))), "
-                    + "PROD_BY = :userUpd, "
-                    + "USER_UPD = :userUpd, "
-                    + "TIME_UPD = :timeUpd, "
-                    + "DATE_UPD = :dateUpd "
-                    + "WHERE DATE_MPCS = :mpcsDate "
-                    + "AND MPCS_GROUP = :mpcsGroup "
-                    + "AND SEQ_MPCS = :seqMpcs ";
-            jdbcTemplate.update(updateQtyQuery, prm);
-            isUpdQtySuccess = true;
-        } catch (DataAccessException e) {
-            e.printStackTrace();
-        }
 
-        if (isUpdQtySuccess) {
-            try {
-                String updateQuantityAccQuery = "MERGE INTO T_SUMM_MPCS tsm "
-                        + "USING ("
-                        + "	SELECT SEQ_MPCS, QTY_ACC_PROD, sum(QTY_PROD) OVER (ORDER BY seq_mpcs) AS UPDATED_QTY_ACC_PROD "
-                        + "		FROM T_SUMM_MPCS tsm "
-                        + "		WHERE tsm.MPCS_GROUP =:mpcsGroup AND tsm.DATE_MPCS = :mpcsDate "
-                        + "	) up "
-                        + "ON (tsm.SEQ_MPCS = up.SEQ_MPCS AND tsm.DATE_MPCS = :mpcsDate AND tsm.MPCS_GROUP = :mpcsGroup) "
-                        + "WHEN MATCHED THEN "
-                        + "	UPDATE SET "
-                        + "		tsm.QTY_ACC_PROD = up.UPDATED_QTY_ACC_PROD, "
-                        + "		tsm.USER_UPD = :userUpd, "
-                        + "		tsm.DATE_UPD = :dateUpd, "
-                        + "		tsm.TIME_UPD = :timeUpd ";
-                jdbcTemplate.update(updateQuantityAccQuery, prm);
-                isUpdQtyAccSuccess = true;
+        String updateQtyQuery = "UPDATE T_SUMM_MPCS "
+            + "SET QTY_PROD = (QTY_PROD - (SELECT (sum(QTY_STOCK) * :qtyMpcs) FROM m_recipe_product WHERE RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup))), "
+            + "PROD_BY = :userUpd, "
+            + "USER_UPD = :userUpd, "
+            + "TIME_UPD = :timeUpd, "
+            + "DATE_UPD = :dateUpd "
+            + "WHERE DATE_MPCS = :mpcsDate "
+            + "AND MPCS_GROUP = :mpcsGroup "
+            + "AND SEQ_MPCS = :seqMpcs ";
+        jdbcTemplate.update(updateQtyQuery, prm);
 
-            } catch (DataAccessException e) {
-                e.printStackTrace();
-            }
-        }
+        String updateQuantityAccQuery = "MERGE INTO T_SUMM_MPCS tsm "
+            + "USING ("
+            + "	SELECT SEQ_MPCS, QTY_ACC_PROD, sum(QTY_PROD) OVER (ORDER BY seq_mpcs) AS UPDATED_QTY_ACC_PROD "
+            + "		FROM T_SUMM_MPCS tsm "
+            + "		WHERE tsm.MPCS_GROUP =:mpcsGroup AND tsm.DATE_MPCS = :mpcsDate "
+            + "	) up "
+            + "ON (tsm.SEQ_MPCS = up.SEQ_MPCS AND tsm.DATE_MPCS = :mpcsDate AND tsm.MPCS_GROUP = :mpcsGroup) "
+            + "WHEN MATCHED THEN "
+            + "	UPDATE SET "
+            + "		tsm.QTY_ACC_PROD = up.UPDATED_QTY_ACC_PROD, "
+            + "		tsm.USER_UPD = :userUpd, "
+            + "		tsm.DATE_UPD = :dateUpd, "
+            + "		tsm.TIME_UPD = :timeUpd ";
+        jdbcTemplate.update(updateQuantityAccQuery, prm);
 
-        if (isUpdQtySuccess && isUpdQtyAccSuccess) {
-            try {
-                String updateHistoryQuery = "UPDATE T_MPCS_HIST tmh "
-                        + "SET FRYER_TYPE = 'D', "
-                        + "TIME_UPD = :timeUpd, "
-                        + "DATE_UPD = :dateUpd "
-                        + "WHERE tmh.HIST_SEQ = :histSeq AND OUTLET_CODE = :outletCode AND MPCS_GROUP = :mpcsGroup AND SEQ_MPCS = :seqMpcs AND QUANTITY = :qtyMpcs ";
-                jdbcTemplate.update(updateHistoryQuery, prm);
-                isUpdHistorySuccess = true;
-            } catch (DataAccessException e) {
-                e.printStackTrace();
-            }
-        }
+        String updateHistoryQuery = "UPDATE T_MPCS_HIST tmh "
+            + "SET FRYER_TYPE = 'D', "
+            + "TIME_UPD = :timeUpd, "
+            + "DATE_UPD = :dateUpd "
+            + "WHERE tmh.HIST_SEQ = :histSeq AND OUTLET_CODE = :outletCode AND MPCS_GROUP = :mpcsGroup AND SEQ_MPCS = :seqMpcs AND QUANTITY = :qtyMpcs ";
+        jdbcTemplate.update(updateHistoryQuery, prm);
 
-        if (isUpdQtySuccess && isUpdQtyAccSuccess && isUpdHistorySuccess) {
-            try {
-                String insertHistoryQuery = "INSERT INTO T_MPCS_DETAIL (OUTLET_CODE,DATE_MPCS,TIME_MPCS,RECIPE_CODE,TYPE_MPCS,ITEM_CODE,QTY1,UOM1,QTY2,UOM2,STATUS,USER_UPD,DATE_UPD,TIME_UPD) ( "
-                        + "	SELECT :outletCode AS OUTLET_CODE, :mpcsDate AS DATE_MPCS, :timeUpd AS TIME_MPCS, RECIPE_CODE, :mpcsGroup AS TYPE_MPCS, ITEM_CODE, (QTY_STOCK * :qtyMpcs) AS QTY1, UOM_STOCK AS UOM1, (QTY_STOCK * :qtyMpcs) AS QTY2, UOM_STOCK AS UOM2, '1' AS STATUS,  :userUpd AS USER_UPD, :dateUpd AS DATE_UPD, :timeUpd AS TIME_UPD "
-                        + "	FROM M_RECIPE_DETAIL where RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup) "
-                        + "	UNION "
-                        + "	SELECT :outletCode AS OUTLET_CODE, :mpcsDate  AS DATE_MPCS, :timeUpd AS TIME_MPCS, RECIPE_CODE, :mpcsGroup AS TYPE_MPCS, PRODUCT_CODE as ITEM_CODE,  -(QTY_STOCK * :qtyMpcs) AS QTY1, UOM_STOCK AS UOM1, -(QTY_STOCK * :qtyMpcs) AS QTY2, UOM_STOCK AS UOM2, '1' AS STATUS, :userUpd AS USER_UPD, :dateUpd AS DATE_UPD, :timeUpd AS TIME_UPD  "
-                        + "	FROM m_recipe_product where recipe_code = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup)) ";
-                jdbcTemplate.update(insertHistoryQuery, prm);
-                isInsertMpcsDetailSuccess = true;
+        String insertMpcsDetailQuery = "INSERT INTO T_MPCS_DETAIL (OUTLET_CODE,DATE_MPCS,TIME_MPCS,RECIPE_CODE,TYPE_MPCS,ITEM_CODE,QTY1,UOM1,QTY2,UOM2,STATUS,USER_UPD,DATE_UPD,TIME_UPD) ( "
+            + "	SELECT :outletCode AS OUTLET_CODE, :mpcsDate AS DATE_MPCS, :timeUpd AS TIME_MPCS, RECIPE_CODE, :mpcsGroup AS TYPE_MPCS, ITEM_CODE, (QTY_STOCK * :qtyMpcs) AS QTY1, UOM_STOCK AS UOM1, (QTY_STOCK * :qtyMpcs) AS QTY2, UOM_STOCK AS UOM2, '1' AS STATUS,  :userUpd AS USER_UPD, :dateUpd AS DATE_UPD, :timeUpd AS TIME_UPD "
+            + "	FROM M_RECIPE_DETAIL where RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup) "
+            + "	UNION "
+            + "	SELECT :outletCode AS OUTLET_CODE, :mpcsDate  AS DATE_MPCS, :timeUpd AS TIME_MPCS, RECIPE_CODE, :mpcsGroup AS TYPE_MPCS, PRODUCT_CODE as ITEM_CODE,  -(QTY_STOCK * :qtyMpcs) AS QTY1, UOM_STOCK AS UOM1, -(QTY_STOCK * :qtyMpcs) AS QTY2, UOM_STOCK AS UOM2, '1' AS STATUS, :userUpd AS USER_UPD, :dateUpd AS DATE_UPD, :timeUpd AS TIME_UPD  "
+            + "	FROM m_recipe_product where recipe_code = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup)) ";
+        jdbcTemplate.update(insertMpcsDetailQuery, prm);
 
-            } catch (DataAccessException e) {
-                e.printStackTrace();
-            }
-        }
-        return isUpdQtySuccess && isUpdQtyAccSuccess && isUpdHistorySuccess && isInsertMpcsDetailSuccess;
+        String updateStockCardDetail = "MERGE INTO T_STOCK_CARD_DETAIL dtl USING ( "
+            + "SELECT up.*, t.* FROM T_STOCK_CARD_DETAIL t "
+            + "   RIGHT JOIN ( "
+            + "       SELECT 'Y' AS IS_RECIPE, 'N' AS IS_PRODUCT, ITEM_CODE AS PRODUCT_CODE, QTY_STOCK FROM M_RECIPE_DETAIL WHERE RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup) "
+            + "       UNION ALL "
+            + "       SELECT 'N' AS IS_RECIPE, 'Y' AS IS_PRODUCT, PRODUCT_CODE AS PRODUCT_CODE, QTY_STOCK FROM m_recipe_product WHERE RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup) "
+            + ") up ON (t.item_code = up.PRODUCT_CODE) WHERE (t.OUTLET_CODE = :outletCode AND t.CD_TRANS = 'PRD' AND t.TRANS_DATE = :mpcsDate) "
+            + ") src "
+            + "ON (dtl.OUTLET_CODE = :outletCode AND dtl.CD_TRANS = 'PRD' AND dtl.TRANS_DATE = :mpcsDate AND src.PRODUCT_CODE = dtl.ITEM_CODE) "
+            + "WHEN MATCHED THEN "
+            + "UPDATE SET "
+            + "   dtl.QUANTITY = CASE WHEN src.IS_RECIPE = 'Y' THEN (dtl.QUANTITY  - (:qtyMpcs * src.QTY_STOCK)) ELSE dtl.QUANTITY END, "
+            + "   dtl.QUANTITY_IN = CASE WHEN src.IS_PRODUCT = 'Y' THEN (dtl.QUANTITY_IN - (:qtyMpcs * src.QTY_STOCK)) ELSE dtl.QUANTITY_IN END, "
+            + "   dtl.USER_UPD = :userUpd, "
+            + "   dtl.DATE_UPD = :dateUpd, "
+            + "   dtl.TIME_UPD = :timeUpd ";
+        jdbcTemplate.update(updateStockCardDetail, prm);
+
+        String updateStockCard = "MERGE INTO T_STOCK_CARD tsc USING ( "
+            + "SELECT up.*, t.* FROM T_STOCK_CARD t "
+            + "   RIGHT JOIN ( "
+            + "       SELECT 'Y' AS IS_RECIPE, 'N' AS IS_PRODUCT, ITEM_CODE AS PRODUCT_CODE, QTY_STOCK FROM M_RECIPE_DETAIL WHERE RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup) "
+            + "       UNION ALL "
+            + "       SELECT 'N' AS IS_RECIPE, 'Y' AS IS_PRODUCT, PRODUCT_CODE AS PRODUCT_CODE, QTY_STOCK FROM m_recipe_product WHERE RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup) "
+            + ") up ON (t.item_code = up.PRODUCT_CODE) WHERE (t.OUTLET_CODE = :outletCode AND t.TRANS_DATE = :mpcsDate) "
+            + ") src "
+            + "ON (tsc.OUTLET_CODE = :outletCode AND tsc.TRANS_DATE = :mpcsDate AND tsc.ITEM_CODE = src.PRODUCT_CODE) "
+            + "WHEN MATCHED THEN "
+            + "UPDATE SET "
+            + "   tsc.QTY_IN = CASE WHEN src.IS_PRODUCT = 'Y' THEN (tsc.QTY_IN  - (:qtyMpcs * src.QTY_STOCK)) ELSE tsc.QTY_IN END, "
+            + "   tsc.QTY_OUT= CASE WHEN src.IS_RECIPE = 'Y' THEN (tsc.QTY_OUT  - (:qtyMpcs * src.QTY_STOCK)) ELSE tsc.QTY_OUT END, "
+            + "   tsc.USER_UPD = :userUpd, "
+            + "   tsc.DATE_UPD = :dateUpd, "
+            + "   tsc.TIME_UPD = :timeUpd ";
+        jdbcTemplate.update(updateStockCard, prm);
+
+        return true;
     }
     // Done delete MPCS Production //
-
+    
     // Add Counter Print Receiving Dani 11 Jan 2024
     @Override
     public void addCounterPrintReceiving(Map<String, Object> param) {
         String query = "UPDATE T_RECV_HEADER a SET a.NO_OF_PRINT  = NO_OF_PRINT+1 WHERE a.ORDER_NO = :noOrder AND a.RECV_NO = :recvNo";
         jdbcTemplate.update(query, param); 
+    }
+    
+    // Add Counter Print Order Entry adit 16 Jan 2024
+    @Override
+    public void addCounterPrintOrderEntry(Map<String, Object> param) {
+        String query = "UPDATE T_ORDER_HEADER a SET a.NO_OF_PRINT  = a.NO_OF_PRINT+1 WHERE a.ORDER_NO = :orderNo";
+        jdbcTemplate.update(query, param); 
+    }
+    
+    // Add menyimpan data user absensi by id by M Joko 16 Jan 2024
+    @Override
+    public boolean insertAbsensi(Map<String, Object> param) {
+        String query = "SELECT * FROM M_STAFF ms WHERE ms.STAFF_CODE = :staffCode AND ms.PASSWORD = :password";
+        List list = jdbcTemplate.query(query, param, new DynamicRowMapper());
+        if(list.isEmpty()){
+            return false;
+        }
+        
+        String queryUpd = """
+            INSERT INTO T_ABSENSI (
+              OUTLET_CODE, DAY_SEQ, STAFF_ID, SEQ_NO, 
+              DATE_ABSEN, TIME_ABSEN, STATUS
+            ) 
+            SELECT 
+              * 
+            FROM 
+              (
+                SELECT 
+                  OUTLET_CODE, 
+                  CASE WHEN NVL(SEQ_NO, 2) = 2 THEN NVL(DAY_SEQ, 0) + 1 ELSE NVL(DAY_SEQ, 1) END AS DAY_SEQ, 
+                  STAFF_ID, 
+                  CASE WHEN NVL(SEQ_NO, 1) = 1 THEN 2 ELSE 1 END AS SEQ_NO, 
+                  TO_CHAR(SYSTIMESTAMP, 'DD-MON-YYYY') AS DATE_ABSEN, 
+                  TO_CHAR(SYSTIMESTAMP, 'HH24MISS') AS TIME_ABSEN, 
+                  'A' AS STATUS 
+                FROM 
+                  (
+                    SELECT 
+                      * 
+                    FROM 
+                      T_ABSENSI ta 
+                    WHERE 
+                      ta.STAFF_ID = :staffCode 
+                      AND ta.DATE_ABSEN = TO_CHAR(SYSTIMESTAMP, 'DD-MON-YYYY') 
+                    ORDER BY 
+                      ta.TIME_ABSEN DESC
+                  ) 
+                WHERE 
+                  ROWNUM = 1 
+                UNION ALL 
+                SELECT 
+                  :outletCode AS OUTLET_CODE, 
+                  COALESCE(
+                    MAX(DAY_SEQ) + 1, 
+                    1
+                  ) AS DAY_SEQ, 
+                  :staffCode AS STAFF_ID, 
+                  COALESCE(
+                    MAX(SEQ_NO) + 1, 
+                    1
+                  ) AS SEQ_NO, 
+                  TO_CHAR(SYSTIMESTAMP, 'DD-MON-YYYY') AS DATE_ABSEN, 
+                  TO_CHAR(SYSTIMESTAMP, 'HH24MISS') AS TIME_ABSEN, 
+                  'A' AS STATUS 
+                FROM 
+                  T_ABSENSI 
+                WHERE 
+                  STAFF_ID = :staffCode 
+                  AND DATE_ABSEN = TO_CHAR(SYSTIMESTAMP, 'DD-MON-YYYY') 
+                  AND NOT EXISTS (
+                    SELECT 
+                      1 
+                    FROM 
+                      T_ABSENSI ta 
+                    WHERE 
+                      ta.STAFF_ID = :staffCode 
+                      AND ta.DATE_ABSEN = TO_CHAR(SYSTIMESTAMP, 'DD-MON-YYYY')
+                  )
+              ) 
+            WHERE 
+              rownum = 1
+                       """;
+        try{
+            jdbcTemplate.update(queryUpd, param);
+        } catch(DataAccessException e){
+            System.err.println("getMessage: " + e.getMessage());
+            return false;
+        }
+        return true;
     }
 }

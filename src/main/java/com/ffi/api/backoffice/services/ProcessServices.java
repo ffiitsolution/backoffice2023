@@ -8,6 +8,7 @@ import com.ffi.api.backoffice.dao.ProcessDao;
 import com.ffi.api.backoffice.model.DetailOpname;
 import com.ffi.api.backoffice.model.HeaderOpname;
 import com.google.gson.JsonObject;
+import java.util.List;
 import java.util.Map;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -135,8 +136,8 @@ public class ProcessServices {
     }
 
     ///////////////new method updateStatusOpname 6-11-2023////////////////////////////
-    public void updateOpnameStatus(Map<String, String> balance) {
-        dao.updateOpnameStatus(balance);
+    public List updateOpnameStatus(Map<String, String> balance) {
+        return dao.updateOpnameStatus(balance);
     }
 
     ///////////////done///////////////
@@ -279,5 +280,15 @@ public class ProcessServices {
     // Add Counter Print Receiving Dani 11 Jan 2024
     public void addCounterPrintReceiving(Map<String, Object> param) {
         dao.addCounterPrintReceiving(param);
+    }
+    
+    // Add Counter Print Order Entry Adit 16 Jan 2024
+    public void addCounterPrintOrderEntry(Map<String, Object> param) {
+        dao.addCounterPrintOrderEntry(param);
+    }
+    
+    // Add menyimpan data user absensi by id by M Joko 16 Jan 2024
+    public boolean insertAbsensi(Map<String, Object> param) {
+        return dao.insertAbsensi(param);
     }
 }

@@ -798,10 +798,23 @@ public class ReportDaoImpl implements ReportDao {
 
     @Override
     public JasperPrint jasperReportRecipe(Map<String, Object> param, Connection connection) throws IOException, JRException {
+        String subReportPath = "report/recipeSub.jrxml";
+        JasperReport subReport = null;
+        try {
+            InputStream inputStream = getClass().getClassLoader().getResourceAsStream(subReportPath);
+            if (inputStream == null) {
+                throw new RuntimeException("Subreport file not found: " + subReportPath);
+            }
+            subReport = JasperCompileManager.compileReport(inputStream);
+        } catch (JRException e) {
+            throw new RuntimeException(e);
+        }
+        
         Map<String, Object> hashMap = new HashMap<>();
         hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("user", param.get("user"));
+        hashMap.put("subReport", subReport);
 
         if (param.get("status").equals("Active")) {
             hashMap.put("status", "A");
@@ -1762,11 +1775,11 @@ public class ReportDaoImpl implements ReportDao {
         queryDataReceipt.append("SELECT UTM.POS_CODE_NOW, JON.POS_DESCRIPTION, UTM.MIN_NOW, UTM.MAX_NOW, UTM.MIN_AGO, " +
                 "UTM.MAX_AGO FROM (");
         queryDataReceipt.append("SELECT * FROM ( SELECT '").append(listPos.get(0).get("posCode")).append("'" +
-                        "AS POS_CODE_NOW , MIN(BILL_NO) AS MIN_NOW, MAX(BILL_NO) AS MAX_NOW FROM T_POS_BILL WHERE TRANS_DATE " +
+                        "AS POS_CODE_NOW , MIN(BILL_NO) AS MIN_NOW, MAX(BILL_NO) AS MAX_NOW FROM T_POS_BILL WHERE BILL_NO LIKE '%-%' AND TRANS_DATE " +
                         "= '").append(param.get("periode")).append("' AND POS_CODE = '").append(listPos.get(0).get("posCode"))
                 .append("' AND OUTLET_CODE = '").append(param.get("outletCode")).append("' " +
                         ")A JOIN ( SELECT '").append(listPos.get(0).get("posCode")).append("' AS " +
-                        "POS_CODE_AGO, MIN(BILL_NO) AS MIN_AGO, MAX(BILL_NO) AS MAX_AGO FROM T_POS_BILL WHERE " +
+                        "POS_CODE_AGO, MIN(BILL_NO) AS MIN_AGO, MAX(BILL_NO) AS MAX_AGO FROM T_POS_BILL WHERE BILL_NO LIKE '%-%' AND " +
                         "TRANS_DATE = '").append(yesterdayDateString).append("' AND POS_CODE = '")
                 .append(listPos.get(0).get("posCode")).append("' AND OUTLET_CODE = '").append(param.get("outletCode"))
                 .append("')B ON A.POS_CODE_NOW = B.POS_CODE_AGO");
@@ -1774,11 +1787,11 @@ public class ReportDaoImpl implements ReportDao {
         for (int i = 1; i < listPos.size(); i++) {
             queryDataReceipt.append(" UNION ALL ");
             queryDataReceipt.append("SELECT * FROM ( SELECT '").append(listPos.get(i).get("posCode")).append("' " +
-                            "AS POS_CODE_NOW , MIN(BILL_NO) AS MIN_NOW, MAX(BILL_NO) AS MAX_NOW FROM T_POS_BILL WHERE TRANS_DATE " +
+                            "AS POS_CODE_NOW , MIN(BILL_NO) AS MIN_NOW, MAX(BILL_NO) AS MAX_NOW FROM T_POS_BILL WHERE BILL_NO LIKE '%-%' AND TRANS_DATE " +
                             "= '").append(param.get("periode")).append("' AND POS_CODE = '").append(listPos.get(i).get("posCode"))
                     .append("' AND OUTLET_CODE = '").append(param.get("outletCode")).append("'" +
                             ")A JOIN ( SELECT '").append(listPos.get(i).get("posCode")).append("' AS " +
-                            "POS_CODE_AGO, MIN(BILL_NO) AS MIN_AGO, MAX(BILL_NO) AS MAX_AGO FROM T_POS_BILL WHERE " +
+                            "POS_CODE_AGO, MIN(BILL_NO) AS MIN_AGO, MAX(BILL_NO) AS MAX_AGO FROM T_POS_BILL WHERE BILL_NO LIKE '%-%' AND " +
                             "TRANS_DATE = '").append(yesterdayDateString).append("' AND POS_CODE = '")
                     .append(listPos.get(i).get("posCode")).append("' AND OUTLET_CODE = '").append(param.get("outletCode"))
                     .append("')B ON A.POS_CODE_NOW = B.POS_CODE_AGO");
@@ -1794,6 +1807,7 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("dateAgo", yesterdayDateString);
         hashMap.put("user", param.get("user"));
         hashMap.put("outletName", param.get("outletName"));
+        System.out.println(queryDataReceipt.toString());
 
         List<Map<String, Object>> listParamPos = (List<Map<String, Object>>) param.get("pos");
         StringBuilder posCode = new StringBuilder();
@@ -2582,14 +2596,12 @@ public class ReportDaoImpl implements ReportDao {
     public JasperPrint jesperReportPerformanceRiderHd(Map<String, Object> param, Connection connection) throws IOException, JRException {
         Map<String, Object> hashMap = new HashMap<String, Object>();
         hashMap.put("outletBrand", param.get("outletBrand"));
-        hashMap.put("city", "X_" + param.get("city"));
-        hashMap.put("fromDate", param.get("fromDate"));
-        hashMap.put("toDate", param.get("toDate"));
+        hashMap.put("periode", param.get("periode"));
         hashMap.put("outletCode", param.get("outletCode"));
-        hashMap.put("user", param.get("user"));
         hashMap.put("typeReport", param.get("typeReport"));
+        hashMap.put("user", param.get("user"));
 
-        ClassPathResource classPathResource = new ClassPathResource(param.get("typeReport").equals("1") ? "report/reportDeleteMpcsProduksi.jrxml" : "report/reportDeleteMpcsProduksiDetail.jrxml");
+        ClassPathResource classPathResource = new ClassPathResource(param.get("typeReport").equals("1") ? "report/reportPerformanceRiderHd.jrxml" : "report/reportPerformanceRiderHdDetail.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }
@@ -2663,18 +2675,6 @@ public class ReportDaoImpl implements ReportDao {
     ///////////////NEW METHOD REPORT PRODUCTION by Sifa 11 Januari 2024////
     @Override
     public JasperPrint jasperReportProduction(Map<String, Object> param, Connection connection) throws IOException, JRException {
-        String subReportPath = "report/subReportProductionRecipe.jrxml";
-        JasperReport subReport = null;
-        try {
-            InputStream inputStream = getClass().getClassLoader().getResourceAsStream(subReportPath);
-            if (inputStream == null) {
-                throw new RuntimeException("Subreport file not found: " + subReportPath);
-            }
-            subReport = JasperCompileManager.compileReport(inputStream);
-        } catch (JRException e) {
-            throw new RuntimeException(e);
-        }
-        
         Map<String, Object> hashMap = new HashMap<String, Object>();
 
         hashMap.put("outletBrand", param.get("outletBrand"));
@@ -2683,10 +2683,14 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("mpcsGroup", param.get("mpcsGroup"));
         hashMap.put("user", param.get("user"));
-        hashMap.put("subReport", subReport);
-
-        System.err.println("hashMap: " + hashMap);
-        ClassPathResource classPathResource = new ClassPathResource("report/productionReport.jrxml");
+        
+        String reportPath;
+        if ("Jam Aktual".equals(param.get("detail"))) {
+            reportPath = "report/productionReportActualTime.jrxml";
+        } else {
+            reportPath = "report/productionReport.jrxml";
+        }
+        ClassPathResource classPathResource = new ClassPathResource(reportPath);
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }

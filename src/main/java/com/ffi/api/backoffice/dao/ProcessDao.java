@@ -7,6 +7,7 @@ package com.ffi.api.backoffice.dao;
 import com.ffi.api.backoffice.model.DetailOpname;
 import com.ffi.api.backoffice.model.HeaderOpname;
 import com.google.gson.JsonObject;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -113,7 +114,7 @@ public interface ProcessDao {
     /////////////done
     ///////////////new method updateStatusOpname 6-11-2023////////////////////////////
 
-    public void updateOpnameStatus(Map<String, String> mapping);
+    public List updateOpnameStatus(Map<String, String> mapping);
 
     /////////////done
     ////////////New method for Transfer master outlet - Fathur 11 Dec 2023////////////
@@ -159,5 +160,11 @@ public interface ProcessDao {
 
     // Add Counter Print Receiving Dani 11 Jan 2024
     public void addCounterPrintReceiving(Map<String, Object> params);
+    
+    // Add Counter Print Order Entry adit 16 Jan 2024
+    public void addCounterPrintOrderEntry(Map<String, Object> params);
+    
+    // Add menyimpan data user absensi by id by M Joko 16 Jan 2024
+    public boolean insertAbsensi(Map<String, Object> params);
     
 }

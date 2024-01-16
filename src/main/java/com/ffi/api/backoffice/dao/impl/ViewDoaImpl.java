@@ -1436,13 +1436,16 @@ public class ViewDoaImpl implements ViewDao {
                 + "AND H.OUTLET_CODE = :outletCode  "
                 + "AND H.Order_to LIKE :orderTo  "
                 + "" + where + ""
-                + " ORDER BY H.ORDER_ID DESC, H.DATE_UPD DESC, H.TIME_UPD DESC "; // ORDER  H.DATE_UPD DESC, H.TIME_UPD DESC by Dani 12 Desc 2023
+                + "AND CASE WHEN G.DESCRIPTION is null and  m.outlet_name is null then s.supplier_name " 
+                + "WHEN G.DESCRIPTION is null and s.supplier_name  is null then m.outlet_name ELSE g.description end LIKE :delivery"
+                + " ORDER BY H.DATE_UPD DESC, H.TIME_UPD DESC ";
         Map prm = new HashMap();
         prm.put("status", "%" + balance.get("status") + "%");
         prm.put("orderType", "%" + balance.get("orderType") + "%");
         prm.put("orderTo", "%" + balance.get("orderTo") + "%");
         prm.put("outletCode", balance.get("outletCode"));
         prm.put("orderDate", balance.get("orderDate"));
+        prm.put("delivery", "%" + balance.get("delivery") + "%");
 
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
@@ -2944,12 +2947,12 @@ public class ViewDoaImpl implements ViewDao {
 
         Map<String, Object> sqlParam = new HashMap<>();
         if (param.get("typeReturn").equals("Gudang")) {
-            query = "SELECT * FROM M_GLOBAL WHERE COND =:cond AND STATUS = 'A'";
+            query = "SELECT * FROM M_GLOBAL WHERE COND =:cond AND STATUS = 'A' ORDER BY CODE ASC";
             sqlParam.put("cond", param.get("cond"));
 
         }
         if (param.get("typeReturn").equals("Supplier")) {
-            query = "SELECT * FROM M_SUPPLIER ORDER BY SUPPLIER_NAME ASC";
+            query = "SELECT * FROM M_SUPPLIER WHERE STATUS = 'A' ORDER BY SUPPLIER_NAME ASC";
         }
 
         List<Map<String, Object>> list = jdbcTemplate.query(query, sqlParam, new RowMapper<Map<String, Object>>() {
@@ -2961,7 +2964,6 @@ public class ViewDoaImpl implements ViewDao {
                     rt.put("description", rs.getString("DESCRIPTION"));
                     rt.put("value", rs.getString("VALUE"));
                     rt.put("status", rs.getString("STATUS"));
-
                 } else {
                     rt.put("cdSupplier", rs.getString("CD_SUPPLIER"));
                     rt.put("supplierName", rs.getString("SUPPLIER_NAME"));
@@ -3053,7 +3055,7 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> listQueryStockCard(Map<String, String> ref) {
         String where = " ";
-         if (!ref.get("cdWarehouse").equals("")) {
+        if (!ref.get("cdWarehouse").equals("")) {
             where = " AND MITEM.ITEM_CODE IN (SELECT ITEM_CODE FROM M_ITEM WHERE CD_WAREHOUSE LIKE :cdWarehouse) ";
         }
         String query = "SELECT SCARD.TRANS_DATE, SCARD.TIME_UPD, "
@@ -3366,11 +3368,10 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> mpcsProductionDetail(Map<String, String> balance) {
 
-        String qry = "SELECT HIST_SEQ, MPCS_GROUP, RECIPE_CODE, SEQ_MPCS, QUANTITY, to_char(to_date(TIME_UPD, 'hh24miss'), 'hh24:mi') AS TIME_UPD, "
-                + "(to_char(DATE_UPD, 'YYYY-MM-dd') ||' ' || to_char(to_date(TIME_UPD, 'hh24miss'), 'hh24:mi:ss')) AS DATE_UPD "
+        String qry = "SELECT HIST_SEQ, MPCS_GROUP, RECIPE_CODE, SEQ_MPCS, QUANTITY, TIME_UPD, DATE_UPD "
                 + "FROM T_MPCS_HIST WHERE MPCS_GROUP = :mpcsGroup AND MPCS_DATE = :dateMpcs "
-                + "AND TIME_UPD <= replace(:maxTime, ':' , '')||'00' "
-                + "AND TIME_UPD >= replace(:minTime, ':' , '')||'00' "
+                + "AND TIME_UPD <= replace(:maxTime, '.' , '')||'00' "
+                + "AND TIME_UPD >= replace(:minTime, '.' , '')||'00' "
                 + "AND FRYER_TYPE != 'D'";
 
         Map prm = new HashMap();
@@ -3997,5 +3998,22 @@ public class ViewDoaImpl implements ViewDao {
         String query = "SELECT mg.CODE, mg.DESCRIPTION FROM M_GLOBAL mg WHERE mg.COND = 'ITEM' ORDER BY mg.CODE ASC ";
 
         return jdbcTemplate.query(query, new HashMap(), new DynamicRowMapper());
+    }
+
+    /////// NEW METHOD to mengambil data user absensi by id by M Joko 16 Jan 2024
+    @Override
+    public List<Map<String, Object>> getIdAbsensi(Map<String, String> mapping) {
+        String query = """
+            SELECT 
+             to_char(SYSDATE,'DD-FMMONTH-YYYY') AS DATE_NOW, to_char(SYSDATE,'HH24MISS') AS TIME_NOW,
+             s.REGION_CODE, s.OUTLET_CODE, s.STAFF_CODE, s.STAFF_NAME, s.STAFF_FULL_NAME, s.ID_CARD, 
+             s.SEX, TO_CHAR(s.DATE_OF_BIRTH,'YYYY-MM-DD') AS DATE_OF_BIRTH, s.POSITION, s.GROUP_ID, s.STATUS, s.RIDER_FLAG,
+             NVL(m.DAY_SEQ,0) AS DAY_SEQ, NVL(m.SEQ_NO,0) AS SEQ_NO, NVL(m.TIME_ABSEN,0) AS TIME_ABSEN
+            FROM M_STAFF s
+            LEFT JOIN T_ABSENSI m ON s.OUTLET_CODE = m.OUTLET_CODE AND s.STAFF_CODE = m.STAFF_ID
+            WHERE STAFF_CODE = :staffCode
+            ORDER BY m.DAY_SEQ, m.SEQ_NO
+                       """;
+        return jdbcTemplate.query(query, mapping, new DynamicRowMapper());
     }
 }

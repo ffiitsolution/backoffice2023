@@ -143,5 +143,16 @@
         "url": "/pos/end-of-day"
       }
     ]
+  },
+  {
+    "name": "Time Management",
+    "url": "/time-management",
+    "icon": "fa fa-clock-o",
+    "children": [
+      {
+        "name": "Transaksi",
+        "url": "/time-management/transaction"
+      }
+    ]
   }
 ]

@@ -514,4 +514,9 @@ public class ViewServices {
     public List<Map<String, Object>> getListItemDetailReport() {
         return viewDao.getListItemDetailReport();
     }
+
+    /////// NEW METHOD to mengambil data user absensi by id by M Joko 16 Jan 2024
+    public List<Map<String, Object>> getIdAbsensi(Map<String, String> mapping) {
+        return viewDao.getIdAbsensi(mapping);
+    }
 }

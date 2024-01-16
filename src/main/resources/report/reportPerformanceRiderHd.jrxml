@@ -1,0 +1,628 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reportPerformanceRiderHdDetail" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="1356944a-c454-4393-99ee-8392e8ce3866">
+	<property name="ireport.zoom" value="2.196150000000001"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Localhost"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="outletCode" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="periode" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="user" class="java.lang.String"/>
+	<parameter name="typeReport" class="java.lang.Integer"/>
+	<parameter name="outletBrand" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT p.*,
+CAST(p."STORE_TIME_DIBAWAH_7" AS INT) + CAST(p."STORE_TIME_DIATAS_45" AS INT) AS SUM_STORE_TIME,
+CAST(p."DOOR_TIME_DIBAWAH_7" AS INT) + CAST(p."DOOR_TIME_DIATAS_45" AS INT) AS SUM_DOOR_TIME,
+CAST(p."DEL_TIME_DIBAWAH_7" AS INT) + CAST(p."DEL_TIME_DIATAS_45" AS INT) AS SUM_DEL_TIME
+FROM (
+	SELECT q.*,
+		COUNT(q.TRANS_DATE) OVER () AS TRANSC,
+		COUNT(q.TRANS_DATE) OVER () AS PAIRING,
+		ROUND(COUNT(q.TRANS_DATE) OVER () * 100.0 / COUNT(*) OVER (), 2) AS PERCENT_PAIRING,
+	    COUNT(CASE WHEN q."IN-STORE-S" > 0 AND q."IN-STORE-S" <= 420 THEN 1 END) OVER () AS STORE_TIME_DIBAWAH_7,
+	    COUNT(CASE WHEN q."IN-STORE-S" >= 420 AND q."IN-STORE-S" > 2700 THEN 1 END) OVER () AS STORE_TIME_DIATAS_45,
+	    ROUND((COUNT(CASE WHEN q."IN-STORE-S" > 0 AND q."IN-STORE-S" <= 420 THEN 1 END) OVER () * 100.0) / COUNT(q."IN-STORE-S") OVER (), 2) AS PERCENT_STORE_TIME_DIBAWAH_7,
+	    ROUND((COUNT(CASE WHEN q."IN-STORE-S" >= 420 AND q."IN-STORE-S" > 2700 THEN 1 END) OVER () * 100.0) / COUNT(q."IN-STORE-S") OVER (), 2) AS PERCENT_STORE_TIME_DIATAS_45,
+	    COUNT(CASE WHEN q."AT-DOOR-S" > 0 AND q."AT-DOOR-S" <= 420 THEN 1 END) OVER () AS DOOR_TIME_DIBAWAH_7,
+	    COUNT(CASE WHEN q."AT-DOOR-S" >= 420 AND q."AT-DOOR-S" > 2700 THEN 1 END) OVER () AS DOOR_TIME_DIATAS_45,
+	    ROUND((COUNT(CASE WHEN q."AT-DOOR-S" > 0 AND q."AT-DOOR-S" <= 420 THEN 1 END) OVER () * 100.0) / COUNT(q."AT-DOOR-S") OVER (), 2) AS PERCENT_DOOR_TIME_DIBAWAH_7,
+	    ROUND((COUNT(CASE WHEN q."AT-DOOR-S" >= 420 AND q."AT-DOOR-S" > 2700 THEN 1 END) OVER () * 100.0) / COUNT(q."AT-DOOR-S") OVER (), 2) AS PERCENT_DOOR_TIME_DIATAS_45,
+	    COUNT(CASE WHEN q."DEL-TIME-S" > 0 AND q."DEL-TIME-S" <= 420 THEN 1 END) OVER () AS DEL_TIME_DIBAWAH_7,
+	    COUNT(CASE WHEN q."DEL-TIME-S" >= 420 AND q."DEL-TIME-S" > 2700 THEN 1 END) OVER () AS DEL_TIME_DIATAS_45,
+	    ROUND((COUNT(CASE WHEN q."DEL-TIME-S" > 0 AND q."DEL-TIME-S" <= 420 THEN 1 END) OVER () * 100.0) / COUNT(q."DEL-TIME-S") OVER (), 2) AS PERCENT_DEL_TIME_DIBAWAH_7,
+	    ROUND((COUNT(CASE WHEN q."DEL-TIME-S" >= 420 AND q."DEL-TIME-S" > 2700 THEN 1 END) OVER () * 100.0) / COUNT(q."DEL-TIME-S") OVER (), 2) AS PERCENT_DEL_TIME_DIATAS_45
+			FROM (
+			SELECT 	
+					a.OUTLET_CODE,
+					c.OUTLET_NAME,
+					c.ADDRESS_1,
+					c.ADDRESS_2,
+					c.PHONE,
+					d.POS_CODE,
+					d.POS_DESCRIPTION,
+					e.CODE,
+					e.DESCRIPTION,
+					a.TRANS_DATE,
+					a.BILL_DATE,
+					a.BILL_NO,
+					a.CUSTOMER_NAME,
+					a.CUSTOMER_PHONE_NO,
+					a.ADDRESS_1 AS CUSTOMER_ADDRESS,
+					b.STAFF_NAME,
+					TO_CHAR(TO_DATE(a.BILL_TIME, 'HH24MISS'), 'HH24:MI:SS') AS ORDER_TIME, 
+					b.RIDER_CLOCK_OUT, 
+					ABS(INTIMESTORES) AS "IN-STORE-S",
+					ABS(INTIMESTOREM) AS "IN-STORE-M",
+					RIDER_CLOCK_IN,
+					ABS(DOORTIMES) AS "AT-DOOR-S",
+					ABS(DOORTIMEM) AS "AT-DOOR-M",
+					ABS((INTIMESTORES + DOORTIMES)) AS "DEL-TIME-S",
+					ABS((INTIMESTOREM + DOORTIMEM)) AS "DEL-TIME-M"
+				FROM T_POS_BILL a 
+				JOIN TMP_HD b ON a.BILL_NO = b.BILL_NO 
+				JOIN M_OUTLET c ON a.OUTLET_CODE = c.OUTLET_CODE AND a.OUTLET_CODE = $P{outletCode} 
+				JOIN M_POS d ON a.POS_CODE = d.POS_CODE
+				JOIN M_GLOBAL e ON d.POS_TYPE = e.CODE AND e.COND = 'POS_TYPE'
+				WHERE a.TRANS_DATE= $P{periode} AND DELIVERY_STATUS = 'CLS' AND e.CODE = '3'
+				ORDER BY b.STAFF_NAME,a.BILL_TIME ) q ) p]]>
+	</queryString>
+	<field name="OUTLET_CODE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="OUTLET_CODE"/>
+		<property name="com.jaspersoft.studio.field.label" value="OUTLET_CODE"/>
+	</field>
+	<field name="OUTLET_NAME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="OUTLET_NAME"/>
+		<property name="com.jaspersoft.studio.field.label" value="OUTLET_NAME"/>
+	</field>
+	<field name="ADDRESS_1" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADDRESS_1"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADDRESS_1"/>
+	</field>
+	<field name="ADDRESS_2" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADDRESS_2"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADDRESS_2"/>
+	</field>
+	<field name="PHONE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="PHONE"/>
+		<property name="com.jaspersoft.studio.field.label" value="PHONE"/>
+	</field>
+	<field name="POS_CODE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="POS_CODE"/>
+		<property name="com.jaspersoft.studio.field.label" value="POS_CODE"/>
+	</field>
+	<field name="POS_DESCRIPTION" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="POS_DESCRIPTION"/>
+		<property name="com.jaspersoft.studio.field.label" value="POS_DESCRIPTION"/>
+	</field>
+	<field name="CODE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="CODE"/>
+		<property name="com.jaspersoft.studio.field.label" value="CODE"/>
+	</field>
+	<field name="DESCRIPTION" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="DESCRIPTION"/>
+		<property name="com.jaspersoft.studio.field.label" value="DESCRIPTION"/>
+	</field>
+	<field name="TRANS_DATE" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="TRANS_DATE"/>
+		<property name="com.jaspersoft.studio.field.label" value="TRANS_DATE"/>
+	</field>
+	<field name="BILL_DATE" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="BILL_DATE"/>
+		<property name="com.jaspersoft.studio.field.label" value="BILL_DATE"/>
+	</field>
+	<field name="BILL_NO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="BILL_NO"/>
+		<property name="com.jaspersoft.studio.field.label" value="BILL_NO"/>
+	</field>
+	<field name="CUSTOMER_NAME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="CUSTOMER_NAME"/>
+		<property name="com.jaspersoft.studio.field.label" value="CUSTOMER_NAME"/>
+	</field>
+	<field name="CUSTOMER_PHONE_NO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="CUSTOMER_PHONE_NO"/>
+		<property name="com.jaspersoft.studio.field.label" value="CUSTOMER_PHONE_NO"/>
+	</field>
+	<field name="CUSTOMER_ADDRESS" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="CUSTOMER_ADDRESS"/>
+		<property name="com.jaspersoft.studio.field.label" value="CUSTOMER_ADDRESS"/>
+	</field>
+	<field name="STAFF_NAME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="STAFF_NAME"/>
+		<property name="com.jaspersoft.studio.field.label" value="STAFF_NAME"/>
+	</field>
+	<field name="ORDER_TIME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ORDER_TIME"/>
+		<property name="com.jaspersoft.studio.field.label" value="ORDER_TIME"/>
+	</field>
+	<field name="RIDER_CLOCK_OUT" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="RIDER_CLOCK_OUT"/>
+		<property name="com.jaspersoft.studio.field.label" value="RIDER_CLOCK_OUT"/>
+	</field>
+	<field name="IN-STORE-S" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="IN-STORE-S"/>
+		<property name="com.jaspersoft.studio.field.label" value="IN-STORE-S"/>
+	</field>
+	<field name="IN-STORE-M" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="IN-STORE-M"/>
+		<property name="com.jaspersoft.studio.field.label" value="IN-STORE-M"/>
+	</field>
+	<field name="RIDER_CLOCK_IN" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="RIDER_CLOCK_IN"/>
+		<property name="com.jaspersoft.studio.field.label" value="RIDER_CLOCK_IN"/>
+	</field>
+	<field name="AT-DOOR-S" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="AT-DOOR-S"/>
+		<property name="com.jaspersoft.studio.field.label" value="AT-DOOR-S"/>
+	</field>
+	<field name="AT-DOOR-M" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="AT-DOOR-M"/>
+		<property name="com.jaspersoft.studio.field.label" value="AT-DOOR-M"/>
+	</field>
+	<field name="DEL-TIME-S" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="DEL-TIME-S"/>
+		<property name="com.jaspersoft.studio.field.label" value="DEL-TIME-S"/>
+	</field>
+	<field name="DEL-TIME-M" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="DEL-TIME-M"/>
+		<property name="com.jaspersoft.studio.field.label" value="DEL-TIME-M"/>
+	</field>
+	<field name="TRANSC" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="TRANSC"/>
+		<property name="com.jaspersoft.studio.field.label" value="TRANSC"/>
+	</field>
+	<field name="PAIRING" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="PAIRING"/>
+		<property name="com.jaspersoft.studio.field.label" value="PAIRING"/>
+	</field>
+	<field name="PERCENT_PAIRING" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="PERCENT_PAIRING"/>
+		<property name="com.jaspersoft.studio.field.label" value="PERCENT_PAIRING"/>
+	</field>
+	<field name="STORE_TIME_DIBAWAH_7" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="STORE_TIME_DIBAWAH_7"/>
+		<property name="com.jaspersoft.studio.field.label" value="STORE_TIME_DIBAWAH_7"/>
+	</field>
+	<field name="STORE_TIME_DIATAS_45" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="STORE_TIME_DIATAS_45"/>
+		<property name="com.jaspersoft.studio.field.label" value="STORE_TIME_DIATAS_45"/>
+	</field>
+	<field name="PERCENT_STORE_TIME_DIBAWAH_7" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="PERCENT_STORE_TIME_DIBAWAH_7"/>
+		<property name="com.jaspersoft.studio.field.label" value="PERCENT_STORE_TIME_DIBAWAH_7"/>
+	</field>
+	<field name="PERCENT_STORE_TIME_DIATAS_45" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="PERCENT_STORE_TIME_DIATAS_45"/>
+		<property name="com.jaspersoft.studio.field.label" value="PERCENT_STORE_TIME_DIATAS_45"/>
+	</field>
+	<field name="DOOR_TIME_DIBAWAH_7" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="DOOR_TIME_DIBAWAH_7"/>
+		<property name="com.jaspersoft.studio.field.label" value="DOOR_TIME_DIBAWAH_7"/>
+	</field>
+	<field name="DOOR_TIME_DIATAS_45" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="DOOR_TIME_DIATAS_45"/>
+		<property name="com.jaspersoft.studio.field.label" value="DOOR_TIME_DIATAS_45"/>
+	</field>
+	<field name="PERCENT_DOOR_TIME_DIBAWAH_7" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="PERCENT_DOOR_TIME_DIBAWAH_7"/>
+		<property name="com.jaspersoft.studio.field.label" value="PERCENT_DOOR_TIME_DIBAWAH_7"/>
+	</field>
+	<field name="PERCENT_DOOR_TIME_DIATAS_45" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="PERCENT_DOOR_TIME_DIATAS_45"/>
+		<property name="com.jaspersoft.studio.field.label" value="PERCENT_DOOR_TIME_DIATAS_45"/>
+	</field>
+	<field name="DEL_TIME_DIBAWAH_7" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="DEL_TIME_DIBAWAH_7"/>
+		<property name="com.jaspersoft.studio.field.label" value="DEL_TIME_DIBAWAH_7"/>
+	</field>
+	<field name="DEL_TIME_DIATAS_45" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="DEL_TIME_DIATAS_45"/>
+		<property name="com.jaspersoft.studio.field.label" value="DEL_TIME_DIATAS_45"/>
+	</field>
+	<field name="PERCENT_DEL_TIME_DIBAWAH_7" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="PERCENT_DEL_TIME_DIBAWAH_7"/>
+		<property name="com.jaspersoft.studio.field.label" value="PERCENT_DEL_TIME_DIBAWAH_7"/>
+	</field>
+	<field name="PERCENT_DEL_TIME_DIATAS_45" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="PERCENT_DEL_TIME_DIATAS_45"/>
+		<property name="com.jaspersoft.studio.field.label" value="PERCENT_DEL_TIME_DIATAS_45"/>
+	</field>
+	<field name="SUM_STORE_TIME" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="SUM_STORE_TIME"/>
+		<property name="com.jaspersoft.studio.field.label" value="SUM_STORE_TIME"/>
+	</field>
+	<field name="SUM_DOOR_TIME" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="SUM_DOOR_TIME"/>
+		<property name="com.jaspersoft.studio.field.label" value="SUM_DOOR_TIME"/>
+	</field>
+	<field name="SUM_DEL_TIME" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="SUM_DEL_TIME"/>
+		<property name="com.jaspersoft.studio.field.label" value="SUM_DEL_TIME"/>
+	</field>
+	<group name="detail">
+		<groupExpression><![CDATA[$F{TRANS_DATE}]]></groupExpression>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="110" splitType="Stretch">
+			<image>
+				<reportElement x="1" y="0" width="48" height="48" isPrintWhenDetailOverflows="true" uuid="e97813fe-6bdd-4579-8fc4-915ca01dc9f1">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="60" y="-1" width="112" height="11" uuid="01f34372-348f-4fd9-b8ad-4573af9f8ec9"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="60" y="9" width="122" height="11" uuid="abbc81ca-ac76-4c2d-a1d7-b16bce5f33fa"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OUTLET_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="60" y="19" width="122" height="11" uuid="944aade3-f718-4dee-826e-c97bb0132c53"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ADDRESS_1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="60" y="29" width="122" height="11" uuid="4b6193bf-341a-491e-8b7a-4820dfaffb6c"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ADDRESS_2}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="52" width="554" height="18" uuid="ea455947-ace1-498b-b577-d4d4c599c247"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Report Performance Rider HD]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="76" width="22" height="11" uuid="1fd47466-5b3f-47a4-a4de-93e2c65c45d3"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Date : ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="24" y="76" width="287" height="11" uuid="ceb8922b-cf0d-42a7-9c2b-ed64ad7cb7ac"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{periode}))]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="441" y="0" width="114" height="11" uuid="fbc60455-869e-469f-8d2e-6daadf1e7e4a"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Halaman : " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="441" y="10" width="114" height="11" uuid="151278d0-c013-402f-8b12-9fb307dde65a"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["User Cetak : " + $P{user}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="441" y="20" width="114" height="11" uuid="f2a5250d-945a-4ddc-badc-4c6bfa40ce73"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Tanggal Cetak : " + new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="441" y="30" width="114" height="11" uuid="59538c26-b8c7-43fa-ad2a-2b6ae8bcb442"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Jam Cetak : " + new SimpleDateFormat("hh:mm:ss").format(new Date())]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="1" y="91" width="554" height="2" uuid="acca77af-7fde-4636-a431-7c763e07e2fc">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+			</line>
+			<line>
+				<reportElement x="1" y="107" width="554" height="1" uuid="bf86da33-f3e7-4902-adf9-3bf028fc428a">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+			</line>
+			<staticText>
+				<reportElement mode="Transparent" x="0" y="92" width="75" height="15" uuid="ce7fa785-d473-4d03-8576-672d0a17b1c8">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[WAKTU]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="77" y="92" width="78" height="15" uuid="cb71f9ea-911e-439e-930d-98c30c345222">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[In Store Time]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="155" y="92" width="80" height="15" uuid="39949074-e652-4520-9403-25f0eac2d9bb">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[In Store Time]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="235" y="92" width="80" height="15" uuid="1de71327-8d3f-4d92-8033-35b229ba08c2">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Door Time]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="315" y="92" width="80" height="15" uuid="33bcf90c-bbbd-4e7a-a299-813c9b319c5a">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Door Time]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="395" y="92" width="80" height="15" uuid="dc1112cb-9dc7-47a0-a83e-699f462d859e">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Delivery Time]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="475" y="92" width="80" height="15" uuid="67d4cc61-9cad-4c68-9db0-22619b171771">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Delivery Time]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="61" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Transparent" x="0" y="1" width="75" height="15" uuid="cb2116b5-9fca-43dc-bdfb-36171bb7b6f9">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[07 MIN OR LESS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="0" y="16" width="75" height="15" uuid="4c4a6e93-7f8b-442e-aee4-5ac7d4c923ce">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[> 45 MIN]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="0" y="31" width="75" height="15" uuid="42146170-d51d-4cc6-8bdd-4f0531e80df1">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TOTAL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="0" y="46" width="75" height="15" uuid="109a58fc-eb1e-4b11-857b-a2b17c8329a3">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Note]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="77" y="1" width="78" height="15" uuid="65eff38a-d836-4ebc-89cd-bff7c8e4631d">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{STORE_TIME_DIBAWAH_7}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="77" y="16" width="78" height="15" uuid="cbce7ad9-82df-42ae-97d3-eb6771b9e941">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{STORE_TIME_DIATAS_45}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="155" y="1" width="80" height="15" uuid="baa448b7-5fa8-41cc-b7c6-a73a81260cd4">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PERCENT_STORE_TIME_DIBAWAH_7} + " %"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="155" y="16" width="80" height="15" uuid="334d6d2e-805c-4349-8847-2aaf0c43e7d9">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PERCENT_STORE_TIME_DIATAS_45} + " %"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="235" y="1" width="80" height="15" uuid="7cb17088-afd3-40ca-8158-54223674d365">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DOOR_TIME_DIBAWAH_7}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="235" y="16" width="80" height="15" uuid="f325b96a-b47e-4da6-a486-0e585c52a645">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DOOR_TIME_DIATAS_45}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="315" y="1" width="80" height="15" uuid="f43cb934-6822-4fac-88ca-87a225707a9f">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PERCENT_DOOR_TIME_DIBAWAH_7} + " %"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="315" y="16" width="80" height="15" uuid="31444308-c12a-49be-9b3e-c11135078897">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PERCENT_DOOR_TIME_DIATAS_45} + " %"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="395" y="1" width="80" height="15" uuid="7f8ff38a-4222-4ff3-9668-6f177e8699bd">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DEL_TIME_DIBAWAH_7}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="395" y="16" width="80" height="15" uuid="3f09820c-f06e-4111-b1bb-1efe6dda753e">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DEL_TIME_DIATAS_45}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="475" y="1" width="80" height="15" uuid="6ad8d6e9-5c84-4c58-b8bf-8085ebd38097">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PERCENT_DEL_TIME_DIBAWAH_7} + " %"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="475" y="16" width="80" height="15" uuid="d19b816c-5bf4-4222-ad0b-39f5f7bf11d0">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PERCENT_DEL_TIME_DIATAS_45} + " %"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Transparent" x="77" y="46" width="78" height="15" uuid="f6cf29a9-fa28-4aa7-a749-e7a8fc82ee6b">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TIPE PAIRING]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="155" y="46" width="80" height="15" uuid="cf00071f-1ac4-491d-a3d9-fdc7f47f03de">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA["PAIRING # " + $F{PAIRING}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="235" y="46" width="80" height="15" uuid="aeb2f4ad-4ed5-40a8-8aa5-46c4e1135104">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA["TRANSC .# " + $F{TRANSC}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="315" y="46" width="80" height="15" uuid="389fde08-4cc5-4c05-b181-3ef1d3d25eb4">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA["PAIRING% " + $F{PERCENT_PAIRING} + " %"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="77" y="31" width="78" height="15" uuid="944e5c54-d009-4bf2-a68e-763315e09675">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SUM_STORE_TIME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="235" y="31" width="80" height="15" uuid="7ae46ab0-ba34-4b20-a5cb-d2498dc33c6b">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SUM_DOOR_TIME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="395" y="31" width="80" height="15" uuid="7157cf0b-00a4-4593-8849-fc1b0eb6fae6">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SUM_DEL_TIME}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>
