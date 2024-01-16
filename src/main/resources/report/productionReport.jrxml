@@ -45,7 +45,7 @@
     tsm.TIME_MPCS,
     tsm.QTY_PROJ, tsm.QTY_ACC_PROJ, tsm.QTY_PROD, tsm.QTY_ACC_PROD, tsm.QTY_SOLD, 
     tsm.QTY_ACC_SOLD, tsm.QTY_REJECT, tsm.QTY_ACC_REJECT, tsm.QTY_WASTAGE, tsm.QTY_ACC_WASTAGE,
-    tsm.QTY_ONHAND, tsm.QTY_ACC_ONHAND, tsm.QTY_VARIANCE, tsm.QTY_ACC_VARIANCE,
+    tsm.QTY_ONHAND, tsm.QTY_ACC_ONHAND, tsm.QTY_VARIANCE, tsm.QTY_ACC_VARIANCE, tsm.QTY_IN, tsm.QTY_OUT,
     mo.OUTLET_NAME,
     mo.TYPE,
     mo.ADDRESS_1,
@@ -177,6 +177,14 @@ ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS
 		<property name="com.jaspersoft.studio.field.name" value="QTY_ACC_VARIANCE"/>
 		<property name="com.jaspersoft.studio.field.label" value="QTY_ACC_VARIANCE"/>
 	</field>
+	<field name="QTY_IN" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="QTY_IN"/>
+		<property name="com.jaspersoft.studio.field.label" value="QTY_IN"/>
+	</field>
+	<field name="QTY_OUT" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="QTY_OUT"/>
+		<property name="com.jaspersoft.studio.field.label" value="QTY_OUT"/>
+	</field>
 	<field name="OUTLET_NAME" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="OUTLET_NAME"/>
 		<property name="com.jaspersoft.studio.field.label" value="OUTLET_NAME"/>
@@ -276,7 +284,7 @@ ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0.0000").format(0)]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0.0000").format($F{QTY_OUT})]]></textFieldExpression>
 				</textField>
 				<textField>
 					<reportElement x="757" y="0" width="40" height="14" uuid="f5aa642a-ae50-4dc7-85df-70ff5cf58e88">
@@ -294,7 +302,7 @@ ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0.0000").format(0)]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0.0000").format($F{QTY_IN})]]></textFieldExpression>
 				</textField>
 				<textField>
 					<reportElement x="479" y="0" width="42" height="14" uuid="be2d907a-2ec0-4140-8264-61578a48f215">
@@ -647,7 +655,7 @@ ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS
 				<textElement textAlignment="Center">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Qty]]></text>
+				<text><![CDATA[In]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Transparent" x="296" y="116" width="40" height="15" uuid="29d97584-81d2-40c5-8149-148b0a4e36ce"/>
@@ -675,7 +683,7 @@ ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS
 				<textElement textAlignment="Center">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Accum]]></text>
+				<text><![CDATA[Out]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Transparent" x="432" y="101" width="92" height="15" uuid="8cccdde7-cf7c-4585-af70-c0f2447b1177"/>

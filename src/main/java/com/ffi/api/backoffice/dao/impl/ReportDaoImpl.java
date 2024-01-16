@@ -2675,18 +2675,6 @@ public class ReportDaoImpl implements ReportDao {
     ///////////////NEW METHOD REPORT PRODUCTION by Sifa 11 Januari 2024////
     @Override
     public JasperPrint jasperReportProduction(Map<String, Object> param, Connection connection) throws IOException, JRException {
-        String subReportPath = "report/subReportProductionRecipe.jrxml";
-        JasperReport subReport = null;
-        try {
-            InputStream inputStream = getClass().getClassLoader().getResourceAsStream(subReportPath);
-            if (inputStream == null) {
-                throw new RuntimeException("Subreport file not found: " + subReportPath);
-            }
-            subReport = JasperCompileManager.compileReport(inputStream);
-        } catch (JRException e) {
-            throw new RuntimeException(e);
-        }
-        
         Map<String, Object> hashMap = new HashMap<String, Object>();
 
         hashMap.put("outletBrand", param.get("outletBrand"));
@@ -2695,7 +2683,6 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("mpcsGroup", param.get("mpcsGroup"));
         hashMap.put("user", param.get("user"));
-        hashMap.put("subReport", subReport);
         
         String reportPath;
         if ("Jam Aktual".equals(param.get("detail"))) {

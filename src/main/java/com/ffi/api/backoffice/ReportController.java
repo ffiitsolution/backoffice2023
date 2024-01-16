@@ -1177,9 +1177,14 @@ public class ReportController {
 
         JasperPrint jasperPrint = reportServices.jasperReportProduction(prm, conn);
         conn.close();
-        byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=ReportProduction.pdf");
-        return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        
+        if (!jasperPrint.getPages().isEmpty()) {
+            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "inline; filename=ReportProduction.pdf");
+            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
     }
 }
