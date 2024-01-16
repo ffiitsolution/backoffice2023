@@ -2944,12 +2944,12 @@ public class ViewDoaImpl implements ViewDao {
 
         Map<String, Object> sqlParam = new HashMap<>();
         if (param.get("typeReturn").equals("Gudang")) {
-            query = "SELECT * FROM M_GLOBAL WHERE COND =:cond AND STATUS = 'A'";
+            query = "SELECT * FROM M_GLOBAL WHERE COND =:cond AND STATUS = 'A' ORDER BY CODE ASC";
             sqlParam.put("cond", param.get("cond"));
 
         }
         if (param.get("typeReturn").equals("Supplier")) {
-            query = "SELECT * FROM M_SUPPLIER ORDER BY SUPPLIER_NAME ASC";
+            query = "SELECT * FROM M_SUPPLIER WHERE STATUS = 'A' ORDER BY SUPPLIER_NAME ASC";
         }
 
         List<Map<String, Object>> list = jdbcTemplate.query(query, sqlParam, new RowMapper<Map<String, Object>>() {
@@ -2961,7 +2961,6 @@ public class ViewDoaImpl implements ViewDao {
                     rt.put("description", rs.getString("DESCRIPTION"));
                     rt.put("value", rs.getString("VALUE"));
                     rt.put("status", rs.getString("STATUS"));
-
                 } else {
                     rt.put("cdSupplier", rs.getString("CD_SUPPLIER"));
                     rt.put("supplierName", rs.getString("SUPPLIER_NAME"));
