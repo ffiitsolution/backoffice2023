@@ -1436,6 +1436,8 @@ public class ViewDoaImpl implements ViewDao {
                 + "AND H.OUTLET_CODE = :outletCode  "
                 + "AND H.Order_to LIKE :orderTo  "
                 + "" + where + ""
+                + "AND CASE WHEN G.DESCRIPTION is null and  m.outlet_name is null then s.supplier_name " 
+                + "WHEN G.DESCRIPTION is null and s.supplier_name  is null then m.outlet_name ELSE g.description end LIKE :delivery"
                 + " ORDER BY H.DATE_UPD DESC, H.TIME_UPD DESC ";
         Map prm = new HashMap();
         prm.put("status", "%" + balance.get("status") + "%");
@@ -1443,6 +1445,7 @@ public class ViewDoaImpl implements ViewDao {
         prm.put("orderTo", "%" + balance.get("orderTo") + "%");
         prm.put("outletCode", balance.get("outletCode"));
         prm.put("orderDate", balance.get("orderDate"));
+        prm.put("delivery", "%" + balance.get("delivery") + "%");
 
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
