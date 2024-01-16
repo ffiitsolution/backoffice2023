@@ -3021,4 +3021,86 @@ public class ProcessDaoImpl implements ProcessDao {
         String query = "UPDATE T_ORDER_HEADER a SET a.NO_OF_PRINT  = a.NO_OF_PRINT+1 WHERE a.ORDER_NO = :orderNo";
         jdbcTemplate.update(query, param); 
     }
+    
+    // Add menyimpan data user absensi by id by M Joko 16 Jan 2024
+    @Override
+    public boolean insertAbsensi(Map<String, Object> param) {
+        String query = "SELECT * FROM M_STAFF ms WHERE ms.STAFF_CODE = :staffCode AND ms.PASSWORD = :password";
+        List list = jdbcTemplate.query(query, param, new DynamicRowMapper());
+        if(list.isEmpty()){
+            return false;
+        }
+        
+        String queryUpd = """
+            INSERT INTO T_ABSENSI (
+              OUTLET_CODE, DAY_SEQ, STAFF_ID, SEQ_NO, 
+              DATE_ABSEN, TIME_ABSEN, STATUS
+            ) 
+            SELECT 
+              * 
+            FROM 
+              (
+                SELECT 
+                  OUTLET_CODE, 
+                  CASE WHEN NVL(SEQ_NO, 2) = 2 THEN NVL(DAY_SEQ, 0) + 1 ELSE NVL(DAY_SEQ, 1) END AS DAY_SEQ, 
+                  STAFF_ID, 
+                  CASE WHEN NVL(SEQ_NO, 1) = 1 THEN 2 ELSE 1 END AS SEQ_NO, 
+                  TO_CHAR(SYSTIMESTAMP, 'DD-MON-YYYY') AS DATE_ABSEN, 
+                  TO_CHAR(SYSTIMESTAMP, 'HH24MISS') AS TIME_ABSEN, 
+                  'A' AS STATUS 
+                FROM 
+                  (
+                    SELECT 
+                      * 
+                    FROM 
+                      T_ABSENSI ta 
+                    WHERE 
+                      ta.STAFF_ID = :staffCode 
+                      AND ta.DATE_ABSEN = TO_CHAR(SYSTIMESTAMP, 'DD-MON-YYYY') 
+                    ORDER BY 
+                      ta.TIME_ABSEN DESC
+                  ) 
+                WHERE 
+                  ROWNUM = 1 
+                UNION ALL 
+                SELECT 
+                  :outletCode AS OUTLET_CODE, 
+                  COALESCE(
+                    MAX(DAY_SEQ) + 1, 
+                    1
+                  ) AS DAY_SEQ, 
+                  :staffCode AS STAFF_ID, 
+                  COALESCE(
+                    MAX(SEQ_NO) + 1, 
+                    1
+                  ) AS SEQ_NO, 
+                  TO_CHAR(SYSTIMESTAMP, 'DD-MON-YYYY') AS DATE_ABSEN, 
+                  TO_CHAR(SYSTIMESTAMP, 'HH24MISS') AS TIME_ABSEN, 
+                  'A' AS STATUS 
+                FROM 
+                  T_ABSENSI 
+                WHERE 
+                  STAFF_ID = :staffCode 
+                  AND DATE_ABSEN = TO_CHAR(SYSTIMESTAMP, 'DD-MON-YYYY') 
+                  AND NOT EXISTS (
+                    SELECT 
+                      1 
+                    FROM 
+                      T_ABSENSI ta 
+                    WHERE 
+                      ta.STAFF_ID = :staffCode 
+                      AND ta.DATE_ABSEN = TO_CHAR(SYSTIMESTAMP, 'DD-MON-YYYY')
+                  )
+              ) 
+            WHERE 
+              rownum = 1
+                       """;
+        try{
+            jdbcTemplate.update(queryUpd, param);
+        } catch(DataAccessException e){
+            System.err.println("getMessage: " + e.getMessage());
+            return false;
+        }
+        return true;
+    }
 }

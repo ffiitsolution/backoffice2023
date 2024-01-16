@@ -3999,4 +3999,21 @@ public class ViewDoaImpl implements ViewDao {
 
         return jdbcTemplate.query(query, new HashMap(), new DynamicRowMapper());
     }
+
+    /////// NEW METHOD to mengambil data user absensi by id by M Joko 16 Jan 2024
+    @Override
+    public List<Map<String, Object>> getIdAbsensi(Map<String, String> mapping) {
+        String query = """
+            SELECT 
+             to_char(SYSDATE,'DD-FMMONTH-YYYY') AS DATE_NOW, to_char(SYSDATE,'HH24MISS') AS TIME_NOW,
+             s.REGION_CODE, s.OUTLET_CODE, s.STAFF_CODE, s.STAFF_NAME, s.STAFF_FULL_NAME, s.ID_CARD, 
+             s.SEX, TO_CHAR(s.DATE_OF_BIRTH,'YYYY-MM-DD') AS DATE_OF_BIRTH, s.POSITION, s.GROUP_ID, s.STATUS, s.RIDER_FLAG,
+             NVL(m.DAY_SEQ,0) AS DAY_SEQ, NVL(m.SEQ_NO,0) AS SEQ_NO, NVL(m.TIME_ABSEN,0) AS TIME_ABSEN
+            FROM M_STAFF s
+            LEFT JOIN T_ABSENSI m ON s.OUTLET_CODE = m.OUTLET_CODE AND s.STAFF_CODE = m.STAFF_ID
+            WHERE STAFF_CODE = :staffCode
+            ORDER BY m.DAY_SEQ, m.SEQ_NO
+                       """;
+        return jdbcTemplate.query(query, mapping, new DynamicRowMapper());
+    }
 }

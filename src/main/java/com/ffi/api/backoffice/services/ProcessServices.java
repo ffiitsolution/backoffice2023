@@ -286,4 +286,9 @@ public class ProcessServices {
     public void addCounterPrintOrderEntry(Map<String, Object> param) {
         dao.addCounterPrintOrderEntry(param);
     }
+    
+    // Add menyimpan data user absensi by id by M Joko 16 Jan 2024
+    public boolean insertAbsensi(Map<String, Object> param) {
+        return dao.insertAbsensi(param);
+    }
 }

@@ -3273,4 +3273,43 @@ public class IndexController {
         }
         return rm;
     }
+    
+    @RequestMapping(value = "/get-id-absensi", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk mengambil data user absensi by id by M Joko 16 Jan 2024", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage getIdAbsensi(@RequestBody String params) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> data = gsn.fromJson(params, new TypeToken<Map<String, String>>() {
+        }.getType());
+        ResponseMessage rm = new ResponseMessage();
+        List<Map<String, Object>> list = viewServices.getIdAbsensi(data);
+        Map first = list.get(0);
+        rm.setItem(list);
+        rm.setSuccess(!list.isEmpty());
+        rm.setMessage(list.isEmpty() ? "User Not Found" : ((first.get("daySeq").equals(0) && first.get("seqNo").equals(0)) || list.size() % 2 == 0 ? "Masuk" : ( list.size() % 2 != 0 ? "Keluar" : "User Found")));
+        return rm;
+    }
+    
+    @RequestMapping(value = "/insert-absensi", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk menyimpan data user absensi by id by M Joko 16 Jan 2024", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage insertAbsensi(@RequestBody String params) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, Object> data = gsn.fromJson(params, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        ResponseMessage rm = new ResponseMessage();
+        boolean b = processServices.insertAbsensi(data);
+        rm.setItem(new ArrayList());
+        rm.setSuccess(b);
+        rm.setMessage( b ? "Absensi berhasil." : "Periksa kembali password anda.");
+        return rm;
+    }
 }
