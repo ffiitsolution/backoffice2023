@@ -376,6 +376,13 @@ ORDER BY
 				</textElement>
 				<textFieldExpression><![CDATA[": " + $F{DELIVERY_NO}]]></textFieldExpression>
 			</textField>
+			<staticText>
+				<reportElement x="0" y="55" width="555" height="20" uuid="11fbda74-a20e-4156-9d27-b26a5966a831"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Delivery Order]]></text>
+			</staticText>
 		</band>
 	</columnHeader>
 	<detail>

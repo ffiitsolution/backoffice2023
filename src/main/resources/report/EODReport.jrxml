@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="receivingTransactions" pageWidth="616" pageHeight="842" columnWidth="576" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="1c5f4ca8-2023-497c-927a-a1037d8f6343">
+	<property name="ireport.zoom" value="1.0000000000000102"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="DatasetSales" uuid="4abea42d-2bf7-4412-ad51-dcd08088c083">
+		<parameter name="outletCode" class="java.lang.String">
+			<defaultValueExpression><![CDATA[$P{outletCode}]]></defaultValueExpression>
+		</parameter>
+		<parameter name="transDate" class="java.lang.String">
+			<defaultValueExpression><![CDATA[$P{transDate}]]></defaultValueExpression>
+		</parameter>
+		<queryString language="SQL">
+			<![CDATA[SELECT POS.*, (
+SELECT
+	MIN(SUBSTR(BILL_NO, 5,
+4)|| SUBSTR(BILL_NO, 3, 2)|| SUBSTR(BILL_NO, 1, 2)|| '-' || SUBSTR(BILL_NO, 10, 5)) || ' s/d ' || MAX(SUBSTR(BILL_NO, 5,
+4)|| SUBSTR(BILL_NO, 3, 2)|| SUBSTR(BILL_NO, 1, 2)|| '-' || SUBSTR(BILL_NO, 10, 5))
+FROM
+		T_POS_BILL
+WHERE
+		OUTLET_CODE = '0321'
+	AND TRANS_DATE BETWEEN '29 Nov 2023' 
+AND $P{transDate}
+	AND POS_CODE = POS.POS_CODE
+) AS BILL_NO
+FROM (
+	SELECT
+	POS_CODE,
+	COUNT(0) TTL_BILL,
+	SUM(TOTAL_ITEM) TTL_ITEM,
+	SUM(TOTAL_AMOUNT) TTL_AMT
+FROM
+	T_POS_BILL
+WHERE
+	OUTLET_CODE = '0321'
+	AND TRANS_DATE BETWEEN 
+'29 Nov 2023' AND '29 Nov 2023'
+GROUP BY
+	POS_CODE
+ORDER BY
+	POS_CODE) POS]]>
+		</queryString>
+		<field name="POS_CODE" class="java.lang.String"/>
+		<field name="TTL_BILL" class="java.math.BigDecimal"/>
+		<field name="TTL_ITEM" class="java.math.BigDecimal"/>
+		<field name="TTL_AMT" class="java.math.BigDecimal"/>
+		<field name="BILL_NO" class="java.lang.String"/>
+	</subDataset>
+	<parameter name="transDate" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="outletCode" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="user" class="java.lang.String"/>
+	<parameter name="outletBrand" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT 
+			OUTLET_NAME AS OUTLET_CODE_NAME,
+			ADDRESS_1 AS OUTLET_CODE_ADDR_1,
+			ADDRESS_2 AS OUTLET_CODE_ADDR_2,
+			PHONE AS OUTLET_CODE_PHONE,
+			OUTLET_CODE,
+			OUTLET_CODE AS TOTAL_BILL
+			FROM M_OUTLET WHERE OUTLET_CODE = $P{outletCode}]]>
+	</queryString>
+	<field name="OUTLET_CODE_NAME" class="java.lang.String"/>
+	<field name="OUTLET_CODE_ADDR_1" class="java.lang.String"/>
+	<field name="OUTLET_CODE_ADDR_2" class="java.lang.String"/>
+	<field name="OUTLET_CODE_PHONE" class="java.lang.String"/>
+	<field name="TOTAL_BILL" class="java.lang.String"/>
+	<field name="OUTLET_CODE" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="360" splitType="Stretch">
+			<textField>
+				<reportElement x="59" y="10" width="122" height="11" uuid="dc10479a-d1a9-447d-a601-31f855317c75"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OUTLET_CODE_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="59" y="40" width="122" height="11" isPrintWhenDetailOverflows="true" uuid="3dd5bce2-246d-4308-9d03-bf5693e9ae03"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Phone : " + $F{OUTLET_CODE_PHONE}]]></textFieldExpression>
+			</textField>
+			<image scaleImage="FillFrame">
+				<reportElement x="0" y="1" width="48" height="48" isPrintWhenDetailOverflows="true" uuid="ef6033a2-82d5-4fcd-adc8-2da175b9a26c"/>
+				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="59" y="20" width="122" height="11" isPrintWhenDetailOverflows="true" uuid="297f1e9f-6971-452c-99d0-0baba7798a65"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OUTLET_CODE_ADDR_1}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="59" y="0" width="112" height="11" uuid="013e94ac-b496-49a1-b08c-86374d2dc450"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="59" y="30" width="122" height="11" isPrintWhenDetailOverflows="true" uuid="437529e3-b03d-4cbb-ac47-54c4f389ec9f"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OUTLET_CODE_ADDR_2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="483" y="94" width="119" height="11" uuid="3f148db7-608d-486e-a8b1-16d11b34a4c3"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="400" y="74" width="84" height="11" uuid="f13316a1-ffad-42f6-ac39-cad93c1374af"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Halaman]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="400" y="104" width="84" height="11" uuid="97c73347-6237-48db-a592-dd43da29b39a"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Jam Cetak]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="400" y="84" width="84" height="11" uuid="170bf558-ddc8-4af5-8090-fb3135928e1e"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[User Cetak]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="483" y="84" width="119" height="11" uuid="b24b80c1-6aae-46d4-8048-8cb347a4c02f"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + $P{user}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="400" y="94" width="84" height="11" uuid="0a36322d-e036-4df9-9693-f85fa631b3fb"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Tanggal Cetak]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="483" y="104" width="119" height="11" uuid="d755b18f-f159-430e-9d73-773a456afb7f"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("hh:mm:ss a").format(new Date())]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="483" y="74" width="119" height="11" uuid="d45bfdb2-a045-40a3-a678-8841f1856bd9"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="94" y="94" width="270" height="11" uuid="13334438-cfb9-4ac3-909f-360cba7f3eee"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + $P{transDate}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="94" y="84" width="270" height="11" uuid="126a6e67-d4ce-4eb8-9a19-6c29876719c4"/>
+				<textElement>
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + $P{outletCode}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="5" y="94" width="90" height="11" uuid="f14501c9-a61e-46b3-8182-100ceb250e02"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Bussines Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="74" width="90" height="11" uuid="6e514215-c7e6-4c77-9bd3-a6c3ee1854cf"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Outlet Tujuan]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="94" y="74" width="270" height="11" uuid="f9d6f139-4d93-4043-9930-0d4fb43cf140"/>
+				<textElement>
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": "+ $F{OUTLET_CODE} + " - " + $F{OUTLET_CODE_NAME}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="5" y="84" width="90" height="11" uuid="cb0d1ae6-f422-4d24-bfd8-746a06946769"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[End Of Day Count]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="410" y="0" width="150" height="30" uuid="28e6461b-c7f9-4eaa-abb8-e34307f8f5d3"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[--EOD Report --]]></text>
+			</staticText>
+			<componentElement>
+				<reportElement x="0" y="160" width="570" height="40" uuid="c3f75293-d92d-4c12-9618-187b9b277617">
+					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
+					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
+					<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
+				</reportElement>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="DatasetSales" uuid="dc74eb19-c361-437d-884d-371e0776f7cb">
+						<datasetParameter name="outletCode">
+							<datasetParameterExpression><![CDATA[$P{outletCode}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="transDate">
+							<datasetParameterExpression><![CDATA[$P{transDate}]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:column width="80" uuid="0a4f46f8-2480-4002-8492-c19b2c78d717">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
+						<jr:tableHeader style="Table_TH" height="20" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="80" height="20" uuid="4b632994-a563-4b0c-a82f-f48cd7fa5635"/>
+								<textElement textAlignment="Center"/>
+								<text><![CDATA[POS]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:detailCell style="Table_TD" height="20">
+							<textField>
+								<reportElement x="0" y="0" width="80" height="20" uuid="81e03482-a08d-4c58-9f74-4673d16076c9"/>
+								<textElement textAlignment="Center"/>
+								<textFieldExpression><![CDATA[$F{POS_CODE}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="240" uuid="b23cd3e0-5907-4ed3-a1bf-f9b023dded5e">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
+						<jr:tableHeader style="Table_TH" height="20" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="240" height="20" uuid="3e2fe39d-b9aa-4a74-9a98-8a187e414d23"/>
+								<textElement textAlignment="Center"/>
+								<text><![CDATA[Bill No. (from - to)]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:detailCell style="Table_TD" height="20">
+							<textField>
+								<reportElement x="0" y="0" width="240" height="20" uuid="b9626bb5-5a3a-48f8-996e-f286a0105e5e"/>
+								<textElement textAlignment="Center"/>
+								<textFieldExpression><![CDATA[$F{BILL_NO}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="50" uuid="7797c75a-f193-46c4-b026-2d1f1ddb95de">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
+						<jr:tableHeader style="Table_TH" height="20" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="50" height="20" uuid="a3a79d08-ea95-4ef5-b04a-75108a6e853c"/>
+								<textElement textAlignment="Center"/>
+								<text><![CDATA[Total Bill]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:detailCell style="Table_TD" height="20">
+							<textField>
+								<reportElement x="0" y="0" width="50" height="20" uuid="2abb29ac-2cc0-4984-84ff-d3617f42039d"/>
+								<textElement textAlignment="Center"/>
+								<textFieldExpression><![CDATA[$F{TTL_BILL}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="60" uuid="1b6a9b46-1bed-42d6-ac1a-25a039c67588">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
+						<jr:tableHeader style="Table_TH" height="20" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="60" height="20" uuid="c0e5281b-d3cd-44a4-b796-0efb25fdd4e9"/>
+								<textElement textAlignment="Center"/>
+								<text><![CDATA[Total Item]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:detailCell style="Table_TD" height="20">
+							<textField>
+								<reportElement x="0" y="0" width="60" height="20" uuid="6d30d31a-2121-4400-87bb-46020a539406"/>
+								<textElement textAlignment="Center"/>
+								<textFieldExpression><![CDATA[$F{TTL_ITEM}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="140" uuid="2320000f-6ef5-4573-bdd9-cfb6b436749c">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
+						<jr:tableHeader style="Table_TH" height="20" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="140" height="20" uuid="c1bf5455-4e90-4dc3-9b9a-adc66b368828"/>
+								<textElement textAlignment="Center"/>
+								<text><![CDATA[Total Amount]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:detailCell style="Table_TD" height="20">
+							<textField>
+								<reportElement x="0" y="0" width="140" height="20" uuid="e84292d0-415f-4972-aa82-f605a3faa809"/>
+								<textElement textAlignment="Right"/>
+								<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{TTL_AMT})]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+			<staticText>
+				<reportElement x="0" y="130" width="181" height="30" uuid="314fb347-b4d4-40d0-9cbd-359f3e25c502"/>
+				<textElement>
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA["POS SUMMARY REPORT"]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="FixRelativeToBottom" x="0" y="230" width="181" height="30" uuid="e9250da3-4d36-4fc8-89ac-10f33827344d"/>
+				<textElement>
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[POS SUMMARY REPORT]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="227" splitType="Stretch">
+			<printWhenExpression><![CDATA[$V{PAGE_NUMBER}.equals(1)]]></printWhenExpression>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="125" splitType="Stretch"/>
+	</detail>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

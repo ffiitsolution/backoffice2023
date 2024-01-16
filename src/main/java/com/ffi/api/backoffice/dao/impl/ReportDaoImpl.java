@@ -2690,4 +2690,12 @@ public class ReportDaoImpl implements ReportDao {
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }
+
+     ///////////////NEW METHOD REPORT EOD by Dani 16 Januari 2024////
+     @Override
+     public JasperPrint jasperReportEod(Map<String, Object> param, Connection connection) throws IOException, JRException {
+        ClassPathResource classPathResource = new ClassPathResource("report/EODReport.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, param, connection);
+     }
 }
