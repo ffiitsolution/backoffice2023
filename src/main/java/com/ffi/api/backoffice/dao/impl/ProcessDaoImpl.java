@@ -609,7 +609,7 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("cdTemplate", balance.getCdTemplate());
         param.put("opnameNo", opNo);
         param.put("opnameDate", balance.getOpnameDate());
-        param.put("remark", balance.getRemark());
+        param.put("remark", balance.getRemark() == null || balance.getRemark().length() < 1 ? " " : balance.getRemark());
         param.put("status", balance.getStatus());
         param.put("userUpd", balance.getUserUpd());
         param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
@@ -754,10 +754,10 @@ public class ProcessDaoImpl implements ProcessDao {
         if( !list.isEmpty()){
             for (Map<String, Object> sc : list) {
                 Map paramUpd = new HashMap();
-                param.put("itemCode", sc.get("itemCode"));
-                param.put("outletCode", sc.get("outletCode"));
-                param.put("quantityIn", sc.get("quantityIn"));
-                param.put("quantity", sc.get("quantity"));
+                paramUpd.put("itemCode", sc.get("itemCode"));
+                paramUpd.put("outletCode", sc.get("outletCode"));
+                paramUpd.put("quantityIn", sc.get("quantityIn"));
+                paramUpd.put("quantity", sc.get("quantity"));
                 String qryUpd = """
                     UPDATE t_stock_card sc
                     SET 
@@ -766,6 +766,7 @@ public class ProcessDaoImpl implements ProcessDao {
                     WHERE sc.trans_date = (SELECT trans_date FROM m_outlet WHERE outlet_code = :outletCode) AND sc.item_code = :itemCode
                                             """;
                 try{
+                    System.out.println("akan update so to sc detail: " + paramUpd);
                     jdbcTemplate.update(qryUpd, paramUpd);
                 } catch (DataAccessException e){
                     System.out.println("error update sc: " + paramUpd);
