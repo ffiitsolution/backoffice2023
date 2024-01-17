@@ -184,14 +184,14 @@ ORDER BY
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[": " + $F{OUTLET_TO_ADDR_2}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["  " + $F{OUTLET_TO_ADDR_2}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="94" y="84" width="270" height="11" uuid="126a6e67-d4ce-4eb8-9a19-6c29876719c4"/>
 				<textElement>
 					<font size="8" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[": " + $F{OUTLET_TO_ADDR_1}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["  " + $F{OUTLET_TO_ADDR_1}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="382" y="87" width="90" height="11" uuid="4f290f4c-686a-466d-b875-0ca90ec8c00f"/>
@@ -237,14 +237,14 @@ ORDER BY
 			</staticText>
 			<staticText>
 				<reportElement x="244" y="124" width="106" height="30" uuid="7d45a69e-a9e6-4abf-8067-756882d1ca09"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Konversi Barang]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="350" y="125" width="80" height="30" uuid="2f5d0d0f-f573-4932-b528-cc503a291060"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Besar                Jumlah Satuan]]></text>
@@ -281,7 +281,7 @@ ORDER BY
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[": " + $F{OUTLET_TO_PHONE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["  " + $F{OUTLET_TO_PHONE}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="5" y="74" width="90" height="11" uuid="6e514215-c7e6-4c77-9bd3-a6c3ee1854cf"/>
@@ -310,7 +310,7 @@ ORDER BY
 			</staticText>
 			<staticText>
 				<reportElement x="430" y="125" width="80" height="30" uuid="abd597f8-32d3-43d1-abe7-5f327e7c634f"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Kecil                 Jumlah Satuan]]></text>
@@ -410,21 +410,21 @@ ORDER BY
 			</textField>
 			<textField>
 				<reportElement x="244" y="1" width="106" height="15" uuid="a363a400-de3a-4366-9bb5-18c94dd33224"/>
-				<textElement>
+				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.0000").format($F{CONV_WAREHOUSE}) +" " + $F{UOM_STOCK} + "/" +  $F{UOM_PURCH}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="350" y="1" width="80" height="15" uuid="ea2d5769-f157-4464-8797-b36348e0fa99"/>
-				<textElement>
+				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.0000").format($F{QTY_PURCH}) +" "+ $F{UOM_PURCH}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="430" y="1" width="80" height="15" uuid="1675f625-fc87-4c13-992f-9e0ab38a8728"/>
-				<textElement>
+				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.0000").format($F{QTY_STOCK}) +" "+ $F{UOM_STOCK}]]></textFieldExpression>
