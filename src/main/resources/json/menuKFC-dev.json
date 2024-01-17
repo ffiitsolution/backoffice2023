@@ -15,10 +15,7 @@
     "children": [
       {
         "name": "User",
-        "badge": {
-            "color": "warning",
-            "text": "On Progress"
-          }
+        "url": "/master/user"
       },
       {
         "name": "Outlet",
