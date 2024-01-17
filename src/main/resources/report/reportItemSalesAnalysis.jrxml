@@ -1,0 +1,1148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reportItemSalesAnalysis" pageWidth="965" pageHeight="595" orientation="Landscape" columnWidth="925" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="1d53ea5c-ff03-496f-9493-846b82c9b4ba">
+    <property name="ireport.zoom" value="1.3310000000000286"/>
+    <property name="ireport.x" value="0"/>
+    <property name="ireport.y" value="0"/>
+    <parameter name="date" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="outletCode" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="posCode1" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="posCode2" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="cashierCode1" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="cashierCode2" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="shiftCode1" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="shiftCode2" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="posCode" class="java.lang.String"/>
+    <parameter name="cashierCode" class="java.lang.String"/>
+    <parameter name="shiftCode" class="java.lang.String"/>
+    <parameter name="user" class="java.lang.String"/>
+    <parameter name="reportBy" class="java.lang.String"/>
+    <queryString>
+        <![CDATA[SELECT
+    a.GROUP_CODE,
+    b.DESCRIPTION,
+    a.ITEM_CODE,
+    c.ITEM_DESCRIPTION,
+    SUM(CASE WHEN TO_CHAR(a.TRANS_DATE, 'DAY') = 'SUNDAY   ' THEN a.QTY_EI + a.QTY_TA ELSE 0 END) AS MINGGU_QTY,
+    SUM(CASE WHEN TO_CHAR(a.TRANS_DATE, 'DAY') = 'MONDAY   ' THEN a.QTY_EI + a.QTY_TA ELSE 0 END) AS SENIN_QTY,
+    SUM(CASE WHEN TO_CHAR(a.TRANS_DATE, 'DAY') = 'TUESDAY  ' THEN a.QTY_EI + a.QTY_TA ELSE 0 END) AS SELASA_QTY,
+    SUM(CASE WHEN TO_CHAR(a.TRANS_DATE, 'DAY') = 'WEDNESDAY' THEN a.QTY_EI + a.QTY_TA ELSE 0 END) AS RABU_QTY,
+    SUM(CASE WHEN TO_CHAR(a.TRANS_DATE, 'DAY') = 'THURSDAY ' THEN a.QTY_EI + a.QTY_TA ELSE 0 END) AS KAMIS_QTY,
+    SUM(CASE WHEN TO_CHAR(a.TRANS_DATE, 'DAY') = 'FRIDAY   ' THEN a.QTY_EI + a.QTY_TA ELSE 0 END) AS JUMAT_QTY,
+    SUM(CASE WHEN TO_CHAR(a.TRANS_DATE, 'DAY') = 'SATURDAY ' THEN a.QTY_EI + a.QTY_TA ELSE 0 END) AS SABTU_QTY,
+    SUM(CASE WHEN TO_CHAR(a.TRANS_DATE, 'DAY') = 'SUNDAY   ' THEN a.AMT_EI  + a.AMT_TA ELSE 0 END) AS MINGGU_AMT,
+    SUM(CASE WHEN TO_CHAR(a.TRANS_DATE, 'DAY') = 'MONDAY   ' THEN a.AMT_EI  + a.AMT_TA ELSE 0 END) AS SENIN_AMT,
+    SUM(CASE WHEN TO_CHAR(a.TRANS_DATE, 'DAY') = 'TUESDAY  ' THEN a.AMT_EI  + a.AMT_TA ELSE 0 END) AS SELASA_AMT,
+    SUM(CASE WHEN TO_CHAR(a.TRANS_DATE, 'DAY') = 'WEDNESDAY' THEN a.AMT_EI  + a.AMT_TA ELSE 0 END) AS RABU_AMT,
+    SUM(CASE WHEN TO_CHAR(a.TRANS_DATE, 'DAY') = 'THURSDAY ' THEN a.AMT_EI  + a.AMT_TA ELSE 0 END) AS KAMIS_AMT,
+    SUM(CASE WHEN TO_CHAR(a.TRANS_DATE, 'DAY') = 'FRIDAY   ' THEN a.AMT_EI  + a.AMT_TA ELSE 0 END) AS JUMAT_AMT,
+    SUM(CASE WHEN TO_CHAR(a.TRANS_DATE, 'DAY') = 'SATURDAY ' THEN a.AMT_EI  + a.AMT_TA ELSE 0 END) AS SABTU_AMT,
+    TO_CHAR(NEXT_DAY(TRUNC(TO_DATE($P{date}, 'DD-Mon-YY')-7, 'IW'),'SUNDAY'),'DD Mon YYYY') AS from_date,
+    TO_CHAR(NEXT_DAY(TRUNC(TO_DATE($P{date}, 'DD-Mon-YY'), 'IW'),'SATURDAY'),'DD Mon YYYY') AS to_date,
+    d.OUTLET_NAME,
+    e.DESCRIPTION AS type_outlet
+FROM
+    TMP_SALES_BY_ITEM a
+LEFT JOIN
+	M_GLOBAL b ON
+	a.GROUP_CODE = b.CODE AND b.COND = 'GROUP'
+LEFT JOIN
+	M_ITEM c ON
+	a.ITEM_CODE = c.ITEM_CODE
+LEFT JOIN
+	M_OUTLET d ON
+	a.OUTLET_CODE = d.OUTLET_CODE
+LEFT JOIN
+	M_GLOBAL e ON
+	d."TYPE" = e.CODE AND e.COND = 'OUTLET_TP'
+WHERE
+    a.OUTLET_CODE = $P{outletCode}
+    AND a.TRANS_DATE BETWEEN TO_CHAR(NEXT_DAY(TRUNC(TO_DATE($P{date}, 'DD-Mon-YY')-7, 'IW'),'SUNDAY'),'DD-Mon-YY') AND TO_CHAR(NEXT_DAY(TRUNC(TO_DATE($P{date}, 'DD-Mon-YY'), 'IW'),'SATURDAY'),'DD-Mon-YY')
+    AND a.POS_CODE BETWEEN $P{posCode1} AND $P{posCode2}
+    AND a.CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+    AND a.SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
+GROUP BY
+    a.GROUP_CODE,
+    a.ITEM_CODE,
+    b.DESCRIPTION,
+    c.ITEM_DESCRIPTION,
+    d.OUTLET_NAME,
+    e.DESCRIPTION
+ORDER BY
+    a.GROUP_CODE,
+    a.ITEM_CODE ASC]]>
+    </queryString>
+    <field name="GROUP_CODE" class="java.lang.String"/>
+    <field name="DESCRIPTION" class="java.lang.String"/>
+    <field name="ITEM_CODE" class="java.lang.String"/>
+    <field name="ITEM_DESCRIPTION" class="java.lang.String"/>
+    <field name="MINGGU_QTY" class="java.lang.Double"/>
+    <field name="SENIN_QTY" class="java.lang.Double"/>
+    <field name="SELASA_QTY" class="java.lang.Double"/>
+    <field name="RABU_QTY" class="java.lang.Double"/>
+    <field name="KAMIS_QTY" class="java.lang.Double"/>
+    <field name="JUMAT_QTY" class="java.lang.Double"/>
+    <field name="SABTU_QTY" class="java.lang.Double"/>
+    <field name="MINGGU_AMT" class="java.lang.Double"/>
+    <field name="SENIN_AMT" class="java.lang.Double"/>
+    <field name="SELASA_AMT" class="java.lang.Double"/>
+    <field name="RABU_AMT" class="java.lang.Double"/>
+    <field name="KAMIS_AMT" class="java.lang.Double"/>
+    <field name="JUMAT_AMT" class="java.lang.Double"/>
+    <field name="SABTU_AMT" class="java.lang.Double"/>
+    <field name="FROM_DATE" class="java.lang.String"/>
+    <field name="TO_DATE" class="java.lang.String"/>
+    <field name="OUTLET_NAME" class="java.lang.String"/>
+    <field name="TYPE_OUTLET" class="java.lang.String"/>
+    <variable name="sumMingguQty" class="java.lang.Long" resetType="Group" resetGroup="groupCode" calculation="Sum">
+        <variableExpression><![CDATA[$F{MINGGU_QTY}]]></variableExpression>
+    </variable>
+    <variable name="sumSeninQty" class="java.lang.Long" resetType="Group" resetGroup="groupCode" calculation="Sum">
+        <variableExpression><![CDATA[$F{SENIN_QTY}]]></variableExpression>
+    </variable>
+    <variable name="sumSelasaQty" class="java.lang.Long" resetType="Group" resetGroup="groupCode" calculation="Sum">
+        <variableExpression><![CDATA[$F{SELASA_QTY}]]></variableExpression>
+    </variable>
+    <variable name="sumRabuQty" class="java.lang.Long" resetType="Group" resetGroup="groupCode" calculation="Sum">
+        <variableExpression><![CDATA[$F{RABU_QTY}]]></variableExpression>
+    </variable>
+    <variable name="sumKamisQty" class="java.lang.Long" resetType="Group" resetGroup="groupCode" calculation="Sum">
+        <variableExpression><![CDATA[$F{KAMIS_QTY}]]></variableExpression>
+    </variable>
+    <variable name="sumJumatQty" class="java.lang.Long" resetType="Group" resetGroup="groupCode" calculation="Sum">
+        <variableExpression><![CDATA[$F{JUMAT_QTY}]]></variableExpression>
+    </variable>
+    <variable name="sumSabtuQty" class="java.lang.Long" resetType="Group" resetGroup="groupCode" calculation="Sum">
+        <variableExpression><![CDATA[$F{SABTU_QTY}]]></variableExpression>
+    </variable>
+    <variable name="grandMingguQty" class="java.lang.Long" calculation="Sum">
+        <variableExpression><![CDATA[$F{MINGGU_QTY}]]></variableExpression>
+    </variable>
+    <variable name="grandSeninQty" class="java.lang.Long" calculation="Sum">
+        <variableExpression><![CDATA[$F{SENIN_QTY}]]></variableExpression>
+    </variable>
+    <variable name="grandSelasaQty" class="java.lang.Long" calculation="Sum">
+        <variableExpression><![CDATA[$F{SELASA_QTY}]]></variableExpression>
+    </variable>
+    <variable name="grandRabuQty" class="java.lang.Long" calculation="Sum">
+        <variableExpression><![CDATA[$F{RABU_QTY}]]></variableExpression>
+    </variable>
+    <variable name="grandKamisQty" class="java.lang.Long" calculation="Sum">
+        <variableExpression><![CDATA[$F{KAMIS_QTY}]]></variableExpression>
+    </variable>
+    <variable name="grandJumatQty" class="java.lang.Long" calculation="Sum">
+        <variableExpression><![CDATA[$F{JUMAT_QTY}]]></variableExpression>
+    </variable>
+    <variable name="grandSabtuQty" class="java.lang.Long" calculation="Sum">
+        <variableExpression><![CDATA[$F{SABTU_QTY}]]></variableExpression>
+    </variable>
+    <variable name="sumMingguAmt" class="java.lang.Long" resetType="Group" resetGroup="groupCode" calculation="Sum">
+        <variableExpression><![CDATA[$F{MINGGU_AMT}]]></variableExpression>
+    </variable>
+    <variable name="sumSeninAmt" class="java.lang.Long" resetType="Group" resetGroup="groupCode" calculation="Sum">
+        <variableExpression><![CDATA[$F{SENIN_AMT}]]></variableExpression>
+    </variable>
+    <variable name="sumSelasaAmt" class="java.lang.Long" resetType="Group" resetGroup="groupCode" calculation="Sum">
+        <variableExpression><![CDATA[$F{SELASA_AMT}]]></variableExpression>
+    </variable>
+    <variable name="sumRabuAmt" class="java.lang.Long" resetType="Group" resetGroup="groupCode" calculation="Sum">
+        <variableExpression><![CDATA[$F{RABU_AMT}]]></variableExpression>
+    </variable>
+    <variable name="sumKamisAmt" class="java.lang.Long" resetType="Group" resetGroup="groupCode" calculation="Sum">
+        <variableExpression><![CDATA[$F{KAMIS_AMT}]]></variableExpression>
+    </variable>
+    <variable name="sumJumatAmt" class="java.lang.Long" resetType="Group" resetGroup="groupCode" calculation="Sum">
+        <variableExpression><![CDATA[$F{JUMAT_AMT}]]></variableExpression>
+    </variable>
+    <variable name="sumSabtuAmt" class="java.lang.Long" resetType="Group" resetGroup="groupCode" calculation="Sum">
+        <variableExpression><![CDATA[$F{SABTU_AMT}]]></variableExpression>
+    </variable>
+    <variable name="grandMingguAmt" class="java.lang.Long" calculation="Sum">
+        <variableExpression><![CDATA[$F{MINGGU_AMT}]]></variableExpression>
+    </variable>
+    <variable name="grandSeninAmt" class="java.lang.Long" calculation="Sum">
+        <variableExpression><![CDATA[$F{SENIN_AMT}]]></variableExpression>
+    </variable>
+    <variable name="grandSelasaAmt" class="java.lang.Long" calculation="Sum">
+        <variableExpression><![CDATA[$F{SELASA_AMT}]]></variableExpression>
+    </variable>
+    <variable name="grandRabuAmt" class="java.lang.Long" calculation="Sum">
+        <variableExpression><![CDATA[$F{RABU_AMT}]]></variableExpression>
+    </variable>
+    <variable name="grandKamisAmt" class="java.lang.Long" calculation="Sum">
+        <variableExpression><![CDATA[$F{KAMIS_AMT}]]></variableExpression>
+    </variable>
+    <variable name="grandJumatAmt" class="java.lang.Long" calculation="Sum">
+        <variableExpression><![CDATA[$F{JUMAT_AMT}]]></variableExpression>
+    </variable>
+    <variable name="grandSabtuAmt" class="java.lang.Long" calculation="Sum">
+        <variableExpression><![CDATA[$F{SABTU_AMT}]]></variableExpression>
+    </variable>
+    <group name="groupCode">
+        <groupExpression><![CDATA[$F{GROUP_CODE}]]></groupExpression>
+        <groupHeader>
+            <band height="23">
+                <textField>
+                    <reportElement x="49" y="0" width="441" height="20" uuid="eafa26f1-4dd3-44b8-9a11-5992c9e28589"/>
+                    <textElement>
+                        <font size="8" isBold="true"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[$F{GROUP_CODE} + " - " + $F{DESCRIPTION}]]></textFieldExpression>
+                </textField>
+                <line>
+                    <reportElement x="0" y="20" width="925" height="1" uuid="54b83bea-39e9-4e1a-91a9-c107afd613ac"/>
+                </line>
+            </band>
+        </groupHeader>
+        <groupFooter>
+            <band height="19">
+                <line>
+                    <reportElement x="50" y="0" width="875" height="1" uuid="1cc35263-183d-4433-861f-2d5d3943394c"/>
+                </line>
+                <textField>
+                    <reportElement x="50" y="1" width="155" height="15" uuid="ff843b21-b31c-458e-b59b-9d6c0d907b49"/>
+                    <textElement>
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA["Total" + " " + $F{DESCRIPTION}]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="276" y="1" width="70" height="15" uuid="a0c8d6b3-1a1e-444d-8999-d5d694f6da2e">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{sumMingguQty})]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="348" y="1" width="70" height="15" uuid="ed7948a8-6395-4006-bd2e-fbc9db8dc5bb">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{sumSeninQty})]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="420" y="1" width="70" height="15" uuid="91165d02-5466-40f5-b5dc-64d0904c9bd4">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{sumSelasaQty})]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="492" y="1" width="70" height="15" uuid="d75f5acc-4ada-4ef6-ac3a-67135e3d8bd3">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{sumRabuQty})]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="564" y="1" width="70" height="15" uuid="2dd1e799-d157-4d28-89fc-8cd3013e4239">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{sumKamisQty})]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="636" y="1" width="70" height="15" uuid="23d5aa4e-2036-4611-af45-637147e82fd9">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{sumJumatQty})]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="708" y="1" width="70" height="15" uuid="31f77799-7a70-454b-9ec4-6bc7957e7f20">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{sumSabtuQty})]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="780" y="1" width="70" height="15" uuid="95001459-145d-4a3c-97bc-71e1368929a6">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{sumMingguQty}+$V{sumSeninQty}+$V{sumSelasaQty}+$V{sumRabuQty}+$V{sumKamisQty}+$V{sumJumatQty}+$V{sumSabtuQty})]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="852" y="1" width="70" height="15" uuid="ee7661b3-913b-4cc4-9743-2aaa2cbf30d2">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format(($V{sumMingguQty}+$V{sumSeninQty}+$V{sumSelasaQty}+$V{sumRabuQty}+$V{sumKamisQty}+$V{sumJumatQty}+$V{sumSabtuQty}) / 7)]]></textFieldExpression>
+                </textField>
+                <line>
+                    <reportElement x="50" y="16" width="875" height="1" uuid="c72e8485-ed70-4145-b080-66c0724ce0e0"/>
+                </line>
+                <textField>
+                    <reportElement x="276" y="1" width="70" height="15" uuid="9b0bafa6-4f20-4f9d-8f50-867430a663f2">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{sumMingguAmt})]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="348" y="1" width="70" height="15" uuid="ad7b035d-3b36-4df2-bee7-574826e16a0a">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{sumSeninAmt})]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="420" y="1" width="70" height="15" uuid="06a37b69-6ec3-4542-95c5-ea347bf8683a">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{sumSelasaAmt})]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="492" y="1" width="70" height="15" uuid="a50bd063-49a9-4384-abf4-5e414ee6acf9">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{sumRabuAmt})]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="564" y="1" width="70" height="15" uuid="e7fdc01f-f7a0-4e0f-b6a9-91ce7e5d1015">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{sumKamisAmt})]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="636" y="1" width="70" height="15" uuid="516cdc83-e9ef-4464-9e80-7cfc6d4b41e9">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{sumJumatAmt})]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="708" y="1" width="70" height="15" uuid="98947b93-635b-4c1b-85bb-35777b67ced4">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{sumSabtuAmt})]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="780" y="1" width="70" height="15" uuid="bc8d99f6-4881-4dd4-846b-4f41a55577dd">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{sumMingguAmt}+$V{sumSeninAmt}+$V{sumSelasaAmt}+$V{sumRabuAmt}+$V{sumKamisAmt}+$V{sumJumatAmt}+$V{sumSabtuAmt})]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="852" y="1" width="70" height="15" uuid="6ae3c9cf-04b3-4595-9a52-cac4dc224883">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format(($V{sumMingguAmt}+$V{sumSeninAmt}+$V{sumSelasaAmt}+$V{sumRabuAmt}+$V{sumKamisAmt}+$V{sumJumatAmt}+$V{sumSabtuAmt})/7)]]></textFieldExpression>
+                </textField>
+            </band>
+        </groupFooter>
+    </group>
+    <group name="itemCode">
+        <groupExpression><![CDATA[$F{ITEM_CODE}]]></groupExpression>
+        <groupHeader>
+            <band height="17">
+                <textField>
+                    <reportElement x="0" y="0" width="50" height="15" uuid="f573ed6f-66de-4eef-9b24-a7c8cc47d413"/>
+                    <textElement>
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[$F{ITEM_CODE}]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="49" y="0" width="157" height="15" uuid="0dda2158-525e-4d1d-8cd9-656352f369d8"/>
+                    <textElement>
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="205" y="0" width="70" height="15" uuid="b078cd4b-7dc1-48a2-aa37-f41237dca827"/>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format(($F{MINGGU_AMT}+$F{SENIN_AMT}+$F{SELASA_AMT}+$F{RABU_AMT}+$F{KAMIS_AMT}+$F{JUMAT_AMT}+$F{SABTU_AMT}) / ($F{MINGGU_QTY}+$F{SENIN_QTY}+$F{SELASA_QTY}+$F{RABU_QTY}+$F{KAMIS_QTY}+$F{JUMAT_QTY}+$F{SABTU_QTY}))]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="276" y="0" width="70" height="15" uuid="d7ba5afc-96c8-49e4-b530-07f80ccefdf9">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{MINGGU_QTY})]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="348" y="0" width="70" height="15" uuid="061dacfe-4d1a-4bf9-a819-51b8765b3b4a">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{SENIN_QTY})]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="420" y="0" width="70" height="15" uuid="457ba500-33c0-4427-840f-dc56dcff3fec">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{SELASA_QTY})]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="492" y="0" width="70" height="15" uuid="bff07115-474d-49c9-b286-da6ea5489fec">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{RABU_QTY})]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="564" y="0" width="70" height="15" uuid="af13e99b-f3a0-43af-b7eb-fcfea29dfd35">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{KAMIS_QTY})]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="636" y="0" width="70" height="15" uuid="67e22fc2-b1e8-43ce-9f51-f57d915e7b51">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{JUMAT_QTY})]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="708" y="0" width="70" height="15" uuid="db6f27c1-547d-49ba-a780-fec55eec8dc1">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{SABTU_QTY})]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="780" y="0" width="70" height="15" uuid="cefa61c5-de02-4005-ad97-47eb17d907cd">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{MINGGU_QTY}+$F{SENIN_QTY}+$F{SELASA_QTY}+$F{RABU_QTY}+$F{KAMIS_QTY}+$F{JUMAT_QTY}+$F{SABTU_QTY})]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="852" y="0" width="70" height="15" uuid="1d27c599-5887-4f09-bd2a-2b0d20ac40dd">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format(($F{MINGGU_QTY}+$F{SENIN_QTY}+$F{SELASA_QTY}+$F{RABU_QTY}+$F{KAMIS_QTY}+$F{JUMAT_QTY}+$F{SABTU_QTY})/7)]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="276" y="0" width="70" height="15" uuid="cebbcdad-aa6f-479d-8a21-c3e39d297ff7">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{MINGGU_AMT})]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="348" y="0" width="70" height="15" uuid="e24c0b6b-616f-4ca0-92d1-6709bc59c147">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{SENIN_AMT})]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="420" y="0" width="70" height="15" uuid="477b9d87-32a4-4e15-98fb-4e64adf64d26">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{SELASA_AMT})]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="492" y="0" width="70" height="15" uuid="6dd176f1-0344-49c2-98fd-ad112efffc5f">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{RABU_AMT})]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="564" y="0" width="70" height="15" uuid="946cb186-4eb8-48d5-8daf-657fe5071e46">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{KAMIS_AMT})]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="636" y="0" width="70" height="15" uuid="f1a1d013-6ac8-4b8d-aa84-6e796ec16f54">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{JUMAT_AMT})]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="708" y="0" width="70" height="15" uuid="b97165be-1283-4fc3-9399-6c1fe0297d81">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{SABTU_AMT})]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="780" y="0" width="70" height="15" uuid="57a8e534-9f2a-42c8-a42f-a7e9b4660d89">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{MINGGU_AMT}+$F{SENIN_AMT}+$F{SELASA_AMT}+$F{RABU_AMT}+$F{KAMIS_AMT}+$F{JUMAT_AMT}+$F{SABTU_AMT})]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="852" y="0" width="70" height="15" uuid="d2cf5fa9-f7c0-40e1-93c9-1f86c73ad6a7">
+                        <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                    </reportElement>
+                    <textElement textAlignment="Right">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format(($F{MINGGU_AMT}+$F{SENIN_AMT}+$F{SELASA_AMT}+$F{RABU_AMT}+$F{KAMIS_AMT}+$F{JUMAT_AMT}+$F{SABTU_AMT})/7)]]></textFieldExpression>
+                </textField>
+            </band>
+        </groupHeader>
+    </group>
+    <background>
+        <band splitType="Stretch"/>
+    </background>
+    <columnHeader>
+        <band height="134" splitType="Stretch">
+            <staticText>
+                <reportElement x="66" y="0" width="112" height="11" uuid="8c308b0b-e683-4333-8046-169dd114e4ea"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
+            </staticText>
+            <image>
+                <reportElement x="7" y="1" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="aff51b59-576e-4392-b859-44bc438413b3"/>
+                <imageExpression><![CDATA["logo/logoKfc.png"]]></imageExpression>
+            </image>
+            <textField>
+                <reportElement x="66" y="10" width="217" height="11" uuid="151f9ec4-7a5e-450a-bfb3-869d10efc1b8"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{OUTLET_NAME} + " - " + $F{TYPE_OUTLET}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="0" y="50" width="56" height="11" uuid="a990e82e-2dd7-45e9-ad10-2ea965df7954"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[PERIODE]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="0" y="60" width="56" height="11" uuid="72f09cde-897e-4f93-b9bd-3b078ebc7372"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[POS#]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="0" y="70" width="56" height="11" uuid="bf9a5f67-3f01-4b0b-ab4a-4f7fff1c3ee2"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[CASHIER]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="0" y="80" width="56" height="11" uuid="2452ef9e-86b4-4282-8796-6c92db5909af"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[SHIFT]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="55" y="50" width="273" height="11" uuid="6c89296c-8630-4b03-8ed2-c5977d5cce15"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd MMM yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{date}))]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="55" y="60" width="133" height="11" uuid="36fdb8a9-fda0-466b-812f-33bf1e982fed"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + $P{posCode}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="55" y="70" width="133" height="11" uuid="b8abdcd8-a383-423a-9e3a-ac225472b01a"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + $P{cashierCode}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="55" y="80" width="133" height="11" uuid="5c128589-ea7c-45a9-be9d-3e485f472de3"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + $P{shiftCode}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="743" y="0" width="241" height="18" uuid="fb964291-a756-465c-a80b-641cdf7993e3"/>
+                <textElement>
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[--ItemSales Analysis Report--]]></text>
+            </staticText>
+            <line>
+                <reportElement x="743" y="17" width="169" height="1" uuid="81df9b10-76d7-4894-9d13-95d51a8bc5d6"/>
+            </line>
+            <textField>
+                <reportElement x="657" y="21" width="255" height="11" uuid="eb716be0-58d4-4418-8d75-01fd5c534116"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{FROM_DATE} + " s/d " + $F{TO_DATE}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="0" y="95" width="49" height="30" uuid="97f72579-b16c-45ee-ad7a-fa73de33a82b"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Kode]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="49" y="95" width="157" height="30" uuid="f2a76048-a19e-48e4-b7c4-d604e178d5e8"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Nama Barang]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="205" y="95" width="70" height="30" uuid="b6fdc39d-c6b2-46ac-987c-5a7d1f5aaeb6"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Unit Price]]></text>
+            </staticText>
+            <rectangle>
+                <reportElement x="276" y="95" width="70" height="15" uuid="6ef4dbb5-f5ba-4e09-a1d1-e0457a8104f0"/>
+            </rectangle>
+            <rectangle>
+                <reportElement x="276" y="112" width="70" height="15" uuid="6c6fa9e7-f698-48fc-8a14-b84c63fe7aee"/>
+            </rectangle>
+            <rectangle>
+                <reportElement x="348" y="95" width="70" height="15" uuid="aada2640-e059-4d95-b0c3-0344c50d14f8"/>
+            </rectangle>
+            <rectangle>
+                <reportElement x="348" y="112" width="70" height="15" uuid="84d350ce-78ec-459d-b656-76836f6f5df3"/>
+            </rectangle>
+            <rectangle>
+                <reportElement x="420" y="95" width="70" height="15" uuid="635b0129-19c6-4ed3-b6fd-0939bec4beca"/>
+            </rectangle>
+            <rectangle>
+                <reportElement x="420" y="112" width="70" height="15" uuid="d7d6a815-100c-485f-b5ab-c0ddf027dfcb"/>
+            </rectangle>
+            <rectangle>
+                <reportElement x="492" y="95" width="70" height="15" uuid="10bf1114-6830-4dfa-8157-2907e5bc81b1"/>
+            </rectangle>
+            <rectangle>
+                <reportElement x="492" y="112" width="70" height="15" uuid="7f17a5c2-0244-40de-bc50-e65b8b83344e"/>
+            </rectangle>
+            <rectangle>
+                <reportElement x="564" y="95" width="70" height="15" uuid="58c4094e-f9ca-4c65-aa9a-97d51d75eddd"/>
+            </rectangle>
+            <rectangle>
+                <reportElement x="564" y="112" width="70" height="15" uuid="dc6dab5b-40ea-4cfd-af14-9b24b1d77852"/>
+            </rectangle>
+            <rectangle>
+                <reportElement x="636" y="95" width="70" height="15" uuid="9bea7c25-fb0f-4cac-923c-a0cb7ce87f1b"/>
+            </rectangle>
+            <rectangle>
+                <reportElement x="636" y="112" width="70" height="15" uuid="9cdc39d9-d42a-4823-8eb0-6102d6a2ed04"/>
+            </rectangle>
+            <rectangle>
+                <reportElement x="708" y="95" width="70" height="15" uuid="429100f0-dabf-4afd-87c1-dadb574878f0"/>
+            </rectangle>
+            <rectangle>
+                <reportElement x="708" y="112" width="70" height="15" uuid="dc15ad47-cda1-4435-b137-624a85ae2d1c"/>
+            </rectangle>
+            <rectangle>
+                <reportElement x="780" y="112" width="70" height="15" uuid="877f08bd-073b-4578-bf4c-40e2ff87893d"/>
+            </rectangle>
+            <rectangle>
+                <reportElement x="852" y="112" width="70" height="15" uuid="9ba073b4-4eca-436f-aae7-d5733cf417b5"/>
+            </rectangle>
+            <rectangle>
+                <reportElement x="780" y="95" width="142" height="15" uuid="8e617129-9609-43ee-829b-1ffe0589fae1"/>
+            </rectangle>
+            <staticText>
+                <reportElement x="276" y="95" width="70" height="15" uuid="da37a920-c445-455c-88bc-6c53ac161625"/>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Minggu]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="276" y="112" width="70" height="15" uuid="6defe2ca-ea65-42f6-97e8-e78a30305ca8">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Quantity]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="348" y="95" width="70" height="15" uuid="79ed121b-0e06-4a74-a817-18963a73aa6e"/>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Senin]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="348" y="112" width="70" height="15" uuid="6e0aa55c-0792-4b37-abeb-641c7aae0bc6">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Quantity]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="420" y="95" width="70" height="15" uuid="2235933f-2351-4c23-9cdc-e1ea03914932"/>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Selasa]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="420" y="112" width="70" height="15" uuid="c96632b0-d640-421f-a145-12d0f3a3c62a">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Quantity]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="492" y="95" width="70" height="15" uuid="17f5217a-4416-4414-96e3-b3f7df085603"/>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Rabu]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="492" y="112" width="70" height="15" uuid="01cb2a4a-5ba4-4d60-ac2b-4e26c23f2abd">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Quantity]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="564" y="95" width="70" height="15" uuid="9225411e-feea-451f-9f1d-caf1afb82b0b"/>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Kamis]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="564" y="112" width="70" height="15" uuid="9eed05d7-ea5c-4693-a0a9-40ea76b3f860">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Quantity]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="636" y="95" width="70" height="15" uuid="f9674d51-5aef-4bae-a111-0e05fe38da5b"/>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Jumat]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="636" y="112" width="70" height="15" uuid="dd4367da-e629-4467-8e76-a5a7951c5040">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Quantity]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="708" y="95" width="70" height="15" uuid="e65b9816-efc4-4167-a69a-ef38d7ff711e"/>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Sabtu]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="708" y="112" width="70" height="15" uuid="ecdfd75f-49a8-4aa4-a9d2-e2b0348b39b4">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Quantity]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="780" y="112" width="70" height="15" uuid="46255e54-1330-4b3f-9db4-3fdd9c130ecb">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Quantity]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="852" y="112" width="70" height="15" uuid="943213fd-6edf-4cfc-a5ac-9e68f8a7acdb"/>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Average]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="780" y="95" width="142" height="15" uuid="5ab59f6a-4e3b-4401-b8ac-0f37525e3f5f"/>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[TOTAL]]></text>
+            </staticText>
+            <line>
+                <reportElement x="0" y="92" width="925" height="1" uuid="24772d53-3079-44a4-8405-9e8049309ee2"/>
+            </line>
+            <line>
+                <reportElement x="0" y="129" width="925" height="1" uuid="7d229d6f-1f8a-491a-964f-8e64ff1d7f21"/>
+            </line>
+            <staticText>
+                <reportElement x="276" y="112" width="70" height="15" uuid="02bb0930-74c7-4ddc-99e5-1e2ef8679639">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Amount]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="780" y="112" width="70" height="15" uuid="7ca350a4-e090-4afd-be74-0c9e95815d63">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Amount]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="708" y="112" width="70" height="15" uuid="1bb02cec-6ce0-49bd-ad69-dadd4cc06d11">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Amount]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="635" y="112" width="70" height="15" uuid="75c902bb-0d02-4095-9466-59df21018280">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Amount]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="564" y="112" width="70" height="15" uuid="37d04e46-7679-4d5b-abf6-6238b5887049">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Amount]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="492" y="112" width="70" height="15" uuid="0e610e01-39ef-4718-8a0a-e56f9b8b4117">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Amount]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="420" y="112" width="70" height="15" uuid="7db10911-dbf1-4b03-a51e-aee148148dbf">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Amount]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="348" y="112" width="70" height="15" uuid="ed9839e2-3422-4d35-a441-7710cdc7f46b">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Center">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Amount]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+    <summary>
+        <band height="42" splitType="Stretch">
+            <line>
+                <reportElement x="0" y="0" width="925" height="1" uuid="fa490234-dfdd-4f91-8904-f01ac9536a83"/>
+            </line>
+            <staticText>
+                <reportElement x="0" y="2" width="275" height="20" uuid="11053980-6e0e-4f68-9827-1495c313bc2b"/>
+                <text><![CDATA[ GRAND TOTAL..................................................................]]></text>
+            </staticText>
+            <line>
+                <reportElement x="0" y="23" width="925" height="1" uuid="1f64d420-164d-4832-89e8-91a30ff85f69"/>
+            </line>
+            <textField>
+                <reportElement x="276" y="4" width="70" height="15" uuid="c7e2ea87-0576-4c07-97c5-d6285299c851">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{grandMingguQty})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="348" y="4" width="70" height="15" uuid="615131b3-00c1-4843-a08f-5744201f544c">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{grandSeninQty})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="420" y="4" width="70" height="15" uuid="c0edb430-f13e-4e29-88ac-aa95dbfe7891">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{grandSelasaQty})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="492" y="4" width="70" height="15" uuid="e5c786c7-a09f-4af3-b267-ed942f7aa2ce">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{grandRabuQty})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="636" y="4" width="70" height="15" uuid="4e5dd845-1466-4881-804f-0e197aea216d">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{grandJumatQty})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="708" y="4" width="70" height="15" uuid="21698e9a-11da-4d05-8a2c-6c670a8e593b">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{grandSabtuQty})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="564" y="4" width="70" height="15" uuid="ee964087-37f5-4052-86ec-0ac079b7614e">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{grandKamisQty})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="780" y="4" width="70" height="15" uuid="9947828b-aa61-45ba-826e-c95b40675df4">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{grandMingguQty}+$V{grandSeninQty}+$V{grandSelasaQty}+$V{grandRabuQty}+$V{grandKamisQty}+$V{grandJumatQty}+$V{grandSabtuQty})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="852" y="4" width="70" height="15" uuid="654adc44-2d39-412b-8490-6ab366d7dea4">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("QUANTITY")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format(($V{grandMingguQty}+$V{grandSeninQty}+$V{grandSelasaQty}+$V{grandRabuQty}+$V{grandKamisQty}+$V{grandJumatQty}+$V{grandSabtuQty})/7)]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="7" y="27" width="307" height="11" uuid="609f9352-65b7-451a-82e5-ad03ace4d52d"/>
+                <textElement>
+                    <font size="8" isItalic="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Dicetak Oleh" + " : " + $P{user} + " - " + new SimpleDateFormat("dd-MMM-yyyy hh:mm:ss").format(new Date())]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="276" y="4" width="70" height="15" uuid="7ad86e22-66ef-4c8a-8247-6083b6d4f3e5">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{grandMingguAmt})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="348" y="4" width="70" height="15" uuid="6f352a12-46af-4110-9d97-8d17d36d8769">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{grandSeninAmt})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="420" y="4" width="70" height="15" uuid="35fb841a-6bcd-4fc7-ac79-b05174c9c931">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{grandSelasaAmt})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="492" y="4" width="70" height="15" uuid="7ab808cd-1032-45e6-b1bb-13582748ca8a">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{grandRabuAmt})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="564" y="4" width="70" height="15" uuid="b8b30a92-b529-486a-af8d-dbfb2b5fce7b">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{grandKamisAmt})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="636" y="4" width="70" height="15" uuid="82b8fc6a-0726-438d-8706-d34f370bb92c">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{grandJumatAmt})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="708" y="4" width="70" height="15" uuid="41a4b538-b994-4de6-8aa4-0bfd9f8f8032">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{grandSabtuAmt})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="780" y="4" width="70" height="15" uuid="9b651006-f0dd-44c5-bc92-71d976dc0624">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{grandMingguAmt}+$V{grandSeninAmt}+$V{grandSelasaAmt}+$V{grandRabuAmt}+$V{grandKamisAmt}+$V{grandJumatAmt}+$V{grandSabtuAmt})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="852" y="4" width="70" height="15" uuid="339af772-9db1-4164-80c8-abcadce7570e">
+                    <printWhenExpression><![CDATA[$P{reportBy}.equals("AMOUNT")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format(($V{grandMingguAmt}+$V{grandSeninAmt}+$V{grandSelasaAmt}+$V{grandRabuAmt}+$V{grandKamisAmt}+$V{grandJumatAmt}+$V{grandSabtuAmt})/7)]]></textFieldExpression>
+            </textField>
+        </band>
+    </summary>
+</jasperReport>
