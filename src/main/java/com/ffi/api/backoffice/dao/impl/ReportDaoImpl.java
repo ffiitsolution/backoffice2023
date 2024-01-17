@@ -2703,6 +2703,7 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("mpcsGroup", param.get("mpcsGroup"));
         hashMap.put("user", param.get("user"));
+        hashMap.put("detail", param.get("detail"));
         
         String reportPath;
         if ("Jam Aktual".equals(param.get("detail"))) {
