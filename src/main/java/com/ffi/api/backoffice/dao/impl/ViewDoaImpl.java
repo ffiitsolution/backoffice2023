@@ -4010,7 +4010,7 @@ public class ViewDoaImpl implements ViewDao {
              s.SEX, TO_CHAR(s.DATE_OF_BIRTH,'YYYY-MM-DD') AS DATE_OF_BIRTH, s.POSITION, s.GROUP_ID, s.STATUS, s.RIDER_FLAG,
              NVL(m.DAY_SEQ,0) AS DAY_SEQ, NVL(m.SEQ_NO,0) AS SEQ_NO, NVL(m.TIME_ABSEN,0) AS TIME_ABSEN
             FROM M_STAFF s
-            LEFT JOIN T_ABSENSI m ON s.OUTLET_CODE = m.OUTLET_CODE AND s.STAFF_CODE = m.STAFF_ID
+            LEFT JOIN T_ABSENSI m ON s.OUTLET_CODE = m.OUTLET_CODE AND s.STAFF_CODE = m.STAFF_ID AND m.DATE_ABSEN = to_char(SYSDATE,'DD-MON-YYYY')
             WHERE STAFF_CODE = :staffCode
             ORDER BY m.DAY_SEQ, m.SEQ_NO
                        """;

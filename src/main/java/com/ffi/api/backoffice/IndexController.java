@@ -3287,10 +3287,16 @@ public class IndexController {
         }.getType());
         ResponseMessage rm = new ResponseMessage();
         List<Map<String, Object>> list = viewServices.getIdAbsensi(data);
-        Map first = list.get(0);
-        rm.setItem(list);
-        rm.setSuccess(!list.isEmpty());
-        rm.setMessage(list.isEmpty() ? "User Not Found" : ((first.get("daySeq").equals(0) && first.get("seqNo").equals(0)) || list.size() % 2 == 0 ? "Masuk" : ( list.size() % 2 != 0 ? "Keluar" : "User Found")));
+        if(!list.isEmpty()){
+            Map first = list.get(0);
+            rm.setItem(list);
+            rm.setSuccess(true);
+            rm.setMessage(((first.get("daySeq").toString().equalsIgnoreCase("0") && first.get("seqNo").toString().equalsIgnoreCase("0")) || list.size() % 2 == 0 ? "Masuk" : ( list.size() % 2 != 0 ? "Keluar" : "User Found")));
+            return rm;
+        }
+        rm.setSuccess(false);
+        rm.setMessage("User Not Found");
+        rm.setItem(new ArrayList());
         return rm;
     }
     

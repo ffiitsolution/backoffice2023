@@ -3032,7 +3032,7 @@ public class ProcessDaoImpl implements ProcessDao {
         }
         
         String queryUpd = """
-            INSERT INTO T_ABSENSI (
+INSERT INTO T_ABSENSI (
               OUTLET_CODE, DAY_SEQ, STAFF_ID, SEQ_NO, 
               DATE_ABSEN, TIME_ABSEN, STATUS
             ) 
@@ -3056,9 +3056,8 @@ public class ProcessDaoImpl implements ProcessDao {
                       T_ABSENSI ta 
                     WHERE 
                       ta.STAFF_ID = :staffCode 
-                      AND ta.DATE_ABSEN = TO_CHAR(SYSTIMESTAMP, 'DD-MON-YYYY') 
                     ORDER BY 
-                      ta.TIME_ABSEN DESC
+                      ta.DAY_SEQ DESC, ta.SEQ_NO DESC
                   ) 
                 WHERE 
                   ROWNUM = 1 
@@ -3089,7 +3088,6 @@ public class ProcessDaoImpl implements ProcessDao {
                       T_ABSENSI ta 
                     WHERE 
                       ta.STAFF_ID = :staffCode 
-                      AND ta.DATE_ABSEN = TO_CHAR(SYSTIMESTAMP, 'DD-MON-YYYY')
                   )
               ) 
             WHERE 
@@ -3098,7 +3096,7 @@ public class ProcessDaoImpl implements ProcessDao {
         try{
             jdbcTemplate.update(queryUpd, param);
         } catch(DataAccessException e){
-            System.err.println("getMessage: " + e.getMessage());
+            System.err.println("err insertAbsensi: " + e.getMessage());
             return false;
         }
         return true;
