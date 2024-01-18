@@ -26,7 +26,6 @@
 	<parameter name="outletBrand" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
-	<parameter name="subReport" class="net.sf.jasperreports.engine.JasperReport"/>
 	<parameter name="detail" class="java.lang.String"/>
 	<queryString language="SQL">
 		<![CDATA[SELECT 
@@ -213,7 +212,7 @@ ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS
 				<textField>
 					<reportElement x="0" y="0" width="287" height="11" uuid="b7fa83bb-9e51-4c8e-916b-3a3ceb76725b"/>
 					<textElement>
-						<font size="8"/>
+						<font size="8" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($F{DATE_MPCS})]]></textFieldExpression>
 				</textField>
@@ -417,24 +416,24 @@ ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS
 					<reportElement x="0" y="15" width="802" height="1" uuid="32a58a17-24d6-4c82-aa1c-e37bc913608e"/>
 				</line>
 			</band>
-			<band height="40">
+			<band height="35">
 				<printWhenExpression><![CDATA[$F{QTY_PROD} != null && $F{QTY_PROD}.compareTo(BigDecimal.ZERO) > 0]]></printWhenExpression>
 				<staticText>
 					<reportElement x="73" y="0" width="61" height="20" uuid="01fa527d-71a0-4e94-8482-49ad04bef9da"/>
 					<textElement verticalAlignment="Middle">
 						<font size="8" isBold="true"/>
 					</textElement>
-					<text><![CDATA[Kode Resep : ]]></text>
+					<text><![CDATA[Kode Resep  : ]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="73" y="20" width="100" height="17" uuid="726230f5-06a5-4d3e-8d76-7b19dde79c2f"/>
+					<reportElement x="73" y="16" width="100" height="17" uuid="726230f5-06a5-4d3e-8d76-7b19dde79c2f"/>
 					<textElement verticalAlignment="Middle">
 						<font size="8" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Bahan yang dipakai]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="293" y="20" width="70" height="17" uuid="642cd5b1-d09e-4a0b-9634-83fc215ac112"/>
+					<reportElement x="308" y="16" width="70" height="17" uuid="642cd5b1-d09e-4a0b-9634-83fc215ac112"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font size="8" isBold="true"/>
 					</textElement>
@@ -448,7 +447,7 @@ ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS
 					<textFieldExpression><![CDATA[$F{RECIPE_CODE} + " " + $F{RECIPE_REMARK}]]></textFieldExpression>
 				</textField>
 				<line>
-					<reportElement x="73" y="37" width="300" height="1" uuid="6a37e0a3-8b90-4dfa-829b-d03b07c60e67"/>
+					<reportElement x="73" y="34" width="354" height="1" uuid="6a37e0a3-8b90-4dfa-829b-d03b07c60e67"/>
 				</line>
 			</band>
 		</groupHeader>
@@ -456,7 +455,7 @@ ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS
 			<band height="34">
 				<printWhenExpression><![CDATA[$F{QTY_PROD} != null && $F{QTY_PROD}.compareTo(BigDecimal.ZERO) > 0]]></printWhenExpression>
 				<staticText>
-					<reportElement x="293" y="-1" width="70" height="15" uuid="0333a94e-f69c-467d-8629-613dca8801cf"/>
+					<reportElement x="308" y="-1" width="70" height="15" uuid="0333a94e-f69c-467d-8629-613dca8801cf"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font size="8" isBold="true"/>
 					</textElement>
@@ -470,7 +469,7 @@ ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS
 					<text><![CDATA[Hasil Produksi]]></text>
 				</staticText>
 				<textField>
-					<reportElement x="143" y="16" width="150" height="12" uuid="6adaf351-f0a9-4947-81b4-e0c14c9bd1c5">
+					<reportElement x="143" y="16" width="165" height="12" uuid="6adaf351-f0a9-4947-81b4-e0c14c9bd1c5">
 						<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="7e6b0a05-5ce2-4878-bf2a-ae573229c8d1"/>
 					</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
@@ -488,7 +487,7 @@ ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS
 					<textFieldExpression><![CDATA[$F{PRODUCT_ITEM_CODE}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="293" y="16" width="70" height="12" uuid="9698108c-61e5-451e-a3c2-4bf35bbc8ed1">
+					<reportElement x="308" y="16" width="70" height="12" uuid="9698108c-61e5-451e-a3c2-4bf35bbc8ed1">
 						<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="7e6b0a05-5ce2-4878-bf2a-ae573229c8d1"/>
 					</reportElement>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -497,13 +496,13 @@ ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS
 					<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0.000").format($F{QTY_PROD}) + " " + $F{PRODUCT_ITEM_UOM}]]></textFieldExpression>
 				</textField>
 				<line>
-					<reportElement x="73" y="14" width="300" height="1" uuid="dcb5f1e9-3299-4ec0-b407-06a9f2343f56"/>
+					<reportElement x="73" y="14" width="354" height="1" uuid="dcb5f1e9-3299-4ec0-b407-06a9f2343f56"/>
 				</line>
 			</band>
 		</groupFooter>
 	</group>
 	<columnHeader>
-		<band height="136" splitType="Stretch">
+		<band height="138" splitType="Stretch">
 			<image scaleImage="FillFrame">
 				<reportElement x="22" y="1" width="48" height="48" isPrintWhenDetailOverflows="true" uuid="e97813fe-6bdd-4579-8fc4-915ca01dc9f1"/>
 				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
@@ -546,7 +545,7 @@ ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS
 			<staticText>
 				<reportElement x="0" y="60" width="50" height="11" uuid="1fd47466-5b3f-47a4-a4de-93e2c65c45d3"/>
 				<textElement>
-					<font size="8"/>
+					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Outlet]]></text>
 			</staticText>
@@ -589,194 +588,194 @@ ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS
 				<reportElement x="0" y="104" width="802" height="1" uuid="f28629f3-9de6-4630-92c7-c29fd15e5479"/>
 			</line>
 			<staticText>
-				<reportElement mode="Transparent" x="22" y="120" width="48" height="15" uuid="2d38bc32-9abd-4972-9098-2b0312514e3e"/>
+				<reportElement mode="Transparent" x="22" y="122" width="48" height="15" uuid="2d38bc32-9abd-4972-9098-2b0312514e3e"/>
 				<textElement textAlignment="Center">
-					<font size="8" isBold="true"/>
+					<font size="8" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Jam]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="70" y="105" width="90" height="15" uuid="566b449e-5f0c-45a2-bfe8-2373712a5cbc"/>
+				<reportElement mode="Transparent" x="70" y="107" width="90" height="15" uuid="566b449e-5f0c-45a2-bfe8-2373712a5cbc"/>
 				<textElement textAlignment="Center">
-					<font size="8" isBold="true"/>
+					<font size="8" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Projection]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="0" y="120" width="22" height="15" uuid="dfba3012-d575-4721-98ce-8d2af37b6803"/>
+				<reportElement mode="Transparent" x="0" y="122" width="22" height="15" uuid="dfba3012-d575-4721-98ce-8d2af37b6803"/>
 				<textElement textAlignment="Center">
-					<font size="8" isBold="true"/>
+					<font size="8" isBold="false"/>
 				</textElement>
 				<text><![CDATA[No]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="73" y="120" width="40" height="15" uuid="81383f80-0926-4fe5-aa4d-f31edd159d47"/>
+				<reportElement mode="Transparent" x="73" y="122" width="40" height="15" uuid="81383f80-0926-4fe5-aa4d-f31edd159d47"/>
 				<textElement textAlignment="Center">
-					<font size="8" isBold="true"/>
+					<font size="8" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Qty]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="117" y="120" width="40" height="15" uuid="f2e39ffe-3317-4a31-babe-fbe7b6ebffd4"/>
+				<reportElement mode="Transparent" x="117" y="122" width="40" height="15" uuid="f2e39ffe-3317-4a31-babe-fbe7b6ebffd4"/>
 				<textElement textAlignment="Center">
-					<font size="8" isBold="true"/>
+					<font size="8" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Accum]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="207" y="120" width="39" height="15" uuid="92dd625f-0af6-4f94-a5b4-987fb11f564b"/>
+				<reportElement mode="Transparent" x="207" y="122" width="39" height="15" uuid="92dd625f-0af6-4f94-a5b4-987fb11f564b"/>
 				<textElement textAlignment="Center">
-					<font size="8" isBold="true"/>
+					<font size="8" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Accum]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="163" y="120" width="39" height="15" uuid="deffcdb4-0b75-4abf-aa65-032e5179a5b9"/>
+				<reportElement mode="Transparent" x="163" y="122" width="39" height="15" uuid="deffcdb4-0b75-4abf-aa65-032e5179a5b9"/>
 				<textElement textAlignment="Center">
-					<font size="8" isBold="true"/>
+					<font size="8" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Qty]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="160" y="105" width="89" height="15" uuid="d62dea68-cd68-4e8c-aa6e-24a96ad6fee1"/>
+				<reportElement mode="Transparent" x="160" y="107" width="89" height="15" uuid="d62dea68-cd68-4e8c-aa6e-24a96ad6fee1"/>
 				<textElement textAlignment="Center">
-					<font size="8" isBold="true"/>
+					<font size="8" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Production]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="339" y="105" width="93" height="15" uuid="c52c829c-b217-4f48-aa02-2fc60c873cf8"/>
+				<reportElement mode="Transparent" x="339" y="107" width="93" height="15" uuid="c52c829c-b217-4f48-aa02-2fc60c873cf8"/>
 				<textElement textAlignment="Center">
-					<font size="8" isBold="true"/>
+					<font size="8" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Others]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="342" y="120" width="38" height="15" uuid="6f8fb2be-adb8-4950-b903-9de422c5545e"/>
+				<reportElement mode="Transparent" x="342" y="122" width="38" height="15" uuid="6f8fb2be-adb8-4950-b903-9de422c5545e"/>
 				<textElement textAlignment="Center">
-					<font size="8" isBold="true"/>
+					<font size="8" isBold="false"/>
 				</textElement>
 				<text><![CDATA[In]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="296" y="120" width="40" height="15" uuid="29d97584-81d2-40c5-8149-148b0a4e36ce"/>
+				<reportElement mode="Transparent" x="296" y="122" width="40" height="15" uuid="29d97584-81d2-40c5-8149-148b0a4e36ce"/>
 				<textElement textAlignment="Center">
-					<font size="8" isBold="true"/>
+					<font size="8" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Accum]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="252" y="120" width="40" height="15" uuid="6bdf14cc-f9e3-4e04-93c2-6fd04ebfe276"/>
+				<reportElement mode="Transparent" x="252" y="122" width="40" height="15" uuid="6bdf14cc-f9e3-4e04-93c2-6fd04ebfe276"/>
 				<textElement textAlignment="Center">
-					<font size="8" isBold="true"/>
+					<font size="8" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Qty]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="249" y="105" width="90" height="15" uuid="d4160354-15d9-49c3-b71d-2f9754b4d8da"/>
+				<reportElement mode="Transparent" x="249" y="107" width="90" height="15" uuid="d4160354-15d9-49c3-b71d-2f9754b4d8da"/>
 				<textElement textAlignment="Center">
-					<font size="8" isBold="true"/>
+					<font size="8" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Sold]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="385" y="120" width="43" height="15" uuid="44de8f5b-4fbc-46e8-8606-bdcef9572cdb"/>
+				<reportElement mode="Transparent" x="385" y="122" width="43" height="15" uuid="44de8f5b-4fbc-46e8-8606-bdcef9572cdb"/>
 				<textElement textAlignment="Center">
-					<font size="8" isBold="true"/>
+					<font size="8" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Out]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="432" y="105" width="92" height="15" uuid="8cccdde7-cf7c-4585-af70-c0f2447b1177"/>
+				<reportElement mode="Transparent" x="432" y="107" width="92" height="15" uuid="8cccdde7-cf7c-4585-af70-c0f2447b1177"/>
 				<textElement textAlignment="Center">
-					<font size="8" isBold="true"/>
+					<font size="8" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Reject]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="623" y="120" width="40" height="15" uuid="0ec931b6-f366-456c-9030-eaf68f56300a"/>
+				<reportElement mode="Transparent" x="623" y="122" width="40" height="15" uuid="0ec931b6-f366-456c-9030-eaf68f56300a"/>
 				<textElement textAlignment="Center">
-					<font size="8" isBold="true"/>
+					<font size="8" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Qty]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="577" y="120" width="40" height="15" uuid="4816cc5e-37b9-4cb9-abc6-0e25194aba28"/>
+				<reportElement mode="Transparent" x="577" y="122" width="40" height="15" uuid="4816cc5e-37b9-4cb9-abc6-0e25194aba28"/>
 				<textElement textAlignment="Center">
-					<font size="8" isBold="true"/>
+					<font size="8" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Accum]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="527" y="120" width="46" height="15" uuid="ce9304e9-f869-45c3-932d-d531f3cfe021"/>
+				<reportElement mode="Transparent" x="527" y="122" width="46" height="15" uuid="ce9304e9-f869-45c3-932d-d531f3cfe021"/>
 				<textElement textAlignment="Center">
-					<font size="8" isBold="true"/>
+					<font size="8" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Qty]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="435" y="120" width="42" height="15" uuid="da9e215e-4c3c-4f7d-996a-250b35abbacd"/>
+				<reportElement mode="Transparent" x="435" y="122" width="42" height="15" uuid="da9e215e-4c3c-4f7d-996a-250b35abbacd"/>
 				<textElement textAlignment="Center">
-					<font size="8" isBold="true"/>
+					<font size="8" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Qty]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="524" y="105" width="96" height="15" uuid="c85fee0c-7216-45b0-9858-e7340718c6f4"/>
+				<reportElement mode="Transparent" x="524" y="107" width="96" height="15" uuid="c85fee0c-7216-45b0-9858-e7340718c6f4"/>
 				<textElement textAlignment="Center">
-					<font size="8" isBold="true"/>
+					<font size="8" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Wastage]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="667" y="120" width="40" height="15" uuid="662ec449-aa48-4087-928d-b8cd3c30fe86"/>
+				<reportElement mode="Transparent" x="667" y="122" width="40" height="15" uuid="662ec449-aa48-4087-928d-b8cd3c30fe86"/>
 				<textElement textAlignment="Center">
-					<font size="8" isBold="true"/>
+					<font size="8" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Accum]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="620" y="105" width="90" height="15" uuid="19fcf48f-e2fa-4c28-9019-e2a8954a88ed"/>
+				<reportElement mode="Transparent" x="620" y="107" width="90" height="15" uuid="19fcf48f-e2fa-4c28-9019-e2a8954a88ed"/>
 				<textElement textAlignment="Center">
-					<font size="8" isBold="true"/>
+					<font size="8" isBold="false"/>
 				</textElement>
 				<text><![CDATA[On Hand]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="479" y="120" width="42" height="15" uuid="e4772f4c-cdd6-4bc1-8de5-8126b854726e"/>
+				<reportElement mode="Transparent" x="479" y="122" width="42" height="15" uuid="e4772f4c-cdd6-4bc1-8de5-8126b854726e"/>
 				<textElement textAlignment="Center">
-					<font size="8" isBold="true"/>
+					<font size="8" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Accum]]></text>
 			</staticText>
 			<line>
-				<reportElement x="0" y="135" width="802" height="1" uuid="93e69799-a175-4c88-b3aa-b7f2c1f860dd"/>
+				<reportElement x="0" y="137" width="802" height="1" uuid="93e69799-a175-4c88-b3aa-b7f2c1f860dd"/>
 			</line>
 			<staticText>
-				<reportElement mode="Transparent" x="710" y="105" width="90" height="15" uuid="3488d887-3b15-4b13-b865-cb43d668374a"/>
+				<reportElement mode="Transparent" x="710" y="107" width="90" height="15" uuid="3488d887-3b15-4b13-b865-cb43d668374a"/>
 				<textElement textAlignment="Center">
-					<font size="8" isBold="true"/>
+					<font size="8" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Variance]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="757" y="120" width="40" height="15" uuid="a1380169-8c12-4e52-81e6-db251dbdb8b2"/>
+				<reportElement mode="Transparent" x="757" y="122" width="40" height="15" uuid="a1380169-8c12-4e52-81e6-db251dbdb8b2"/>
 				<textElement textAlignment="Center">
-					<font size="8" isBold="true"/>
+					<font size="8" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Accum]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="713" y="120" width="40" height="15" uuid="8d77d68a-02f2-4e1b-b67c-7b2a09c0aa92"/>
+				<reportElement mode="Transparent" x="713" y="122" width="40" height="15" uuid="8d77d68a-02f2-4e1b-b67c-7b2a09c0aa92"/>
 				<textElement textAlignment="Center">
-					<font size="8" isBold="true"/>
+					<font size="8" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Qty]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="0" y="71" width="50" height="11" uuid="22f1637e-20bc-4fc2-a69e-7d47572cead4"/>
 				<textElement>
-					<font size="8"/>
+					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Tanggal]]></text>
 			</staticText>
@@ -791,7 +790,7 @@ ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS
 			<staticText>
 				<reportElement x="0" y="82" width="50" height="11" uuid="bc850a7e-bad8-4aee-b37f-bf2bbdab243c"/>
 				<textElement>
-					<font size="8"/>
+					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[MPCS Group]]></text>
 			</staticText>
@@ -840,7 +839,7 @@ ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS
 			<staticText>
 				<reportElement x="0" y="93" width="50" height="11" uuid="4d6b65c6-191f-4ebd-8812-522b6de277b3"/>
 				<textElement>
-					<font size="8"/>
+					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Detail]]></text>
 			</staticText>
@@ -850,7 +849,7 @@ ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS
 		<band height="14">
 			<printWhenExpression><![CDATA[$F{QTY_PROD} != null && $F{QTY_PROD}.compareTo(BigDecimal.ZERO) > 0]]></printWhenExpression>
 			<textField>
-				<reportElement x="143" y="0" width="150" height="12" uuid="8fa70615-50b9-4760-b5b0-d6ea50ddab21">
+				<reportElement x="143" y="0" width="165" height="12" uuid="8fa70615-50b9-4760-b5b0-d6ea50ddab21">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="7e6b0a05-5ce2-4878-bf2a-ae573229c8d1"/>
 				</reportElement>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
@@ -868,7 +867,7 @@ ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS
 				<textFieldExpression><![CDATA[$F{RECIPE_ITEM_CODE}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="293" y="0" width="70" height="12" uuid="cf986d87-1374-4df9-9d48-bff4ff7cac9c">
+				<reportElement x="308" y="0" width="70" height="12" uuid="cf986d87-1374-4df9-9d48-bff4ff7cac9c">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="7e6b0a05-5ce2-4878-bf2a-ae573229c8d1"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -879,4 +878,18 @@ ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS
 			</textField>
 		</band>
 	</detail>
+	<summary>
+		<band height="26">
+			<line>
+				<reportElement x="0" y="4" width="802" height="1" uuid="daab9c16-da4d-4beb-9830-822b02839b14"/>
+			</line>
+			<staticText>
+				<reportElement x="700" y="5" width="102" height="20" uuid="b7967daf-9f42-4cb3-a6d5-d447cbb0cb61"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10" isBold="false" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[-- End of Report --]]></text>
+			</staticText>
+		</band>
+	</summary>
 </jasperReport>
