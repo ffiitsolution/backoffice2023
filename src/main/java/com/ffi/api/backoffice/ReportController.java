@@ -745,10 +745,10 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        Integer cekDataReport = viewServices.cekDataReport(prm, "inventoryMovement");
-        if (cekDataReport > 0) {
-            JasperPrint jasperPrint = reportServices.jasperReportInventoryMovement(prm, conn);
-            conn.close();
+//        Integer cekDataReport = viewServices.cekDataReport(prm, "inventoryMovement");
+        JasperPrint jasperPrint = reportServices.jasperReportInventoryMovement(prm, conn);
+        conn.close();
+        if (!jasperPrint.getPages().isEmpty()) {
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=InventoryMovement.pdf");
