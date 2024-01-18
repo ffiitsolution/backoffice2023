@@ -310,6 +310,11 @@ public class ProcessDaoImpl implements ProcessDao {
                 + " ACCESS_LEVEL=:accesslevelCode,USER_UPD=:userUpd,DATE_UPD=:dateUpd,TIME_UPD=:timeUpd "
                 + " WHERE STAFF_CODE=:staffCode AND OUTLET_CODE = :outletCode ";
 
+        String qy3 = "INSERT INTO M_POS_STAFF(REGION_CODE,OUTLET_CODE,STAFF_CODE,STAFF_POS_CODE,STAFF_NAME,PASSWORD,"
+                + "ACCESS_LEVEL,RIDER_FLAG,STATUS,USER_UPD,DATE_UPD,TIME_UPD)"
+                + "VALUES(:regionCode,:outletCode,:staffCode,:staffPosCode,:staffName,:passPosCode,"
+                + ":accesslevelCode,:riderFlag,:statusPos,:userUpd,:dateUpd,:timeUpd)";
+
         Map param = new HashMap();
         param.put("regionCode", balancetest1.get("regionCode"));
         param.put("outletCode", balancetest1.get("outletCode"));
@@ -348,7 +353,11 @@ public class ProcessDaoImpl implements ProcessDao {
         jdbcTemplate.update(qy, param);
 
         if (!Objects.equals(balancetest1.get("staffPosCode"), "")) {
-            jdbcTemplate.update(qy2, param);
+            try {
+                jdbcTemplate.update(qy3, param);
+            } catch (Exception exx) {
+                jdbcTemplate.update(qy2, param);
+            }
         }
     }
 
