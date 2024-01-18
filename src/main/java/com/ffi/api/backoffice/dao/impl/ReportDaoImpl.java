@@ -680,10 +680,18 @@ public class ReportDaoImpl implements ReportDao {
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }
+    
+    public String stitchItemCategoryLabel(String existing, String addedString) {
+        if (existing.equals("Semua")) {
+            return addedString;
+        } 
+        return existing + ", " + addedString;
+    };
 
     @Override
     public JasperPrint jesperReportItem(Map<String, Object> param, Connection connection) throws IOException, JRException {
         Map<String, Object> hashMap = new HashMap<String, Object>();
+        String itemCategory = "Semua";
 
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("user", param.get("user"));
@@ -722,23 +730,38 @@ public class ReportDaoImpl implements ReportDao {
         StringBuilder query = new StringBuilder();
         if (!param.get("jenisGudang").equals("Semua"))
             query.append(" AND b.DESCRIPTION = '").append(param.get("jenisGudang")).append("'");
-        if (param.containsKey("bahanBaku"))
+        if (param.containsKey("bahanBaku")) {   
+            itemCategory = stitchItemCategoryLabel(itemCategory, "Bahan Baku");
             query.append(" AND a.FLAG_MATERIAL = 'Y'");
-        if (param.containsKey("itemJual"))
+        }
+        if (param.containsKey("itemJual")) {
+            itemCategory = stitchItemCategoryLabel(itemCategory, "Item Jual");
             query.append(" AND a.FLAG_FINISHED_GOOD = 'Y'");
-        if (param.containsKey("pembelian"))
+        }
+        if (param.containsKey("pembelian")) {
+            itemCategory = stitchItemCategoryLabel(itemCategory, "Pembelian");
             query.append(" AND a.FLAG_OTHERS = 'Y'");
-        if (param.containsKey("produksi"))
+        }
+        if (param.containsKey("produksi")) {
+            itemCategory = stitchItemCategoryLabel(itemCategory, "Produksi");
             query.append(" AND a.FLAG_HALF_FINISH = 'Y'");
-        if (param.containsKey("openMarket"))
+        }
+        if (param.containsKey("openMarket")) {
+            itemCategory = stitchItemCategoryLabel(itemCategory, "Open Market");
             query.append(" AND a.FLAG_OPEN_MARKET = 'Y'");
-        if (param.containsKey("canvasing"))
+        }
+        if (param.containsKey("canvasing")) {
+            itemCategory = stitchItemCategoryLabel(itemCategory, "Canvasing");
             query.append(" AND a.FLAG_CANVASING = 'Y'");
-        if (param.containsKey("transferDo"))
+        }
+        if (param.containsKey("transferDo")) {
+            itemCategory = stitchItemCategoryLabel(itemCategory, "Transfer DO");
             query.append(" AND a.FLAG_TRANSFER_LOC = 'Y'");
-        if (param.containsKey("paket"))
+        }
+        if (param.containsKey("paket")) {
+            itemCategory = stitchItemCategoryLabel(itemCategory, "Paket");
             query.append(" AND a.FLAG_PAKET = 'Y'");
-
+        }
 
 
         if (!param.get("jenisGudang").equals("Semua") || param.containsKey("bahanBaku") || param.containsKey("itemJual")
@@ -746,7 +769,7 @@ public class ReportDaoImpl implements ReportDao {
                 param.containsKey("canvasing") || param.containsKey("transferDo") || param.containsKey("paket")) {
             hashMap.put("query", query.toString());
         }
-
+        hashMap.put("itemCategory", itemCategory);
         ClassPathResource classPathResource = new ClassPathResource("report/item.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
