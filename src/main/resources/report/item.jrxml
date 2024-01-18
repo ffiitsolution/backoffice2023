@@ -68,7 +68,7 @@ ORDER BY ITEM_CODE ASC]]>
 		<band splitType="Stretch"/>
 	</background>
 	<columnHeader>
-		<band height="151" splitType="Stretch">
+		<band height="160" splitType="Stretch">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<image scaleImage="FillFrame">
 				<reportElement x="0" y="1" width="48" height="48" isPrintWhenDetailOverflows="true" uuid="c4587009-5c6a-46d8-83b5-b4d79a81e2ff"/>
