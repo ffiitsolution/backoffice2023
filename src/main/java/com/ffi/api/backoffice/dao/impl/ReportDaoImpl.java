@@ -764,7 +764,7 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("gudang", param.get("gudang"));
         hashMap.put("item", param.get("item"));
         hashMap.put("user", param.get("user"));
-
+        hashMap.put("typePrint", (param.get("typePrint").equals(1.0) ? "Item yang ada mutasi stok" : "Semua item"));
         if (param.get("item").equals("Semua")){
             hashMap.put("itemName", "Semua");
         } else {
