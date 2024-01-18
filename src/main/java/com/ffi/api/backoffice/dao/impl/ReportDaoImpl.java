@@ -2438,6 +2438,10 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("orderType", param.get("orderType"));
         hashMap.put("status", param.get("status"));
+        hashMap.put("user", param.get("user"));
+        hashMap.put("address1", param.get("address1"));
+        hashMap.put("address2", param.get("address2"));
+        hashMap.put("outletName", param.get("outletName"));
 
         ClassPathResource classPathResource = new ClassPathResource("report/reportDaftarMenu.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
