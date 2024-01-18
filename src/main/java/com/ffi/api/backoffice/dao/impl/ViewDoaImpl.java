@@ -6,6 +6,7 @@ package com.ffi.api.backoffice.dao.impl;
 
 import com.ffi.api.backoffice.dao.ViewDao;
 import com.ffi.api.backoffice.model.ParameterLogin;
+import com.ffi.api.backoffice.utils.AppUtil;
 import com.ffi.api.backoffice.utils.DynamicRowMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -49,10 +50,12 @@ public class ViewDoaImpl implements ViewDao {
     private String warehouseEndpoint;
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final AppUtil appUtil;
 
     @Autowired
-    public ViewDoaImpl(NamedParameterJdbcTemplate jdbcTemplate) {
+    public ViewDoaImpl(NamedParameterJdbcTemplate jdbcTemplate, AppUtil appUtil) {
         this.jdbcTemplate = jdbcTemplate;
+        this.appUtil = appUtil;
     }
 
     @Override
@@ -3861,6 +3864,7 @@ public class ViewDoaImpl implements ViewDao {
     //////// NEW METHOD Digunakan untuk ambil data outlet di halaman login by M Joko - 4 Jan 2024
     @Override
     public List<Map<String, Object>> outletInfo(String outletCode) {
+        String env = appUtil.getOrDefault("app.env", "production");
         String qry = """
                     SELECT 
                         region_code, 
@@ -3883,13 +3887,15 @@ public class ViewDoaImpl implements ViewDao {
                         CASE 
                             WHEN outlet_name LIKE '%TACOBELL%' THEN 'TACOBELL'
                             ELSE 'KFC'
-                        END AS brand
+                        END AS brand,
+                        :env AS environment
                     FROM M_OUTLET mo
                     JOIN M_GLOBAL mg ON mo.area_code = mg.code AND mg.cond = 'AREACODE'
                     WHERE outlet_code = :outletcode
                      """;
         Map prm = new HashMap();
         prm.put("outletcode", outletCode);
+        prm.put("env", env);
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new DynamicRowMapper());
         return list;

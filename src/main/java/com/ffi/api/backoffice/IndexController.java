@@ -11,7 +11,7 @@ import com.ffi.api.backoffice.model.ParameterLogin;
 import com.ffi.api.backoffice.services.ProcessServices;
 import com.ffi.api.backoffice.services.ViewServices;
 import com.ffi.api.backoffice.services.ReportServices;
-import com.ffi.api.backoffice.utils.DynamicRowMapper;
+import com.ffi.api.backoffice.utils.AppUtil;
 import com.ffi.paging.Response;
 import com.ffi.paging.ResponseMessage;
 import com.google.gson.Gson;
@@ -22,7 +22,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -49,13 +48,15 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 public class IndexController {
-
+    
     @Autowired
     ViewServices viewServices;
     @Autowired
     ProcessServices processServices;
     @Autowired
     ReportServices reportServices;
+    @Autowired
+    AppUtil appUtil;
 
 //    @Autowired
 //    TransServices transServices;
@@ -3180,8 +3181,9 @@ public class IndexController {
         Map<String, Object> data = gsn.fromJson(param, new TypeToken<Map<String, String>>() {
         }.getType());
         // List<Map<String, Object>> list = viewServices.listMenuApplication(data);
+        String env = appUtil.getOrDefault("app.env", "development");
         Response res = new Response();
-        String filepath = "json/menuKFC.json";
+        String filepath = env.equalsIgnoreCase("development") ? "json/menuKFC-dev.json" : "json/menuKFC.json";
         if(data.containsKey("outletBrand") && data.get("outletBrand").toString().equalsIgnoreCase("TACOBELL")){
             filepath = "json/menuTACOBELL.json";
         }
