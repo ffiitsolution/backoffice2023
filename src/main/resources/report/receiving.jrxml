@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="receiving" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a6bec444-4d4a-435f-b5a1-8e878178a1d1">
-	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.zoom" value="3.138428376721009"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="157"/>
 	<parameter name="city" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
@@ -20,6 +20,8 @@
 	<parameter name="query" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[" AND 1 = 1"]]></defaultValueExpression>
 	</parameter>
+	<parameter name="filterByValue" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="filterDesc" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="outletBrand" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
@@ -35,7 +37,7 @@ LEFT JOIN M_GLOBAL e ON b.CD_SUPPLIER = e.CODE AND e.COND =$P{city}
 LEFT JOIN T_RECV_DETAIL f ON a.RECV_NO = f.RECV_NO AND f.ORDER_NO = a.ORDER_NO
 LEFT JOIN M_ITEM g ON f.ITEM_CODE = g.ITEM_CODE
 JOIN M_OUTLET h ON a.OUTLET_CODE = h.OUTLET_CODE
-WHERE a.OUTLET_CODE =$P{outletCode} AND a.RECV_DATE BETWEEN $P{fromDate} AND $P{toDate} $P!{query} ORDER BY a.RECV_DATE DESC, a.RECV_NO DESC]]>
+WHERE a.OUTLET_CODE =$P{outletCode} AND a.RECV_DATE BETWEEN $P{fromDate} AND $P{toDate} $P!{query} ORDER BY a.RECV_DATE ASC, a.RECV_NO ASC]]>
 	</queryString>
 	<field name="NUM" class="java.math.BigDecimal"/>
 	<field name="RECV_NO" class="java.lang.String"/>
@@ -59,45 +61,45 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.RECV_DATE BETWEEN $P{fromDate} AND $P{
 	<group name="header">
 		<groupExpression><![CDATA[$F{RECV_NO}]]></groupExpression>
 		<groupHeader>
-			<band height="25">
+			<band height="16">
 				<textField>
-					<reportElement x="15" y="5" width="50" height="15" uuid="fa0a4808-9bf2-435d-b0cb-cb8bd890c9f9"/>
-					<textElement textAlignment="Center">
+					<reportElement x="15" y="2" width="50" height="12" uuid="fa0a4808-9bf2-435d-b0cb-cb8bd890c9f9"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font size="8"/>
 					</textElement>
 					<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($F{RECV_DATE})]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="79" y="5" width="90" height="15" uuid="b27a9675-1bc6-4d44-82e1-1c91de9501ee"/>
-					<textElement textAlignment="Center">
+					<reportElement x="79" y="2" width="90" height="12" uuid="b27a9675-1bc6-4d44-82e1-1c91de9501ee"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font size="8"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{RECV_NO}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="168" y="5" width="90" height="15" uuid="4ed42efe-f24f-4ed8-918a-4756183cde49"/>
-					<textElement textAlignment="Center">
+					<reportElement x="168" y="2" width="90" height="12" uuid="4ed42efe-f24f-4ed8-918a-4756183cde49"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font size="8"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{ORDER_NO}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="275" y="5" width="124" height="15" uuid="cfcbddbf-a95b-4013-98c4-ffa3e68c940c"/>
-					<textElement>
+					<reportElement x="275" y="2" width="124" height="12" uuid="cfcbddbf-a95b-4013-98c4-ffa3e68c940c"/>
+					<textElement verticalAlignment="Middle">
 						<font size="8"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{REMARK}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement x="380" y="5" width="137" height="15" uuid="433b57a8-edc0-4829-8037-64d1223ddad6"/>
-					<textElement>
+					<reportElement x="380" y="2" width="137" height="12" uuid="433b57a8-edc0-4829-8037-64d1223ddad6"/>
+					<textElement verticalAlignment="Middle">
 						<font size="8"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{PENERIMAAN_DARI}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="516" y="5" width="38" height="15" uuid="394c89e8-25bf-4e93-b8c1-9d5f5102f21e"/>
-					<textElement textAlignment="Center">
+					<reportElement x="516" y="2" width="38" height="12" uuid="394c89e8-25bf-4e93-b8c1-9d5f5102f21e"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font size="8"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{STATUS}]]></textFieldExpression>
@@ -108,7 +110,7 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.RECV_DATE BETWEEN $P{fromDate} AND $P{
 	<group name="detail" isReprintHeaderOnEachPage="true">
 		<groupExpression><![CDATA[$F{RECV_NO}]]></groupExpression>
 		<groupHeader>
-			<band height="18">
+			<band height="21">
 				<printWhenExpression><![CDATA[$P{detail}.equals(1)]]></printWhenExpression>
 				<staticText>
 					<reportElement x="95" y="2" width="50" height="15" uuid="a5cac225-d8ed-45ce-95ed-b020b869c38e"/>
@@ -201,7 +203,7 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.RECV_DATE BETWEEN $P{fromDate} AND $P{
 		<band splitType="Stretch"/>
 	</background>
 	<columnHeader>
-		<band height="98" splitType="Stretch">
+		<band height="113" splitType="Stretch">
 			<image scaleImage="FillFrame">
 				<reportElement x="22" y="1" width="48" height="48" isPrintWhenDetailOverflows="true" uuid="95bfb9aa-d084-452c-ae47-253e326e49d9"/>
 				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
@@ -235,14 +237,14 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.RECV_DATE BETWEEN $P{fromDate} AND $P{
 				<textFieldExpression><![CDATA[$F{ADDRESS_2}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="0" y="60" width="50" height="11" uuid="a75f3e50-cd15-47f6-8bc7-b824a800c7f9"/>
+				<reportElement x="0" y="83" width="50" height="11" uuid="a75f3e50-cd15-47f6-8bc7-b824a800c7f9"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Periode     : ]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="49" y="60" width="274" height="11" uuid="f0a8c5e0-dc41-4bcc-80bd-3665d3974510"/>
+				<reportElement x="49" y="83" width="350" height="11" uuid="f0a8c5e0-dc41-4bcc-80bd-3665d3974510"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -250,11 +252,11 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.RECV_DATE BETWEEN $P{fromDate} AND $P{
 + " s/d " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{toDate}))]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="190" y="33" width="176" height="18" uuid="d8454a1e-f231-4642-8a9f-b9a330f5a0e0"/>
-				<textElement textAlignment="Center">
+				<reportElement x="0" y="49" width="555" height="18" uuid="d8454a1e-f231-4642-8a9f-b9a330f5a0e0"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<text><![CDATA[LAPORAN RECEIVING]]></text>
+				<text><![CDATA[LAPORAN PENERIMAAN]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="437" y="0" width="114" height="11" uuid="dcf4b008-ae2f-41bc-b83e-469150895f06"/>
@@ -285,59 +287,109 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.RECV_DATE BETWEEN $P{fromDate} AND $P{
 				<textFieldExpression><![CDATA["Jam Cetak : " + new SimpleDateFormat("hh:mm:ss").format(new Date())]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement x="1" y="82" width="552" height="1" uuid="97df2450-a174-43dc-b982-9922694b42db"/>
+				<reportElement x="1" y="95" width="552" height="1" uuid="97df2450-a174-43dc-b982-9922694b42db"/>
 			</line>
 			<line>
-				<reportElement x="1" y="97" width="552" height="1" uuid="371e98c2-9796-4da8-892c-38586fab3ead"/>
+				<reportElement x="1" y="110" width="552" height="1" uuid="371e98c2-9796-4da8-892c-38586fab3ead"/>
 			</line>
 			<staticText>
-				<reportElement x="15" y="83" width="50" height="15" uuid="9413f34f-d583-449a-9075-8be218f212a9"/>
-				<textElement textAlignment="Center">
+				<reportElement x="15" y="97" width="50" height="12" uuid="9413f34f-d583-449a-9075-8be218f212a9"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Tanggal]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="79" y="83" width="90" height="15" uuid="6ffe9b03-8569-47cf-a2a1-91af812de8f5"/>
-				<textElement textAlignment="Center">
+				<reportElement x="79" y="97" width="90" height="12" uuid="6ffe9b03-8569-47cf-a2a1-91af812de8f5"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[No Penerimaan]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="168" y="83" width="90" height="15" uuid="39f66a7b-df35-4cad-803f-881634da60d5"/>
-				<textElement textAlignment="Center">
+				<reportElement x="168" y="97" width="90" height="12" uuid="39f66a7b-df35-4cad-803f-881634da60d5"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Order No]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="247" y="83" width="124" height="15" uuid="5ef8eb90-03f6-41d2-bdfc-339274197696"/>
-				<textElement textAlignment="Center">
+				<reportElement x="247" y="97" width="124" height="12" uuid="5ef8eb90-03f6-41d2-bdfc-339274197696"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Catatan]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="380" y="83" width="137" height="15" uuid="37e588b3-3231-4c8e-bfe2-5618137d7444"/>
-				<textElement>
+				<reportElement x="380" y="97" width="137" height="12" uuid="37e588b3-3231-4c8e-bfe2-5618137d7444"/>
+				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Penerimaan Dari]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="516" y="83" width="38" height="15" uuid="454b776f-688e-4531-a115-a251f5d7fb7f"/>
-				<textElement textAlignment="Center">
+				<reportElement mode="Transparent" x="516" y="97" width="38" height="12" uuid="454b776f-688e-4531-a115-a251f5d7fb7f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Status]]></text>
 			</staticText>
+			<textField>
+				<reportElement x="416" y="82" width="139" height="12" uuid="8cd90147-c63f-4e75-a3b4-ca75026d135a"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Tipe Report : " + ($P{detail}.equals(1) ? "Detail" : "Rekap")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="69" width="45" height="12" uuid="334d0a8b-5341-4fbc-ac25-94281921c1ce">
+					<printWhenExpression><![CDATA[!$P{query}.equals( " AND 1 = 1" )]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[
+					$P{filterByValue}.equals("Gudang") ? "GUDANG" :
+					$P{filterByValue}.equals("Supplier") ? "SUPPLIER" :
+					$P{filterByValue}.equals("Outlet") ? "OUTLET" :
+					$P{filterByValue}
+				]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="45" y="69" width="45" height="12" uuid="e61c1016-62a0-4b8f-98a7-a48b933eaf7b">
+					<printWhenExpression><![CDATA[!$P{query}.equals( " AND 1 = 1" )]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{filterDesc}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="89" y="69" width="137" height="12" uuid="c5546f10-ba64-4c89-8fac-7e977785dcbd">
+					<printWhenExpression><![CDATA[!$P{query}.equals( " AND 1 = 1" )]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PENERIMAAN_DARI}]]></textFieldExpression>
+			</textField>
 		</band>
 	</columnHeader>
 	<pageFooter>
-		<band height="15" splitType="Stretch"/>
+		<band height="4" splitType="Stretch"/>
 	</pageFooter>
 	<summary>
-		<band height="18" splitType="Stretch"/>
+		<band height="20" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="3" width="555" height="1" uuid="29a26c6e-5a3a-44eb-bf76-4cfd2e016da8"/>
+			</line>
+			<staticText>
+				<reportElement x="454" y="5" width="100" height="12" uuid="eae887f6-7d9c-4f9a-be6e-e28d015461b5"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[-- End of Report --]]></text>
+			</staticText>
+		</band>
 	</summary>
 </jasperReport>
