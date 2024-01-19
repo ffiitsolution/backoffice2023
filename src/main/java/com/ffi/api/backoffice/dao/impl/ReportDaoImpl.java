@@ -2801,7 +2801,7 @@ public class ReportDaoImpl implements ReportDao {
         +" :transDate AND SUBSTR(TRIM(VOID_TYPE),1,1) IN ('V', 'C') GROUP BY SUBSTR(TRIM(VOID_TYPE),1,1)";
         List<Map<String, Object>> resultQuery6 = jdbcTemplate.query(query6, param, new DynamicRowMapper());
 
-        String query7 = "select count(0) AS REFUND_COUNTER, SUM(total_amount) AS REFUND_AMOUNT from t_pos_bill where outlet_code = :outletCode and trans_date "
+        String query7 = "select count(0) AS REFUND_COUNTER, COALESCE ( SUM(total_amount), 0) AS REFUND_AMOUNT from t_pos_bill where outlet_code = :outletCode and trans_date "
         +" between :transDate and :transDate and refund_manager_code <>' ' and "
         +" refund_manager_code is not NULL";
         Map<String, Object> resultQuery7 = jdbcTemplate.queryForObject(query7, param, new DynamicRowMapper());
