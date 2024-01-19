@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reportInventoryMovement" pageWidth="626" pageHeight="842" columnWidth="586" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="06b530b0-c9da-4324-8953-10ae8fc23de2">
 	<property name="ireport.zoom" value="1.3310000000000035"/>
 	<property name="ireport.x" value="0"/>
@@ -231,14 +232,14 @@ ORDER BY
 				<text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="65" y="11" width="165" height="11" uuid="8a229328-adaa-449c-9a56-6aa4cf09dc56"/>
+				<reportElement x="65" y="11" width="200" height="11" uuid="8a229328-adaa-449c-9a56-6aa4cf09dc56"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{OUTLET_NAME}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="65" y="21" width="165" height="11" uuid="cc480b68-68a2-443f-8bf2-1c1945555575"/>
+				<reportElement x="65" y="21" width="200" height="11" uuid="cc480b68-68a2-443f-8bf2-1c1945555575"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -263,7 +264,7 @@ ORDER BY
 				<textElement>
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Desctiption]]></text>
+				<text><![CDATA[Description]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="252" y="92" width="56" height="15" uuid="e14bd2f9-b710-4088-bf02-dc29f9cc572f"/>
@@ -333,7 +334,7 @@ ORDER BY
 				<text><![CDATA[Adjustment]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="65" y="31" width="122" height="11" isPrintWhenDetailOverflows="true" uuid="3a428dd5-ec16-4b28-93fd-a788fe102feb"/>
+				<reportElement x="65" y="31" width="200" height="11" isPrintWhenDetailOverflows="true" uuid="3a428dd5-ec16-4b28-93fd-a788fe102feb"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -386,7 +387,7 @@ ORDER BY
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("hh:mm:ss").format(new Date())]]></textFieldExpression>
+				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="514" y="21" width="114" height="11" uuid="3e080122-a7a4-48a6-a039-313a4e8fbcc7"/>
