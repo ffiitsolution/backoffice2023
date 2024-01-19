@@ -1,236 +1,203 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reportDaftarMenu" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="2f9ba0bb-b878-42b5-bf5c-af89e4fc2ee3">
-	<property name="ireport.zoom" value="3.797498335832426"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="menu-report-finale" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4dfc93c0-b36d-45ed-910f-5f07f31b055d">
+	<property name="ireport.zoom" value="1.7715610000000077"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="322"/>
-	<parameter name="outletCode" class="java.lang.String">
+	<property name="ireport.y" value="0"/>
+	<parameter name="status" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<parameter name="orderType" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
-	<parameter name="status" class="java.lang.String">
+	<parameter name="user" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
-		<parameter name="outletBrand" class="java.lang.String">
+	<parameter name="address1" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="address2" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="outletName" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="outletBrand" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
-	b.description AS MENU_GROUP_DESCRIPTION,
-	mitem.ITEM_DESCRIPTION,
-	mms.menu_set_item_code,
-	mms.qty,
-	mg2.description AS description_set,
-	a.*
-FROM
-	(
-	SELECT
-		mmi.menu_group_code,
-		mmi.menu_item_code,
-		mg.description,
-		mp.price,
-		mmi.modifier_group1_Code,
-		mmi.modifier_group2_code,
-		mmi.modifier_group3_code,
-		mmi.modifier_group4_code,
-		mmi.modifier_group5_code,
-		mmi.modifier_group6_code,
-		mmi.modifier_group7_code,
-		mmi.call_group_code,
-		mo.OUTLET_NAME,
-		mo."TYPE",
-		mo.ADDRESS_1,
-		mo.ADDRESS_2,
-		mmi2.modifier_item_code
+	mmg.MENU_GROUP_CODE,
+	mg.DESCRIPTION AS MENU_GROUP_NAME,
+	mmi.MENU_ITEM_CODE,
+	mg2.DESCRIPTION AS MENU_ITEM_NAME,
+	mp.PRICE AS MENU_ITEM_PRICE,
+	mms.MENU_SET_ITEM_CODE,
+	mms.QTY AS MENU_SET_QTY,
+	mg3.DESCRIPTION AS MENU_SET_ITEM_NAME,
+	mmi2.MODIFIER_ITEM_CODE,
+	mg4.DESCRIPTION AS MODIFIER_ITEM_NAME,
+	mmp.PRICE AS MODIFIER_ITEM_PRICE
 	FROM
-		m_menu_item mmi
-	JOIN m_global mg ON
-		mmi.menu_item_code = mg.code
-	JOIN m_outlet_price mop ON
-		mmi.outlet_code = mop.outlet_code
-	JOIN m_price mp ON
-		mmi.menu_item_code = mp.menu_item_code
-		AND
-mop.price_type_code = mp.price_type_code
-	JOIN m_outlet mo ON
-		mmi.outlet_code = mo.outlet_code
-	LEFT JOIN M_MODIFIER_ITEM mmi2 ON
-		mmi.modifier_group1_code = mmi2.modifier_group_code
-	LEFT JOIN m_menu_item_limit mmil ON
-		mmi.region_code = mmil.region_code
-		AND mmi.outlet_code = mmil.outlet_code
-		AND
-mmi.menu_item_code = mmil.menu_item_code
-	WHERE
-		mmi.outlet_code = $P{outletCode}
-		AND
-mmi.menu_group_code IN (
-		SELECT
-			menu_group_code
-		FROM
-			m_menu_group_limit
-		WHERE
-			order_type = $P{orderType})
-		AND mmi.status = $P{status}
-		AND
-mg.cond = 'ITEM'
-		AND mop.order_type = $P{orderType}
-		AND (mmil.order_type IS NULL
-			OR
-mmil.order_type = $P{orderType})
+	 M_MENU_GROUP mmg
+	JOIN M_GLOBAL mg ON mmg.MENU_GROUP_CODE = mg.CODE
+	JOIN M_MENU_ITEM mmi ON mmg.MENU_GROUP_CODE = mmi.MENU_GROUP_CODE AND mmi.STATUS = $P{status}
+	JOIN M_MENU_GROUP_LIMIT mmgl ON mmgl.MENU_GROUP_CODE = mmg.MENU_GROUP_CODE AND mmgl.ORDER_TYPE = $P{orderType}
+	JOIN M_MENU_ITEM_LIMIT mmil ON mmil.MENU_ITEM_CODE = mmi.MENU_ITEM_CODE AND mmil.ORDER_TYPE = $P{orderType}
+	JOIN M_OUTLET_PRICE mop ON mop.OUTLET_CODE = mmg.OUTLET_CODE AND mop.ORDER_TYPE = $P{orderType}
+	JOIN M_PRICE mp ON mmi.MENU_ITEM_CODE = mp.MENU_ITEM_CODE AND mop.PRICE_TYPE_CODE  = mp.PRICE_TYPE_CODE
+	JOIN M_GLOBAL mg2 ON mmi.MENU_ITEM_CODE = mg2.CODE AND mg2.COND = 'ITEM'
+	LEFT JOIN M_MENU_SET mms ON mms.MENU_SET_CODE = mmi.MENU_ITEM_CODE AND mms.STATUS = $P{status}
+	LEFT JOIN M_GLOBAL mg3 ON mms.MENU_SET_ITEM_CODE = mg3.CODE AND mg3.COND = 'ITEM'
+	LEFT JOIN M_MODIFIER_ITEM mmi2 ON mmi.MODIFIER_GROUP1_CODE = mmi2.MODIFIER_GROUP_CODE  AND mmi2.STATUS = $P{status}
+	LEFT JOIN M_GLOBAL mg4 ON mmi2.MODIFIER_ITEM_CODE = mg4.CODE AND mg4.COND = 'ITEM'
+	LEFT JOIN M_MODIFIER_PRICE mmp ON mmi2.MODIFIER_GROUP_CODE = mmp.MODIFIER_GROUP_CODE AND mmi2.MODIFIER_ITEM_CODE = mmp.MODIFIER_ITEM_CODE AND mmp.PRICE_TYPE_CODE = '5'
+		LEFT JOIN M_GLOBAL mg4 ON mmi2.MODIFIER_ITEM_CODE = mg4.CODE AND mg4.COND = 'ITEM'
 	ORDER BY
-		mmi.menu_group_code,
-		mmi.seq)a
-LEFT JOIN M_GLOBAL b ON
-	a.menu_group_code = b.code
-	LEFT JOIN M_ITEM mitem ON a.modifier_item_code = mitem.item_code
-LEFT JOIN
-	M_MENU_SET mms ON a.menu_item_code = mms.menu_set_code
-LEFT JOIN
-	M_GLOBAL mg2 ON mms.menu_set_item_code = mg2.code AND mg2.COND = 'ITEM']]>
+    	mmg.MENU_GROUP_CODE ASC,
+	    CASE
+	        WHEN REGEXP_LIKE(mmi.MENU_ITEM_CODE, '^\d+(\.\d+)?$') -- Check if it's a numeric value
+	        THEN TO_NUMBER(mmi.MENU_ITEM_CODE)
+	        ELSE 0 -- Replace non-numeric values with 0
+	  	END ASC,
+	   	mms.MENU_SET_ITEM_CODE ASC]]>
 	</queryString>
-	<field name="MENU_GROUP_DESCRIPTION" class="java.lang.String"/>
-	<field name="ITEM_DESCRIPTION" class="java.lang.String"/>
-	<field name="MENU_SET_ITEM_CODE" class="java.lang.String"/>
-	<field name="QTY" class="java.math.BigDecimal"/>
-	<field name="DESCRIPTION_SET" class="java.lang.String"/>
 	<field name="MENU_GROUP_CODE" class="java.lang.String"/>
+	<field name="MENU_GROUP_NAME" class="java.lang.String"/>
 	<field name="MENU_ITEM_CODE" class="java.lang.String"/>
-	<field name="DESCRIPTION" class="java.lang.String"/>
-	<field name="PRICE" class="java.math.BigDecimal"/>
-	<field name="MODIFIER_GROUP1_CODE" class="java.lang.String"/>
-	<field name="MODIFIER_GROUP2_CODE" class="java.lang.String"/>
-	<field name="MODIFIER_GROUP3_CODE" class="java.lang.String"/>
-	<field name="MODIFIER_GROUP4_CODE" class="java.lang.String"/>
-	<field name="MODIFIER_GROUP5_CODE" class="java.lang.String"/>
-	<field name="MODIFIER_GROUP6_CODE" class="java.lang.String"/>
-	<field name="MODIFIER_GROUP7_CODE" class="java.lang.String"/>
-	<field name="CALL_GROUP_CODE" class="java.lang.String"/>
-	<field name="OUTLET_NAME" class="java.lang.String"/>
-	<field name="TYPE" class="java.lang.String"/>
-	<field name="ADDRESS_1" class="java.lang.String"/>
-	<field name="ADDRESS_2" class="java.lang.String"/>
+	<field name="MENU_ITEM_NAME" class="java.lang.String"/>
+	<field name="MENU_ITEM_PRICE" class="java.math.BigDecimal"/>
+	<field name="MENU_SET_ITEM_CODE" class="java.lang.String"/>
+	<field name="MENU_SET_QTY" class="java.math.BigDecimal"/>
+	<field name="MENU_SET_ITEM_NAME" class="java.lang.String"/>
 	<field name="MODIFIER_ITEM_CODE" class="java.lang.String"/>
-	<group name="Group head item">
-		<groupExpression><![CDATA[$F{MENU_GROUP_DESCRIPTION}]]></groupExpression>
+	<field name="MODIFIER_ITEM_NAME" class="java.lang.String"/>
+	<field name="MODIFIER_ITEM_PRICE" class="java.math.BigDecimal"/>
+	<group name="MENU_GROUP_CODE">
+		<groupExpression><![CDATA[$F{MENU_GROUP_CODE}]]></groupExpression>
 		<groupHeader>
-			<band height="20">
+			<band height="16">
 				<textField>
-					<reportElement x="34" y="2" width="100" height="15" uuid="e79c9cc8-dfde-4e16-8ce7-ab67568956ff"/>
+					<reportElement x="11" y="2" width="52" height="12" uuid="5d94c6a2-750f-400d-b3b9-bd68507244c2"/>
 					<textElement verticalAlignment="Middle">
-						<font isBold="true"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$F{MENU_GROUP_DESCRIPTION}]]></textFieldExpression>
-				</textField>
-				<textField>
-					<reportElement x="4" y="2" width="24" height="15" uuid="98cb0ac1-39cd-4838-9f68-1c2893298e5f"/>
-					<textElement verticalAlignment="Middle">
-						<font isBold="true"/>
+						<font size="8" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{MENU_GROUP_CODE}]]></textFieldExpression>
 				</textField>
+				<textField>
+					<reportElement x="81" y="2" width="127" height="12" uuid="f4d0c07f-cbfa-44a2-97b7-433a56e1a299"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{MENU_GROUP_NAME}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="66" y="8" width="12" height="1" uuid="4fd5d71c-1fec-481a-bd94-a5bb3cf52e1c"/>
+				</line>
 			</band>
 		</groupHeader>
 	</group>
-	<group name="Sub menu group 1">
+	<group name="MENU_ITEM_CODE">
 		<groupExpression><![CDATA[$F{MENU_ITEM_CODE}]]></groupExpression>
 		<groupHeader>
-			<band height="15">
+			<band height="13">
 				<textField>
-					<reportElement x="34" y="0" width="30" height="15" uuid="d1a58913-b1e3-4e16-bee9-0f446f945872"/>
+					<reportElement x="81" y="1" width="57" height="12" uuid="f06c1182-7a66-4b92-a942-e8be7f651341"/>
 					<textElement verticalAlignment="Middle">
-						<font isBold="true"/>
+						<font size="8" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{MENU_ITEM_CODE}]]></textFieldExpression>
 				</textField>
-				<textField>
-					<reportElement x="87" y="0" width="100" height="15" uuid="3ee1a474-6080-47d8-8bc4-c2f564b9082d"/>
-					<textElement verticalAlignment="Middle">
-						<font isBold="true"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$F{DESCRIPTION}]]></textFieldExpression>
-				</textField>
-				<textField>
-					<reportElement x="505" y="0" width="49" height="15" uuid="f7b11e48-8ddc-4f01-974f-6b0e8b5bfd3b">
-						<printWhenExpression><![CDATA[!$F{PRICE}.equals( null )]]></printWhenExpression>
-					</reportElement>
-					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font isBold="true"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$F{PRICE}]]></textFieldExpression>
-				</textField>
 				<line>
-					<reportElement x="69" y="7" width="13" height="1" uuid="51b8d435-2c63-4121-8a2f-dc6ebc8416f4"/>
+					<reportElement x="141" y="7" width="12" height="1" uuid="a43c7e2b-003f-40ef-8672-29e94c9b45bf"/>
 				</line>
+				<textField>
+					<reportElement x="156" y="1" width="275" height="12" uuid="6c018aeb-8fa9-47d7-89aa-9faa4b2abc92"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{MENU_ITEM_NAME}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="441" y="1" width="113" height="12" uuid="79baa34a-5eed-4f50-8476-2a5926c7dd17"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{MENU_ITEM_PRICE}]]></textFieldExpression>
+				</textField>
 			</band>
 		</groupHeader>
 	</group>
-	<group name="Menu submenu group 2">
-		<groupExpression><![CDATA[$F{MODIFIER_GROUP1_CODE}]]></groupExpression>
+	<group name="MENU_SET_ITEM">
+		<groupExpression><![CDATA[$F{MENU_SET_ITEM_CODE}]]></groupExpression>
 		<groupHeader>
-			<band height="20">
-				<line>
-					<reportElement x="114" y="10" width="16" height="1" uuid="8f4d87b9-36b6-4196-8288-930f72f8433c">
-						<printWhenExpression><![CDATA[!$F{MENU_SET_ITEM_CODE}.equals( null )]]></printWhenExpression>
-					</reportElement>
-				</line>
+			<band height="14">
+				<printWhenExpression><![CDATA[$F{MENU_SET_ITEM_CODE} != null]]></printWhenExpression>
 				<textField>
-					<reportElement x="87" y="3" width="23" height="15" uuid="c9a6c4cb-a9b0-4a2b-a5ed-8aedc3f711e6">
-						<printWhenExpression><![CDATA[!$F{MENU_SET_ITEM_CODE}.equals( null )]]></printWhenExpression>
-					</reportElement>
-					<textElement verticalAlignment="Middle"/>
+					<reportElement x="167" y="1" width="41" height="12" uuid="b1057c88-2923-4de3-b843-c0b3cd7cd52b"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
 					<textFieldExpression><![CDATA[$F{MENU_SET_ITEM_CODE}]]></textFieldExpression>
 				</textField>
+				<line>
+					<reportElement x="211" y="6" width="12" height="1" uuid="032d30d6-6d40-4176-b05e-631ba6705ae8"/>
+				</line>
 				<textField>
-					<reportElement x="134" y="3" width="100" height="15" uuid="53271775-8c89-42ca-90db-198d2e897761">
-						<printWhenExpression><![CDATA[!$F{DESCRIPTION_SET}.equals( null )]]></printWhenExpression>
-					</reportElement>
-					<textElement verticalAlignment="Middle"/>
-					<textFieldExpression><![CDATA[$F{DESCRIPTION_SET}]]></textFieldExpression>
+					<reportElement x="226" y="1" width="169" height="12" uuid="9b1f2bfc-cb8a-4c70-8e20-3d312e68b6f7"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{MENU_SET_ITEM_NAME}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="479" y="2" width="25" height="15" uuid="2b05f7e1-e3a9-4426-95aa-898eba7ac195">
-						<printWhenExpression><![CDATA[!$F{QTY}.equals( null )]]></printWhenExpression>
-					</reportElement>
-					<textElement verticalAlignment="Middle"/>
-					<textFieldExpression><![CDATA[$F{QTY}]]></textFieldExpression>
+					<reportElement x="395" y="1" width="36" height="12" uuid="bba85d17-bcf1-41ac-9f93-bb06268b9074"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{MENU_SET_QTY}]]></textFieldExpression>
 				</textField>
+				<staticText>
+					<reportElement x="156" y="1" width="11" height="12" uuid="98bc7c1d-b1e5-4b83-a860-ef9df30d7000"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[#]]></text>
+				</staticText>
 			</band>
 		</groupHeader>
 	</group>
-	<group name="Submenu group 3">
+	<group name="MODIFIER_GROUP_ITEM">
 		<groupExpression><![CDATA[$F{MODIFIER_ITEM_CODE}]]></groupExpression>
 		<groupHeader>
-			<band height="19">
-				<printWhenExpression><![CDATA[!$F{MODIFIER_ITEM_CODE}.equals( null )]]></printWhenExpression>
-				<textField>
-					<reportElement x="152" y="4" width="40" height="14" uuid="2dc41cbd-8303-4227-9ef9-f7b664e1319a"/>
-					<textElement verticalAlignment="Middle"/>
-					<textFieldExpression><![CDATA[$F{MODIFIER_ITEM_CODE}]]></textFieldExpression>
-				</textField>
+			<band height="14">
+				<printWhenExpression><![CDATA[$F{MODIFIER_ITEM_CODE} != null]]></printWhenExpression>
 				<staticText>
-					<reportElement x="138" y="4" width="12" height="14" uuid="07701d2a-eeb9-4c5e-8f48-6d64a634078f">
-						<printWhenExpression><![CDATA[!$F{MODIFIER_ITEM_CODE}.equals( null )]]></printWhenExpression>
-					</reportElement>
-					<textElement verticalAlignment="Middle"/>
+					<reportElement x="226" y="1" width="11" height="12" uuid="a5836173-eb96-4ccd-a554-57465fad0422"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[#]]></text>
 				</staticText>
 				<textField>
-					<reportElement x="192" y="4" width="100" height="14" uuid="e016eae6-f990-48c3-b9a3-9993ba3e77d6">
-						<printWhenExpression><![CDATA[!$F{MODIFIER_ITEM_CODE}.equals( null )]]></printWhenExpression>
-					</reportElement>
-					<textElement verticalAlignment="Middle"/>
-					<textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
+					<reportElement x="239" y="1" width="42" height="12" uuid="7c6e64b6-d130-4948-ad0a-ec5b58a3cb2c"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{MODIFIER_ITEM_CODE}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="506" y="3" width="49" height="15" uuid="84c347e4-698c-4726-9574-1f3315201aa6">
-						<printWhenExpression><![CDATA[!$F{PRICE}.equals( null )]]></printWhenExpression>
-					</reportElement>
-					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font isBold="false"/>
+					<reportElement x="283" y="1" width="158" height="12" uuid="a0df3396-498b-413d-b7d1-9fb91fbe7886"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$F{PRICE}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$F{MODIFIER_ITEM_NAME}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="441" y="1" width="113" height="12" uuid="8b42cc04-0477-4a60-8b7f-5d80e4832633"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{MODIFIER_ITEM_PRICE}]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupHeader>
@@ -239,121 +206,134 @@ LEFT JOIN
 		<band splitType="Stretch"/>
 	</background>
 	<pageHeader>
-		<band height="130" splitType="Stretch">
+		<band height="98" splitType="Stretch">
 			<image scaleImage="FillFrame">
 				<reportElement x="10" y="1" width="48" height="48" isPrintWhenDetailOverflows="true" uuid="b4b752b4-a368-425d-908b-6cb1ee097235"/>
 				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
 			</image>
 			<staticText>
-				<reportElement x="82" y="1" width="177" height="17" uuid="bec0dc85-2f6d-454b-9608-5510717047fd"/>
+				<reportElement x="82" y="1" width="177" height="12" uuid="bec0dc85-2f6d-454b-9608-5510717047fd"/>
 				<textElement>
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="82" y="14" width="94" height="15" uuid="140ac3ab-6fdd-446d-9b03-240d2b9845e1"/>
+				<reportElement x="82" y="12" width="94" height="12" uuid="140ac3ab-6fdd-446d-9b03-240d2b9845e1"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{OUTLET_NAME}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{outletName}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="82" y="27" width="300" height="15" uuid="6401cb8d-3bf9-4c06-ac34-32e1c42a26a4"/>
+				<reportElement x="82" y="23" width="300" height="12" uuid="6401cb8d-3bf9-4c06-ac34-32e1c42a26a4"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{ADDRESS_1}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{address1}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="82" y="40" width="300" height="15" uuid="6401cb8d-3bf9-4c06-ac34-32e1c42a26a4"/>
+				<reportElement x="82" y="34" width="300" height="11" uuid="6401cb8d-3bf9-4c06-ac34-32e1c42a26a4"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{ADDRESS_2}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{address2}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="433" y="1" width="114" height="11" isPrintWhenDetailOverflows="true" uuid="7413e6fb-6c32-414b-91bb-c1c62e1a5ad4"/>
+				<reportElement x="433" y="0" width="114" height="12" isPrintWhenDetailOverflows="true" uuid="7413e6fb-6c32-414b-91bb-c1c62e1a5ad4"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Halaman : " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="433" y="14" width="114" height="11" isPrintWhenDetailOverflows="true" uuid="85aa221b-2e01-4563-a4fb-28ef214f19cd"/>
+				<reportElement x="433" y="11" width="114" height="12" isPrintWhenDetailOverflows="true" uuid="85aa221b-2e01-4563-a4fb-28ef214f19cd"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA["User Cetak : "]]></textFieldExpression>
+				<textFieldExpression><![CDATA["User Cetak : " + $P{user}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="433" y="27" width="114" height="11" isPrintWhenDetailOverflows="true" uuid="d8cb15ba-2600-41e2-8890-07ba9b6d1da5"/>
+				<reportElement x="433" y="22" width="114" height="12" isPrintWhenDetailOverflows="true" uuid="d8cb15ba-2600-41e2-8890-07ba9b6d1da5"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Tanggal Cetak : " + new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="433" y="40" width="114" height="11" isPrintWhenDetailOverflows="true" uuid="9a6f7a03-e74c-46b7-9c2c-52582b01d25c"/>
+				<reportElement x="433" y="33" width="114" height="12" isPrintWhenDetailOverflows="true" uuid="9a6f7a03-e74c-46b7-9c2c-52582b01d25c"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Jam Cetak : " + new SimpleDateFormat("hh:mm:ss").format(new Date())]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="64" y="70" width="408" height="18" uuid="e5188639-1aad-4f1c-9fe7-9b2ff8a57c66"/>
-				<textElement textAlignment="Center">
-					<font size="12" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA["MENU SET"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="1" y="90" width="408" height="18" uuid="e5188639-1aad-4f1c-9fe7-9b2ff8a57c66"/>
-				<textElement textAlignment="Left">
-					<font size="10" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Order Type : " + $P{orderType}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="0" y="89" width="552" height="18" uuid="e5188639-1aad-4f1c-9fe7-9b2ff8a57c66"/>
-				<textElement textAlignment="Right">
-					<font size="10" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{status}.equals("A") ? "Active" : "Inactive"]]></textFieldExpression>
-			</textField>
 			<line>
-				<reportElement x="1" y="105" width="552" height="1" uuid="acca77af-7fde-4636-a431-7c763e07e2fc"/>
+				<reportElement x="0" y="77" width="555" height="1" uuid="f3cc73a6-7ccc-476f-92fd-70b836f4ab32"/>
 			</line>
 			<line>
-				<reportElement x="1" y="125" width="552" height="1" uuid="bf86da33-f3e7-4902-adf9-3bf028fc428a"/>
+				<reportElement x="0" y="94" width="555" height="1" uuid="248ca268-5d51-4bd3-b6c5-90f30d733023"/>
 			</line>
 			<staticText>
-				<reportElement x="1" y="107" width="177" height="17" uuid="bec0dc85-2f6d-454b-9608-5510717047fd"/>
+				<reportElement x="11" y="80" width="100" height="12" uuid="8f895401-1625-4b13-b814-e0ce7926b5b6"/>
 				<textElement verticalAlignment="Middle">
-					<font size="10" isBold="true"/>
+					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Menu Item]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="110" y="107" width="177" height="17" uuid="bec0dc85-2f6d-454b-9608-5510717047fd"/>
+				<reportElement x="152" y="80" width="100" height="12" uuid="aad19993-2092-43a0-9f8b-32331ae96ea2"/>
 				<textElement verticalAlignment="Middle">
-					<font size="10" isBold="true"/>
+					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Menu Set]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="105" width="552" height="17" uuid="bec0dc85-2f6d-454b-9608-5510717047fd"/>
+				<reportElement x="451" y="80" width="100" height="12" uuid="3dd00d4d-0493-4912-b21b-e5b0e5e4b578"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="10" isBold="true"/>
+					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Price]]></text>
 			</staticText>
+			<staticText>
+				<reportElement x="0" y="45" width="554" height="17" uuid="b3a45ed7-7516-4c75-ac8e-b70bb74f3f29"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DAFTAR MENU]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="64" width="49" height="12" uuid="13c7d733-732f-4e6f-bcfa-8e7f82b6e0d3"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Order Type :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="50" y="64" width="100" height="12" uuid="2718b0f5-93ff-41c8-b145-d91edd1ba2bf"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{orderType}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="501" y="64" width="49" height="12" uuid="8850c52c-d04b-49d8-89a2-3416ff13aa3c"/>
+				<textElement verticalAlignment="Middle" textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["A".equals($P{status}) ? "active" : "inactive"]]></textFieldExpression>
+			</textField>
 		</band>
 	</pageHeader>
+	<columnHeader>
+		<band height="5" splitType="Stretch"/>
+	</columnHeader>
+	<columnFooter>
+		<band height="5" splitType="Stretch"/>
+	</columnFooter>
 	<pageFooter>
-		<band height="18" splitType="Stretch"/>
+		<band height="6" splitType="Stretch"/>
 	</pageFooter>
 	<summary>
-		<band height="18" splitType="Stretch"/>
+		<band height="7" splitType="Stretch"/>
 	</summary>
 </jasperReport>

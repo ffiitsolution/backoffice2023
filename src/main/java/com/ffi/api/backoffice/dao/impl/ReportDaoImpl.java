@@ -696,10 +696,18 @@ public class ReportDaoImpl implements ReportDao {
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }
+    
+    public String stitchItemCategoryLabel(String existing, String addedString) {
+        if (existing.equals("Semua")) {
+            return addedString;
+        } 
+        return existing + ", " + addedString;
+    };
 
     @Override
     public JasperPrint jesperReportItem(Map<String, Object> param, Connection connection) throws IOException, JRException {
         Map<String, Object> hashMap = new HashMap<String, Object>();
+        String itemCategory = "Semua";
 
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("user", param.get("user"));
@@ -738,23 +746,38 @@ public class ReportDaoImpl implements ReportDao {
         StringBuilder query = new StringBuilder();
         if (!param.get("jenisGudang").equals("Semua"))
             query.append(" AND b.DESCRIPTION = '").append(param.get("jenisGudang")).append("'");
-        if (param.containsKey("bahanBaku"))
+        if (param.containsKey("bahanBaku")) {   
+            itemCategory = stitchItemCategoryLabel(itemCategory, "Bahan Baku");
             query.append(" AND a.FLAG_MATERIAL = 'Y'");
-        if (param.containsKey("itemJual"))
+        }
+        if (param.containsKey("itemJual")) {
+            itemCategory = stitchItemCategoryLabel(itemCategory, "Item Jual");
             query.append(" AND a.FLAG_FINISHED_GOOD = 'Y'");
-        if (param.containsKey("pembelian"))
+        }
+        if (param.containsKey("pembelian")) {
+            itemCategory = stitchItemCategoryLabel(itemCategory, "Pembelian");
             query.append(" AND a.FLAG_OTHERS = 'Y'");
-        if (param.containsKey("produksi"))
+        }
+        if (param.containsKey("produksi")) {
+            itemCategory = stitchItemCategoryLabel(itemCategory, "Produksi");
             query.append(" AND a.FLAG_HALF_FINISH = 'Y'");
-        if (param.containsKey("openMarket"))
+        }
+        if (param.containsKey("openMarket")) {
+            itemCategory = stitchItemCategoryLabel(itemCategory, "Open Market");
             query.append(" AND a.FLAG_OPEN_MARKET = 'Y'");
-        if (param.containsKey("canvasing"))
+        }
+        if (param.containsKey("canvasing")) {
+            itemCategory = stitchItemCategoryLabel(itemCategory, "Canvasing");
             query.append(" AND a.FLAG_CANVASING = 'Y'");
-        if (param.containsKey("transferDo"))
+        }
+        if (param.containsKey("transferDo")) {
+            itemCategory = stitchItemCategoryLabel(itemCategory, "Transfer DO");
             query.append(" AND a.FLAG_TRANSFER_LOC = 'Y'");
-        if (param.containsKey("paket"))
+        }
+        if (param.containsKey("paket")) {
+            itemCategory = stitchItemCategoryLabel(itemCategory, "Paket");
             query.append(" AND a.FLAG_PAKET = 'Y'");
-
+        }
 
 
         if (!param.get("jenisGudang").equals("Semua") || param.containsKey("bahanBaku") || param.containsKey("itemJual")
@@ -762,7 +785,7 @@ public class ReportDaoImpl implements ReportDao {
                 param.containsKey("canvasing") || param.containsKey("transferDo") || param.containsKey("paket")) {
             hashMap.put("query", query.toString());
         }
-
+        hashMap.put("itemCategory", itemCategory);
         ClassPathResource classPathResource = new ClassPathResource("report/item.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
@@ -780,7 +803,7 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("gudang", param.get("gudang"));
         hashMap.put("item", param.get("item"));
         hashMap.put("user", param.get("user"));
-
+        hashMap.put("typePrint", (param.get("typePrint").equals(1.0) ? "Item yang ada mutasi stok" : "Semua item"));
         if (param.get("item").equals("Semua")){
             hashMap.put("itemName", "Semua");
         } else {
@@ -1210,6 +1233,18 @@ public class ReportDaoImpl implements ReportDao {
             hashMap.put("outletCode", param.get("outletCode"));
             hashMap.put("fromDate", param.get("fromDate"));
             hashMap.put("toDate", param.get("toDate"));
+        } else if (param.get("typeReport").equals("Item Sales Analysis") && param.get("typeParam").equals("Pos")) {
+            query = "SELECT a.POS_CODE, b.POS_DESCRIPTION FROM TMP_SALES_BY_ITEM a LEFT JOIN M_POS b ON a.POS_CODE = b.POS_CODE WHERE a.OUTLET_CODE = :outletCode AND a.TRANS_DATE BETWEEN TO_CHAR(NEXT_DAY(TRUNC(TO_DATE(:date, 'DD-Mon-YY')-7, 'IW'),'SUNDAY'),'DD-Mon-YY') AND TO_CHAR(NEXT_DAY(TRUNC(TO_DATE(:date, 'DD-Mon-YY'), 'IW'),'SATURDAY'),'DD-Mon-YY') GROUP BY a.POS_CODE, b.POS_DESCRIPTION ORDER BY a.POS_CODE ASC";
+            hashMap.put("date", param.get("date"));
+            hashMap.put("outletCode", param.get("outletCode"));
+        } else if (param.get("typeReport").equals("Item Sales Analysis") && param.get("typeParam").equals("Cashier")) {
+            query = "SELECT a.CASHIER_CODE, b.STAFF_NAME FROM TMP_SALES_BY_ITEM a LEFT JOIN M_POS_STAFF b ON a.CASHIER_CODE = b.STAFF_POS_CODE WHERE a.OUTLET_CODE = :outletCode AND a.TRANS_DATE BETWEEN TO_CHAR(NEXT_DAY(TRUNC(TO_DATE(:date, 'DD-Mon-YY')-7, 'IW'),'SUNDAY'),'DD-Mon-YY') AND TO_CHAR(NEXT_DAY(TRUNC(TO_DATE(:date, 'DD-Mon-YY'), 'IW'),'SATURDAY'),'DD-Mon-YY') GROUP BY a.CASHIER_CODE, b.STAFF_NAME ORDER BY a.CASHIER_CODE ASC";
+            hashMap.put("date", param.get("date"));
+            hashMap.put("outletCode", param.get("outletCode"));
+        } else if (param.get("typeReport").equals("Item Sales Analysis") && param.get("typeParam").equals("Shift")) {
+            query = "SELECT a.SHIFT_CODE, CASE WHEN a.SHIFT_CODE = 'S1' THEN 'Shift 1' WHEN SHIFT_CODE = 'S2' THEN 'Shift 2' ELSE 'Shift 3' END AS SHIFT_NAME FROM TMP_SALES_BY_ITEM a WHERE a.OUTLET_CODE = :outletCode AND a.TRANS_DATE BETWEEN TO_CHAR(NEXT_DAY(TRUNC(TO_DATE(:date, 'DD-Mon-YY')-7, 'IW'),'SUNDAY'),'DD-Mon-YY') AND TO_CHAR(NEXT_DAY(TRUNC(TO_DATE(:date, 'DD-Mon-YY'), 'IW'),'SATURDAY'),'DD-Mon-YY') GROUP BY a.SHIFT_CODE ORDER BY a.SHIFT_CODE ASC";
+            hashMap.put("date", param.get("date"));
+            hashMap.put("outletCode", param.get("outletCode"));
         }
 
         assert query != null;
@@ -1308,6 +1343,15 @@ public class ReportDaoImpl implements ReportDao {
                 } else if (param.get("typeReport").equals("Laporan Item Selected By Product") && param.get("typeParam").equals("Kode Item")) {
                     rt.put("code", rs.getString("ITEM_CODE"));
                     rt.put("description", rs.getString("ITEM_DESCRIPTION"));
+                } else if (param.get("typeReport").equals("Item Sales Analysis") && param.get("typeParam").equals("Pos")) {
+                    rt.put("posCode", rs.getString("POS_CODE"));
+                    rt.put("posDescription", rs.getString("POS_DESCRIPTION"));
+                } else if (param.get("typeReport").equals("Item Sales Analysis") && param.get("typeParam").equals("Cashier")) {
+                    rt.put("cashierCode", rs.getString("CASHIER_CODE"));
+                    rt.put("staffName", rs.getString("STAFF_NAME"));
+                } else if (param.get("typeReport").equals("Item Sales Analysis") && param.get("typeParam").equals("Shift")) {
+                    rt.put("shiftCode", rs.getString("SHIFT_CODE"));
+                    rt.put("shiftName", rs.getString("SHIFT_NAME"));
                 }
                 return rt;
             }
@@ -2410,6 +2454,10 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("orderType", param.get("orderType"));
         hashMap.put("status", param.get("status"));
+        hashMap.put("user", param.get("user"));
+        hashMap.put("address1", param.get("address1"));
+        hashMap.put("address2", param.get("address2"));
+        hashMap.put("outletName", param.get("outletName"));
 
         ClassPathResource classPathResource = new ClassPathResource("report/reportDaftarMenu.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
@@ -2698,6 +2746,7 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("mpcsGroup", param.get("mpcsGroup"));
         hashMap.put("user", param.get("user"));
+        hashMap.put("detail", param.get("detail"));
         
         String reportPath;
         if ("Jam Aktual".equals(param.get("detail"))) {
@@ -2781,4 +2830,75 @@ public class ReportDaoImpl implements ReportDao {
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, param, connection);
      }
+
+    @Override
+    public JasperPrint jasperReportItemSalesAnalysis(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        Map<String, Object> hashMap = new HashMap<>();
+
+        hashMap.put("date", param.get("date"));
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("user", param.get("user"));
+        hashMap.put("reportBy", param.get("reportBy"));
+
+        List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
+        StringBuilder posCode = new StringBuilder();
+        if (listPos.size() == 1) {
+            hashMap.put("posCode", "Semua");
+            hashMap.put("posCode1", "000");
+            hashMap.put("posCode2", "zzz");
+        } else {
+            for (Map<String, Object> object : listPos) {
+                if (object.containsKey("posCode1")) {
+                    hashMap.put("posCode1", object.get("posCode1"));
+                    posCode.append(object.get("posName1")).append(" s/d ");
+                } else {
+                    hashMap.put("posCode2", object.get("posCode2"));
+                    posCode.append(object.get("posName2"));
+                }
+                hashMap.put("posCode", posCode.toString());
+            }
+        }
+
+        List<Map<String, Object>> listCashier = (List<Map<String, Object>>) param.get("cashier");
+        StringBuilder cashierCode = new StringBuilder();
+        if (listCashier.size() == 1) {
+            hashMap.put("cashierCode", "Semua");
+            hashMap.put("cashierCode1", "000");
+            hashMap.put("cashierCode2", "zzz");
+        } else {
+            for (Map<String, Object> object : listCashier) {
+                if (object.containsKey("cashierCode1")) {
+                    hashMap.put("cashierCode1", object.get("cashierCode1"));
+                    cashierCode.append(object.get("cashierName1")).append(" s/d ");
+                } else {
+                    hashMap.put("cashierCode2", object.get("cashierCode2"));
+                    cashierCode.append(object.get("cashierName2"));
+                }
+                hashMap.put("cashierCode", cashierCode.toString());
+            }
+        }
+
+        List<Map<String, Object>> listShift = (List<Map<String, Object>>) param.get("shift");
+        StringBuilder shiftCode = new StringBuilder();
+        if (listShift.size() == 1) {
+            hashMap.put("shiftCode", "Semua");
+            hashMap.put("shiftCode1", "000");
+            hashMap.put("shiftCode2", "zzz");
+        } else {
+            for (Map<String, Object> object : listShift) {
+                if (object.containsKey("shiftCode1")) {
+                    hashMap.put("shiftCode1", object.get("shiftCode1"));
+                    shiftCode.append(object.get("shiftName1")).append(" s/d ");
+                } else {
+                    hashMap.put("shiftCode2", object.get("shiftCode2"));
+                    shiftCode.append(object.get("shiftName2"));
+                }
+                hashMap.put("shiftCode", shiftCode.toString());
+            }
+        }
+
+        ClassPathResource classPathResource = new ClassPathResource("report/reportItemSalesAnalysis.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
 }

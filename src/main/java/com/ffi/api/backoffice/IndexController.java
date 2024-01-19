@@ -11,7 +11,7 @@ import com.ffi.api.backoffice.model.ParameterLogin;
 import com.ffi.api.backoffice.services.ProcessServices;
 import com.ffi.api.backoffice.services.ViewServices;
 import com.ffi.api.backoffice.services.ReportServices;
-import com.ffi.api.backoffice.utils.DynamicRowMapper;
+import com.ffi.api.backoffice.utils.AppUtil;
 import com.ffi.paging.Response;
 import com.ffi.paging.ResponseMessage;
 import com.google.gson.Gson;
@@ -22,7 +22,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -56,6 +55,8 @@ public class IndexController {
     ProcessServices processServices;
     @Autowired
     ReportServices reportServices;
+    @Autowired
+    AppUtil appUtil;
 
 //    @Autowired
 //    TransServices transServices;
@@ -1664,8 +1665,8 @@ public class IndexController {
         String qtyPurch = balance.getOrDefault("qtyPurch", "0");
         String qtyStock = balance.getOrDefault("qtyStock", "0");
         String totalQty = balance.getOrDefault("totalQty", "0");
-        if (Long.parseLong(qtyPurch) > maxValue || Long.parseLong(qtyStock) > maxValue || Long.parseLong(totalQty) > maxValue || 
-            qtyPurch.length() > 14 || qtyStock.length() > 14 || totalQty.length() > 14) {
+        if (Long.parseLong(qtyPurch) > maxValue || Long.parseLong(qtyStock) > maxValue || Long.parseLong(totalQty) > maxValue
+                || qtyPurch.length() > 14 || qtyStock.length() > 14 || totalQty.length() > 14) {
             rm.setSuccess(false);
             rm.setMessage("Nilai maksimum terlampaui, mohon cek kembali jumlah item.");
             return rm;
@@ -2427,12 +2428,12 @@ public class IndexController {
         ResponseMessage rm = new ResponseMessage();
         try {
             list = processServices.updateOpnameStatus(balance);
-            if(list.isEmpty()){
+            if (list.isEmpty()) {
                 rm.setSuccess(true);
                 rm.setMessage("Update Success");
-            }else {
+            } else {
                 rm.setSuccess(false);
-                rm.setMessage( list.size() + " item berikut terdeteksi memiliki nilai input total 0");
+                rm.setMessage(list.size() + " item berikut terdeteksi memiliki nilai input total 0");
             }
         } catch (Exception e) {
             rm.setSuccess(false);
@@ -3180,19 +3181,21 @@ public class IndexController {
         Map<String, Object> data = gsn.fromJson(param, new TypeToken<Map<String, String>>() {
         }.getType());
         // List<Map<String, Object>> list = viewServices.listMenuApplication(data);
+        String env = data.containsKey("env") ? data.getOrDefault("env", "prod").toString() : appUtil.getOrDefault("app.env", "development");
         Response res = new Response();
-        String filepath = "json/menuKFC.json";
-        if(data.containsKey("outletBrand") && data.get("outletBrand").toString().equalsIgnoreCase("TACOBELL")){
+        String filepath = env.toLowerCase().contains("dev") ? "json/menuKFC-dev.json" : "json/menuKFC.json";
+        System.err.println("menu filepath: " + filepath);
+        if (data.containsKey("outletBrand") && data.get("outletBrand").toString().equalsIgnoreCase("TACOBELL")) {
             filepath = "json/menuTACOBELL.json";
         }
-        try{
+        try {
             ClassPathResource resource = new ClassPathResource(filepath);
             byte[] bytes = FileCopyUtils.copyToByteArray(resource.getInputStream());
             String jsonString = new String(bytes, StandardCharsets.UTF_8);
             ObjectMapper objectMapper = new ObjectMapper();
             List<Map<String, Object>> menuList = objectMapper.readValue(jsonString, new ArrayList<LinkedHashMap<String, Object>>().getClass());
             res.setData(menuList);
-        } catch (IOException e){
+        } catch (IOException e) {
             System.err.println("e: " + e.getMessage());
             List<Map<String, Object>> menuList = new ArrayList();
             data.put("success", false);
@@ -3233,7 +3236,8 @@ public class IndexController {
         @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 404, message = "The resource not found"),}
     )
-    public @ResponseBody Response listCustomerNameReportDp(@RequestBody String param) throws IOException, Exception {
+    public @ResponseBody
+    Response listCustomerNameReportDp(@RequestBody String param) throws IOException, Exception {
         Response res = new Response();
         res.setData(viewServices.listCustomerNameReportDp());
         return res;
@@ -3246,12 +3250,13 @@ public class IndexController {
         @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 404, message = "The resource not found"),}
     )
-    public @ResponseBody Response listOrderTypeReportDp(@RequestBody String param) throws IOException, Exception {
+    public @ResponseBody
+    Response listOrderTypeReportDp(@RequestBody String param) throws IOException, Exception {
         Response res = new Response();
         res.setData(viewServices.listOrderTypeReportDp());
         return res;
     }
-    
+
     @RequestMapping(value = "/delete-mpcs-production", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk menghapus mpcs produksi detail by Fathur 11 Jan 2024", response = Object.class)
     @ApiResponses(value = {
@@ -3273,7 +3278,7 @@ public class IndexController {
         }
         return rm;
     }
-    
+
     @RequestMapping(value = "/get-id-absensi", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk mengambil data user absensi by id by M Joko 16 Jan 2024", response = Object.class)
     @ApiResponses(value = {
@@ -3287,11 +3292,11 @@ public class IndexController {
         }.getType());
         ResponseMessage rm = new ResponseMessage();
         List<Map<String, Object>> list = viewServices.getIdAbsensi(data);
-        if(!list.isEmpty()){
+        if (!list.isEmpty()) {
             Map first = list.get(0);
             rm.setItem(list);
             rm.setSuccess(true);
-            rm.setMessage(((first.get("daySeq").toString().equalsIgnoreCase("0") && first.get("seqNo").toString().equalsIgnoreCase("0")) || list.size() % 2 == 0 ? "Masuk" : ( list.size() % 2 != 0 ? "Keluar" : "User Found")));
+            rm.setMessage(((first.get("daySeq").toString().equalsIgnoreCase("0") && first.get("seqNo").toString().equalsIgnoreCase("0")) || list.size() % 2 == 0 ? "Masuk" : (list.size() % 2 != 0 ? "Keluar" : "User Found")));
             return rm;
         }
         rm.setSuccess(false);
@@ -3299,7 +3304,7 @@ public class IndexController {
         rm.setItem(new ArrayList());
         return rm;
     }
-    
+
     @RequestMapping(value = "/insert-absensi", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk menyimpan data user absensi by id by M Joko 16 Jan 2024", response = Object.class)
     @ApiResponses(value = {
@@ -3315,7 +3320,7 @@ public class IndexController {
         boolean b = processServices.insertAbsensi(data);
         rm.setItem(new ArrayList());
         rm.setSuccess(b);
-        rm.setMessage( b ? "Absensi berhasil." : "Periksa kembali password anda.");
+        rm.setMessage(b ? "Absensi berhasil." : "Periksa kembali password anda.");
         return rm;
     }
 }

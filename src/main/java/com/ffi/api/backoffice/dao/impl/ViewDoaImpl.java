@@ -6,6 +6,7 @@ package com.ffi.api.backoffice.dao.impl;
 
 import com.ffi.api.backoffice.dao.ViewDao;
 import com.ffi.api.backoffice.model.ParameterLogin;
+import com.ffi.api.backoffice.utils.AppUtil;
 import com.ffi.api.backoffice.utils.DynamicRowMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -32,6 +33,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.lang.Nullable;
 //import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -48,10 +50,12 @@ public class ViewDoaImpl implements ViewDao {
     private String warehouseEndpoint;
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final AppUtil appUtil;
 
     @Autowired
-    public ViewDoaImpl(NamedParameterJdbcTemplate jdbcTemplate) {
+    public ViewDoaImpl(NamedParameterJdbcTemplate jdbcTemplate, AppUtil appUtil) {
         this.jdbcTemplate = jdbcTemplate;
+        this.appUtil = appUtil;
     }
 
     @Override
@@ -305,6 +309,32 @@ public class ViewDoaImpl implements ViewDao {
         } else {
             qry += "AND M.STATUS IN ('A', 'I' ) ORDER BY MENU_GROUP_CODE";
         }
+        
+        if(ref.containsKey("type") && ref.get("type").equalsIgnoreCase("Price")){
+            qry = "SELECT g.CODE AS menu_group_code, g.description AS menu_group, g.value AS seq, g.status FROM M_GLOBAL g WHERE g.COND = 'GROUP' AND g.CODE LIKE 'G%' AND g.STATUS = 'A' ORDER BY g.code";
+        } else if(ref.containsKey("type") && ref.get("type").equalsIgnoreCase("PriceSub")){
+            qry = """
+                    SELECT 
+                            mg3.CODE AS MENU_GROUP_CODE,
+                            mi.ITEM_DESCRIPTION AS SEQ,
+                            mg3.DESCRIPTION AS MENU_GROUP,
+                            mg3.STATUS AS STATUS
+                    FROM M_MENU_ITEM mmi 
+                    LEFT JOIN M_ITEM mi ON mi.ITEM_CODE = mmi.MENU_ITEM_CODE
+                    LEFT JOIN M_PRICE mp ON mp.MENU_ITEM_CODE = mmi.MENU_ITEM_CODE
+                    LEFT JOIN M_OUTLET_PRICE mop ON mop.PRICE_TYPE_CODE = mp.PRICE_TYPE_CODE  
+                    LEFT JOIN M_GLOBAL mg ON mg.COND = 'GROUP' AND mg.CODE = mmi.MENU_GROUP_CODE
+                    LEFT JOIN M_GLOBAL mg3 ON mg3.DESCRIPTION LIKE '%' || mg.DESCRIPTION || '%' || mi.ITEM_DESCRIPTION || '%'
+                    LEFT JOIN M_MENU_GROUP_LIMIT mmgl ON mmgl.MENU_GROUP_CODE = :menuGroupCode AND mmgl.ORDER_TYPE = 'ETA'
+                    WHERE mmi.MENU_GROUP_CODE = :menuGroupCode
+                    AND mmi.OUTLET_CODE LIKE :outletCode  
+                    AND mop.OUTLET_CODE LIKE :outletCode  
+                    AND mop.ORDER_TYPE = 'ETA' 
+                    AND mmi.status = 'A'
+                    ORDER BY mg3.CODE
+                  """;
+            prm.put("menuGroupCode", ref.get("menuGroupCode"));
+        }
 
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
@@ -361,37 +391,79 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listItemPrice(Map<String, String> ref) {
-        String qry = "SELECT "
-                + "    MMI.MENU_ITEM_CODE, "
-                + "    MI.ITEM_DESCRIPTION, "
-                + "    MG.DESCRIPTION AS MENU_GROUP_NAME, "
-                + "    MG.STATUS AS MENU_GROUP_STATUS, "
-                + "    MP.PRICE, "
-                + "    MP.PRICE_TYPE_CODE AS PRICE_TYPE_CODE, "
-                + "    MMI.TAXABLE "
-                + "FROM M_MENU_ITEM MMI "
-                + "LEFT JOIN M_ITEM MI "
-                + "ON MMI.MENU_ITEM_CODE = MI.ITEM_CODE  "
-                + "LEFT JOIN M_PRICE MP "
-                + "ON MMI.MENU_ITEM_CODE = MP.MENU_ITEM_CODE "
-                + "LEFT JOIN M_OUTLET_PRICE MOP "
-                + "ON MOP.PRICE_TYPE_CODE = MP.PRICE_TYPE_CODE  "
-                + "LEFT JOIN M_GLOBAL MG "
-                + "ON MMI.MENU_GROUP_CODE = MG.CODE AND MG.COND = 'GROUP' "
-                + "WHERE MMI.MENU_GROUP_CODE  LIKE:menuGroupCode  "
-                + "AND MMI.MENU_ITEM_CODE LIKE '%%' "
-                + "AND MMI.STATUS = 'A'  "
-                + "AND MI.STATUS = 'A'  "
-                + "AND MMI.OUTLET_CODE LIKE :outletCode  "
-                + "AND MOP.OUTLET_CODE LIKE :outletCode  "
-                + "AND MOP.ORDER_TYPE = 'ETA' "
-                + "ORDER BY MMI.MENU_ITEM_CODE";
+        List listCode = new ArrayList();
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("menuGroupCode", ref.get("menuGroupCode"));
+        params.addValue("outletCode", ref.get("outletCode"));
+        String qry = """
+                        SELECT 
+                                mmi.MENU_ITEM_CODE,
+                                mmi.PLU,
+                                mi.ITEM_DESCRIPTION,
+                                mmi.MENU_GROUP_CODE,
+                                mg.DESCRIPTION AS MENU_GROUP_NAME,
+                                mmi.TAXABLE,
+                                mmi.STATUS AS menu_group_status,
+                                mp.PRICE,
+                                mp.PRICE_TYPE_CODE
+                        FROM M_MENU_ITEM mmi 
+                        LEFT JOIN M_ITEM mi ON mi.ITEM_CODE = mmi.MENU_ITEM_CODE
+                        LEFT JOIN M_PRICE mp ON mp.MENU_ITEM_CODE = mmi.MENU_ITEM_CODE
+                        LEFT JOIN M_OUTLET_PRICE mop ON mop.PRICE_TYPE_CODE = mp.PRICE_TYPE_CODE  
+                        LEFT JOIN M_GLOBAL mg ON mg.COND = 'GROUP' AND mg.CODE = mmi.MENU_GROUP_CODE
+                        WHERE mmi.MENU_ITEM_CODE IS NOT NULL 
+                     """;
+        if(ref.get("menuGroupCode") == null || ref.get("menuGroupCode").isEmpty()){
+            System.err.println("allItems");
+            String querySub = "SELECT code from m_global WHERE cond ='GROUP' AND code LIKE 'D%'";
+            listCode = jdbcTemplate.query(querySub, params, new DynamicRowMapper());
+            if (listCode != null && !listCode.isEmpty()) {
+                StringJoiner joiner = new StringJoiner(",", " (", ") ");
+                for (Object code : listCode) {
+                    joiner.add("'" + code.toString().replaceAll("\\{code=([A-Z0-9]+)\\}", "$1") + "'");
+                }
+                qry += " AND mmi.MENU_GROUP_CODE IN " + joiner.toString();
+            }
+        } else if(ref.get("menuGroupCode").startsWith("G")){
+            System.err.println("by Group G");
+            String querySub = """
+                                    SELECT mg3.CODE
+                                    FROM M_MENU_ITEM mmi 
+                                    LEFT JOIN M_ITEM mi ON mi.ITEM_CODE = mmi.MENU_ITEM_CODE
+                                    LEFT JOIN M_PRICE mp ON mp.MENU_ITEM_CODE = mmi.MENU_ITEM_CODE
+                                    LEFT JOIN M_OUTLET_PRICE mop ON mop.PRICE_TYPE_CODE = mp.PRICE_TYPE_CODE  
+                                    LEFT JOIN M_GLOBAL mg ON mg.COND = 'GROUP' AND mg.CODE = mmi.MENU_GROUP_CODE
+                                    LEFT JOIN M_GLOBAL mg3 ON mg3.DESCRIPTION LIKE '%' || mg.DESCRIPTION || '%' || mi.ITEM_DESCRIPTION || '%'
+                                    LEFT JOIN M_MENU_GROUP_LIMIT mmgl ON mmgl.MENU_GROUP_CODE = :menuGroupCode AND mmgl.ORDER_TYPE = 'ETA'
+                                    WHERE mmi.MENU_GROUP_CODE = :menuGroupCode
+                                    AND mmi.OUTLET_CODE = :outletCode  
+                                    AND mop.OUTLET_CODE = :outletCode  
+                                    AND mop.ORDER_TYPE = 'ETA' 
+                                    AND mmi.STATUS = 'A'
+                              """;
+            listCode = jdbcTemplate.query(querySub, params, new DynamicRowMapper());
+            if (listCode != null && !listCode.isEmpty()) {
+                StringJoiner joiner = new StringJoiner(",", " (", ") ");
+                for (Object code : listCode) {
+                    joiner.add("'" + code.toString().replaceAll("\\{code=([A-Z0-9]+)\\}", "$1") + "'");
+                }
+                qry += " AND mmi.MENU_GROUP_CODE IN " + joiner.toString();
+            }
+        } else {
+            System.err.println("by Group D");
+            qry += " AND mmi.MENU_GROUP_CODE = :menuGroupCode ";
+        }
+        qry += """
+                AND mmi.OUTLET_CODE = :outletCode 
+                AND mop.OUTLET_CODE = :outletCode 
+                AND mop.ORDER_TYPE = 'ETA' 
+                AND mmi.STATUS = 'A'
+                ORDER BY mmi.MENU_ITEM_CODE
+            """;
 
-        Map prm = new HashMap();
-        prm.put("outletCode", "%" + ref.get("outletCode") + "%");
-        prm.put("menuGroupCode", "%" + ref.get("menuGroupCode") + "%");
+        System.err.println("prm :" + params);
         System.err.println("q :" + qry);
-        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, params, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
@@ -1193,7 +1265,7 @@ public class ViewDoaImpl implements ViewDao {
     //////////Group Items by Kevin 29-03-2023
     @Override
     public List<Map<String, Object>> listMenuItem(Map<String, String> ref) {
-        String qry = "select distinct i.menu_item_code, g.description, i.status "
+        String qry = "select i.menu_item_code, g.description, i.status "
                 + "from m_menu_item i "
                 + "join m_global g on g.code = i.menu_item_code "
                 + "where g.cond = 'ITEM' "
@@ -3287,16 +3359,16 @@ public class ViewDoaImpl implements ViewDao {
     public List<Map<String, Object>> listMpcsPlan(Map<String, String> balance) {
         String getCity = getCity(balance.get("outletCode"));
 
-        String qry = "SELECT  OUTLET_CODE, MPCS_GROUP, DATE_MPCS, TIME_MPCS, QTY_PROJ, QTY_PROJ_CONV,  "
-                + "QTY_ACC_PROJ, QTY_SOLD, QTY_ACC_SOLD, QTY_VARIANCE, QTY_ACC_VARIANCE, USER_UPD,  "
-                + "DATE_UPD, TIME_UPD, SEQ_MPCS FROM t_summ_mpcs "
-                + "WHERE OUTLET_CODE =:outletCode   "
-                + "AND MPCS_GROUP =:mpcsGroup   "
-                + "AND DATE_MPCS =:dateMpcs "
-                + "AND TIME_MPCS >='000000' "
-                + "ORDER BY  "
-                + "OUTLET_CODE  ASC, MPCS_GROUP  ASC, DATE_MPCS  ASC, TIME_MPCS  ASC, SEQ_MPCS   "
-                + "ASC ";
+            String qry = "SELECT  OUTLET_CODE, MPCS_GROUP, DATE_MPCS, TIME_MPCS, QTY_PROJ, QTY_PROJ_CONV,  "
+                    + "QTY_ACC_PROJ, QTY_SOLD, QTY_ACC_SOLD, QTY_VARIANCE, QTY_ACC_VARIANCE, USER_UPD,  "
+                    + "DATE_UPD, TIME_UPD, SEQ_MPCS FROM t_summ_mpcs "
+                    + "WHERE OUTLET_CODE =:outletCode   "
+                    + "AND MPCS_GROUP =:mpcsGroup   "
+                    + "AND DATE_MPCS =:dateMpcs "
+                    + "AND TIME_MPCS >='000000' "
+                    + "ORDER BY  "
+                    + "OUTLET_CODE  ASC, MPCS_GROUP  ASC, DATE_MPCS  ASC, TIME_MPCS  ASC, SEQ_MPCS   "
+                    + "ASC ";
 
         Map prm = new HashMap();
         prm.put("outletCode", balance.get("outletCode"));
@@ -3792,6 +3864,7 @@ public class ViewDoaImpl implements ViewDao {
     //////// NEW METHOD Digunakan untuk ambil data outlet di halaman login by M Joko - 4 Jan 2024
     @Override
     public List<Map<String, Object>> outletInfo(String outletCode) {
+        String envBe = appUtil.getOrDefault("app.env", "production");
         String qry = """
                     SELECT 
                         region_code, 
@@ -3814,13 +3887,16 @@ public class ViewDoaImpl implements ViewDao {
                         CASE 
                             WHEN outlet_name LIKE '%TACOBELL%' THEN 'TACOBELL'
                             ELSE 'KFC'
-                        END AS brand
+                        END AS brand,
+                        :envBe AS env_be
+                     
                     FROM M_OUTLET mo
                     JOIN M_GLOBAL mg ON mo.area_code = mg.code AND mg.cond = 'AREACODE'
                     WHERE outlet_code = :outletcode
                      """;
         Map prm = new HashMap();
         prm.put("outletcode", outletCode);
+        prm.put("envBe", envBe);
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new DynamicRowMapper());
         return list;
