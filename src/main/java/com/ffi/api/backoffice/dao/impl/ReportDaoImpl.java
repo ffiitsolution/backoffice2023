@@ -4,10 +4,26 @@
  */
 package com.ffi.api.backoffice.dao.impl;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ffi.api.backoffice.dao.ReportDao;
-import net.sf.jasperreports.engine.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
@@ -17,17 +33,16 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.*;
-import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.Date;
-import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ffi.api.backoffice.dao.ReportDao;
+import com.ffi.api.backoffice.utils.DynamicRowMapper;
+
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
 
 @Repository
 public class ReportDaoImpl implements ReportDao {
@@ -2698,6 +2713,70 @@ public class ReportDaoImpl implements ReportDao {
      ///////////////NEW METHOD REPORT EOD by Dani 16 Januari 2024////
      @Override
      public JasperPrint jasperReportEod(Map<String, Object> param, Connection connection) throws IOException, JRException {
+        String query1 = "SELECT D.*, (TAXABLE + tax + PEMBULATAN) AS GROSS_SALES FROM ( SELECT (SUM(TOTAL_AMOUNT) - SUM(TOTAL_DISCOUNT)) TAXABLE, "
+        +" SUM(TOTAL_TAX) TAX, "
+        +" SUM(TOTAL_ROUNDING) PEMBULATAN, "
+        +" SUM(TOTAL_CHARGE) BIAYA_ANTAR, "
+        +" SUM(TOTAL_REFUND) REFUND, "
+        +" SUM(TOTAL_CUSTOMER) CUSTOMER, SUM(TOTAL_DP_PAID) TOTAL_DP_PAID, "
+        +" COUNT(0) TRANSAKSI, SUM(TOTAL_DISCOUNT) TOTAL_DISCOUNT, "
+        +"    ROUND((SUM(TOTAL_AMOUNT) - SUM(TOTAL_DISCOUNT)) / (NVL(SUM(TOTAL_CUSTOMER), "
+        +" 1))) CUST_AVERAGE,	ROUND((SUM(TOTAL_AMOUNT) - SUM(TOTAL_DISCOUNT)) / (COUNT(1))) TICKET_AVG "
+        +" FROM T_POS_BILL "
+        +" WHERE (DELIVERY_STATUS IN (' ','CLS') OR DELIVERY_STATUS IS NULL)"
+        +" AND OUTLET_CODE = :outletCode AND TRANS_DATE BETWEEN :transDate AND :transDate) D";
+        Map<String, Object> resultQuery1 = jdbcTemplate.queryForObject(query1, param, new DynamicRowMapper());
+
+        String query2 = "SELECT B.PAYMENT_TYPE_CODE as KEY,SUM(A.PAYMENT_USED) as VALUE "
+        +" FROM T_POS_BILL_PAYMENT A, M_PAYMENT_METHOD B"
+        +" WHERE A.OUTLET_CODE = :outletCode "
+        +" AND A.TRANS_DATE BETWEEN :transDate AND :transDate "
+        +" AND A.PAYMENT_METHOD_CODE = B.PAYMENT_METHOD_CODE"
+        +" GROUP BY B.PAYMENT_TYPE_CODE";
+        List<Map<String, Object>> resultQuery2 = jdbcTemplate.query(query2, param, new DynamicRowMapper());
+        
+        String query3 = "SELECT TRANS_CODE as KEY, SUM(TRANS_AMOUNT) as VALUE FROM T_POS_DAY_TRANS WHERE OUTLET_CODE = "
+        +":outletCode AND TRANS_DATE BETWEEN :transDate AND :transDate GROUP BY "
+        +"TRANS_CODE";
+        List<Map<String, Object>> resultQuery3 = jdbcTemplate.query(query3, param, new DynamicRowMapper());
+
+        String query5 = "SELECT COALESCE(sum(payment_used), 0) AS downPayment from (select payment_method_code, sum(payment_amount) payment_amount, sum(payment_used) payment_used from " 
+        +" t_pos_book_payment where outlet_code = :outletCode and book_no in (select book_no"
+        +" from t_pos_book where outlet_code = :outletCode and trans_date between :transDate "
+        +" and :transDate) group by payment_method_code)";
+        BigDecimal downPayment = jdbcTemplate.queryForObject(query5, param, BigDecimal.class);
+        resultQuery1.put("downPayment", downPayment);
+
+        String query6 = "SELECT SUBSTR(TRIM(VOID_TYPE),1,1) AS VOID_TYPE, COUNT(0) AS COUNTER, SUM(AMOUNT) AS AMOUNT FROM T_POS_ITEM_VOID "
+        +" WHERE OUTLET_CODE = :outletCode AND TRANS_DATE BETWEEN :transDate AND "
+        +" :transDate AND SUBSTR(TRIM(VOID_TYPE),1,1) IN ('V', 'C') GROUP BY SUBSTR(TRIM(VOID_TYPE),1,1)";
+        List<Map<String, Object>> resultQuery6 = jdbcTemplate.query(query6, param, new DynamicRowMapper());
+
+        String query7 = "select count(0) AS REFUND_COUNTER, SUM(total_amount) AS REFUND_AMOUNT from t_pos_bill where outlet_code = :outletCode and trans_date "
+        +" between :transDate and :transDate and refund_manager_code <>' ' and "
+        +" refund_manager_code is not NULL";
+        Map<String, Object> resultQuery7 = jdbcTemplate.queryForObject(query7, param, new DynamicRowMapper());
+
+        // combine query1 and query2 and query3 and query4
+        List<Map<String, Object>> combine = new ArrayList<>();
+        combine.addAll(resultQuery2);
+        combine.addAll(resultQuery3);
+
+       for (Map<String, Object> animal : combine) {
+            resultQuery1.put((String) animal.get("key"), (BigDecimal) animal.get("value"));
+        }
+
+        for (Map<String,Object> resultMapQry6 : resultQuery6) {
+            String voidType = (String) resultMapQry6.get("voidType");
+            resultQuery1.put(voidType+"Counter", resultMapQry6.get("counter"));
+            resultQuery1.put(voidType+"Amount", resultMapQry6.get("amount"));
+        }
+
+        param.putAll(resultQuery1);
+        param.putAll(resultQuery7);
+        // param.putAll(param);
+        System.out.println(param);
+
         ClassPathResource classPathResource = new ClassPathResource("report/EODReport.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, param, connection);
