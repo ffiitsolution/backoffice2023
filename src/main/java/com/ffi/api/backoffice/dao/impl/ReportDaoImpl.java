@@ -603,6 +603,8 @@ public class ReportDaoImpl implements ReportDao {
         }
         if (!param.get("filterBy").equals("All")) {
             hashMap.put("query", " AND b.CD_SUPPLIER = '" + param.get("filterDesc") + "'");
+            hashMap.put("filterByValue", param.get("filterByValue"));
+            hashMap.put("filterDesc", param.get("filterDesc"));
         }
 
         ClassPathResource classPathResource = new ClassPathResource("report/receiving.jrxml");
