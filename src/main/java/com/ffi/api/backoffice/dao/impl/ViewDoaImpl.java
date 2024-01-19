@@ -474,6 +474,8 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("price", rs.getString("price"));
                 rt.put("priceTypeCode", rs.getString("price_type_code"));
                 rt.put("taxable", rs.getString("taxable"));
+                rt.put("menuGroupCode", rs.getString("menu_group_code"));
+                rt.put("plu", rs.getString("plu"));
                 return rt;
             }
         });
