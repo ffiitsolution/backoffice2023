@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="receivingTransactions" pageWidth="616" pageHeight="842" columnWidth="576" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="1c5f4ca8-2023-497c-927a-a1037d8f6343">
 	<property name="ireport.zoom" value="3.0"/>
 	<property name="ireport.x" value="352"/>
@@ -307,7 +308,7 @@ ORDER BY S.MENU_ITEM_CODE, S.MENU_CODE, S.TOT_STOCK]]>
 		<band splitType="Stretch"/>
 	</background>
 	<columnHeader>
-		<band height="159" splitType="Stretch">
+		<band height="167" splitType="Stretch">
 			<textField>
 				<reportElement x="59" y="10" width="122" height="11" uuid="dc10479a-d1a9-447d-a601-31f855317c75"/>
 				<textElement>
@@ -394,7 +395,7 @@ ORDER BY S.MENU_ITEM_CODE, S.MENU_CODE, S.TOT_STOCK]]>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("hh:mm:ss a").format(new Date())]]></textFieldExpression>
+				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="455" y="2" width="119" height="11" uuid="d45bfdb2-a045-40a3-a678-8841f1856bd9"/>
@@ -404,48 +405,48 @@ ORDER BY S.MENU_ITEM_CODE, S.MENU_CODE, S.TOT_STOCK]]>
 				<textFieldExpression><![CDATA[": " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="59" y="123" width="71" height="30" uuid="59ba1b97-a441-40dc-92d5-74a9801ca623"/>
+				<reportElement x="59" y="131" width="71" height="30" uuid="59ba1b97-a441-40dc-92d5-74a9801ca623"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[MENU ITEM CODE]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="123" width="59" height="30" uuid="6a5b4320-bc50-4b37-8a6d-d92355d1db8d"/>
+				<reportElement x="0" y="131" width="59" height="30" uuid="6a5b4320-bc50-4b37-8a6d-d92355d1db8d"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[ITEM CODE]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="141" y="123" width="97" height="30" uuid="7d45a69e-a9e6-4abf-8067-756882d1ca09"/>
+				<reportElement x="141" y="131" width="97" height="30" uuid="7d45a69e-a9e6-4abf-8067-756882d1ca09"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[DESCRIPTION]]></text>
 			</staticText>
 			<line>
-				<reportElement x="0" y="122" width="574" height="1" uuid="302961e6-b0d0-455b-900f-77f4bbcc553b"/>
+				<reportElement x="0" y="130" width="574" height="1" uuid="302961e6-b0d0-455b-900f-77f4bbcc553b"/>
 			</line>
 			<line>
-				<reportElement x="0" y="153" width="574" height="1" uuid="212cc8ec-b373-4dcf-aa71-4b7879427ee9"/>
+				<reportElement x="0" y="161" width="574" height="1" uuid="212cc8ec-b373-4dcf-aa71-4b7879427ee9"/>
 			</line>
 			<staticText>
 				<reportElement x="1" y="53" width="575" height="20" uuid="5b646da8-e747-4f19-b784-8da872718399"/>
 				<textElement textAlignment="Center">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Item Selected by Product]]></text>
+				<text><![CDATA[ITEM SELECTED BY PRODUCT]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="5" y="87" width="90" height="11" uuid="4fcaea03-c409-4586-a3f8-be296ca6f35e"/>
+				<reportElement x="5" y="89" width="90" height="11" uuid="4fcaea03-c409-4586-a3f8-be296ca6f35e"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Item Code]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="94" y="87" width="270" height="11" uuid="c2fc7cf0-5ee1-4b24-9daf-0c39ea513dc9"/>
+				<reportElement x="94" y="89" width="270" height="11" uuid="c2fc7cf0-5ee1-4b24-9daf-0c39ea513dc9"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -466,33 +467,47 @@ ORDER BY S.MENU_ITEM_CODE, S.MENU_CODE, S.TOT_STOCK]]>
 				<textFieldExpression><![CDATA[": " + $F{PERIODE}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="94" y="97" width="270" height="11" uuid="fdcac1a2-44ac-4ec7-9d38-75826fe12b29"/>
+				<reportElement x="94" y="101" width="270" height="11" uuid="fdcac1a2-44ac-4ec7-9d38-75826fe12b29"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA["  " + $F{DESCRIPTION}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="544" y="123" width="30" height="30" uuid="9c20706a-3439-44e6-ac87-d6619b33c863"/>
+				<reportElement x="544" y="131" width="30" height="30" uuid="9c20706a-3439-44e6-ac87-d6619b33c863"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[QTY]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="275" y="123" width="59" height="30" uuid="0e9ec1d5-895a-42cb-8758-14538d6cc243"/>
+				<reportElement x="275" y="131" width="59" height="30" uuid="0e9ec1d5-895a-42cb-8758-14538d6cc243"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[MENU CODE]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="337" y="123" width="147" height="30" uuid="48916951-3faf-406f-b714-fda64b4a2a9c"/>
+				<reportElement x="337" y="131" width="147" height="30" uuid="48916951-3faf-406f-b714-fda64b4a2a9c"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[MENU NAME]]></text>
 			</staticText>
+			<staticText>
+				<reportElement x="5" y="113" width="90" height="11" uuid="31a1c9e4-ff26-4a95-9f17-91ff25ec9588"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Tipe Report]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="94" y="113" width="270" height="11" uuid="7a334413-4abc-4c6a-8563-9b3070a5b296"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + ( $P{detail}.booleanValue() ? "Detail" : "Rekap" )]]></textFieldExpression>
+			</textField>
 		</band>
 	</columnHeader>
 	<detail>
@@ -525,7 +540,7 @@ ORDER BY S.MENU_ITEM_CODE, S.MENU_CODE, S.TOT_STOCK]]>
 		<band height="21"/>
 	</pageFooter>
 	<summary>
-		<band height="44" splitType="Stretch">
+		<band height="45" splitType="Stretch">
 			<staticText>
 				<reportElement x="428" y="6" width="65" height="12" uuid="e1f7c4b0-bf18-4e9d-b661-6e5697866156"/>
 				<textElement textAlignment="Right">
@@ -543,24 +558,18 @@ ORDER BY S.MENU_ITEM_CODE, S.MENU_CODE, S.TOT_STOCK]]>
 			<line>
 				<reportElement x="0" y="3" width="574" height="1" uuid="5c3ea783-f43b-400b-b31f-0695ef8836b0"/>
 			</line>
+			<staticText>
+				<reportElement mode="Transparent" x="440" y="30" width="134" height="15" uuid="fa62311d-a481-42ba-a58a-ae51f73bc05a">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[-- End Of Report --]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="30" width="574" height="1" uuid="f34198d5-83ab-48d4-bddb-b15ec18b650f"/>
+			</line>
 		</band>
 	</summary>
-	<noData>
-		<band height="50">
-			<staticText>
-				<reportElement x="0" y="0" width="575" height="20" uuid="2b7bceed-2725-462e-8cde-6c49976cbb85"/>
-				<textElement textAlignment="Center">
-					<font size="12" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Item Selected by Product]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="20" width="575" height="20" uuid="ec1f4fe8-2a37-4e2f-b089-8499acb3fa9f"/>
-				<textElement textAlignment="Center">
-					<font size="12" isBold="true"/>
-				</textElement>
-				<text><![CDATA[No Data]]></text>
-			</staticText>
-		</band>
-	</noData>
 </jasperReport>
