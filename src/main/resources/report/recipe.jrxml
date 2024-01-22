@@ -3,6 +3,8 @@
 	<property name="ireport.zoom" value="2.1435888100000016"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<parameter name="outletCode" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
@@ -10,50 +12,121 @@
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<parameter name="user" class="java.lang.String"/>
-	<parameter name="labelStatus" class="java.lang.String"/>
+	<parameter name="address1" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
 	<parameter name="outletBrand" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="address2" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="phone" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="outletName" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
-	mrh.RECIPE_CODE,
-	mrh.RECIPE_REMARK,
-	mrd.ITEM_CODE,
-	mrd.QTY_STOCK ,
-	mrd.UOM_STOCK,
-	mi.ITEM_DESCRIPTION,
-	mrp.PRODUCT_CODE,
-	mi2.ITEM_DESCRIPTION AS PRODUCT_DESCRIPTION,
-	mrp.QTY_STOCK AS QTY_PRODUCT,
-	mrh.STATUS,
-	mrh.MPCS_GROUP
-	FROM
-		M_RECIPE_HEADER mrh
-	JOIN M_RECIPE_DETAIL mrd ON
-		mrh.RECIPE_CODE = mrd.RECIPE_CODE
-	JOIN M_ITEM mi ON
-		mrd.ITEM_CODE = mi.ITEM_CODE
-	LEFT JOIN M_RECIPE_PRODUCT mrp ON
-		mrp.RECIPE_CODE = mrh.RECIPE_CODE
-	LEFT JOIN M_ITEM mi2 ON
-		mrp.PRODUCT_CODE = mi2.ITEM_CODE
-	WHERE mrh.STATUS = $P{status}
-	ORDER BY mrh.RECIPE_CODE  ASC, ITEM_CODE ASC]]>
+  *
+FROM
+  (
+    SELECT
+      mrh.RECIPE_CODE,
+      mrh.RECIPE_REMARK,
+      mrd.ITEM_CODE,
+      mrd.QTY_STOCK,
+      mrd.UOM_STOCK,
+      mi.ITEM_DESCRIPTION,
+      mrp.PRODUCT_CODE,
+      mi2.ITEM_DESCRIPTION AS PRODUCT_DESCRIPTION,
+      mrp.QTY_STOCK AS QTY_PRODUCT,
+      mrh.STATUS,
+      mrh.MPCS_GROUP
+    FROM
+      M_RECIPE_HEADER mrh
+      JOIN M_RECIPE_DETAIL mrd ON mrh.RECIPE_CODE = mrd.RECIPE_CODE
+      JOIN M_ITEM mi ON mrd.ITEM_CODE = mi.ITEM_CODE
+      LEFT JOIN M_RECIPE_PRODUCT mrp ON mrp.RECIPE_CODE = mrh.RECIPE_CODE
+      LEFT JOIN M_ITEM mi2 ON mrp.PRODUCT_CODE = mi2.ITEM_CODE
+    WHERE
+      mrh.STATUS = $P{status}
+    ORDER BY
+      mrh.RECIPE_CODE ASC,
+      ITEM_CODE ASC
+  ) a
+  LEFT JOIN (
+    SELECT
+      mrh.RECIPE_CODE,
+      COUNT(mrd.ITEM_CODE) AS counter
+    FROM
+      M_RECIPE_HEADER mrh
+      JOIN M_RECIPE_DETAIL mrd ON mrh.RECIPE_CODE = mrd.RECIPE_CODE
+    WHERE
+      mrh.STATUS = $P{status}
+    GROUP BY
+      mrh.RECIPE_CODE
+  ) b ON a.RECIPE_CODE = b.RECIPE_CODE
+  ORDER BY
+      a.RECIPE_CODE ASC,
+      a.ITEM_CODE ASC,
+      a.PRODUCT_CODE ASC]]>
 	</queryString>
-	<field name="RECIPE_CODE" class="java.lang.String"/>
-	<field name="RECIPE_REMARK" class="java.lang.String"/>
-	<field name="ITEM_CODE" class="java.lang.String"/>
-	<field name="QTY_STOCK" class="java.math.BigDecimal"/>
-	<field name="UOM_STOCK" class="java.lang.String"/>
-	<field name="ITEM_DESCRIPTION" class="java.lang.String"/>
-	<field name="PRODUCT_CODE" class="java.lang.String"/>
-	<field name="PRODUCT_DESCRIPTION" class="java.lang.String"/>
-	<field name="QTY_PRODUCT" class="java.math.BigDecimal"/>
-	<field name="STATUS" class="java.lang.String"/>
-	<field name="MPCS_GROUP" class="java.lang.String"/>
+	<field name="RECIPE_CODE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="RECIPE_CODE"/>
+		<property name="com.jaspersoft.studio.field.label" value="RECIPE_CODE"/>
+	</field>
+	<field name="RECIPE_REMARK" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="RECIPE_REMARK"/>
+		<property name="com.jaspersoft.studio.field.label" value="RECIPE_REMARK"/>
+	</field>
+	<field name="ITEM_CODE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ITEM_CODE"/>
+		<property name="com.jaspersoft.studio.field.label" value="ITEM_CODE"/>
+	</field>
+	<field name="QTY_STOCK" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="QTY_STOCK"/>
+		<property name="com.jaspersoft.studio.field.label" value="QTY_STOCK"/>
+	</field>
+	<field name="UOM_STOCK" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="UOM_STOCK"/>
+		<property name="com.jaspersoft.studio.field.label" value="UOM_STOCK"/>
+	</field>
+	<field name="ITEM_DESCRIPTION" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ITEM_DESCRIPTION"/>
+		<property name="com.jaspersoft.studio.field.label" value="ITEM_DESCRIPTION"/>
+	</field>
+	<field name="PRODUCT_CODE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="PRODUCT_CODE"/>
+		<property name="com.jaspersoft.studio.field.label" value="PRODUCT_CODE"/>
+	</field>
+	<field name="PRODUCT_DESCRIPTION" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="PRODUCT_DESCRIPTION"/>
+		<property name="com.jaspersoft.studio.field.label" value="PRODUCT_DESCRIPTION"/>
+	</field>
+	<field name="QTY_PRODUCT" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="QTY_PRODUCT"/>
+		<property name="com.jaspersoft.studio.field.label" value="QTY_PRODUCT"/>
+	</field>
+	<field name="STATUS" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="STATUS"/>
+		<property name="com.jaspersoft.studio.field.label" value="STATUS"/>
+	</field>
+	<field name="MPCS_GROUP" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="MPCS_GROUP"/>
+		<property name="com.jaspersoft.studio.field.label" value="MPCS_GROUP"/>
+	</field>
+	<field name="COUNTER" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="COUNTER"/>
+		<property name="com.jaspersoft.studio.field.label" value="COUNTER"/>
+	</field>
 	<variable name="isLastData" class="java.lang.Boolean" resetType="Group" resetGroup="header"/>
 	<variable name="lastData" class="java.lang.Boolean" resetType="Group" resetGroup="ITEM_CODE">
 		<initialValueExpression><![CDATA[true]]></initialValueExpression>
+	</variable>
+	<variable name="counter" class="java.lang.Integer" resetType="Group" resetGroup="RECEIPT_CODE" incrementType="Group" incrementGroup="ITEM_CODE" calculation="Count">
+		<variableExpression><![CDATA[""]]></variableExpression>
 	</variable>
 	<group name="header">
 		<groupExpression><![CDATA[$F{RECIPE_CODE}]]></groupExpression>
@@ -71,7 +144,7 @@
 				</textField>
 				<textField>
 					<reportElement x="76" y="4" width="294" height="12" uuid="7d6acfec-1193-40c8-bfa3-e71a0a3c2aef"/>
-					<textElement>
+					<textElement verticalAlignment="Middle">
 						<font size="8" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{RECIPE_REMARK}]]></textFieldExpression>
@@ -82,41 +155,27 @@
 	<group name="ITEM_CODE">
 		<groupExpression><![CDATA[$F{ITEM_CODE}]]></groupExpression>
 		<groupHeader>
-			<band height="18">
+			<band height="12">
 				<textField>
-					<reportElement x="76" y="4" width="61" height="12" uuid="ddbb44a2-1d28-4cc9-b781-7f94eaf59033"/>
-					<textElement>
+					<reportElement x="76" y="0" width="61" height="12" uuid="ddbb44a2-1d28-4cc9-b781-7f94eaf59033"/>
+					<textElement verticalAlignment="Middle">
 						<font size="8"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{ITEM_CODE}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="137" y="4" width="233" height="12" uuid="721d2d3b-a60c-4d52-9e13-818b053e53a9"/>
-					<textElement>
+					<reportElement x="137" y="0" width="233" height="12" uuid="721d2d3b-a60c-4d52-9e13-818b053e53a9"/>
+					<textElement verticalAlignment="Middle">
 						<font size="8"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="370" y="4" width="109" height="12" uuid="5ac11880-53fd-4289-8985-f5b1e7e28fe3"/>
-					<textElement textAlignment="Center">
-						<font size="8"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$F{QTY_STOCK}]]></textFieldExpression>
-				</textField>
-			</band>
-		</groupHeader>
-	</group>
-	<group name="PRODUCT_CODE">
-		<groupExpression><![CDATA[$F{PRODUCT_CODE}]]></groupExpression>
-		<groupHeader>
-			<band height="17">
-				<textField>
-					<reportElement x="201" y="1" width="169" height="12" uuid="270fccc3-8833-4ab8-9d1a-bf3866a8e807"/>
+					<reportElement x="370" y="0" width="109" height="12" uuid="5ac11880-53fd-4289-8985-f5b1e7e28fe3"/>
 					<textElement verticalAlignment="Middle">
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$F{PRODUCT_CODE}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$F{QTY_STOCK}]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupHeader>
@@ -126,13 +185,10 @@
 	</background>
 	<columnHeader>
 		<band height="98">
-			<staticText>
-				<reportElement x="69" y="0" width="112" height="11" uuid="43adaef0-010b-4e65-a6c1-a9378cb38acb"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
-			</staticText>
+			<image scaleImage="FillFrame">
+				<reportElement x="22" y="1" width="48" height="48" isPrintWhenDetailOverflows="true" uuid="95bfb9aa-d084-452c-ae47-253e326e49d9"/>
+				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
+			</image>
 			<line>
 				<reportElement x="1" y="97" width="552" height="1" uuid="59ea3a16-0366-49bc-9be4-39daa3bf3dfb"/>
 			</line>
@@ -140,46 +196,46 @@
 				<reportElement x="1" y="82" width="552" height="1" uuid="93fafdcc-cb32-4ac4-834d-6d9eaf89a7cf"/>
 			</line>
 			<staticText>
-				<reportElement x="0" y="83" width="77" height="15" uuid="a1d979a2-dd98-459c-b501-e283e73b15fb"/>
-				<textElement textAlignment="Center">
+				<reportElement x="0" y="83" width="77" height="14" uuid="a1d979a2-dd98-459c-b501-e283e73b15fb"/>
+				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Code]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="76" y="83" width="77" height="15" uuid="19b16726-783d-43cc-a077-d4fd79e7092f"/>
-				<textElement textAlignment="Center">
+				<reportElement x="76" y="83" width="77" height="14" uuid="19b16726-783d-43cc-a077-d4fd79e7092f"/>
+				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Recipe]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="152" y="83" width="97" height="15" uuid="ba71da50-e8e8-471b-b791-cf05ff7894aa"/>
-				<textElement textAlignment="Center">
+				<reportElement x="152" y="83" width="97" height="14" uuid="ba71da50-e8e8-471b-b791-cf05ff7894aa"/>
+				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Material]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="248" y="83" width="122" height="15" uuid="d0cf34eb-8709-4d98-812e-ebb2e144c34a"/>
-				<textElement>
+				<reportElement x="248" y="83" width="122" height="14" uuid="d0cf34eb-8709-4d98-812e-ebb2e144c34a"/>
+				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Product Result]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="370" y="83" width="110" height="15" uuid="b987482b-c4b0-4ad3-a449-0dd10d6f8aa8"/>
-				<textElement textAlignment="Center">
+				<reportElement x="370" y="83" width="110" height="14" uuid="b987482b-c4b0-4ad3-a449-0dd10d6f8aa8"/>
+				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Qty Recipe]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="479" y="83" width="74" height="15" uuid="f596dbc8-b5bc-4bd4-a103-984fffa80688"/>
-				<textElement textAlignment="Center">
+				<reportElement x="479" y="83" width="74" height="14" uuid="f596dbc8-b5bc-4bd4-a103-984fffa80688"/>
+				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Qty Recipe]]></text>
+				<text><![CDATA[Qty Hasil]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="0" y="47" width="556" height="17" uuid="ea853665-a21f-4895-a4fd-8905489265ee"/>
@@ -193,14 +249,99 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{STATUS}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{STATUS}.equals("A") ? "Active" : "Inactive"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="439" y="30" width="116" height="11" uuid="ac4e3cc6-762f-4159-8639-2267369b856d"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Jam Cetak : " + new SimpleDateFormat("hh:mm:ss").format(new Date())]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="439" y="19" width="117" height="11" uuid="e75e8bea-2fa9-496d-abd2-92aaff39bdfd"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Tanggal Cetak : " + new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="439" y="9" width="117" height="11" uuid="2e197b88-c9f9-46fe-a2ad-4c1a0cc2a663"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["User Cetak : " + $P{user}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="439" y="0" width="114" height="11" uuid="dcf4b008-ae2f-41bc-b83e-469150895f06"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Halaman : " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="76" y="-1" width="200" height="11" uuid="ce732ff8-61b6-4344-9271-d37ad48c2487"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="76" y="10" width="122" height="11" uuid="33a3beb9-d9f4-45ab-9acf-0fe54008fdcd"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{outletName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="76" y="20" width="200" height="12" uuid="871bde34-d6d2-4c48-8025-92ce7eb32565"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{address1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="76" y="30" width="122" height="12" uuid="53e24089-b8b0-4203-884d-40711bf4b944"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{address2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="76" y="40" width="200" height="11" uuid="fb67b558-d6bf-4085-9737-2a533d246694"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Phone : " + $P{phone}]]></textFieldExpression>
 			</textField>
 		</band>
 	</columnHeader>
-	<pageFooter>
-		<band height="18" splitType="Stretch"/>
-	</pageFooter>
-	<summary>
-		<band height="18" splitType="Stretch"/>
-	</summary>
+	<detail>
+		<band height="12">
+			<printWhenExpression><![CDATA[$F{COUNTER}.intValue() == ($V{counter}.intValue() )]]></printWhenExpression>
+			<textField>
+				<reportElement x="161" y="0" width="48" height="12" uuid="a98973ef-86fd-450b-9875-33e35a2ccec0">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="f96db6a5-1ab8-4824-9a27-566b6b1967d3"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PRODUCT_CODE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="209" y="0" width="161" height="12" uuid="3906b2a6-a53a-4e6d-9713-4a31ec3009de"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PRODUCT_DESCRIPTION}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="480" y="0" width="73" height="12" uuid="07c3b8a3-e0d7-42d4-92d3-33bd1a4f0fa1"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{QTY_PRODUCT}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
 </jasperReport>

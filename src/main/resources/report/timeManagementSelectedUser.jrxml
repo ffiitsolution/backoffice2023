@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="timeManagement" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="31e3f283-89be-4c39-a405-bd3ffde11907">
+	<property name="ireport.zoom" value="1.331000000000006"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="fromDate" class="java.lang.String"/>
+	<parameter name="toDate" class="java.lang.String"/>
+	<parameter name="userUpd" class="java.lang.String"/>
+	<parameter name="staffCode" class="java.lang.String"/>
+	<parameter name="outletCode" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="outletBrand" class="java.lang.String"/>
+	<parameter name="additionalQuery" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT a.DAY_SEQ, a.STAFF_ID, ms.STAFF_NAME,
+		mo.ADDRESS_1, mo.ADDRESS_2, a.OUTLET_CODE,  mo.OUTLET_NAME, mo."TYPE", mo.PHONE,
+    TO_CHAR(a.DATE_ABSEN, 'DD Mon YYYY') AS DATE_IN, TO_CHAR(TO_DATE(a.TIME_ABSEN, 'HH24MISS'), 'HH:MI:SS') AS TIME_IN,
+    COALESCE(TO_CHAR(b.DATE_ABSEN, 'DD Mon YYYY'), '') AS DATE_OUT,
+    CASE WHEN b.TIME_ABSEN IS NULL THEN '-' ELSE  TO_CHAR(TO_DATE(b.TIME_ABSEN, 'HH24MISS'), 'HH:MI:SS') end AS TIME_OUT, a.STATUS
+	FROM T_ABSENSI a
+	LEFT JOIN T_ABSENSI b
+ON
+    a.OUTLET_CODE = b.OUTLET_CODE
+    AND a.DAY_SEQ = b.DAY_SEQ
+    AND a.STAFF_ID = b.STAFF_ID
+    AND b.SEQ_NO = 2
+LEFT JOIN M_OUTLET mo ON mo.OUTLET_CODE = $P{outletCode}
+LEFT JOIN M_STAFF ms ON a.staff_id = ms.STAFF_CODE
+WHERE a.SEQ_NO = 1 $P!{additionalQuery}
+ORDER BY a.STAFF_ID, a.DAY_SEQ]]>
+	</queryString>
+	<field name="DATE_IN" class="java.lang.String"/>
+	<field name="DATE_OUT" class="java.lang.String"/>
+	<field name="TIME_IN" class="java.lang.String"/>
+	<field name="TIME_OUT" class="java.lang.String"/>
+	<field name="STAFF_NAME" class="java.lang.String"/>
+	<field name="ADDRESS_1" class="java.lang.String"/>
+	<field name="ADDRESS_2" class="java.lang.String"/>
+	<field name="OUTLET_NAME" class="java.lang.String"/>
+	<field name="TYPE" class="java.lang.String"/>
+	<field name="PHONE" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="116" splitType="Stretch">
+			<staticText>
+				<reportElement x="8" y="101" width="20" height="15" uuid="1dc3411a-e0f5-45ba-8a2d-05d3e96cf6ed">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="28" y="101" width="264" height="15" uuid="db1d375e-da90-491a-944a-8036f0cc2144"/>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nama Staff]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="292" y="101" width="80" height="15" uuid="35a0763e-7371-428b-ba68-89d53e59a8b1">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date In]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="502" y="101" width="50" height="15" uuid="21622837-e534-4e88-a8e9-32939517d7a5"/>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Time Out]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="422" y="101" width="80" height="15" uuid="577119fc-33b7-4f69-bbd8-6ff71f4e6648">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date Out]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="372" y="101" width="50" height="15" uuid="8acbede9-8782-487c-bb7b-5c84aba1c320"/>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Time In]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="59" y="-1" width="112" height="11" uuid="a39e1ace-79fb-47e3-af90-294aa344bea8"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="59" y="9" width="122" height="11" uuid="54c18511-5c28-4cd9-8ee0-957bcd33b611"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OUTLET_NAME} + "-" + $F{TYPE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="59" y="19" width="122" height="11" uuid="1744f5ce-46a7-4902-b607-491ce84aa38e"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ADDRESS_1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="59" y="29" width="122" height="11" uuid="def64831-f858-4c9b-b9e7-60c4c2efc74c"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ADDRESS_2}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="0" y="0" width="58" height="48" isPrintWhenDetailOverflows="true" uuid="20d3bcff-f0d7-478c-a02f-0749c04cea22">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
+			</image>
+			<line>
+				<reportElement x="1" y="100" width="552" height="1" uuid="3cdebe2b-aff3-4ace-9774-cb15acb5b834"/>
+			</line>
+			<line>
+				<reportElement x="1" y="115" width="552" height="1" uuid="7d6a5e5f-4032-42e2-9fb4-45a6f987c04b"/>
+			</line>
+			<textField isBlankWhenNull="true">
+				<reportElement x="201" y="41" width="182" height="20" uuid="cfa3b5bc-ce6e-43e0-883b-ea26302f4d97"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["REPORT TIME MANAGEMENT "]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="78" width="58" height="11" uuid="0a836d9e-0721-468c-bd69-8700b021a376"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Staff Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="67" width="58" height="11" uuid="689eb29b-afcb-468d-97b8-6a7c0d471dcf"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Periode]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="59" y="78" width="6" height="11" uuid="64affab0-62e5-41af-8a0b-b52c78e2b96c"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="59" y="67" width="6" height="11" uuid="3191682f-de42-4b85-9db1-1b2b0e00851b"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="65" y="78" width="135" height="11" uuid="9fbc0d62-5e16-45d7-acbb-b2d0b9656734"/>
+				<textElement textAlignment="Left">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{STAFF_NAME}]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="65" y="67" width="135" height="11" uuid="3b220c9e-07de-4797-9913-473024f41a15"/>
+				<textElement textAlignment="Left">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{fromDate} +" - "+ $P{toDate}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="420" y="33" width="60" height="11" uuid="9f9923d5-751b-4e2b-a289-277d57eea37a"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Jam Cetak  "]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="420" y="0" width="60" height="11" uuid="41939624-8ec9-4420-a582-6fcef3fb1538"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Halaman "]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="420" y="22" width="60" height="11" uuid="975027e0-ad38-418a-bfea-7d91922ca757"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Tanggal Cetak "]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="480" y="11" width="75" height="11" uuid="258ea14a-f75d-4c3e-8617-3718b5770807"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + $P{userUpd}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="480" y="0" width="75" height="11" uuid="0d12bc09-62c3-466c-adef-f2e56cde0934"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="420" y="11" width="60" height="11" uuid="7f1a68f5-0d75-49f0-b75f-cd49056271c3"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["User Cetak "]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="480" y="22" width="75" height="11" uuid="6ccd53b8-1dbe-483d-9fb8-ea613b4c02c8"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="480" y="33" width="75" height="11" uuid="49068f62-6c61-4a45-9f04-6536db1d33a1"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="59" y="40" width="142" height="11" isPrintWhenDetailOverflows="true" uuid="686f8be7-23a5-45d0-8006-c68f981a5ce2"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Phone : " + $F{PHONE}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="18" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<textField>
+				<reportElement x="28" y="0" width="264" height="15" uuid="b5280c23-2a96-4113-a955-e05572875ec4"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{STAFF_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="292" y="0" width="80" height="15" uuid="6aae4a0f-1adf-429e-8585-1f637ae38c04"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DATE_IN}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="372" y="0" width="50" height="15" uuid="7b791f3a-dfb3-425c-914a-70b26f1bd78c"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{TIME_IN}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="422" y="0" width="80" height="15" uuid="2951b293-5a32-477a-87a4-57192287cf49"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DATE_OUT} != null && !$F{DATE_OUT}.isEmpty() ? $F{DATE_OUT} : "-"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="502" y="0" width="50" height="15" uuid="c99958a2-270e-4270-a1e0-c88dc9f39299"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{TIME_OUT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="8" y="0" width="20" height="15" uuid="652ed264-6a46-4823-9200-9789dd4d6ca0">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="15" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="25" splitType="Stretch">
+			<staticText>
+				<reportElement x="452" y="1" width="102" height="20" uuid="5dd541e0-0c00-41c7-9351-34f395be4ee5"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="false" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[-- End of Report --]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="1" width="553" height="1" uuid="9e2c532c-4446-465a-9dc6-5b633138673d"/>
+			</line>
+		</band>
+	</summary>
+</jasperReport>
