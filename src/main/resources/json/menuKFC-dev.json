@@ -30,8 +30,8 @@
         "url": "/master/price"
       },
       {
-        "name": "Frayer Type",
-        "url": "/master/frayer"
+        "name": "Fryer Type",
+        "url": "/master/fryer"
       },
       {
         "name": "Group Item",
@@ -152,6 +152,10 @@
       {
         "name": "Transaksi",
         "url": "/time-management/transaction"
+      },
+      {
+        "name": "Laporan Absensi",
+        "url": "/time-management/report-time-management"
       }
     ]
   }

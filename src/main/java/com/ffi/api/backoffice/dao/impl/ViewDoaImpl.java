@@ -220,11 +220,7 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listMpcs(Map<String, String> balance) {
-        String qry = "SELECT  A.OUTLET_CODE,B.OUTLET_NAME, A.FRYER_TYPE, A.FRYER_TYPE_SEQ, A.STATUS, A.FRYER_TYPE_RESET, "
-                + "A.FRYER_TYPE_SEQ_CNT, A.FRYER_TYPE_CNT, A.USER_UPD, A.DATE_UPD, A.TIME_UPD  FROM "
-                + "M_MPCS_DETAIL A LEFT JOIN M_OUTLET B "
-                + "ON A.OUTLET_CODE=B.OUTLET_CODE WHERE A.OUTLET_CODE =:outletCode  AND A.FRYER_TYPE = :fryerType ORDER BY "
-                + "A.OUTLET_CODE  ASC, A.FRYER_TYPE  ASC,A. FRYER_TYPE_SEQ  ASC ";
+        String qry = "SELECT A.OUTLET_CODE, B.OUTLET_NAME, A.FRYER_TYPE, A.FRYER_TYPE_SEQ, A.STATUS, A.FRYER_TYPE_RESET, A.FRYER_TYPE_SEQ_CNT, A.FRYER_TYPE_CNT, A.USER_UPD, A.DATE_UPD, A.TIME_UPD FROM M_MPCS_DETAIL A LEFT JOIN M_OUTLET B ON A.OUTLET_CODE = B.OUTLET_CODE WHERE A.OUTLET_CODE =:outletCode AND (A.FRYER_TYPE = :fryerType OR :fryerType IS NULL) ORDER BY A.OUTLET_CODE ASC, A.FRYER_TYPE ASC, A.FRYER_TYPE_SEQ ASC";
         Map prm = new HashMap();
         prm.put("outletCode", balance.get("outletCode"));
         prm.put("fryerType", balance.get("fryerType"));
@@ -293,6 +289,9 @@ public class ViewDoaImpl implements ViewDao {
     /////Update where clause by Fathur 6 Des 2023///////////////////
     @Override
     public List<Map<String, Object>> listMenuGroup(Map<String, String> ref) {
+        if(ref.containsKey("menuGroupCode") && (ref.get("menuGroupCode").equalsIgnoreCase("G90") || ref.get("menuGroupCode").equalsIgnoreCase("G91"))){
+            return new ArrayList();
+        }
         String qry = "SELECT   "
                 + "    M.MENU_GROUP_CODE,M.STATUS,M.SEQ, "
                 + "    G.DESCRIPTION AS MENU_GROUP "
@@ -424,7 +423,9 @@ public class ViewDoaImpl implements ViewDao {
                 }
                 qry += " AND mmi.MENU_GROUP_CODE IN " + joiner.toString();
             }
-        } else if(ref.get("menuGroupCode").startsWith("G")){
+        } else if (ref.containsKey("menuGroupCode") && (ref.get("menuGroupCode").equalsIgnoreCase("G90") || ref.get("menuGroupCode").equalsIgnoreCase("G91"))){
+            qry += " AND mmi.MENU_GROUP_CODE = :menuGroupCode ";
+        } else if (ref.get("menuGroupCode").startsWith("G")){
             System.err.println("by Group G");
             String querySub = """
                                     SELECT mg3.CODE
@@ -2847,6 +2848,9 @@ public class ViewDoaImpl implements ViewDao {
         if (isValidParamKey(balance.get("status"))) {
             qry += " and a.status = :status ";
             prm.put("status", balance.get("status"));
+        } else {
+            qry += " and a.status < 2 ";
+            prm.put("status", balance.get("status"));
         }
         if (isValidParamKey(balance.get("outletCode"))) {
             qry += " and a.outlet_code = :outletCode ";
@@ -2862,7 +2866,7 @@ public class ViewDoaImpl implements ViewDao {
         } else {
             prm.put("limit", "1001");
         }
-        qry += " order by a.date_upd desc, a.time_upd desc) where rownum < :limit";
+        qry += " order by a.status asc, a.date_upd desc, a.time_upd desc) where rownum < :limit";
 
         System.err.println("balance : " + balance);
         System.err.println("status : " + balance.get("status"));
