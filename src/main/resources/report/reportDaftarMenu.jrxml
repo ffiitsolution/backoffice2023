@@ -306,7 +306,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<text><![CDATA[Order Type :]]></text>
+				<text><![CDATA[Order Type : ]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="50" y="64" width="100" height="12" uuid="2718b0f5-93ff-41c8-b145-d91edd1ba2bf"/>
@@ -315,12 +315,19 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$P{orderType}]]></textFieldExpression>
 			</textField>
+			<staticText>
+				<reportElement x="498" y="64" width="49" height="12" uuid="13c7d733-732f-4e6f-bcfa-8e7f82b6e0d3"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Status :]]></text>
+			</staticText>
 			<textField>
 				<reportElement x="501" y="64" width="49" height="12" uuid="8850c52c-d04b-49d8-89a2-3416ff13aa3c"/>
 				<textElement verticalAlignment="Middle" textAlignment="Right">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA["A".equals($P{status}) ? "active" : "inactive"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["A".equals($P{status}) ? "Active" : "Inactive"]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>

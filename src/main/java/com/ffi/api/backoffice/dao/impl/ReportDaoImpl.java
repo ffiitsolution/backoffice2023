@@ -853,8 +853,12 @@ public class ReportDaoImpl implements ReportDao {
         Map<String, Object> hashMap = new HashMap<>();
         hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("outletName", param.get("outletName"));
         hashMap.put("user", param.get("user"));
-        hashMap.put("subReport", subReport);
+        hashMap.put("address1", param.get("address1"));
+        hashMap.put("address2", param.get("address2"));
+        hashMap.put("phone", param.get("phone"));
+
 
         if (param.get("status").equals("Active")) {
             hashMap.put("status", "A");
