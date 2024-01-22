@@ -254,4 +254,8 @@ public class ReportServices {
     public JasperPrint jasperReportItemSalesAnalysis(Map<String, Object> param, Connection connection) throws JRException, SQLException, IOException {
         return dao.jasperReportItemSalesAnalysis(param, connection);
     }
+    
+    public JasperPrint jasperReportTimeManagement(Map<String, Object> param, Connection connection) throws JRException, SQLException, IOException {
+        return dao.jasperReportTimeManagement(param, connection);
+    }
 }

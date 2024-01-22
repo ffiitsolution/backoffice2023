@@ -1247,6 +1247,10 @@ public class ReportDaoImpl implements ReportDao {
             query = "SELECT a.SHIFT_CODE, CASE WHEN a.SHIFT_CODE = 'S1' THEN 'Shift 1' WHEN SHIFT_CODE = 'S2' THEN 'Shift 2' ELSE 'Shift 3' END AS SHIFT_NAME FROM TMP_SALES_BY_ITEM a WHERE a.OUTLET_CODE = :outletCode AND a.TRANS_DATE BETWEEN TO_CHAR(NEXT_DAY(TRUNC(TO_DATE(:date, 'DD-Mon-YY')-7, 'IW'),'SUNDAY'),'DD-Mon-YY') AND TO_CHAR(NEXT_DAY(TRUNC(TO_DATE(:date, 'DD-Mon-YY'), 'IW'),'SATURDAY'),'DD-Mon-YY') GROUP BY a.SHIFT_CODE ORDER BY a.SHIFT_CODE ASC";
             hashMap.put("date", param.get("date"));
             hashMap.put("outletCode", param.get("outletCode"));
+        } else if (param.get("typeReport").equals("time-management") && param.get("typeParam").equals("Staff")) {
+            query = "SELECT DISTINCT TA.STAFF_ID AS STAFF_CODE, ms.STAFF_FULL_NAME AS STAFF_NAME FROM T_ABSENSI ta JOIN M_STAFF ms ON TA.STAFF_ID = ms.STAFF_CODE WHERE ta.DATE_ABSEN BETWEEN :fromDate AND :toDate"; 
+            hashMap.put("fromDate", param.get("fromDate"));
+            hashMap.put("toDate", param.get("toDate"));
         }
 
         assert query != null;
@@ -1354,6 +1358,9 @@ public class ReportDaoImpl implements ReportDao {
                 } else if (param.get("typeReport").equals("Item Sales Analysis") && param.get("typeParam").equals("Shift")) {
                     rt.put("shiftCode", rs.getString("SHIFT_CODE"));
                     rt.put("shiftName", rs.getString("SHIFT_NAME"));
+                } else if (param.get("typeReport").equals("time-management") && param.get("typeParam").equals("Staff")) {
+                    rt.put("staffCode", rs.getString("STAFF_CODE"));
+                    rt.put("staffName", rs.getString("STAFF_NAME"));
                 }
                 return rt;
             }
@@ -2913,6 +2920,30 @@ public class ReportDaoImpl implements ReportDao {
         }
 
         ClassPathResource classPathResource = new ClassPathResource("report/reportItemSalesAnalysis.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
+    
+    // Report Time Management by Fathur 22 Januari 2024 //
+    @Override
+    public JasperPrint jasperReportTimeManagement(Map<String, Object> param, Connection connection) throws IOException, JRException {
+        Map<String, Object> hashMap = new HashMap<>();
+        String reportName = "report/timeManagementAllUser.jrxml";
+        
+        hashMap.put("outletBrand", param.get("outletBrand"));
+        hashMap.put("fromDate", param.get("fromDate"));
+        hashMap.put("toDate", param.get("toDate"));
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("staffCode", param.get("staffCode"));
+        hashMap.put("userUpd", param.get("userUpd"));
+        hashMap.put("additionalQuery", " ");
+        
+        if(!param.get("staffCode").equals("Semua")) {
+            reportName = "report/timeManagementSelectedUser.jrxml";
+            hashMap.put("additionalQuery", " AND a.STAFF_ID = '" + param.get("staffCode")+ "' ");
+        }
+        
+        ClassPathResource classPathResource = new ClassPathResource(reportName);
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }
