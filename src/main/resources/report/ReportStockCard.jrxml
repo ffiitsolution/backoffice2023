@@ -1113,7 +1113,7 @@ FROM
 				<textElement textAlignment="Center">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Report Stock Card]]></text>
+				<text><![CDATA[REPORT STOCK CARD]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="49" y="80" width="283" height="11" uuid="8d67a94f-acc0-49eb-8fc2-59a71206989b"/>

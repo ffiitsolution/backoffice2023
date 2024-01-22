@@ -43,7 +43,8 @@
 	c.OUTLET_NAME,
 	c.ADDRESS_1,
 	c.ADDRESS_2,
-	c.PHONE
+	c.PHONE,
+	d.ITEM_COST
 FROM
 	(
 	SELECT
@@ -197,9 +198,13 @@ FROM
 LEFT JOIN
 	M_ITEM b ON
 	a.ITEM_CODE = b.ITEM_CODE
+LEFT JOIN
+	M_ITEM_COST d ON
+	a.ITEM_CODE = d.ITEM_CODE
 JOIN
 	M_OUTLET c ON
 	a.OUTLET_CODE = c.OUTLET_CODE
+WHERE b.STATUS = 'A' 
 GROUP BY
 	a.OUTLET_CODE,
 	a.ITEM_CODE,
@@ -210,7 +215,8 @@ GROUP BY
 	c.OUTLET_NAME,
 	c.ADDRESS_1,
 	c.ADDRESS_2,
-	c.PHONE
+	c.PHONE,
+	d.ITEM_COST
 ORDER BY
 	a.ITEM_CODE ASC]]>
 	</queryString>
@@ -239,6 +245,7 @@ ORDER BY
 	<field name="ADDRESS_1" class="java.lang.String"/>
 	<field name="ADDRESS_2" class="java.lang.String"/>
 	<field name="PHONE" class="java.lang.String"/>
+	<field name="ITEM_COST" class="java.math.BigDecimal"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -643,6 +650,13 @@ ORDER BY
 			<line>
 				<reportElement x="0" y="32" width="650" height="1" uuid="a8314217-c228-4771-8fa0-8d0879f9f997"/>
 			</line>
+			<textField pattern="#,##0">
+				<reportElement x="585" y="15" width="65" height="15" uuid="7c2cc36f-e2b6-4b69-b8c4-1a035c18faca"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ITEM_COST}]]></textFieldExpression>
+			</textField>
 		</band>
 	</detail>
 	<summary>

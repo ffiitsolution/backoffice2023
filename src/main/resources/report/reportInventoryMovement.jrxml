@@ -17,7 +17,7 @@
 		<defaultValueExpression><![CDATA["1 = 1"]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[SELECT
+		<![CDATA[SELECT * FROM (SELECT
 	a.OUTLET_CODE,
 	a.ITEM_CODE,
 	b.ITEM_DESCRIPTION,
@@ -189,7 +189,8 @@ LEFT JOIN
 	a.ITEM_CODE = b.ITEM_CODE
 JOIN
 	M_OUTLET c ON
-	a.OUTLET_CODE = c.OUTLET_CODE
+	a.OUTLET_CODE = c.OUTLET_CODE 
+WHERE b.STATUS = 'A'
 GROUP BY
 	a.OUTLET_CODE,
 	a.ITEM_CODE,
@@ -202,7 +203,7 @@ GROUP BY
 	c.ADDRESS_2,
 	c.PHONE
 ORDER BY
-	a.ITEM_CODE ASC]]>
+	a.ITEM_CODE ASC) WHERE QTY_IN <> 0 OR QTY_OUT <> 0]]>
 	</queryString>
 	<field name="OUTLET_CODE" class="java.lang.String"/>
 	<field name="ITEM_CODE" class="java.lang.String"/>
