@@ -14,7 +14,7 @@
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT a.DAY_SEQ, a.STAFF_ID, ms.STAFF_NAME,
-		mo.ADDRESS_1, mo.ADDRESS_2, a.OUTLET_CODE,  mo.OUTLET_NAME, mo."TYPE",
+		mo.ADDRESS_1, mo.ADDRESS_2, a.OUTLET_CODE,  mo.OUTLET_NAME, mo."TYPE", mo.PHONE,
     TO_CHAR(a.DATE_ABSEN, 'DD Mon YYYY') AS DATE_IN, TO_CHAR(TO_DATE(a.TIME_ABSEN, 'HH24MISS'), 'HH:MI:SS') AS TIME_IN,
     COALESCE(TO_CHAR(b.DATE_ABSEN, 'DD Mon YYYY'), '') AS DATE_OUT,
     CASE WHEN b.TIME_ABSEN IS NULL THEN '-' ELSE  TO_CHAR(TO_DATE(b.TIME_ABSEN, 'HH24MISS'), 'HH:MI:SS') end AS TIME_OUT, a.STATUS
@@ -39,6 +39,7 @@ ORDER BY a.STAFF_ID, a.DAY_SEQ]]>
 	<field name="ADDRESS_2" class="java.lang.String"/>
 	<field name="OUTLET_NAME" class="java.lang.String"/>
 	<field name="TYPE" class="java.lang.String"/>
+	<field name="PHONE" class="java.lang.String"/>
 	<group name="Group1">
 		<groupExpression><![CDATA[$F{DATE_IN}]]></groupExpression>
 		<groupHeader>
@@ -126,7 +127,7 @@ ORDER BY a.STAFF_ID, a.DAY_SEQ]]>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{OUTLET_NAME} + "-" + $F{TYPE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{OUTLET_NAME} + " - " + $F{TYPE}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="59" y="19" width="122" height="11" uuid="1744f5ce-46a7-4902-b607-491ce84aa38e"/>
@@ -143,7 +144,10 @@ ORDER BY a.STAFF_ID, a.DAY_SEQ]]>
 				<textFieldExpression><![CDATA[$F{ADDRESS_2}]]></textFieldExpression>
 			</textField>
 			<image>
-				<reportElement x="0" y="0" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="20d3bcff-f0d7-478c-a02f-0749c04cea22"/>
+				<reportElement x="0" y="0" width="58" height="48" isPrintWhenDetailOverflows="true" uuid="20d3bcff-f0d7-478c-a02f-0749c04cea22">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
 			</image>
 			<line>
@@ -256,6 +260,13 @@ ORDER BY a.STAFF_ID, a.DAY_SEQ]]>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="59" y="40" width="142" height="11" isPrintWhenDetailOverflows="true" uuid="cbd70421-295a-42d7-abac-08b35bacfb2f"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Phone : " + $F{PHONE}]]></textFieldExpression>
 			</textField>
 		</band>
 	</columnHeader>
