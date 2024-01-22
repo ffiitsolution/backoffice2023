@@ -188,19 +188,12 @@ order by A.MPCS_DATE, A.MPCS_GROUP]]>
 				</textElement>
 				<text><![CDATA[REPORT DELETE MPCS PRODUKSI]]></text>
 			</staticText>
-			<staticText>
-				<reportElement x="0" y="79" width="46" height="11" uuid="1fd47466-5b3f-47a4-a4de-93e2c65c45d3"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Date From : ]]></text>
-			</staticText>
 			<textField>
-				<reportElement x="47" y="79" width="287" height="11" uuid="ceb8922b-cf0d-42a7-9c2b-ed64ad7cb7ac"/>
+				<reportElement x="1" y="80" width="287" height="11" uuid="ceb8922b-cf0d-42a7-9c2b-ed64ad7cb7ac"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{fromDate}))
+				<textFieldExpression><![CDATA["Date From : " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{fromDate}))
 + " To " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{toDate}))]]></textFieldExpression>
 			</textField>
 			<textField>
@@ -290,13 +283,6 @@ order by A.MPCS_DATE, A.MPCS_GROUP]]>
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[MPCS Group]]></text>
-			</staticText>
-			<staticText>
-				<reportElement mode="Transparent" x="470" y="75" width="81" height="15" uuid="1029ec8f-98b4-402b-8b3e-9a38a8ec0c8a"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Type Report : Rekap]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="81" y="42" width="122" height="11" uuid="ae8a948f-452f-4fd3-b55e-296957136a40"/>

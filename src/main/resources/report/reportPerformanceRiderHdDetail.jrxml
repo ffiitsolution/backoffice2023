@@ -207,21 +207,14 @@
 				<textElement textAlignment="Center">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Report Performance Rider HD]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="76" width="22" height="11" uuid="1fd47466-5b3f-47a4-a4de-93e2c65c45d3"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Date : ]]></text>
+				<text><![CDATA[REPORT PERFORMANCE RIDER HD ]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="24" y="76" width="287" height="11" uuid="ceb8922b-cf0d-42a7-9c2b-ed64ad7cb7ac"/>
+				<reportElement x="0" y="76" width="287" height="11" uuid="ceb8922b-cf0d-42a7-9c2b-ed64ad7cb7ac"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{periode}))]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Periode : " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{periode}))]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="686" y="1" width="114" height="11" uuid="fbc60455-869e-469f-8d2e-6daadf1e7e4a"/>
@@ -383,6 +376,27 @@
 				</textElement>
 				<text><![CDATA[Del Time S]]></text>
 			</staticText>
+			<textField>
+				<reportElement x="60" y="40" width="122" height="11" uuid="179e17c2-5611-4d9d-9522-be9007ad80eb"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PHONE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="699" y="76" width="68" height="11" uuid="4efdab03-1d9c-4845-9045-bcbce093c905"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Tipe Report]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="767" y="76" width="127" height="11" uuid="a316958b-00ed-4fde-9a33-a37e993a0abb"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[: Detail]]></text>
+			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
@@ -507,6 +521,19 @@
 		<band splitType="Stretch"/>
 	</pageFooter>
 	<summary>
-		<band height="15" splitType="Stretch"/>
+		<band height="18" splitType="Stretch">
+			<line>
+				<reportElement x="1" y="2" width="799" height="1" uuid="7291ef13-9ac7-475c-bd4d-024c62a16883"/>
+			</line>
+			<staticText>
+				<reportElement mode="Transparent" x="694" y="3" width="106" height="15" uuid="e9cfa992-64c0-4759-b00f-cc03374c383e">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[-- End Of Report --]]></text>
+			</staticText>
+		</band>
 	</summary>
 </jasperReport>

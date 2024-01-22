@@ -252,7 +252,7 @@ FROM (
 	</background>
 	<columnHeader>
 		<band height="110" splitType="Stretch">
-			<image>
+			<image scaleImage="FillFrame">
 				<reportElement x="1" y="0" width="48" height="48" isPrintWhenDetailOverflows="true" uuid="e97813fe-6bdd-4579-8fc4-915ca01dc9f1">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -292,21 +292,14 @@ FROM (
 				<textElement textAlignment="Center">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Report Performance Rider HD]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="76" width="22" height="11" uuid="1fd47466-5b3f-47a4-a4de-93e2c65c45d3"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Date : ]]></text>
+				<text><![CDATA[REPORT PERFORMANCE RIDER HD]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="24" y="76" width="287" height="11" uuid="ceb8922b-cf0d-42a7-9c2b-ed64ad7cb7ac"/>
+				<reportElement x="0" y="76" width="287" height="11" uuid="ceb8922b-cf0d-42a7-9c2b-ed64ad7cb7ac"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{periode}))]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Periode : " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{periode}))]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="441" y="0" width="114" height="11" uuid="fbc60455-869e-469f-8d2e-6daadf1e7e4a"/>
@@ -409,13 +402,20 @@ FROM (
 				</textElement>
 				<text><![CDATA[Delivery Time]]></text>
 			</staticText>
+			<textField>
+				<reportElement x="60" y="40" width="122" height="11" uuid="f65b8b9e-f6a3-4ddd-89f9-4a58bf779255"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PHONE}]]></textFieldExpression>
+			</textField>
 		</band>
 	</columnHeader>
 	<pageFooter>
 		<band splitType="Stretch"/>
 	</pageFooter>
 	<summary>
-		<band height="61" splitType="Stretch">
+		<band height="81" splitType="Stretch">
 			<staticText>
 				<reportElement mode="Transparent" x="0" y="1" width="75" height="15" uuid="cb2116b5-9fca-43dc-bdfb-36171bb7b6f9">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -623,6 +623,18 @@ FROM (
 				</textElement>
 				<textFieldExpression><![CDATA[$F{SUM_DEL_TIME}]]></textFieldExpression>
 			</textField>
+			<line>
+				<reportElement x="0" y="64" width="552" height="1" uuid="6c3b1f39-8169-4645-85dd-4f6067b9f5a8"/>
+			</line>
+			<staticText>
+				<reportElement mode="Transparent" x="447" y="66" width="106" height="15" uuid="866bf21e-e883-420f-a5a3-59238ece44a0">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[-- End Of Report --]]></text>
+			</staticText>
 		</band>
 	</summary>
 </jasperReport>

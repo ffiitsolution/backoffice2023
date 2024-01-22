@@ -180,19 +180,12 @@ ORDER BY A.MPCS_DATE, a.TIME_UPD]]>
 				</textElement>
 				<text><![CDATA[REPORT DELETE MPCS PRODUKSI]]></text>
 			</staticText>
-			<staticText>
-				<reportElement x="0" y="79" width="46" height="11" uuid="1fd47466-5b3f-47a4-a4de-93e2c65c45d3"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Date From : ]]></text>
-			</staticText>
 			<textField>
-				<reportElement x="47" y="79" width="287" height="11" uuid="ceb8922b-cf0d-42a7-9c2b-ed64ad7cb7ac"/>
+				<reportElement x="1" y="79" width="287" height="11" uuid="ceb8922b-cf0d-42a7-9c2b-ed64ad7cb7ac"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{fromDate}))
+				<textFieldExpression><![CDATA["Date From : " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{fromDate}))
 + " To " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{toDate}))]]></textFieldExpression>
 			</textField>
 			<textField>
@@ -283,13 +276,6 @@ ORDER BY A.MPCS_DATE, a.TIME_UPD]]>
 				</textElement>
 				<text><![CDATA[MPCS Group]]></text>
 			</staticText>
-			<staticText>
-				<reportElement mode="Transparent" x="470" y="75" width="81" height="15" uuid="1029ec8f-98b4-402b-8b3e-9a38a8ec0c8a"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Type Report : Detail]]></text>
-			</staticText>
 			<textField>
 				<reportElement x="81" y="42" width="122" height="11" uuid="ae8a948f-452f-4fd3-b55e-296957136a40"/>
 				<textElement>
@@ -297,6 +283,20 @@ ORDER BY A.MPCS_DATE, a.TIME_UPD]]>
 				</textElement>
 				<textFieldExpression><![CDATA["Phone : " + $F{PHONE}]]></textFieldExpression>
 			</textField>
+			<staticText>
+				<reportElement x="452" y="79" width="66" height="11" uuid="dc16c208-d99b-44d7-9d4b-d545f829430b"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Tipe Report]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="518" y="79" width="125" height="11" uuid="b2c17dc7-38b3-445c-85dc-e08a9a74855f"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[: Detail]]></text>
+			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
