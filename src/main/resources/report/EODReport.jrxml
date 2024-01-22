@@ -75,26 +75,36 @@ FROM
 		T_POS_BILL
 WHERE
 		OUTLET_CODE = $P{outletCode}
-	AND TRANS_DATE BETWEEN '29 Nov 2023' 
+	AND TRANS_DATE BETWEEN $P{transDate} 
 AND $P{transDate}
 	AND POS_CODE = POS.POS_CODE
 ) AS BILL_NO
 FROM (
 	SELECT
-	POS_CODE,
-	COUNT(0) TTL_BILL,
-	SUM(TOTAL_ITEM) TTL_ITEM,
-	SUM(TOTAL_AMOUNT) TTL_AMT
+	a.POS_CODE,
+		COUNT(0) TTL_BILL,
+		b.total_amount AS TTL_AMT,
+	b.qty AS TTL_ITEM
 FROM
-	T_POS_BILL
+	T_POS_BILL a
+JOIN
+		(
+	SELECT
+		POS_CODE ,
+		sum (QTY_EI) + sum (qty_ta) AS qty,sum(AMT_EI)+SUM(AMT_TA) AS total_amount
+	FROM
+		TMP_SALES_BY_ITEM tsbi
+	WHERE
+		TRANS_DATE  BETWEEN $P{transDate} AND $P{transDate} 
+	GROUP BY
+		POS_CODE) b
+		ON
+	a.pos_code = b.pos_code
 WHERE
 	OUTLET_CODE = $P{outletCode}
-	AND TRANS_DATE BETWEEN 
- 	$P{transDate} AND $P{transDate}
+	AND TRANS_DATE BETWEEN $P{transDate} AND $P{transDate}
 GROUP BY
-	POS_CODE
-ORDER BY
-	POS_CODE) POS]]>
+	a.POS_CODE,b.total_amount,b.qty ORDER BY a.POS_CODE ) POS]]>
 		</queryString>
 		<field name="POS_CODE" class="java.lang.String"/>
 		<field name="TTL_BILL" class="java.math.BigDecimal"/>
@@ -113,17 +123,53 @@ ORDER BY
 		</parameter>
 		<queryString language="SQL">
 			<![CDATA[SELECT
-	itm.GROUP_CODE,
-	itm.TOTAL_QTY,
-	itm.TOTAL_AMT,
-	COALESCE(x.description, ' ') AS DESCRIPTION,
-	(TOTAL_QTY / sum(TOTAL_QTY) OVER()) * 100 AS QTY_PERC,
-	(TOTAL_AMT / sum(TOTAL_AMT) OVER()) * 100 AS AMT_PERC
-FROM (SELECT GROUP_CODE, SUM(QTY_EI+QTY_TA) TOTAL_QTY, SUM(AMT_EI+AMT_TA) AS TOTAL_AMT FROM TMP_SALES_BY_ITEM 
-WHERE OUTLET_CODE = $P{outletCode} AND TRANS_DATE BETWEEN $P{transDate} AND 
-$P{transDate} GROUP BY GROUP_CODE ) itm LEFT JOIN m_global x ON itm.GROUP_CODE = x.code 
-ORDER BY
-	GROUP_CODE ASC]]>
+	GROUP_CODE,
+	TOTAL_QTY,
+	TOTAL_AMT,
+	DESCRIPTION,
+	(TOTAL_QTY / QTY * 100) AS QTY_PERC,
+	(TOTAL_AMT / GROSSSALES * 100 ) AS AMT_PERC
+FROM
+	(
+	SELECT
+		'0208' AS OUTLET_CODE,
+		A.GROUP_CODE,
+		A.TOTAL_QTY,
+		A.TOTAL_AMT,
+		COALESCE(X.DESCRIPTION, ' ') AS DESCRIPTION,
+		GROSSSALES,
+		QTY
+	FROM
+		(
+		SELECT
+			$P{outletCode} AS OUTLET_CODE,
+			GROUP_CODE,
+			SUM(QTY_EI + QTY_TA) TOTAL_QTY,
+			SUM(AMT_EI + AMT_TA) AS TOTAL_AMT
+		FROM
+			TMP_SALES_BY_ITEM
+		WHERE
+			OUTLET_CODE = $P{outletCode}
+			AND TRANS_DATE BETWEEN $P{transDate} AND 
+$P{transDate}
+		GROUP BY
+			GROUP_CODE ) A
+	LEFT JOIN M_GLOBAL X ON
+		A.GROUP_CODE = X.CODE
+	LEFT JOIN (
+		SELECT
+			$P{outletCode} AS OUTLET_CODE,
+			SUM(AMT_EI)+ SUM(AMT_TA) AS GROSSSALES,
+			SUM(QTY_EI)+ SUM(QTY_TA) AS QTY
+		FROM
+			TMP_SALES_BY_ITEM
+		WHERE
+			TRANS_DATE = $P{transDate}) C
+	ON
+		A.OUTLET_CODE = C.OUTLET_CODE
+	ORDER BY
+		GROUP_CODE ASC	
+)]]>
 		</queryString>
 		<field name="GROUP_CODE" class="java.lang.String"/>
 		<field name="TOTAL_QTY" class="java.math.BigDecimal"/>
