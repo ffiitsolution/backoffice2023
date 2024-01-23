@@ -122,14 +122,14 @@ ORDER BY
 				<text><![CDATA[Periode :]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="33" y="110" width="51" height="15" uuid="2016b64e-3feb-403f-9b82-c74c928569b3"/>
+				<reportElement x="33" y="110" width="100" height="15" uuid="2016b64e-3feb-403f-9b82-c74c928569b3"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{fromDate}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="99" y="110" width="51" height="15" uuid="c4b82015-0528-49fc-8ff4-e5f29ba4d29d"/>
+				<reportElement x="96" y="110" width="100" height="15" uuid="c4b82015-0528-49fc-8ff4-e5f29ba4d29d"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
@@ -177,7 +177,7 @@ ORDER BY
 				<text><![CDATA[Quantity]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="86" y="110" width="11" height="15" uuid="25149f58-15e6-4a55-b0a8-7518f5a41f8b"/>
+				<reportElement x="85" y="110" width="11" height="15" uuid="25149f58-15e6-4a55-b0a8-7518f5a41f8b"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>

@@ -175,7 +175,7 @@ FROM
 					<textElement verticalAlignment="Middle">
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[new DecimalFormat("#,##0.0000").format($F{QTY_STOCK})]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$F{QTY_STOCK}]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupHeader>
@@ -340,7 +340,7 @@ FROM
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.0000").format($F{QTY_PRODUCT})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{QTY_PRODUCT}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
