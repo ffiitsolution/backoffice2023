@@ -32,6 +32,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -1390,7 +1391,6 @@ public class ViewDoaImpl implements ViewDao {
         prm.put("cond", balance.get("cond"));
         prm.put("status", balance.get("status"));
         prm.put("aplikasi", balance.get("aplikasi"));
-        System.out.println(prm);
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
@@ -1401,6 +1401,133 @@ public class ViewDoaImpl implements ViewDao {
                 return rt;
             }
         });
+        // jika kosong/belum ada, insert baru
+        if(list.isEmpty()){
+            String qryInsert = """
+                INSERT INTO M_MENUDTL
+                (TYPE_ID, MENU_ID, DESCRIPTION, ID_NO, APLIKASI, DBASE, STATUS, TYPE_MENU)
+                SELECT 'PROGRAM', 'POS0001', 'Cashier By Date', 1, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0001')
+                UNION ALL
+                SELECT 'PROGRAM', 'POS0002', 'Laporan Pemakaian Sales', 2, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0002')
+                UNION ALL
+                SELECT 'PROGRAM', 'POS0003', 'Report Menu & Detail Modifier', 3, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0003')
+                UNION ALL
+                SELECT 'PROGRAM', 'POS0005', 'Sales by Date', 5, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0005')
+                UNION ALL
+                SELECT 'PROGRAM', 'POS0006', 'Sales by Item', 6, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0006')
+                UNION ALL
+                SELECT 'PROGRAM', 'POS0007', 'Sales by Time', 7, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0007')
+                UNION ALL
+                SELECT 'PROGRAM', 'POS0008', 'Sales Mix by Department', 8, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0008')
+                UNION ALL
+                SELECT 'PROGRAM', 'POS0009', 'Receipt Maintenance', 9, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0009')
+                UNION ALL
+                SELECT 'PROGRAM', 'POS0010', 'Summary Sales by Item Code', 10, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0010')
+                UNION ALL
+                SELECT 'PROGRAM', 'POS0011', 'Transaction by Payment Type', 11, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0011')
+                UNION ALL
+                SELECT 'PROGRAM', 'POS0012', 'Sales Void', 12, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0012')
+                UNION ALL
+                SELECT 'PROGRAM', 'POS0013', 'Item Selected by Time', 13, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0013')
+                UNION ALL
+                SELECT 'PROGRAM', 'POS0014', 'Laporan Item Selected By Time', 14, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0014')
+                UNION ALL
+                SELECT 'PROGRAM', 'POS0015', 'Refund Report', 15, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0015')
+                UNION ALL
+                SELECT 'PROGRAM', 'POS0016', 'Laporan Down Payment (DP)', 16, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0016')
+                UNION ALL
+                SELECT 'PROGRAM', 'POS0017', 'Actual Stock Opname', 17, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0017')
+                UNION ALL
+                SELECT 'PROGRAM', 'POS0018', 'End of Day', 18, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0018')
+                UNION ALL
+                SELECT 'PROGRAM', 'POS0019', 'Laporan Selected by Item Detail', 19, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0019')
+                UNION ALL
+                SELECT 'PROGRAM', 'POS0020', 'Laporan Selected by Item Produksi', 20, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0020')
+                UNION ALL
+                SELECT 'PROGRAM', 'POS0021', 'Laporan Product Efficiency', 21, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0021')
+                UNION ALL
+                SELECT 'PROGRAM', 'POS0022', 'Laporan Item Selected By Product', 22, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0022')
+                UNION ALL
+                SELECT 'PROGRAM', 'POS0023', 'Report Pajak', 23, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0023')
+                UNION ALL
+                SELECT 'PROGRAM', 'POS0024', 'Item Sales Analisis', 24, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0024')
+                UNION ALL
+                SELECT 'PROGRAM', 'INV0001', 'Report Stock Card', 1, 'INV', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV0001')
+                UNION ALL
+                SELECT 'PROGRAM', 'INV0002', 'Report Stock', 2, 'INV', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV0002')
+                UNION ALL
+                SELECT 'PROGRAM', 'INV0003', 'Free Meal Dept', 3, 'INV', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV0003')
+                UNION ALL
+                SELECT 'PROGRAM', 'INV0004', 'Listing Recipe', 4, 'INV', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV0004')
+                UNION ALL
+                SELECT 'PROGRAM', 'INV0005', 'Item Barang', 5, 'INV', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV0005')
+                UNION ALL
+                SELECT 'PROGRAM', 'INV0006', 'Delivery Order', 6, 'INV', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV0006')
+                UNION ALL
+                SELECT 'PROGRAM', 'INV0007', 'Wastage', 7, 'INV', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV0007')
+                UNION ALL
+                SELECT 'PROGRAM', 'INV0008', 'Return Order', 8, 'INV', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV0008')
+                UNION ALL
+                SELECT 'PROGRAM', 'INV0009', 'Receiving', 9, 'INV', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV0009')
+                UNION ALL
+                SELECT 'PROGRAM', 'INV00010', 'Order Entry', 10, 'INV', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV00010')
+                UNION ALL
+                SELECT 'PROGRAM', 'INV00011', 'Inventory Movement', 11, 'INV', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV00011')
+                UNION ALL
+                SELECT 'PROGRAM', 'INV00012', 'Laporan Produksi Aktual', 12, 'INV', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV00012')
+                UNION ALL
+                SELECT 'PROGRAM', 'INV00013', 'Laporan Delete MPCS Produksi', 13, 'INV', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV00013')
+                UNION ALL
+                SELECT 'PROGRAM', 'INV00014', 'Daftar Menu', 14, 'INV', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV00014')
+                UNION ALL
+                SELECT 'PROGRAM', 'INV00015', 'Laporan Produksi', 15, 'INV', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV00015')
+                """;
+            System.err.println("insert New Menu report");
+            try{
+                jdbcTemplate.update(qryInsert, new HashMap());
+                return listGlobal(balance);
+            } catch (DataAccessException e) {
+                System.err.println("Error insert New Menu report: " + e.getMessage());
+            }
+        }
         return list;
     }
     ///////////////////done

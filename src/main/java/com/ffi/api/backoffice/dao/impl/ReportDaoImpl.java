@@ -1845,7 +1845,7 @@ public class ReportDaoImpl implements ReportDao {
 
         StringBuilder queryDataReceipt = new StringBuilder();
         queryDataReceipt.append("SELECT UTM.POS_CODE_NOW, JON.POS_DESCRIPTION, UTM.MIN_NOW, UTM.MAX_NOW, UTM.MIN_AGO, " +
-                "UTM.MAX_AGO FROM (");
+                "UTM.MAX_AGO, mo.OUTLET_CODE, mo.OUTLET_NAME, mo.ADDRESS_1, mo.ADDRESS_2, mo.PHONE, ms.STAFF_NAME AS PRINT_NAME FROM (");
         queryDataReceipt.append("SELECT * FROM ( SELECT '").append(listPos.get(0).get("posCode")).append("'" +
                         "AS POS_CODE_NOW , MIN(BILL_NO) AS MIN_NOW, MAX(BILL_NO) AS MAX_NOW FROM T_POS_BILL WHERE BILL_NO LIKE '%-%' AND TRANS_DATE " +
                         "= '").append(param.get("periode")).append("' AND POS_CODE = '").append(listPos.get(0).get("posCode"))
@@ -1869,7 +1869,7 @@ public class ReportDaoImpl implements ReportDao {
                     .append("')B ON A.POS_CODE_NOW = B.POS_CODE_AGO");
         }
         queryDataReceipt.append(") UTM LEFT JOIN M_POS JON ON UTM.POS_CODE_NOW = JON.POS_CODE AND JON.OUTLET_CODE = '")
-                .append(param.get("outletCode")).append("' WHERE UTM.POS_CODE_NOW BETWEEN $P{posCode1} AND $P{posCode2}" +
+                .append(param.get("outletCode")).append("' LEFT JOIN M_OUTLET mo ON mo.OUTLET_CODE = '").append(param.get("outletCode")).append("' LEFT JOIN M_STAFF ms ON ms.STAFF_CODE = '").append(param.get("user")).append("' WHERE UTM.POS_CODE_NOW BETWEEN $P{posCode1} AND $P{posCode2}" +
                         "ORDER BY UTM.POS_CODE_NOW ASC");
 
         Map<String, Object> hashMap = new HashMap<>();
