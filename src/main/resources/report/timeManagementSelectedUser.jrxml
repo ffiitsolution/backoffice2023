@@ -31,6 +31,7 @@ ON
 LEFT JOIN M_OUTLET mo ON mo.OUTLET_CODE = $P{outletCode}
 LEFT JOIN M_STAFF ms ON a.staff_id = ms.STAFF_CODE
 WHERE a.SEQ_NO = 1 $P!{additionalQuery}
+AND a.DATE_ABSEN BETWEEN $P{fromDate} AND $P{toDate}
 ORDER BY a.STAFF_ID, a.DAY_SEQ]]>
 	</queryString>
 	<field name="DATE_IN" class="java.lang.String"/>
