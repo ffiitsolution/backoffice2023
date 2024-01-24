@@ -265,7 +265,7 @@
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Jam Cetak : " + new SimpleDateFormat("hh:mm:ss").format(new Date())]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Jam Cetak : " + new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement x="0" y="77" width="555" height="1" uuid="f3cc73a6-7ccc-476f-92fd-70b836f4ab32"/>

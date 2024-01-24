@@ -149,7 +149,7 @@ WHERE
 			</textField>
 			<textField pattern="HH.mm">
 				<reportElement x="453" y="48" width="100" height="15" uuid="96ebc05b-ba75-455d-8b2f-7218b6ba4e4d"/>
-				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("hh:mm:ss").format(new Date())]]></textFieldExpression>
+				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="6" y="113" width="65" height="25" uuid="e1eb0179-eec4-4ef4-9c03-99cd318d7653"/>

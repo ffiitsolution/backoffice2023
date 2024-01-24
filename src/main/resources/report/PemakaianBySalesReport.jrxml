@@ -770,7 +770,7 @@ ORDER BY   ITEM ASC]]>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("hh:mm:ss").format(new Date())]]></textFieldExpression>
+				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="421" y="0" width="66" height="11" uuid="6db7c404-8b4a-4fad-8957-14785f1d668d"/>

@@ -258,7 +258,7 @@ LEFT JOIN M_OUTLET b ON
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("hh:mm:ss").format(new Date())]]></textFieldExpression>
+				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="421" y="30" width="66" height="11" uuid="aa1ff340-d193-4208-a0b0-adfd94e99464"/>

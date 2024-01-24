@@ -287,7 +287,7 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.DELIVERY_DATE BETWEEN $P{fromDate} AND
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("hh:mm:ss").format(new Date())]]></textFieldExpression>
+				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement x="1" y="92" width="574" height="1" uuid="acca77af-7fde-4636-a431-7c763e07e2fc"/>

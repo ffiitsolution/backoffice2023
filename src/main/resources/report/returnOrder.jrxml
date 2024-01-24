@@ -347,7 +347,7 @@ ORDER BY a.RETURN_DATE, a.RETURN_NO, e.ITEM_CODE ASC]]>
                 <textElement>
                     <font size="8"/>
                 </textElement>
-                <textFieldExpression><![CDATA["Jam Cetak : " + new SimpleDateFormat("hh:mm:ss").format(new Date())]]></textFieldExpression>
+                <textFieldExpression><![CDATA["Jam Cetak : " + new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
             </textField>
             <textField>
                 <reportElement x="438" y="60" width="114" height="11" uuid="9a944fca-f0aa-45eb-bb6e-7404e5c775c1"/>

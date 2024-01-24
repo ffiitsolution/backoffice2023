@@ -324,7 +324,7 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.TYPE_TRANS IN ($P{typeTrans1}, $P{type
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("hh:mm:ss").format(new Date())]]></textFieldExpression>
+				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="495" y="0" width="114" height="11" uuid="c50f7b4f-1e4d-4fa1-9b9f-87e69afc533f"/>
