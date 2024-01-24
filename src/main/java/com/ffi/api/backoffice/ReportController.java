@@ -446,6 +446,27 @@ public class ReportController {
     }
 
     /////////////////////////////////DONE///////////////////////////////////////
+    /////////////// NEW METHOD REPORT BY DATE DANI 23 JAN 2024 ////
+    @CrossOrigin
+    @RequestMapping(value = "/report-sales-by-date-new-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Mepampilkan report sales by date", response = Object.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    public ResponseEntity<byte[]> jesperReportSalesDateNew(@RequestBody String param) throws SQLException, JRException, IOException {
+        Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
+        Gson gsn = new Gson();
+        Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        JasperPrint jasperPrint = reportServices.jasperReportSalesByDateNew(prm, conn);
+        conn.close();
+        byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=salesByDate.pdf");
+
+        return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+    }
+
+    /////////////////////////////////DONE///////////////////////////////////////
     ///////////////NEW METHOD REPORT BY PASCA 26 August 2023////
     @CrossOrigin
     @RequestMapping(value = "/report-sales-by-item-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -1130,9 +1151,12 @@ public class ReportController {
 
         prm.put("startDate", prm.get("fromDate"));
         prm.put("endDate", prm.get("toDate"));
-        prm.put("customerName", "%"+ prm.get("customerName")+"%");                
-        prm.put("orderType", "%"+prm.get("orderType")+"%");                
-        prm.put("bookStatus", "%"+prm.get("bookStatus")+"%");  
+        String customerName = (String) prm.get("customerName");
+        String orderType = (String) prm.get("orderType");
+        String bookStatus = (String) prm.get("bookStatus");
+        prm.put("customerName", "%"+ (customerName != null && customerName.equalsIgnoreCase("All") ? "" : customerName) +"%");                
+        prm.put("orderType", "%"+ (orderType != null && orderType.equalsIgnoreCase("All") ? "" : orderType) +"%");                
+        prm.put("bookStatus", "%"+ (bookStatus != null && bookStatus.equalsIgnoreCase("All") ? "" : bookStatus)+"%");  
         Integer cekDataReport = viewServices.cekDataReport(prm, "DownPayment");
         if (cekDataReport > 0) {
             JasperPrint jasperPrint = reportServices.jasperReportDownPayment(prm, conn);

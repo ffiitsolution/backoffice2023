@@ -109,6 +109,11 @@ public class ReportServices {
     }
     ///////////////////////END//////////////////////////////
     ///////////////NEW METHOD REPORT BY PASCA 25 August 2023////
+    public JasperPrint jasperReportSalesByDateNew(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        return dao.jasperReportSalesByDateNew(param, connection);
+    }
+    ///////////////////////END//////////////////////////////
+    ///////////////NEW METHOD REPORT BY PASCA 25 August 2023////
     public JasperPrint jasperReportSalesByDate(Map<String, Object> param, Connection connection) throws JRException, IOException {
         return dao.jasperReportSalesByDate(param, connection);
     }

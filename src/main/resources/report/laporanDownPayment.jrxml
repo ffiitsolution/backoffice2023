@@ -169,34 +169,6 @@
 				</staticText>
 			</band>
 		</groupHeader>
-		<groupFooter>
-			<band height="15">
-				<printWhenExpression><![CDATA[$P{detail}.equals(1.0)]]></printWhenExpression>
-				<textField>
-					<reportElement x="193" y="0" width="74" height="15" uuid="ef843161-618e-4263-b2e8-3bad21df8679">
-						<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					</reportElement>
-					<textElement textAlignment="Right">
-						<font size="8"/>
-					</textElement>
-					<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($F{PAYMENT_DATE})]]></textFieldExpression>
-				</textField>
-				<textField>
-					<reportElement x="270" y="0" width="74" height="14" uuid="b051d31b-1e4a-48a3-ba6a-29cd4ea8a71b"/>
-					<textElement textAlignment="Right">
-						<font size="8"/>
-					</textElement>
-					<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{TOTAL_AMOUNT})]]></textFieldExpression>
-				</textField>
-				<textField>
-					<reportElement x="150" y="-1" width="40" height="15" uuid="187695f9-b73d-4767-986a-0f4e23f7539f"/>
-					<textElement textAlignment="Center">
-						<font size="8"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$F{DP_SEQ}]]></textFieldExpression>
-				</textField>
-			</band>
-		</groupFooter>
 	</group>
 	<background>
 		<band splitType="Stretch"/>
@@ -243,56 +215,56 @@
 				<textFieldExpression><![CDATA[$F{OUTLET_CODE_ADDR_2}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="470" y="94" width="119" height="11" uuid="3f148db7-608d-486e-a8b1-16d11b34a4c3"/>
+				<reportElement x="476" y="20" width="119" height="11" uuid="3f148db7-608d-486e-a8b1-16d11b34a4c3"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="387" y="74" width="84" height="11" uuid="f13316a1-ffad-42f6-ac39-cad93c1374af"/>
+				<reportElement x="393" y="0" width="84" height="11" uuid="f13316a1-ffad-42f6-ac39-cad93c1374af"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Halaman]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="387" y="104" width="84" height="11" uuid="97c73347-6237-48db-a592-dd43da29b39a"/>
+				<reportElement x="393" y="30" width="84" height="11" uuid="97c73347-6237-48db-a592-dd43da29b39a"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Jam Cetak]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="387" y="84" width="84" height="11" uuid="170bf558-ddc8-4af5-8090-fb3135928e1e"/>
+				<reportElement x="393" y="10" width="84" height="11" uuid="170bf558-ddc8-4af5-8090-fb3135928e1e"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[User Cetak]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="470" y="84" width="119" height="11" uuid="b24b80c1-6aae-46d4-8048-8cb347a4c02f"/>
+				<reportElement x="476" y="10" width="119" height="11" uuid="b24b80c1-6aae-46d4-8048-8cb347a4c02f"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + $P{user}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="387" y="94" width="84" height="11" uuid="0a36322d-e036-4df9-9693-f85fa631b3fb"/>
+				<reportElement x="393" y="20" width="84" height="11" uuid="0a36322d-e036-4df9-9693-f85fa631b3fb"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Tanggal Cetak]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="470" y="104" width="119" height="11" uuid="d755b18f-f159-430e-9d73-773a456afb7f"/>
+				<reportElement x="476" y="30" width="119" height="11" uuid="d755b18f-f159-430e-9d73-773a456afb7f"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("hh:mm:ss a").format(new Date())]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="470" y="74" width="119" height="11" uuid="d45bfdb2-a045-40a3-a678-8841f1856bd9"/>
+				<reportElement x="476" y="0" width="119" height="11" uuid="d45bfdb2-a045-40a3-a678-8841f1856bd9"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -416,11 +388,6 @@
 				</textElement>
 				<textFieldExpression><![CDATA[": " + (("%%".equals($P{bookStatus}) ) ? "Semua" :  $F{BOOK_STATUS})]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="480" y="5" width="88" height="30" uuid="47ae32a0-b7e3-430f-a25a-b0cfb8027e7b"/>
-				<textElement textAlignment="Center"/>
-				<textFieldExpression><![CDATA["-- Report DP --"]]></textFieldExpression>
-			</textField>
 			<staticText>
 				<reportElement x="430" y="124" width="78" height="30" uuid="358b1cbd-7af6-42be-8686-206c2a49d1a5"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
@@ -428,13 +395,55 @@
 				</textElement>
 				<text><![CDATA[Total DP Paid]]></text>
 			</staticText>
+			<staticText>
+				<reportElement x="247" y="50" width="92" height="20" uuid="04862617-a37f-44d3-983f-ec6137d98b99"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[REPORT DP]]></text>
+			</staticText>
 		</band>
 	</columnHeader>
+	<detail>
+		<band height="16">
+			<printWhenExpression><![CDATA[$P{detail}.equals(1.0)]]></printWhenExpression>
+			<textField>
+				<reportElement x="272" y="2" width="74" height="14" uuid="e65174bf-9715-46b9-a08b-c0a984ff56d5"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{TOTAL_AMOUNT})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="155" y="2" width="40" height="14" uuid="8ee4af36-5fe2-4496-a4d8-f888278926e3"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DP_SEQ}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="198" y="2" width="74" height="14" uuid="bb974676-3a07-4b3a-b455-5b0eba86a24f">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($F{PAYMENT_DATE})]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
 	<summary>
-		<band height="15" splitType="Stretch">
+		<band height="17" splitType="Stretch">
 			<line>
 				<reportElement x="0" y="1" width="576" height="1" uuid="99cb9094-7798-44c9-881d-aa843a94d53d"/>
 			</line>
+			<staticText>
+				<reportElement x="475" y="3" width="100" height="14" uuid="9841c2ae-20d8-450c-97f5-18facb7654b0"/>
+				<textElement textAlignment="Right">
+					<font isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[-- End Of Report --]]></text>
+			</staticText>
 		</band>
 	</summary>
 </jasperReport>

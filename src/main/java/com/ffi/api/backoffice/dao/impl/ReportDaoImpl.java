@@ -1456,6 +1456,13 @@ public class ReportDaoImpl implements ReportDao {
     }
 
     @Override
+    public JasperPrint jasperReportSalesByDateNew(Map<String, Object> param, Connection connection) throws IOException, JRException {
+        ClassPathResource classPathResource = new ClassPathResource("report/laporanSalesDate.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, param, connection);
+    }
+
+    @Override
     public JasperPrint jasperReportSalesByItem(Map<String, Object> param, Connection connection) throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
         hashMap.put("outletBrand", param.get("outletBrand"));
@@ -2788,15 +2795,15 @@ public class ReportDaoImpl implements ReportDao {
      ///////////////NEW METHOD REPORT EOD by Dani 16 Januari 2024////
      @Override
      public JasperPrint jasperReportEod(Map<String, Object> param, Connection connection) throws IOException, JRException {
-        String query1 = "SELECT D.*, (TAXABLE + tax + PEMBULATAN) AS GROSS_SALES FROM ( SELECT (SUM(TOTAL_AMOUNT) - SUM(TOTAL_DISCOUNT)) TAXABLE, "
-        +" SUM(TOTAL_TAX) TAX, "
-        +" SUM(TOTAL_ROUNDING) PEMBULATAN, "
-        +" SUM(TOTAL_CHARGE) BIAYA_ANTAR, "
-        +" SUM(TOTAL_REFUND) REFUND, "
-        +" SUM(TOTAL_CUSTOMER) CUSTOMER, SUM(TOTAL_DP_PAID) TOTAL_DP_PAID, "
-        +" COUNT(0) TRANSAKSI, SUM(TOTAL_DISCOUNT) TOTAL_DISCOUNT, "
-        +"    ROUND((SUM(TOTAL_AMOUNT) - SUM(TOTAL_DISCOUNT)) / (NVL(SUM(TOTAL_CUSTOMER), "
-        +" 1))) CUST_AVERAGE,	ROUND((SUM(TOTAL_AMOUNT) - SUM(TOTAL_DISCOUNT)) / (COUNT(1))) TICKET_AVG "
+        String query1 = "SELECT D.*, COALESCE((TAXABLE + tax + PEMBULATAN) , 0) AS GROSS_SALES FROM ( SELECT COALESCE(SUM(TOTAL_AMOUNT) - SUM(TOTAL_DISCOUNT), 0) TAXABLE, "
+        +" COALESCE(SUM(TOTAL_TAX), 0 ) TAX, "
+        +" COALESCE(SUM(TOTAL_ROUNDING), 0 ) PEMBULATAN, "
+        +" COALESCE(SUM(TOTAL_CHARGE), 0 ) BIAYA_ANTAR, "
+        +" COALESCE(SUM(TOTAL_REFUND), 0 ) REFUND, "
+        +" COALESCE(SUM(TOTAL_CUSTOMER), 0 ) CUSTOMER, COALESCE(SUM(TOTAL_DP_PAID), 0) TOTAL_DP_PAID, "
+        +" COUNT(0) TRANSAKSI, COALESCE(SUM(TOTAL_DISCOUNT), 0) TOTAL_DISCOUNT, "
+        +"    COALESCE(ROUND((SUM(TOTAL_AMOUNT) - SUM(TOTAL_DISCOUNT)) / (NVL(SUM(TOTAL_CUSTOMER), "
+        +" 1))), 0 ) CUST_AVERAGE,	 COALESCE(ROUND((SUM(TOTAL_AMOUNT) - SUM(TOTAL_DISCOUNT)) / (COUNT(1))), 0) TICKET_AVG "
         +" FROM T_POS_BILL "
         +" WHERE (DELIVERY_STATUS IN (' ','CLS') OR DELIVERY_STATUS IS NULL)"
         +" AND OUTLET_CODE = :outletCode AND TRANS_DATE BETWEEN :transDate AND :transDate) D";
