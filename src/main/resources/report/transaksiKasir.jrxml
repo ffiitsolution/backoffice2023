@@ -435,7 +435,7 @@ ORDER BY
 				<textElement>
 					<font isBold="true" isItalic="false"/>
 				</textElement>
-				<text><![CDATA[TOL - Setor End Shift]]></text>
+				<text><![CDATA[TLO - Setor End Shift]]></text>
 			</staticText>
 			<textField pattern="#,##0.00">
 				<reportElement x="386" y="16" width="100" height="15" uuid="8086ca27-1ce5-472d-939a-06fd08953394"/>
