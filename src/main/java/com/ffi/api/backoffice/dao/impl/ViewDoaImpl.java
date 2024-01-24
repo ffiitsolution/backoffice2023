@@ -1436,9 +1436,6 @@ public class ViewDoaImpl implements ViewDao {
                 SELECT 'PROGRAM', 'POS0012', 'Sales Void', 12, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0012')
                 UNION ALL
-                SELECT 'PROGRAM', 'POS0013', 'Item Selected by Time', 13, 'POS', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0013')
-                UNION ALL
                 SELECT 'PROGRAM', 'POS0014', 'Laporan Item Selected By Time', 14, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0014')
                 UNION ALL
@@ -1456,9 +1453,6 @@ public class ViewDoaImpl implements ViewDao {
                 UNION ALL
                 SELECT 'PROGRAM', 'POS0019', 'Laporan Selected by Item Detail', 19, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0019')
-                UNION ALL
-                SELECT 'PROGRAM', 'POS0020', 'Laporan Selected by Item Produksi', 20, 'POS', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0020')
                 UNION ALL
                 SELECT 'PROGRAM', 'POS0021', 'Laporan Product Efficiency', 21, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0021')

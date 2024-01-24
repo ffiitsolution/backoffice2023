@@ -42,7 +42,6 @@
     SUM(S.TOT_STOCK) OVER (PARTITION BY S.MENU_ITEM_CODE) AS GROUP_TOT_STOCK
 FROM (
     SELECT
-        T.TRANS_DATE,
         T.ITEM_CODE,
         T.MENU_ITEM_CODE,
         T.ITEM_DESCRIPTION,
@@ -213,7 +212,6 @@ FROM (
 		    E.ITEM_DESCRIPTION
     ) T
     GROUP BY
-        T.TRANS_DATE,
         T.ITEM_CODE,
         T.MENU_ITEM_CODE,
         T.ITEM_DESCRIPTION,
@@ -226,7 +224,6 @@ LEFT JOIN M_OUTLET mo ON mo.OUTLET_CODE = $P{outletCode}
 ORDER BY S.MENU_ITEM_CODE, S.MENU_CODE, S.TOT_STOCK]]>
 	</queryString>
 	<field name="DESCRIPTION" class="java.lang.String"/>
-	<field name="TRANS_DATE" class="java.sql.Timestamp"/>
 	<field name="ITEM_CODE" class="java.lang.String"/>
 	<field name="MENU_ITEM_CODE" class="java.lang.String"/>
 	<field name="ITEM_DESCRIPTION" class="java.lang.String"/>
@@ -474,11 +471,11 @@ ORDER BY S.MENU_ITEM_CODE, S.MENU_CODE, S.TOT_STOCK]]>
 				<textFieldExpression><![CDATA["  " + $F{DESCRIPTION}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="544" y="131" width="30" height="30" uuid="9c20706a-3439-44e6-ac87-d6619b33c863"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<reportElement x="493" y="131" width="81" height="30" uuid="9c20706a-3439-44e6-ac87-d6619b33c863"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[QTY]]></text>
+				<text><![CDATA[TOTAL QTY. SALES]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="275" y="131" width="59" height="30" uuid="0e9ec1d5-895a-42cb-8758-14538d6cc243"/>
@@ -492,7 +489,7 @@ ORDER BY S.MENU_ITEM_CODE, S.MENU_CODE, S.TOT_STOCK]]>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[MENU NAME]]></text>
+				<text><![CDATA[MENU DESCRIPTION]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="5" y="113" width="90" height="11" uuid="31a1c9e4-ff26-4a95-9f17-91ff25ec9588"/>

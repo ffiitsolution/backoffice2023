@@ -355,7 +355,7 @@ ORDER BY
 				<textElement textAlignment="Center">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Sales Voided Report - Item]]></text>
+				<text><![CDATA[SALES VOIDED REPORT - ITEM]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="5" y="88" width="90" height="11" uuid="4fcaea03-c409-4586-a3f8-be296ca6f35e"/>
