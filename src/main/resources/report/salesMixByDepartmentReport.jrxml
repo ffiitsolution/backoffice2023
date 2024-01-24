@@ -159,7 +159,7 @@ ORDER BY
 					<textElement>
 						<font size="8" isBold="true"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$F{GROUP_CODE} + " - " + $F{DESCRIPTION}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$F{GROUP_CODE} + " - " + ($F{DESCRIPTION} != null ? $F{DESCRIPTION} : "OTR")]]></textFieldExpression>
 				</textField>
 				<line>
 					<reportElement x="0" y="16" width="555" height="1" uuid="74774f90-681c-456f-a5cf-2379fc8b1ed2"/>
