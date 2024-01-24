@@ -1925,7 +1925,7 @@ public class ReportDaoImpl implements ReportDao {
             for (Map<String, Object> object : listPos) {
                 if (object.containsKey("posCode1")) {
                     hashMap.put("posCode1", object.get("posCode1"));
-                    posCode.append(object.get("posName1")).append(" s/d ");
+                    posCode.append(object.get("posName1")).append(" s.d. ");
                 } else {
                     hashMap.put("posCode2", object.get("posCode2"));
                     posCode.append(object.get("posName2"));
@@ -1944,7 +1944,7 @@ public class ReportDaoImpl implements ReportDao {
             for (Map<String, Object> object : listCashier) {
                 if (object.containsKey("cashierCode1")) {
                     hashMap.put("cashierCode1", object.get("cashierCode1"));
-                    cashierCode.append(object.get("cashierName1")).append(" s/d ");
+                    cashierCode.append(object.get("cashierName1")).append(" s.d. ");
                 } else {
                     hashMap.put("cashierCode2", object.get("cashierCode2"));
                     cashierCode.append(object.get("cashierName2"));
@@ -1963,7 +1963,7 @@ public class ReportDaoImpl implements ReportDao {
             for (Map<String, Object> object : listShift) {
                 if (object.containsKey("shiftCode1")) {
                     hashMap.put("shiftCode1", object.get("shiftCode1"));
-                    shiftCode.append(object.get("shiftName1")).append(" s/d ");
+                    shiftCode.append(object.get("shiftName1")).append(" s.d. ");
                 } else {
                     hashMap.put("shiftCode2", object.get("shiftCode2"));
                     shiftCode.append(object.get("shiftName2"));
