@@ -1230,10 +1230,7 @@ public class ReportDaoImpl implements ReportDao {
             hashMap.put("fromTime", param.get("fromTime"));
             hashMap.put("toTime", param.get("toTime"));
         } else if (param.get("typeReport").equals("Report Pajak") && param.get("typeParam").equals("Pos")) {
-            query = "SELECT DISTINCT b.POS_TYPE, d.DESCRIPTION FROM T_POS_BILL a JOIN M_POS b ON a.POS_CODE = b.POS_CODE JOIN M_OUTLET c ON a.OUTLET_CODE = c.OUTLET_CODE JOIN M_GLOBAL d ON b.POS_TYPE = d.CODE AND COND = 'POS_TYPE' WHERE (a.DELIVERY_STATUS  IN (' ','CLS') OR a.DELIVERY_STATUS IS NULL) AND a.OUTLET_CODE =:outletCode AND a.trans_date BETWEEN :fromDate AND :toDate";
-            hashMap.put("outletCode", param.get("outletCode"));
-            hashMap.put("fromDate", param.get("fromDate"));
-            hashMap.put("toDate", param.get("toDate"));
+            query = "SELECT * FROM M_GLOBAL WHERE COND = 'POS_TYPE' ORDER BY code ASC";
         } else if (param.get("typeReport").equals("Laporan Item Selected By Product") && param.get("typeParam").equals("Kode Item")) {
             query = "SELECT DISTINCT(D.ITEM_CODE), mi.ITEM_DESCRIPTION FROM T_POS_BILL_ITEM_DETAIL A JOIN M_GROUP_ITEM D ON A.MENU_ITEM_CODE = D.GROUP_ITEM_CODE AND D.STATUS = 'A' JOIN M_ITEM mi ON mi.ITEM_CODE =D.ITEM_CODE WHERE A.TRANS_DATE BETWEEN :fromDate AND :toDate AND A.OUTLET_CODE = :outletCode ORDER BY D.ITEM_CODE ASC";
             hashMap.put("outletCode", param.get("outletCode"));
@@ -1348,7 +1345,7 @@ public class ReportDaoImpl implements ReportDao {
                     rt.put("shiftCode", rs.getString("SHIFT_CODE"));
                     rt.put("shiftName", rs.getString("SHIFT_NAME"));
                 } else if (param.get("typeReport").equals("Report Pajak") && param.get("typeParam").equals("Pos")) {
-                    rt.put("posCode", rs.getString("POS_TYPE"));
+                    rt.put("posCode", rs.getString("CODE"));
                     rt.put("posDescription", rs.getString("DESCRIPTION"));
                 } else if (param.get("typeReport").equals("Laporan Item Selected By Product") && param.get("typeParam").equals("Kode Item")) {
                     rt.put("code", rs.getString("ITEM_CODE"));

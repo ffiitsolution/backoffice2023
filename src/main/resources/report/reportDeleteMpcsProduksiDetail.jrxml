@@ -42,7 +42,7 @@
 FROM T_MPCS_HIST a 
 JOIN M_RECIPE_HEADER b ON a.MPCS_GROUP = b.MPCS_GROUP and A.MPCS_DATE between $P{fromDate} and $P{toDate} and fryer_type='D'
 JOIN M_STAFF c ON a.USER_UPD = c.STAFF_CODE 
-JOIN M_OUTLET d ON a.OUTLET_CODE = d.OUTLET_CODE
+JOIN M_OUTLET d ON a.OUTLET_CODE = d.OUTLET_CODE AND a.OUTLET_CODE = $P{outletCode}
 ORDER BY A.MPCS_DATE, a.TIME_UPD]]>
 	</queryString>
 	<field name="OUTLET_NAME" class="java.lang.String">
@@ -180,42 +180,6 @@ ORDER BY A.MPCS_DATE, a.TIME_UPD]]>
 				</textElement>
 				<text><![CDATA[REPORT DELETE MPCS PRODUKSI]]></text>
 			</staticText>
-			<textField>
-				<reportElement x="1" y="79" width="287" height="11" uuid="ceb8922b-cf0d-42a7-9c2b-ed64ad7cb7ac"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Date From : " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{fromDate}))
-+ " To " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{toDate}))]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="437" y="0" width="114" height="11" uuid="fbc60455-869e-469f-8d2e-6daadf1e7e4a"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Halaman : " + $V{PAGE_NUMBER}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="437" y="10" width="114" height="11" uuid="151278d0-c013-402f-8b12-9fb307dde65a"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["User Cetak : " + $P{user}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="437" y="20" width="114" height="11" uuid="f2a5250d-945a-4ddc-badc-4c6bfa40ce73"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Tanggal Cetak : " + new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="437" y="30" width="114" height="11" uuid="59538c26-b8c7-43fa-ad2a-2b6ae8bcb442"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Jam Cetak : " + new SimpleDateFormat("hh:mm:ss").format(new Date())]]></textFieldExpression>
-			</textField>
 			<line>
 				<reportElement x="1" y="93" width="552" height="1" uuid="acca77af-7fde-4636-a431-7c763e07e2fc"/>
 			</line>
@@ -296,6 +260,141 @@ ORDER BY A.MPCS_DATE, a.TIME_UPD]]>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[: Detail]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="79" width="44" height="11" uuid="de4dbc17-5357-4f97-bc49-199a7a2c6197">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Periode]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="44" y="79" width="10" height="11" uuid="a5716438-1c66-4427-8c30-4b5e7cfe2921">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="54" y="79" width="206" height="11" uuid="f250e930-a4a4-4b16-9260-79281778fabc">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="8" isUnderline="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{fromDate})) + " - " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{toDate}))]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="504" y="1" width="50" height="11" uuid="a7e25250-73c3-457a-8701-0c1e1d7ae5b9">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Top">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="504" y="12" width="50" height="11" uuid="c3bf8186-7f83-44f6-b3b0-200d21c4127f">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{user}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="504" y="23" width="50" height="11" uuid="d4a430b4-92eb-434a-b06f-c5139555d15f">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="504" y="34" width="50" height="11" uuid="b495defb-bc93-4090-93ad-4713574e20d6">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="450" y="1" width="44" height="11" uuid="ffc6a14a-319c-4d9c-b581-6b0cf8371d25">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Halaman]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="450" y="12" width="44" height="11" uuid="cd4fc558-6153-4ee0-8406-d7574ace778f">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[User Cetak]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="450" y="23" width="44" height="11" uuid="08872033-0aca-4442-ad65-94ec89513bb5">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Tanggal]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="450" y="34" width="44" height="11" uuid="81f01aea-cf83-431d-8c8b-2a04fd172d29">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Jam Cetak]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="494" y="1" width="10" height="11" uuid="8e65492c-6d07-4627-8d4c-741083940db0">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="494" y="12" width="10" height="11" uuid="e183cd54-d0e8-4795-b794-b39541e79d7f">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="494" y="23" width="10" height="11" uuid="31c0860b-ac63-4d77-9526-7901c680deda">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="494" y="34" width="10" height="11" uuid="587577d1-d161-4ed5-9a20-f3881e364cea">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
