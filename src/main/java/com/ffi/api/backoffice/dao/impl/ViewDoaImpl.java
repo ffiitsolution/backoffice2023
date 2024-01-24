@@ -61,11 +61,7 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> loginJson(ParameterLogin ref) {
-        String qry = "select S.REGION_CODE,O.TRANS_DATE,O.address_1,O.phone,G.DESCRIPTION REG_NAME,S.OUTLET_CODE,O.OUTLET_NAME,S.STAFF_CODE,S.STAFF_NAME,S.STAFF_FULL_NAME,S.ID_CARD,S.POSITION,S.GROUP_ID,O.CITY  "
-                + "from M_STAFF S "
-                + "JOIN M_OUTLET O ON O.OUTLET_CODE = S.OUTLET_CODE "
-                + "JOIN M_GLOBAL G ON G.CODE = S.REGION_CODE AND G.COND = 'REG_OUTLET'  "
-                + "where S.STAFF_CODE = :staffCode and S.PASSWORD = :pass and S.OUTLET_CODE = :outletCode and S.STATUS = 'A'";
+        String qry = "SELECT S.REGION_CODE, O.TRANS_DATE, O.ADDRESS_1, O.PHONE, G.DESCRIPTION AS REG_NAME, S.OUTLET_CODE, O.OUTLET_NAME, S.STAFF_CODE, S.STAFF_NAME, S.STAFF_FULL_NAME, S.ID_CARD, S.POSITION, S.GROUP_ID, O.CITY, S.STATUS FROM M_STAFF S JOIN M_OUTLET O ON O.OUTLET_CODE = S.OUTLET_CODE JOIN M_GLOBAL G ON G.CODE = S.REGION_CODE AND G.COND = 'REG_OUTLET' WHERE S.STAFF_CODE = :staffCode AND S.PASSWORD = :pass AND S.OUTLET_CODE = :outletCode";
         Map prm = new HashMap();
         prm.put("staffCode", ref.getUserName());
         prm.put("pass", ref.getPassword());
@@ -89,6 +85,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("transDate", rs.getString("TRANS_DATE"));
                 rt.put("address1", rs.getString("ADDRESS_1"));
                 rt.put("phone", rs.getString("PHONE"));
+                rt.put("status", rs.getString("STATUS"));
                 return rt;
             }
         });
