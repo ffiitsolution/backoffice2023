@@ -150,32 +150,32 @@ order by A.MPCS_DATE, A.MPCS_GROUP]]>
 	<columnHeader>
 		<band height="109" splitType="Stretch">
 			<image scaleImage="FillFrame">
-				<reportElement x="22" y="1" width="48" height="48" isPrintWhenDetailOverflows="true" uuid="e97813fe-6bdd-4579-8fc4-915ca01dc9f1"/>
+				<reportElement x="2" y="1" width="48" height="48" isPrintWhenDetailOverflows="true" uuid="e97813fe-6bdd-4579-8fc4-915ca01dc9f1"/>
 				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
 			</image>
 			<staticText>
-				<reportElement x="81" y="0" width="112" height="11" uuid="01f34372-348f-4fd9-b8ad-4573af9f8ec9"/>
+				<reportElement x="61" y="0" width="112" height="11" uuid="01f34372-348f-4fd9-b8ad-4573af9f8ec9"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="81" y="10" width="122" height="11" uuid="abbc81ca-ac76-4c2d-a1d7-b16bce5f33fa"/>
+				<reportElement x="61" y="10" width="122" height="11" uuid="abbc81ca-ac76-4c2d-a1d7-b16bce5f33fa"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{OUTLET_NAME}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="81" y="20" width="122" height="11" uuid="944aade3-f718-4dee-826e-c97bb0132c53"/>
+				<reportElement x="61" y="20" width="122" height="11" uuid="944aade3-f718-4dee-826e-c97bb0132c53"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{ADDRESS_1}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="81" y="30" width="122" height="11" uuid="4b6193bf-341a-491e-8b7a-4820dfaffb6c"/>
+				<reportElement x="61" y="30" width="122" height="11" uuid="4b6193bf-341a-491e-8b7a-4820dfaffb6c"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -249,7 +249,7 @@ order by A.MPCS_DATE, A.MPCS_GROUP]]>
 				<text><![CDATA[MPCS Group]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="81" y="42" width="122" height="11" uuid="ae8a948f-452f-4fd3-b55e-296957136a40"/>
+				<reportElement x="61" y="42" width="122" height="11" uuid="ae8a948f-452f-4fd3-b55e-296957136a40"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>

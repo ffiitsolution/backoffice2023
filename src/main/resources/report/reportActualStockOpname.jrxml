@@ -213,39 +213,42 @@ ORDER BY Q.ITEM_CODE]]>
 				<text><![CDATA[REPORT ACTUAL STOCK OPNAME]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="64" y="11" width="165" height="11" uuid="d49f8a33-7c2d-4bd9-8a0c-a3da0cdb2399"/>
+				<reportElement x="61" y="11" width="165" height="11" uuid="d49f8a33-7c2d-4bd9-8a0c-a3da0cdb2399"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{OUTLET_NAME}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="64" y="21" width="165" height="11" uuid="1d413335-f769-4619-9d46-990fa2821fd7"/>
+				<reportElement x="61" y="22" width="165" height="11" uuid="1d413335-f769-4619-9d46-990fa2821fd7"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{ADDRESS_1}]]></textFieldExpression>
 			</textField>
-			<image>
-				<reportElement x="7" y="0" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="a74f4b64-21cf-43c4-b134-dc4525922b36"/>
-				<imageExpression><![CDATA["logo/logoKfc.png"]]></imageExpression>
+			<image scaleImage="FillFrame">
+				<reportElement x="4" y="0" width="48" height="48" isPrintWhenDetailOverflows="true" uuid="a74f4b64-21cf-43c4-b134-dc4525922b36">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
 			</image>
 			<staticText>
-				<reportElement x="64" y="0" width="112" height="11" uuid="b6175580-26b7-4d24-a0da-c1a98b446e71"/>
+				<reportElement x="61" y="0" width="112" height="11" uuid="b6175580-26b7-4d24-a0da-c1a98b446e71"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="64" y="32" width="165" height="11" uuid="be9e687d-8e59-4f84-a5c2-b833dcc77846"/>
+				<reportElement x="61" y="33" width="165" height="11" uuid="be9e687d-8e59-4f84-a5c2-b833dcc77846"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{ADDRESS_2}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="64" y="43" width="165" height="11" uuid="d62d49c9-ba74-42b4-afd4-0db3d9ef3645"/>
+				<reportElement x="61" y="44" width="165" height="11" uuid="d62d49c9-ba74-42b4-afd4-0db3d9ef3645"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -279,7 +282,7 @@ ORDER BY Q.ITEM_CODE]]>
 				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{fromDate})) + " - " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{toDate}))]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="450" y="0" width="44" height="11" uuid="e929fba5-1f0a-4b17-9115-1bc8fedf85f8">
+				<reportElement x="430" y="0" width="64" height="11" uuid="e929fba5-1f0a-4b17-9115-1bc8fedf85f8">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -288,7 +291,7 @@ ORDER BY Q.ITEM_CODE]]>
 				<text><![CDATA[Halaman]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="450" y="11" width="44" height="11" uuid="0959e059-62f1-4251-872d-532147c259c2">
+				<reportElement x="430" y="11" width="64" height="11" uuid="0959e059-62f1-4251-872d-532147c259c2">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -297,16 +300,16 @@ ORDER BY Q.ITEM_CODE]]>
 				<text><![CDATA[User Cetak]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="450" y="22" width="44" height="11" uuid="210805c5-5512-47a7-b621-ea84f625bc27">
+				<reportElement x="430" y="22" width="64" height="11" uuid="210805c5-5512-47a7-b621-ea84f625bc27">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="false"/>
 				</textElement>
-				<text><![CDATA[Tanggal]]></text>
+				<text><![CDATA[Tanggal Cetak]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="450" y="33" width="44" height="11" uuid="73f78cfc-fd96-4dc4-b347-9d50620c92aa">
+				<reportElement x="430" y="33" width="64" height="11" uuid="73f78cfc-fd96-4dc4-b347-9d50620c92aa">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">

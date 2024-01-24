@@ -1364,7 +1364,7 @@ public class ViewDoaImpl implements ViewDao {
     //type store 
     @Override
     public List<Map<String, Object>> viewTypeStore(Map<String, String> Logan) {
-        String qry = "select distinct type,type_store from V_STRUCTURE_STORE";
+        String qry = "SELECT DISTINCT a.type, d.description as type_store FROM m_outlet a JOIN M_GLOBAL b ON a.REGION_CODE = b.CODE and b.cond='REG_OUTLET' JOIN M_GLOBAL c ON a.AREA_CODE = c.CODE and c.cond='AREACODE' JOIN M_GLOBAL d ON a.type = d.CODE and d.cond='OUTLET_TP' where a.status='A' and a.type not in ('HO','REG')";
         Map prm = new HashMap();
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
