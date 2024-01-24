@@ -1230,10 +1230,7 @@ public class ReportDaoImpl implements ReportDao {
             hashMap.put("fromTime", param.get("fromTime"));
             hashMap.put("toTime", param.get("toTime"));
         } else if (param.get("typeReport").equals("Report Pajak") && param.get("typeParam").equals("Pos")) {
-            query = "SELECT DISTINCT b.POS_TYPE, d.DESCRIPTION FROM T_POS_BILL a JOIN M_POS b ON a.POS_CODE = b.POS_CODE JOIN M_OUTLET c ON a.OUTLET_CODE = c.OUTLET_CODE JOIN M_GLOBAL d ON b.POS_TYPE = d.CODE AND COND = 'POS_TYPE' WHERE (a.DELIVERY_STATUS  IN (' ','CLS') OR a.DELIVERY_STATUS IS NULL) AND a.OUTLET_CODE =:outletCode AND a.trans_date BETWEEN :fromDate AND :toDate";
-            hashMap.put("outletCode", param.get("outletCode"));
-            hashMap.put("fromDate", param.get("fromDate"));
-            hashMap.put("toDate", param.get("toDate"));
+            query = "SELECT * FROM M_GLOBAL WHERE COND = 'POS_TYPE' ORDER BY code ASC";
         } else if (param.get("typeReport").equals("Laporan Item Selected By Product") && param.get("typeParam").equals("Kode Item")) {
             query = "SELECT DISTINCT(D.ITEM_CODE), mi.ITEM_DESCRIPTION FROM T_POS_BILL_ITEM_DETAIL A JOIN M_GROUP_ITEM D ON A.MENU_ITEM_CODE = D.GROUP_ITEM_CODE AND D.STATUS = 'A' JOIN M_ITEM mi ON mi.ITEM_CODE =D.ITEM_CODE WHERE A.TRANS_DATE BETWEEN :fromDate AND :toDate AND A.OUTLET_CODE = :outletCode ORDER BY D.ITEM_CODE ASC";
             hashMap.put("outletCode", param.get("outletCode"));
@@ -1348,7 +1345,7 @@ public class ReportDaoImpl implements ReportDao {
                     rt.put("shiftCode", rs.getString("SHIFT_CODE"));
                     rt.put("shiftName", rs.getString("SHIFT_NAME"));
                 } else if (param.get("typeReport").equals("Report Pajak") && param.get("typeParam").equals("Pos")) {
-                    rt.put("posCode", rs.getString("POS_TYPE"));
+                    rt.put("posCode", rs.getString("CODE"));
                     rt.put("posDescription", rs.getString("DESCRIPTION"));
                 } else if (param.get("typeReport").equals("Laporan Item Selected By Product") && param.get("typeParam").equals("Kode Item")) {
                     rt.put("code", rs.getString("ITEM_CODE"));
@@ -1453,6 +1450,13 @@ public class ReportDaoImpl implements ReportDao {
         ClassPathResource classPathResource = new ClassPathResource("report/salesDate.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
+
+    @Override
+    public JasperPrint jasperReportSalesByDateNew(Map<String, Object> param, Connection connection) throws IOException, JRException {
+        ClassPathResource classPathResource = new ClassPathResource("report/laporanSalesDate.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, param, connection);
     }
 
     @Override
@@ -1931,7 +1935,7 @@ public class ReportDaoImpl implements ReportDao {
             for (Map<String, Object> object : listPos) {
                 if (object.containsKey("posCode1")) {
                     hashMap.put("posCode1", object.get("posCode1"));
-                    posCode.append(object.get("posName1")).append(" s/d ");
+                    posCode.append(object.get("posName1")).append(" s.d. ");
                 } else {
                     hashMap.put("posCode2", object.get("posCode2"));
                     posCode.append(object.get("posName2"));
@@ -1950,7 +1954,7 @@ public class ReportDaoImpl implements ReportDao {
             for (Map<String, Object> object : listCashier) {
                 if (object.containsKey("cashierCode1")) {
                     hashMap.put("cashierCode1", object.get("cashierCode1"));
-                    cashierCode.append(object.get("cashierName1")).append(" s/d ");
+                    cashierCode.append(object.get("cashierName1")).append(" s.d. ");
                 } else {
                     hashMap.put("cashierCode2", object.get("cashierCode2"));
                     cashierCode.append(object.get("cashierName2"));
@@ -1969,7 +1973,7 @@ public class ReportDaoImpl implements ReportDao {
             for (Map<String, Object> object : listShift) {
                 if (object.containsKey("shiftCode1")) {
                     hashMap.put("shiftCode1", object.get("shiftCode1"));
-                    shiftCode.append(object.get("shiftName1")).append(" s/d ");
+                    shiftCode.append(object.get("shiftName1")).append(" s.d. ");
                 } else {
                     hashMap.put("shiftCode2", object.get("shiftCode2"));
                     shiftCode.append(object.get("shiftName2"));
@@ -2797,15 +2801,15 @@ public class ReportDaoImpl implements ReportDao {
      ///////////////NEW METHOD REPORT EOD by Dani 16 Januari 2024////
      @Override
      public JasperPrint jasperReportEod(Map<String, Object> param, Connection connection) throws IOException, JRException {
-        String query1 = "SELECT D.*, (TAXABLE + tax + PEMBULATAN) AS GROSS_SALES FROM ( SELECT (SUM(TOTAL_AMOUNT) - SUM(TOTAL_DISCOUNT)) TAXABLE, "
-        +" SUM(TOTAL_TAX) TAX, "
-        +" SUM(TOTAL_ROUNDING) PEMBULATAN, "
-        +" SUM(TOTAL_CHARGE) BIAYA_ANTAR, "
-        +" SUM(TOTAL_REFUND) REFUND, "
-        +" SUM(TOTAL_CUSTOMER) CUSTOMER, SUM(TOTAL_DP_PAID) TOTAL_DP_PAID, "
-        +" COUNT(0) TRANSAKSI, SUM(TOTAL_DISCOUNT) TOTAL_DISCOUNT, "
-        +"    ROUND((SUM(TOTAL_AMOUNT) - SUM(TOTAL_DISCOUNT)) / (NVL(SUM(TOTAL_CUSTOMER), "
-        +" 1))) CUST_AVERAGE,	ROUND((SUM(TOTAL_AMOUNT) - SUM(TOTAL_DISCOUNT)) / (COUNT(1))) TICKET_AVG "
+        String query1 = "SELECT D.*, COALESCE((TAXABLE + tax + PEMBULATAN) , 0) AS GROSS_SALES FROM ( SELECT COALESCE(SUM(TOTAL_AMOUNT) - SUM(TOTAL_DISCOUNT), 0) TAXABLE, "
+        +" COALESCE(SUM(TOTAL_TAX), 0 ) TAX, "
+        +" COALESCE(SUM(TOTAL_ROUNDING), 0 ) PEMBULATAN, "
+        +" COALESCE(SUM(TOTAL_CHARGE), 0 ) BIAYA_ANTAR, "
+        +" COALESCE(SUM(TOTAL_REFUND), 0 ) REFUND, "
+        +" COALESCE(SUM(TOTAL_CUSTOMER), 0 ) CUSTOMER, COALESCE(SUM(TOTAL_DP_PAID), 0) TOTAL_DP_PAID, "
+        +" COUNT(0) TRANSAKSI, COALESCE(SUM(TOTAL_DISCOUNT), 0) TOTAL_DISCOUNT, "
+        +"    COALESCE(ROUND((SUM(TOTAL_AMOUNT) - SUM(TOTAL_DISCOUNT)) / (NVL(SUM(TOTAL_CUSTOMER), "
+        +" 1))), 0 ) CUST_AVERAGE,	 COALESCE(ROUND((SUM(TOTAL_AMOUNT) - SUM(TOTAL_DISCOUNT)) / (COUNT(1))), 0) TICKET_AVG "
         +" FROM T_POS_BILL "
         +" WHERE (DELIVERY_STATUS IN (' ','CLS') OR DELIVERY_STATUS IS NULL)"
         +" AND OUTLET_CODE = :outletCode AND TRANS_DATE BETWEEN :transDate AND :transDate) D";

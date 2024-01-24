@@ -144,35 +144,35 @@ ORDER BY
 			<staticText>
 				<reportElement x="1" y="135" width="100" height="15" uuid="06ba0cb4-2966-4443-ba49-1f1d289ec9ec"/>
 				<textElement verticalAlignment="Middle">
-					<font isBold="true"/>
+					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Code]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="110" y="135" width="124" height="15" uuid="a45c90b8-136b-4b30-91ca-413f0fb3fd93"/>
 				<textElement verticalAlignment="Middle">
-					<font isBold="true"/>
+					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Item Name]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="243" y="135" width="71" height="15" uuid="f9871d54-b44d-48c9-9934-035b53977f4b"/>
 				<textElement verticalAlignment="Middle">
-					<font isBold="true"/>
+					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Code]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="328" y="135" width="124" height="15" uuid="406a62ed-d2d1-4013-a4ce-3ddb9c1c6ab9"/>
 				<textElement verticalAlignment="Middle">
-					<font isBold="true"/>
+					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[PLU Name]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="461" y="135" width="71" height="15" uuid="d3992d4c-31e5-4d07-b239-41451c57b0b4"/>
 				<textElement verticalAlignment="Middle">
-					<font isBold="true"/>
+					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Quantity]]></text>
 			</staticText>
@@ -192,27 +192,37 @@ ORDER BY
 		<band height="24" splitType="Stretch">
 			<textField>
 				<reportElement x="1" y="4" width="100" height="15" uuid="c93ceded-36af-4d7f-b3af-cae73b555c3e"/>
-				<textElement verticalAlignment="Middle"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{CODE}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="110" y="4" width="124" height="15" uuid="5dd72a7b-f07d-4721-95c5-8aac15d2afba"/>
-				<textElement verticalAlignment="Middle"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="243" y="4" width="71" height="15" uuid="b34986e1-2152-4ece-bd07-2cb59427b280"/>
-				<textElement verticalAlignment="Middle"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{CODES}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="328" y="4" width="124" height="15" uuid="e4926f2f-bae9-45ca-8570-ee7a747d2fce"/>
-				<textElement verticalAlignment="Middle"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{PLU_NAME}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="461" y="4" width="71" height="15" uuid="3608b29f-f896-411d-aff7-085dc5b27bcd"/>
-				<textElement verticalAlignment="Middle"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{SUM(B.ITEM_QTY)}]]></textFieldExpression>
 			</textField>
 		</band>

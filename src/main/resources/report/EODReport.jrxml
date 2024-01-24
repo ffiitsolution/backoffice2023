@@ -980,7 +980,7 @@ $P{transDate}
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($P{taxable}.divide($P{transaksi}, 2, RoundingMode.UP))]]></textFieldExpression>
+					<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($P{taxable}.equals(BigDecimal.ZERO) || $P{transaksi}.equals(BigDecimal.ZERO) ? BigDecimal.ZERO : $P{taxable}.divide($P{transaksi}, 2, RoundingMode.UP))]]></textFieldExpression>
 				</textField>
 				<textField>
 					<reportElement x="481" y="52" width="61" height="15" uuid="5c397a03-a4fb-46b5-b56e-772b2a70fcca"/>
