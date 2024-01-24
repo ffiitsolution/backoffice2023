@@ -518,7 +518,7 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        JasperPrint jasperPrint = reportServices.jasperReportTransaksiKasir(prm, conn);
+        JasperPrint jasperPrint = reportServices.jasperReportSummarySalesByItemCode(prm, conn);
         conn.close();
         if (! jasperPrint.getPages().isEmpty()) {
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
