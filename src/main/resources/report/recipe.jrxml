@@ -344,4 +344,18 @@ FROM
 			</textField>
 		</band>
 	</detail>
+	<summary>
+		<band height="18" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="1" width="575" height="1" uuid="109c113c-fc85-484b-8e15-e5958fbbfafb"/>
+			</line>
+			<staticText>
+				<reportElement x="495" y="2" width="100" height="15" uuid="182d87b3-5e39-445a-81f6-8e4c1063a815"/>
+				<textElement>
+					<font size="8" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[--End of Report--]]></text>
+			</staticText>
+		</band>
+	</summary>
 </jasperReport>

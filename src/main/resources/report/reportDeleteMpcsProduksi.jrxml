@@ -34,12 +34,12 @@ sum(A.QUANTITY) AS TOTAL_QUANTITY, d.OUTLET_NAME,
   d.PHONE from t_mpcs_hist a
 join m_recipe_header b
   on A.MPCS_GROUP=B.MPCS_GROUP 
-  and A.MPCS_DATE between '02-Feb-2023' and '28-Feb-2023'
+  and A.MPCS_DATE between $P{fromDate} and $P{toDate} 
   and fryer_type='D'
 join m_staff c
   on A.USER_UPD=C.STAFF_CODE 
 JOIN m_outlet d
-  ON a.OUTLET_CODE = d.OUTLET_CODE 
+  ON a.OUTLET_CODE = d.OUTLET_CODE AND a.OUTLET_CODE = $P{outletCode}
 group by A.MPCS_DATE, A.MPCS_GROUP,B.RECIPE_REMARK,C.STAFF_NAME, d.OUTLET_NAME, 
   d.OUTLET_CODE, 
   d.ADDRESS_1, 
@@ -188,42 +188,6 @@ order by A.MPCS_DATE, A.MPCS_GROUP]]>
 				</textElement>
 				<text><![CDATA[REPORT DELETE MPCS PRODUKSI]]></text>
 			</staticText>
-			<textField>
-				<reportElement x="1" y="80" width="287" height="11" uuid="ceb8922b-cf0d-42a7-9c2b-ed64ad7cb7ac"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Date From : " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{fromDate}))
-+ " To " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{toDate}))]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="437" y="0" width="114" height="11" uuid="fbc60455-869e-469f-8d2e-6daadf1e7e4a"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Halaman : " + $V{PAGE_NUMBER}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="437" y="10" width="114" height="11" uuid="151278d0-c013-402f-8b12-9fb307dde65a"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["User Cetak : " + $P{user}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="437" y="20" width="114" height="11" uuid="f2a5250d-945a-4ddc-badc-4c6bfa40ce73"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Tanggal Cetak : " + new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="437" y="30" width="114" height="11" uuid="59538c26-b8c7-43fa-ad2a-2b6ae8bcb442"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Jam Cetak : " + new SimpleDateFormat("hh:mm:ss").format(new Date())]]></textFieldExpression>
-			</textField>
 			<line>
 				<reportElement x="1" y="93" width="552" height="1" uuid="acca77af-7fde-4636-a431-7c763e07e2fc"/>
 			</line>
@@ -290,6 +254,141 @@ order by A.MPCS_DATE, A.MPCS_GROUP]]>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Phone : " + $F{PHONE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="450" y="1" width="44" height="11" uuid="dfd66226-2eda-4159-9f6c-a72c6523e9e7">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Halaman]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="450" y="12" width="44" height="11" uuid="cb8a5047-73f7-4723-beb8-b69643e338e1">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[User Cetak]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="450" y="23" width="44" height="11" uuid="b4ec7c87-0053-4314-9e2a-339aa70400f6">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Tanggal]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="450" y="34" width="44" height="11" uuid="ec6895ae-5462-4224-8203-c48d0e73c0f5">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Jam Cetak]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="494" y="34" width="10" height="11" uuid="8f6f9ede-e485-489e-b31f-647c2f66e916">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="494" y="23" width="10" height="11" uuid="76f64357-ad01-40b9-a65e-b2882442e660">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="494" y="12" width="10" height="11" uuid="be44d2e5-56e8-4645-a80c-8e95223d810c">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="494" y="1" width="10" height="11" uuid="889f766f-25e6-49c6-80ac-50561b16ce09">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="504" y="1" width="50" height="11" uuid="d5f27bd3-a049-409e-b5c6-f905681b6b00">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Top">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="504" y="12" width="50" height="11" uuid="9f85a9eb-d38f-4587-bc9d-6cd034a6ad98">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{user}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="504" y="23" width="50" height="11" uuid="a9d26ad3-15a0-4040-9e8e-1b5517913ed8">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="504" y="34" width="50" height="11" uuid="2bbde63e-e8ab-46b7-a31f-d415f12166a0">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="78" width="44" height="11" uuid="c83ac697-0668-46bc-855a-d2e52dca45bd">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Periode]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="44" y="78" width="10" height="11" uuid="f5a41bac-c67f-4091-948f-6d83598e0af1">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="54" y="78" width="248" height="11" uuid="213996a2-880d-4c28-8586-6d29b6a26f65">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="8" isUnderline="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{fromDate})) + " - " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{toDate}))]]></textFieldExpression>
 			</textField>
 		</band>
 	</columnHeader>

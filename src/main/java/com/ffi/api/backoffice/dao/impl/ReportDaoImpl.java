@@ -1230,10 +1230,7 @@ public class ReportDaoImpl implements ReportDao {
             hashMap.put("fromTime", param.get("fromTime"));
             hashMap.put("toTime", param.get("toTime"));
         } else if (param.get("typeReport").equals("Report Pajak") && param.get("typeParam").equals("Pos")) {
-            query = "SELECT DISTINCT b.POS_TYPE, d.DESCRIPTION FROM T_POS_BILL a JOIN M_POS b ON a.POS_CODE = b.POS_CODE JOIN M_OUTLET c ON a.OUTLET_CODE = c.OUTLET_CODE JOIN M_GLOBAL d ON b.POS_TYPE = d.CODE AND COND = 'POS_TYPE' WHERE (a.DELIVERY_STATUS  IN (' ','CLS') OR a.DELIVERY_STATUS IS NULL) AND a.OUTLET_CODE =:outletCode AND a.trans_date BETWEEN :fromDate AND :toDate";
-            hashMap.put("outletCode", param.get("outletCode"));
-            hashMap.put("fromDate", param.get("fromDate"));
-            hashMap.put("toDate", param.get("toDate"));
+            query = "SELECT * FROM M_GLOBAL WHERE COND = 'POS_TYPE' ORDER BY code ASC";
         } else if (param.get("typeReport").equals("Laporan Item Selected By Product") && param.get("typeParam").equals("Kode Item")) {
             query = "SELECT DISTINCT(D.ITEM_CODE), mi.ITEM_DESCRIPTION FROM T_POS_BILL_ITEM_DETAIL A JOIN M_GROUP_ITEM D ON A.MENU_ITEM_CODE = D.GROUP_ITEM_CODE AND D.STATUS = 'A' JOIN M_ITEM mi ON mi.ITEM_CODE =D.ITEM_CODE WHERE A.TRANS_DATE BETWEEN :fromDate AND :toDate AND A.OUTLET_CODE = :outletCode ORDER BY D.ITEM_CODE ASC";
             hashMap.put("outletCode", param.get("outletCode"));
@@ -1348,7 +1345,7 @@ public class ReportDaoImpl implements ReportDao {
                     rt.put("shiftCode", rs.getString("SHIFT_CODE"));
                     rt.put("shiftName", rs.getString("SHIFT_NAME"));
                 } else if (param.get("typeReport").equals("Report Pajak") && param.get("typeParam").equals("Pos")) {
-                    rt.put("posCode", rs.getString("POS_TYPE"));
+                    rt.put("posCode", rs.getString("CODE"));
                     rt.put("posDescription", rs.getString("DESCRIPTION"));
                 } else if (param.get("typeReport").equals("Laporan Item Selected By Product") && param.get("typeParam").equals("Kode Item")) {
                     rt.put("code", rs.getString("ITEM_CODE"));
@@ -1852,7 +1849,7 @@ public class ReportDaoImpl implements ReportDao {
 
         StringBuilder queryDataReceipt = new StringBuilder();
         queryDataReceipt.append("SELECT UTM.POS_CODE_NOW, JON.POS_DESCRIPTION, UTM.MIN_NOW, UTM.MAX_NOW, UTM.MIN_AGO, " +
-                "UTM.MAX_AGO FROM (");
+                "UTM.MAX_AGO, mo.OUTLET_CODE, mo.OUTLET_NAME, mo.ADDRESS_1, mo.ADDRESS_2, mo.PHONE, ms.STAFF_NAME AS PRINT_NAME FROM (");
         queryDataReceipt.append("SELECT * FROM ( SELECT '").append(listPos.get(0).get("posCode")).append("'" +
                         "AS POS_CODE_NOW , MIN(BILL_NO) AS MIN_NOW, MAX(BILL_NO) AS MAX_NOW FROM T_POS_BILL WHERE BILL_NO LIKE '%-%' AND TRANS_DATE " +
                         "= '").append(param.get("periode")).append("' AND POS_CODE = '").append(listPos.get(0).get("posCode"))
@@ -1876,7 +1873,7 @@ public class ReportDaoImpl implements ReportDao {
                     .append("')B ON A.POS_CODE_NOW = B.POS_CODE_AGO");
         }
         queryDataReceipt.append(") UTM LEFT JOIN M_POS JON ON UTM.POS_CODE_NOW = JON.POS_CODE AND JON.OUTLET_CODE = '")
-                .append(param.get("outletCode")).append("' WHERE UTM.POS_CODE_NOW BETWEEN $P{posCode1} AND $P{posCode2}" +
+                .append(param.get("outletCode")).append("' LEFT JOIN M_OUTLET mo ON mo.OUTLET_CODE = '").append(param.get("outletCode")).append("' LEFT JOIN M_STAFF ms ON ms.STAFF_CODE = '").append(param.get("user")).append("' WHERE UTM.POS_CODE_NOW BETWEEN $P{posCode1} AND $P{posCode2}" +
                         "ORDER BY UTM.POS_CODE_NOW ASC");
 
         Map<String, Object> hashMap = new HashMap<>();
@@ -1932,7 +1929,7 @@ public class ReportDaoImpl implements ReportDao {
             for (Map<String, Object> object : listPos) {
                 if (object.containsKey("posCode1")) {
                     hashMap.put("posCode1", object.get("posCode1"));
-                    posCode.append(object.get("posName1")).append(" s/d ");
+                    posCode.append(object.get("posName1")).append(" s.d. ");
                 } else {
                     hashMap.put("posCode2", object.get("posCode2"));
                     posCode.append(object.get("posName2"));
@@ -1951,7 +1948,7 @@ public class ReportDaoImpl implements ReportDao {
             for (Map<String, Object> object : listCashier) {
                 if (object.containsKey("cashierCode1")) {
                     hashMap.put("cashierCode1", object.get("cashierCode1"));
-                    cashierCode.append(object.get("cashierName1")).append(" s/d ");
+                    cashierCode.append(object.get("cashierName1")).append(" s.d. ");
                 } else {
                     hashMap.put("cashierCode2", object.get("cashierCode2"));
                     cashierCode.append(object.get("cashierName2"));
@@ -1970,7 +1967,7 @@ public class ReportDaoImpl implements ReportDao {
             for (Map<String, Object> object : listShift) {
                 if (object.containsKey("shiftCode1")) {
                     hashMap.put("shiftCode1", object.get("shiftCode1"));
-                    shiftCode.append(object.get("shiftName1")).append(" s/d ");
+                    shiftCode.append(object.get("shiftName1")).append(" s.d. ");
                 } else {
                     hashMap.put("shiftCode2", object.get("shiftCode2"));
                     shiftCode.append(object.get("shiftName2"));
