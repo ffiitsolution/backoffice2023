@@ -375,6 +375,7 @@ public class ReportDaoImpl implements ReportDao {
         Map prm = new HashMap();
         prm.put("city", "X_" + param.get("city"));
         prm.put("outletCode", param.get("outletCode"));
+        prm.put("outletBrand", param.get("outletBrand"));
         prm.put("returnDateFrom", param.get("returnDateFrom"));
         prm.put("returnDateTo", param.get("returnDateTo"));
         if (param.get("typeReturn").equals(0.0)) {
@@ -620,6 +621,7 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("fromDate", param.get("fromDate"));
         hashMap.put("toDate", param.get("toDate"));
         hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("user", param.get("user"));
         if (param.get("detail").equals(1.0)) {
             hashMap.put("detail", 1);
