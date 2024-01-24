@@ -1637,7 +1637,10 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("fromTime", param.get("fromTime"));
         hashMap.put("toTime", param.get("toTime"));
         hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("address1", param.get("address1"));
+        hashMap.put("address2", param.get("address2"));
         hashMap.put("outletName", param.get("outletName"));
+        hashMap.put("phone", param.get("phone"));
 
         if (!param.get("outletBrand").toString().equalsIgnoreCase("TACOBELL")) {
             if (param.get("brand").toString().equalsIgnoreCase("SEMUA")) {
@@ -1645,6 +1648,7 @@ public class ReportDaoImpl implements ReportDao {
                 hashMap.put("brand1", "KFC");
                 hashMap.put("brand2", "BB");
             } else {
+                hashMap.put("brand", param.get("brand"));
                 hashMap.put("brand1", param.get("brand").toString().toUpperCase());
                 hashMap.put("brand2", param.get("brand").toString().toUpperCase());
             }
@@ -1780,7 +1784,10 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("fromDate", param.get("fromDate"));
         hashMap.put("toDate", param.get("toDate"));
         hashMap.put("user", param.get("user"));
-        hashMap.put("address", param.get("outletName"));
+        hashMap.put("address1", param.get("address1"));
+        hashMap.put("address2", param.get("address2"));
+        hashMap.put("outletName", param.get("outletName"));
+        hashMap.put("phone", param.get("phone"));
 
         List<Map<String, Object>> listCashier = (List<Map<String, Object>>) param.get("cashier");
         StringBuilder cashierCode = new StringBuilder();
@@ -1847,11 +1854,11 @@ public class ReportDaoImpl implements ReportDao {
         queryDataReceipt.append("SELECT UTM.POS_CODE_NOW, JON.POS_DESCRIPTION, UTM.MIN_NOW, UTM.MAX_NOW, UTM.MIN_AGO, " +
                 "UTM.MAX_AGO, mo.OUTLET_CODE, mo.OUTLET_NAME, mo.ADDRESS_1, mo.ADDRESS_2, mo.PHONE, ms.STAFF_NAME AS PRINT_NAME FROM (");
         queryDataReceipt.append("SELECT * FROM ( SELECT '").append(listPos.get(0).get("posCode")).append("'" +
-                        "AS POS_CODE_NOW , MIN(BILL_NO) AS MIN_NOW, MAX(BILL_NO) AS MAX_NOW FROM T_POS_BILL WHERE BILL_NO LIKE '%-%' AND TRANS_DATE " +
+                        "AS POS_CODE_NOW , MIN(BILL_NO) AS MIN_NOW, MAX(BILL_NO) AS MAX_NOW FROM T_POS_BILL WHERE TRANS_DATE " +
                         "= '").append(param.get("periode")).append("' AND POS_CODE = '").append(listPos.get(0).get("posCode"))
                 .append("' AND OUTLET_CODE = '").append(param.get("outletCode")).append("' " +
                         ")A JOIN ( SELECT '").append(listPos.get(0).get("posCode")).append("' AS " +
-                        "POS_CODE_AGO, MIN(BILL_NO) AS MIN_AGO, MAX(BILL_NO) AS MAX_AGO FROM T_POS_BILL WHERE BILL_NO LIKE '%-%' AND " +
+                        "POS_CODE_AGO, MIN(BILL_NO) AS MIN_AGO, MAX(BILL_NO) AS MAX_AGO FROM T_POS_BILL WHERE " +
                         "TRANS_DATE = '").append(yesterdayDateString).append("' AND POS_CODE = '")
                 .append(listPos.get(0).get("posCode")).append("' AND OUTLET_CODE = '").append(param.get("outletCode"))
                 .append("')B ON A.POS_CODE_NOW = B.POS_CODE_AGO");
@@ -1859,11 +1866,11 @@ public class ReportDaoImpl implements ReportDao {
         for (int i = 1; i < listPos.size(); i++) {
             queryDataReceipt.append(" UNION ALL ");
             queryDataReceipt.append("SELECT * FROM ( SELECT '").append(listPos.get(i).get("posCode")).append("' " +
-                            "AS POS_CODE_NOW , MIN(BILL_NO) AS MIN_NOW, MAX(BILL_NO) AS MAX_NOW FROM T_POS_BILL WHERE BILL_NO LIKE '%-%' AND TRANS_DATE " +
+                            "AS POS_CODE_NOW , MIN(BILL_NO) AS MIN_NOW, MAX(BILL_NO) AS MAX_NOW FROM T_POS_BILL WHERE TRANS_DATE " +
                             "= '").append(param.get("periode")).append("' AND POS_CODE = '").append(listPos.get(i).get("posCode"))
                     .append("' AND OUTLET_CODE = '").append(param.get("outletCode")).append("'" +
                             ")A JOIN ( SELECT '").append(listPos.get(i).get("posCode")).append("' AS " +
-                            "POS_CODE_AGO, MIN(BILL_NO) AS MIN_AGO, MAX(BILL_NO) AS MAX_AGO FROM T_POS_BILL WHERE BILL_NO LIKE '%-%' AND " +
+                            "POS_CODE_AGO, MIN(BILL_NO) AS MIN_AGO, MAX(BILL_NO) AS MAX_AGO FROM T_POS_BILL WHERE " +
                             "TRANS_DATE = '").append(yesterdayDateString).append("' AND POS_CODE = '")
                     .append(listPos.get(i).get("posCode")).append("' AND OUTLET_CODE = '").append(param.get("outletCode"))
                     .append("')B ON A.POS_CODE_NOW = B.POS_CODE_AGO");
@@ -1879,7 +1886,6 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("dateAgo", yesterdayDateString);
         hashMap.put("user", param.get("user"));
         hashMap.put("outletName", param.get("outletName"));
-        System.out.println(queryDataReceipt.toString());
 
         List<Map<String, Object>> listParamPos = (List<Map<String, Object>>) param.get("pos");
         StringBuilder posCode = new StringBuilder();
@@ -2314,6 +2320,7 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("fromDate", param.get("fromDate"));
         hashMap.put("toDate", param.get("toDate"));
         hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("user", param.get("user"));
 
         ClassPathResource classPathResource = new ClassPathResource("report/PemakaianBySalesReport.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
@@ -2436,6 +2443,7 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("kodeItem", param.get("kodeItem"));
         hashMap.put("fromDate", param.get("fromDate"));
         hashMap.put("toDate", param.get("toDate"));
+        hashMap.put("user", param.get("user"));
 
         ClassPathResource classPathResource = new ClassPathResource("report/ReportItemSelectedbyTime.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
@@ -2653,6 +2661,7 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("fromDate", param.get("fromDate"));
         hashMap.put("toDate", param.get("toDate"));
+        hashMap.put("user", param.get("user"));
 
         ClassPathResource classPathResource = new ClassPathResource("report/reportProductEfficiency.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
