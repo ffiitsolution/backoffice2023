@@ -1412,6 +1412,9 @@ public class ViewDoaImpl implements ViewDao {
                 SELECT 'PROGRAM', 'POS0003', 'Report Menu & Detail Modifier', 3, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0003')
                 UNION ALL
+                SELECT 'PROGRAM', 'POS0004', 'Item Sales Analisis', 4, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0004')
+                UNION ALL
                 SELECT 'PROGRAM', 'POS0005', 'Sales by Date', 5, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0005')
                 UNION ALL
@@ -1436,35 +1439,32 @@ public class ViewDoaImpl implements ViewDao {
                 SELECT 'PROGRAM', 'POS0012', 'Sales Void', 12, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0012')
                 UNION ALL
-                SELECT 'PROGRAM', 'POS0014', 'Laporan Item Selected By Time', 14, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                SELECT 'PROGRAM', 'POS0013', 'Laporan Item Selected By Time', 13, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0013')
+                UNION ALL
+                SELECT 'PROGRAM', 'POS0014', 'Refund Report', 14, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0014')
                 UNION ALL
-                SELECT 'PROGRAM', 'POS0015', 'Refund Report', 15, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                SELECT 'PROGRAM', 'POS0015', 'Laporan Down Payment (DP)', 15, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0015')
                 UNION ALL
-                SELECT 'PROGRAM', 'POS0016', 'Laporan Down Payment (DP)', 16, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                SELECT 'PROGRAM', 'POS0016', 'Actual Stock Opname', 16, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0016')
                 UNION ALL
-                SELECT 'PROGRAM', 'POS0017', 'Actual Stock Opname', 17, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                SELECT 'PROGRAM', 'POS0017', 'End of Day', 17, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0017')
                 UNION ALL
-                SELECT 'PROGRAM', 'POS0018', 'End of Day', 18, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                SELECT 'PROGRAM', 'POS0018', 'Laporan Selected by Item Detail', 18, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0018')
                 UNION ALL
-                SELECT 'PROGRAM', 'POS0019', 'Laporan Selected by Item Detail', 19, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                SELECT 'PROGRAM', 'POS0019', 'Laporan Product Efficiency', 19, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0019')
                 UNION ALL
-                SELECT 'PROGRAM', 'POS0021', 'Laporan Product Efficiency', 21, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                SELECT 'PROGRAM', 'POS0020', 'Laporan Item Selected By Product', 20, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0020')
+                UNION ALL
+                SELECT 'PROGRAM', 'POS0021', 'Report Pajak', 21, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0021')
-                UNION ALL
-                SELECT 'PROGRAM', 'POS0022', 'Laporan Item Selected By Product', 22, 'POS', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0022')
-                UNION ALL
-                SELECT 'PROGRAM', 'POS0023', 'Report Pajak', 23, 'POS', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0023')
-                UNION ALL
-                SELECT 'PROGRAM', 'POS0024', 'Item Sales Analisis', 24, 'POS', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0024')
                 UNION ALL
                 SELECT 'PROGRAM', 'INV0001', 'Report Stock Card', 1, 'INV', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV0001')
