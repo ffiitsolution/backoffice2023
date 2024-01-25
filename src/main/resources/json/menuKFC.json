@@ -40,7 +40,10 @@
       },
       {
         "name": "Fryer Type",
-        "url": "/master/fryer"
+        "badge": {
+          "color": "warning",
+          "text": "On Progress"
+        }
       },
       {
         "name": "Group Item",
