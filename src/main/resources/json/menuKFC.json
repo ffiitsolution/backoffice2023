@@ -133,7 +133,10 @@
       },
       {
         "name": "Mpcs Query",
-        "url": "/report/mpcs-query"
+        "badge": {
+          "color": "warning",
+          "text": "On Progress"
+        }
       },
       {
         "name": "Pos Report",

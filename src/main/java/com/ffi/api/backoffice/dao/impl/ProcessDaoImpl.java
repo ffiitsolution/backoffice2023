@@ -2554,7 +2554,137 @@ public class ProcessDaoImpl implements ProcessDao {
     @Override
     public void insertTSummMpcs(Map<String, String> balance) {
         // query insert from Dona
-        String query = "insert into t_summ_mpcs (select A.OUTLET_CODE ,A.MPCS_GROUP ,A.DATE_MPCS +1 AS DATE_MPCS ,A.SEQ_MPCS ,A.TIME_MPCS ,TOT AS QTY_PROJ_CONV ,A.UOM_PROJ_CONV ,TOT AS QTY_PROJ ,A.UOM_PROJ ,sum(B.tot)over(PARTITION BY A.MPCS_GROUP ORDER BY A.SEQ_MPCS ) as QTY_ACC_PROJ ,A.UOM_ACC_PROJ ,' ' AS DESC_PROD ,0 as QTY_PROD ,A.UOM_PROD ,0 as QTY_ACC_PROD ,A.UOM_ACC_PROD ,' ' AS PROD_BY ,0 as QTY_SOLD ,A.UOM_SOLD ,0 as QTY_ACC_SOLD ,A.UOM_ACC_SOLD ,0 as QTY_REJECT ,A.UOM_REJECT ,0 as QTY_ACC_REJECT ,A.UOM_ACC_REJECT ,0 as QTY_WASTAGE ,A.UOM_WASTAGE ,0 as QTY_ACC_WASTAGE ,A.UOM_ACC_WASTAGE ,0 as QTY_ONHAND ,A.UOM_ONHAND ,0 as QTY_ACC_ONHAND ,A.UOM_ACC_ONHAND, TOT as QTY_VARIANCE, A.UOM_VARIANCE ,0 as QTY_ACC_VARIANCE ,A.UOM_ACC_VARIANCE ,A.USER_UPD ,A.DATE_UPD ,A.TIME_UPD ,0 as QTY_IN ,0 as QTY_OUT from t_summ_mpcs A LEFT JOIN (SELECT OUTLET_CODE,MPCS_GROUP,SEQ_MPCS,TIME_MPCS,TOT FROM ( select OUTLET_CODE,mpcs_group,seq_mpcs,time_mpcs,sum(qty_sold),sum(qty_sold1),sum(qty_sold2),round((sum(qty_sold)+sum(qty_sold1)+sum(qty_sold2))/3) as tot from( select OUTLET_CODE,mpcs_group,date_mpcs,seq_mpcs,time_mpcs,qty_sold,0 as qty_sold1, 0 as qty_sold2 from t_summ_mpcs where date_mpcs in(select trans_date-7 from m_outlet where outlet_code=:outletCode) union all select OUTLET_CODE,mpcs_group,date_mpcs,seq_mpcs,time_mpcs,0 as qty_sold,qty_sold as qty_sold1, 0 as qty_sold2 from t_summ_mpcs where date_mpcs in(select trans_date-14 from m_outlet where outlet_code=:outletCode) union all select OUTLET_CODE,mpcs_group,date_mpcs,seq_mpcs,time_mpcs,0 as qty_sold,0 as qty_sold1,qty_sold as qty_sold2 from t_summ_mpcs where date_mpcs in(select trans_date-21 from m_outlet where outlet_code=:outletCode) ) group by OUTLET_CODE,mpcs_group,seq_mpcs,time_mpcs order by mpcs_group asc,seq_mpcs) B)B ON A.OUTLET_CODE=B.OUTLET_CODE AND A.MPCS_GROUP=B.MPCS_GROUP AND A.SEQ_MPCS=B.SEQ_MPCS AND A.TIME_MPCS=B.TIME_MPCS WHERE DATE_MPCS IN(select trans_date from m_outlet where outlet_code=:outletCode))";
+        String query = """
+                INSERT INTO T_SUMM_MPCS (
+                SELECT
+                    A.OUTLET_CODE,
+                    A.MPCS_GROUP,
+                    A.DATE_MPCS + 1 AS DATE_MPCS,
+                    A.SEQ_MPCS,
+                    A.TIME_MPCS,
+                    TOT AS QTY_PROJ_CONV,
+                    A.UOM_PROJ_CONV,
+                    TOT AS QTY_PROJ,
+                    A.UOM_PROJ,
+                    SUM(B.TOT) OVER (PARTITION BY A.MPCS_GROUP ORDER BY A.SEQ_MPCS) AS QTY_ACC_PROJ,
+                    A.UOM_ACC_PROJ,
+                    ' ' AS DESC_PROD,
+                    0 AS QTY_PROD,
+                    A.UOM_PROD,
+                    0 AS QTY_ACC_PROD,
+                    A.UOM_ACC_PROD,
+                    ' ' AS PROD_BY,
+                    0 AS QTY_SOLD,
+                    A.UOM_SOLD,
+                    0 AS QTY_ACC_SOLD,
+                    A.UOM_ACC_SOLD,
+                    0 AS QTY_REJECT,
+                    A.UOM_REJECT,
+                    0 AS QTY_ACC_REJECT,
+                    A.UOM_ACC_REJECT,
+                    0 AS QTY_WASTAGE,
+                    A.UOM_WASTAGE,
+                    0 AS QTY_ACC_WASTAGE,
+                    A.UOM_ACC_WASTAGE,
+                    0 AS QTY_ONHAND,
+                    A.UOM_ONHAND,
+                    0 AS QTY_ACC_ONHAND,
+                    A.UOM_ACC_ONHAND,
+                    TOT AS QTY_VARIANCE,
+                    A.UOM_VARIANCE,
+                    0 AS QTY_ACC_VARIANCE,
+                    A.UOM_ACC_VARIANCE,
+                    A.USER_UPD,
+                    A.DATE_UPD,
+                    A.TIME_UPD,
+                    0 AS QTY_IN,
+                    0 AS QTY_OUT
+                FROM
+                    t_summ_mpcs A
+                LEFT JOIN (
+                    SELECT
+                        OUTLET_CODE,
+                        MPCS_GROUP,
+                        SEQ_MPCS,
+                        TIME_MPCS,
+                        SUM(TOT) AS TOT
+                    FROM
+                        (
+                            SELECT
+                                OUTLET_CODE,
+                                mpcs_group,
+                                seq_mpcs,
+                                time_mpcs,
+                                SUM(qty_sold) AS qty_sold,
+                                SUM(qty_sold1) AS qty_sold1,
+                                SUM(qty_sold2) AS qty_sold2,
+                                ROUND((SUM(qty_sold) + SUM(qty_sold1) + SUM(qty_sold2)) / 3) AS tot
+                            FROM
+                                (
+                                    SELECT
+                                        OUTLET_CODE,
+                                        mpcs_group,
+                                        date_mpcs,
+                                        seq_mpcs,
+                                        time_mpcs,
+                                        qty_sold,
+                                        0 AS qty_sold1,
+                                        0 AS qty_sold2
+                                    FROM
+                                        t_summ_mpcs
+                                    WHERE
+                                        date_mpcs IN (SELECT trans_date - 7 FROM m_outlet WHERE outlet_code = :outletCode)
+                                    UNION ALL
+                                    SELECT
+                                        OUTLET_CODE,
+                                        mpcs_group,
+                                        date_mpcs,
+                                        seq_mpcs,
+                                        time_mpcs,
+                                        0 AS qty_sold,
+                                        qty_sold AS qty_sold1,
+                                        0 AS qty_sold2
+                                    FROM
+                                        t_summ_mpcs
+                                    WHERE
+                                        date_mpcs IN (SELECT trans_date - 14 FROM m_outlet WHERE outlet_code = :outletCode)
+                                    UNION ALL
+                                    SELECT
+                                        OUTLET_CODE,
+                                        mpcs_group,
+                                        date_mpcs,
+                                        seq_mpcs,
+                                        time_mpcs,
+                                        0 AS qty_sold,
+                                        0 AS qty_sold1,
+                                        qty_sold AS qty_sold2
+                                    FROM
+                                        t_summ_mpcs
+                                    WHERE
+                                        date_mpcs IN (SELECT trans_date - 21 FROM m_outlet WHERE outlet_code = :outletCode)
+                                )
+                            GROUP BY
+                                OUTLET_CODE,
+                                mpcs_group,
+                                seq_mpcs,
+                                time_mpcs
+                            ORDER BY
+                                mpcs_group ASC,
+                                seq_mpcs
+                        ) B
+                    GROUP BY
+                        OUTLET_CODE,
+                        MPCS_GROUP,
+                        SEQ_MPCS,
+                        TIME_MPCS
+                ) B ON A.OUTLET_CODE = B.OUTLET_CODE
+                    AND A.MPCS_GROUP = B.MPCS_GROUP
+                    AND A.SEQ_MPCS = B.SEQ_MPCS
+                    AND A.TIME_MPCS = B.TIME_MPCS
+                WHERE
+                    DATE_MPCS IN (SELECT trans_date FROM m_outlet WHERE outlet_code = :outletCode)
+                   )
+                       """;
         Map param = new HashMap();
         param.put("outletCode", balance.get("outletCode"));
         System.err.println("q insertTSummMpcs: " + query);
