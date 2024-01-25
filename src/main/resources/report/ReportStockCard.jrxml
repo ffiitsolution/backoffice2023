@@ -30,8 +30,7 @@ SELECT
 	*
 FROM
 	(
-	SELECT 
-		 FLAG_CANVASING,   
+	SELECT  
 		 OUTLET_CODE,
          outlet_name,
          type,
@@ -81,8 +80,7 @@ FROM
          SOPIN,
          SOPOUT,
          CASE WHEN cd_trans = 'SAL' THEN QTY_IN ELSE 0 END AS SAL
-  FROM   (SELECT   FLAG_CANVASING,
-  				   urutan,
+  FROM   (SELECT   urutan,
                    OUTLET_CODE,
                    outlet_name,
                    type,
@@ -119,8 +117,7 @@ FROM
                    SOPIN,
                    SOPOUT,
                    TIME_UPD
-            FROM   (SELECT FLAG_CANVASING,  
-            			     urutan,
+            FROM   (SELECT   urutan,
                              OUTLET_CODE,
                              outlet_name,
                              type,
@@ -165,8 +162,7 @@ FROM
                              SOPIN,
                              SOPOUT,
                              TIME_UPD
-                      FROM   (  SELECT   FLAG_CANVASING,
-                      				     OUTLET_CODE,
+                      FROM   (  SELECT   OUTLET_CODE,
                                          OUTLET_NAME,
                                          TYPE,
                                          ADDRESS_1,
@@ -205,7 +201,6 @@ FROM
                                                   ORDER BY item_code)
                                             AS urutan
                                   FROM   (SELECT   0 numb,
-                                  				   m.FLAG_CANVASING,
                                                    a.outlet_code,
                                                    b.outlet_name,
                                                    b.type,
@@ -263,7 +258,6 @@ FROM
                                                          $P{fromDate}
                                           UNION ALL
                                           SELECT   ROWNUM numb,
-                                          		   m.FLAG_CANVASING,
                                                    A.OUTLET_CODE,
                                                    c.outlet_name,
                                                    c.type,
@@ -487,7 +481,7 @@ FROM
                                                          ($P!{itemCode})
                                                    AND A.trans_date BETWEEN $P{fromDate}
                                                                         AND  $P{toDate})
-                              ORDER BY   item_code ASC, trans_date ASC, CASE WHEN FLAG_CANVASING = 'N' THEN cd_trans END DESC, NUMB ASC)
+                              ORDER BY   item_code ASC, trans_date ASC, NUMB ASC)
                      WHERE   ITEM_CODE IN ($P!{itemCode})
                              AND trans_date BETWEEN $P{fromDate}
                                                 AND  $P{toDate}))
