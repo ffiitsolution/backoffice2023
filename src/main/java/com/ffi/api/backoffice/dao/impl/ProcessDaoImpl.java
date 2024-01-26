@@ -1204,7 +1204,6 @@ public class ProcessDaoImpl implements ProcessDao {
             Map<String, String> histKirim = new HashMap<String, String>();
             histKirim.put("orderNo", balance.get("orderNo").toString());
             histKirim.put("sendUser", balance.get("userUpd").toString());
-            InsertHistKirim(histKirim);
             //End added by KP
 
         } catch (Exception e) {
@@ -2455,7 +2454,6 @@ public class ProcessDaoImpl implements ProcessDao {
             Map<String, String> histKirim = new HashMap<String, String>();
             histKirim.put("orderNo", balance.get("orderNo").toString());
             histKirim.put("sendUser", balance.get("userUpd").toString());
-            InsertHistKirim(histKirim);
 
         } catch (Exception e) {
             e.printStackTrace();
