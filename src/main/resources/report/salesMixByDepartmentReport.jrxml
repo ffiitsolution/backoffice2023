@@ -211,7 +211,7 @@ ORDER BY
 					<textElement>
 						<font size="8" isBold="true"/>
 					</textElement>
-					<textFieldExpression><![CDATA["Total " +  $F{DESCRIPTION}]]></textFieldExpression>
+					<textFieldExpression><![CDATA["Total " +  ($F{DESCRIPTION} != null ? $F{DESCRIPTION} : "OTR")]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupFooter>
@@ -273,7 +273,7 @@ ORDER BY
 				<textElement textAlignment="Center">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Sales Mix by Department Report]]></text>
+				<text><![CDATA[SALES MIX BY DEPARTMENT REPORT]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="56" y="68" width="283" height="11" uuid="ee116623-4d1e-4bf4-8b3b-73101a4ebe8f"/>
