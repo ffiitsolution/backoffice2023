@@ -827,7 +827,11 @@ public class ViewDoaImpl implements ViewDao {
             qry = "SELECT * FROM M_ITEM WHERE STATUS = 'A' AND FLAG_STOCK = 'Y' AND FLAG_PAKET = 'N'"
                     + " AND CD_ITEM_LEFTOVER IS NOT NULL AND CD_ITEM_LEFTOVER != ' '";
         }
-        /////////////// End revised query for Leftover////////////// 
+        /////////////// End revised query for Leftover//////////////
+        //Condition when Non-Paket
+        if (Logan.get("paket").equalsIgnoreCase("N")) {
+            qry = "select * from m_item where status='A' and flag_paket='N' and flag_finished_good = 'Y' order by item_code asc";
+        } 
         Map prm = new HashMap();
         prm.put("FlagPaket", Logan.get("paket"));
         System.err.println("q :" + qry);
@@ -957,9 +961,7 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listRecipeProduct(Map<String, String> ref) {
-        String qry = "select rp.recipe_code, rp.product_code, rp.product_remark, rp.qty_stock, rp.uom_stock "
-                + "from m_recipe_product rp "
-                + "where rp.recipe_code = :reCode ";
+        String qry = "SELECT rp.RECIPE_CODE, rp.PRODUCT_CODE, CASE WHEN rp.PRODUCT_REMARK IS NOT NULL AND rp.PRODUCT_REMARK <> ' ' THEN rp.PRODUCT_REMARK ELSE mi.ITEM_DESCRIPTION END AS PRODUCT_REMARK, rp.QTY_STOCK, rp.UOM_STOCK FROM M_RECIPE_PRODUCT rp LEFT JOIN M_ITEM mi ON mi.ITEM_CODE = rp.PRODUCT_CODE WHERE rp.RECIPE_CODE = :reCode";
         Map prm = new HashMap();
         prm.put("reCode", ref.get("reCode"));
         System.err.println("q :" + qry);
