@@ -3533,8 +3533,66 @@ public class ViewDoaImpl implements ViewDao {
     //////////////////////////////////DONE//////////////////////////////////////////////////////////
 
     // New Method List MPCS Production By Fathur 13 Dec 2023 //
+    // Updated code: insert into t_summ_mpcs when mpcs group not available Fathur 26 Jan 2024//
+    @Transactional
     @Override
     public List<Map<String, Object>> mpcsProductionList(Map<String, String> balance) {
+        Map prm = new HashMap();
+        prm.put("mpcsGroup", balance.get("mpcsGroup"));
+        prm.put("dateMpcs", balance.get("dateMpcs"));
+        prm.put("userUpd", balance.get("userUpd"));
+         prm.put("outletCode", balance.get("outletCode"));
+        String checkMPCSExist = "SELECT count(*) FROM T_SUMM_MPCS tsm WHERE tsm.MPCS_GROUP = :mpcsGroup AND tsm.DATE_MPCS = :dateMpcs";
+
+        Integer rowCount = jdbcTemplate.queryForObject(checkMPCSExist, prm, Integer.class);
+        if (rowCount.equals(0)) {
+            String insertMpcsProduction = "INSERT INTO t_summ_mpcs ( "
+                    + "	 SELECT sm.OUTLET_CODE,  "
+                    + "		 :mpcsGroup AS MPCS_GROUP,  "
+                    + "		 :dateMpcs AS DATE_MPCS,  "
+                    + "		 sm.SEQ_MPCS,  "
+                    + "		 sm.TIME_MPCS,  "
+                    + "		 0 AS QTY_PROJ_CONV,  "
+                    + "		 sm.UOM_PROJ_CONV,  "
+                    + "		 0 AS QTY_PROJ,  "
+                    + "		 sm.UOM_PROJ,  "
+                    + "		 0 AS QTY_ACC_PROJ,  "
+                    + "		 sm.UOM_ACC_PROJ,  "
+                    + "		 ' ' AS DESC_PROD,  "
+                    + "		 0 AS QTY_PROD,  "
+                    + "		 sm.UOM_PROD,  "
+                    + "		 0 AS QTY_ACC_PROD,  "
+                    + "		 sm.UOM_ACC_PROD,  "
+                    + "		 ' ' AS PROD_BY,  "
+                    + "		 0 AS QTY_SOLD,  "
+                    + "		 sm.UOM_SOLD,  "
+                    + "		 0 AS QTY_ACC_SOLD,  "
+                    + "		 sm.UOM_ACC_SOLD,  "
+                    + "		 0 AS QTY_REJECT,  "
+                    + "		 sm.UOM_REJECT,  "
+                    + "		 0 AS QTY_ACC_REJECT,  "
+                    + "		 sm.UOM_ACC_REJECT,  "
+                    + "		 0 AS QTY_WASTAGE,  "
+                    + "		 sm.UOM_WASTAGE,  "
+                    + "		 0 AS QTY_ACC_WASTAGE,  "
+                    + "		 sm.UOM_ACC_WASTAGE,  "
+                    + "		 0 AS QTY_ONHAND,  "
+                    + "		 sm.UOM_ONHAND,  "
+                    + "		 0 AS QTY_ACC_ONHAND,  "
+                    + "		 sm.UOM_ACC_ONHAND,  "
+                    + "		 0 AS QTY_VARIANCE,  "
+                    + "		 sm.UOM_VARIANCE,  "
+                    + "		 0 AS QTY_ACC_VARIANCE,  "
+                    + "		 sm.UOM_ACC_VARIANCE,  "
+                    + "		 :userUpd AS USER_UPD,  "
+                    + "		 TO_CHAR(SYSDATE, 'DD Mon YYYY') AS DATE_UPD,  "
+                    + "		 TO_CHAR(SYSDATE, 'HHMMII') AS TIME_UPD,  "
+                    + "		 0 AS QTY_IN,  "
+                    + "		 0 AS QTY_OUT  "
+                    + "	 FROM T_SUMM_MPCS sm LEFT JOIN M_OUTLET mo ON mo.OUTLET_CODE = sm.OUTLET_CODE WHERE sm.OUTLET_CODE = :outletCode AND sm.MPCS_GROUP = 'C02' AND sm.DATE_MPCS = mo.TRANS_DATE)";
+            jdbcTemplate.update((insertMpcsProduction), prm);
+            System.out.print("success insert");
+        }
 
         String qry = "select to_char(to_date(c.TIME_MPCS, 'hh24miss'), 'hh24:mi') as TIME_MPCS, c.QTY_PROD, c.QTY_ACC_PROD, c.QTY_ACC_PROD, NVL(c.DESC_PROD, ' ') AS DESC_PROD, c.PROD_BY, "
                 + "(to_char(c.DATE_UPD, 'YYYY-MM-dd') || ' ' || to_char(to_date(c.TIME_MPCS, 'hh24miss'), 'hh24:mi:ss')) AS DATE_UPD "
@@ -3542,24 +3600,15 @@ public class ViewDoaImpl implements ViewDao {
                 + "where c.date_mpcs = :dateMpcs "
                 + "AND c.MPCS_GROUP = :mpcsGroup";
 
-        Map prm = new HashMap();
-        prm.put("mpcsGroup", balance.get("mpcsGroup"));
-        prm.put("dateMpcs", balance.get("dateMpcs"));
-
-        System.err.println("q :" + qry);
-        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
-            @Override
-            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
-                Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("timeMpcs", rs.getString("TIME_MPCS"));
-                rt.put("qtyProd", rs.getString("QTY_PROD"));
-                rt.put("qtyAccProd", rs.getString("QTY_ACC_PROD"));
-                rt.put("descProd", rs.getString("DESC_PROD"));
-                rt.put("prodBy", rs.getString("PROD_BY"));
-                rt.put("dateUpd", rs.getString("DATE_UPD"));
-
-                return rt;
-            }
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, (ResultSet rs, int i) -> {
+            Map<String, Object> rt = new HashMap<>();
+            rt.put("timeMpcs", rs.getString("TIME_MPCS"));
+            rt.put("qtyProd", rs.getString("QTY_PROD"));
+            rt.put("qtyAccProd", rs.getString("QTY_ACC_PROD"));
+            rt.put("descProd", rs.getString("DESC_PROD"));
+            rt.put("prodBy", rs.getString("PROD_BY"));
+            rt.put("dateUpd", rs.getString("DATE_UPD"));
+            return rt;
         });
         return list;
     }
