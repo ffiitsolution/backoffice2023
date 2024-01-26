@@ -708,7 +708,7 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> listMasterItemSupplier(Map<String, String> logan) {
         String qry = "select ITEM_CODE||'-'||ITEM_DESCRIPTION as name,item_description,"
-                + " item_code from m_item where Status='A' and FLAG_MATERIAL='Y' AND FLAG_STOCK='Y'";
+                + " item_code from m_item where Status='A' and FLAG_MATERIAL='Y'";
         Map prm = new HashMap();
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
