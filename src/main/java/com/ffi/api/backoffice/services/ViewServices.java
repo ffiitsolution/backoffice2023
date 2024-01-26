@@ -26,7 +26,7 @@ public class ViewServices {
     }
     ///////////////new method from dona 28-02-2023////////////////////////////
 
-    public List<Map<String, Object>> listSupplier(Map<String, String> ref) {
+    public List<Map<String, Object>> listSupplier(Map<String, Object> ref) {
         return viewDao.listSupplier(ref);
     }
     ///////////////done

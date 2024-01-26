@@ -95,14 +95,18 @@ public class ViewDoaImpl implements ViewDao {
     ///////////////new method from dona 28-02-2023////////////////////////////
 
     @Override
-    public List<Map<String, Object>> listSupplier(Map<String, String> balance) {
+    public List<Map<String, Object>> listSupplier(Map<String, Object> balance) {
         String qry = "SELECT  CD_SUPPLIER, SUPPLIER_NAME, CP_NAME, FLAG_CANVASING, STATUS, ADDRESS_1, "
                 + "ADDRESS_2, CITY, ZIP_CODE, PHONE, FAX, HOMEPAGE, CP_TITLE, CP_MOBILE, CP_PHONE, "
                 + "CP_PHONE_EXT, CP_EMAIL, USER_UPD, DATE_UPD, TIME_UPD FROM m_supplier"
                 + " where status like :status"
                 + " and city LIKE :city"
-                + " and FLAG_CANVASING Like :flagCanvasing"
-                + " order by cd_Supplier desc";
+                + " and FLAG_CANVASING Like :flagCanvasing";
+        if (balance.containsKey("isFSD")) {
+            boolean isFSD = (boolean) balance.get("isFSD");
+            qry += " and HOMEPAGE " + (isFSD ? "like '%FSD%'" : "not like '%FSD%'");
+        }
+        qry += " order by cd_Supplier desc";
         Map prm = new HashMap();
         prm.put("status", "%" + balance.get("status") + "%");
         prm.put("city", "%" + balance.get("city") + "%");

@@ -157,7 +157,7 @@ public class IndexController {
     public @ResponseBody
     Response listSupplier(@RequestBody String param) throws IOException, Exception {
         Gson gsn = new Gson();
-        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        Map<String, Object> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
