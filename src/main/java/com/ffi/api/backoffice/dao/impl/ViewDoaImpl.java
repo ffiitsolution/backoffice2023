@@ -732,13 +732,23 @@ public class ViewDoaImpl implements ViewDao {
     ///////////////new method from asep 29-mar-2023 //////////////      
     @Override
     public List<Map<String, Object>> listOutlet(Map<String, String> balance) {
-        String qry = "SELECT a.region_code,b.description region_name,a.outlet_code,a.area_code,c.description area_name, a.initial_outlet, a.outlet_name, a.type,d.description type_store, a.status "
-                + "FROM M_OUTLET a "
-                + "join m_global b on a.region_code=b.code and b.cond='REG_OUTLET'"
-                + "join m_global c on a.area_code=c.code  and c.cond='AREACODE'"
-                + "join m_global d on a.type=d.code  and d.cond='OUTLET_TP'"
-                + "where a.type <>'HO' and a.status='A' and  a.REGION_CODE LIKE :region AND a.AREA_CODE LIKE :area AND a.TYPE LIKE :type";
+        if(balance.containsKey("outletCode") && balance.get("outletCode").length() > 0 && balance.get("detail").endsWith("1")){
+            String qry = """
+                    SELECT a.REGION_CODE, b.DESCRIPTION AS REGION_NAME, a.AREA_CODE, c.DESCRIPTION AS AREA_NAME, a.TYPE, d.DESCRIPTION AS TYPE_STORE, a.OUTLET_CODE, a.OUTLET_NAME, a.ADDRESS_1, a.ADDRESS_2, a.CITY, a.POST_CODE, a.PHONE, a.FAX, a.CASH_BALANCE, TO_CHAR(a.TRANS_DATE,'YYYY-MM-DD') AS TRANS_DATE, a.DEL_LIMIT, a.DEL_CHARGE, a.RND_PRINT, a.RND_FACT, a.RND_LIMIT, a.TAX, a.DP_MIN, a.CANCEL_FEE, a.CAT_ITEMS, a.MAX_BILLS, a.MIN_ITEMS, a.REF_TIME, a.TIME_OUT, a.MAX_SHIFT, a.SEND_DATA, a.MIN_PULL_TRX, a.MAX_PULL_VALUE, a.STATUS, TO_CHAR(a.START_DATE,'YYYY-MM-DD') AS START_DATE, TO_CHAR(a.FINISH_DATE,'YYYY-MM-DD') AS FINISH_DATE, a.MAX_DISC_PERCENT, a.MAX_DISC_AMOUNT, a.OPEN_TIME, a.CLOSE_TIME, a.REFUND_TIME_LIMIT, a.MONDAY, a.TUESDAY, a.WEDNESDAY, a.THURSDAY, a.FRIDAY, a.SATURDAY, a.SUNDAY, a.HOLIDAY, a.OUTLET_24_HOUR, a.IP_OUTLET, a.PORT_OUTLET, a.USER_UPD, TO_CHAR(a.DATE_UPD,'YYYY-MM-DD') AS DATE_UPD, a.TIME_UPD, a.FTP_ADDR, a.FTP_USER, a.INITIAL_OUTLET, a.RSC_CODE, a.TAX_CHARGE
+                    FROM M_OUTLET a
+                    LEFT JOIN M_GLOBAL b ON a.region_code = b.code AND b.cond = 'REG_OUTLET'
+                    LEFT JOIN M_GLOBAL c ON a.area_code = c.code AND c.cond = 'AREACODE'
+                    LEFT JOIN M_GLOBAL d ON a.type = d.code AND d.cond = 'OUTLET_TP'
+                    WHERE a.OUTLET_CODE = :outletCode
+                         """;
+            return jdbcTemplate.query(qry, balance, new DynamicRowMapper());
+        }
         Map prm = new HashMap();
+        String qry = "SELECT a.REGION_CODE, b.DESCRIPTION AS REGION_NAME, a.OUTLET_CODE, a.AREA_CODE, c.DESCRIPTION AS AREA_NAME, a.INITIAL_OUTLET, a.OUTLET_NAME, a.TYPE, d.DESCRIPTION AS TYPE_STORE, a.STATUS FROM M_OUTLET a JOIN M_GLOBAL b ON a.REGION_CODE = b.CODE AND b.COND = 'REG_OUTLET' JOIN M_GLOBAL c ON a.AREA_CODE = c.CODE AND c.COND = 'AREACODE' JOIN M_GLOBAL d ON a.TYPE = d.CODE AND d.COND = 'OUTLET_TP' WHERE a.TYPE <> 'HO' AND a.STATUS = 'A' AND a.REGION_CODE LIKE :region AND a.AREA_CODE LIKE :area AND a.TYPE LIKE :type ";
+        if(balance.containsKey("outletCode") && !balance.get("outletCode").isBlank()){
+            qry += " AND a.OUTLET_CODE = :outletCode UNION ALL SELECT a.REGION_CODE, b.DESCRIPTION AS REGION_NAME, a.OUTLET_CODE, a.AREA_CODE, c.DESCRIPTION AS AREA_NAME, a.INITIAL_OUTLET, a.OUTLET_NAME, a.TYPE, d.DESCRIPTION AS TYPE_STORE, a.STATUS FROM M_OUTLET a JOIN M_GLOBAL b ON a.REGION_CODE = b.CODE AND b.COND = 'REG_OUTLET' JOIN M_GLOBAL c ON a.AREA_CODE = c.CODE AND c.COND = 'AREACODE' JOIN M_GLOBAL d ON a.TYPE = d.CODE AND d.COND = 'OUTLET_TP' WHERE a.TYPE <> 'HO' AND a.STATUS = 'A' AND a.REGION_CODE LIKE :region AND a.AREA_CODE LIKE :area AND a.TYPE LIKE :type AND a.OUTLET_CODE <> :outletCode";
+            prm.put("outletCode", balance.get("outletCode"));
+        }
         System.err.println("q :" + qry);
         prm.put("region", "%" + balance.get("region") + "%");
         prm.put("area", "%" + balance.get("area") + "%");
