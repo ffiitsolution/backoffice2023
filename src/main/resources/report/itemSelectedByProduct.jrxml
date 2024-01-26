@@ -249,28 +249,30 @@ ORDER BY S.MENU_ITEM_CODE, S.MENU_CODE, S.TOT_STOCK]]>
 		<groupHeader>
 			<band height="20">
 				<textField>
-					<reportElement x="0" y="4" width="59" height="15" uuid="75388658-2157-4739-ad2b-88419d455c9d"/>
+					<reportElement x="0" y="3" width="59" height="15" uuid="75388658-2157-4739-ad2b-88419d455c9d"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{ITEM_CODE}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="59" y="4" width="71" height="15" uuid="70d2a9a8-9291-44bf-9be2-d6d697ed0b24"/>
+					<reportElement x="59" y="3" width="71" height="15" uuid="70d2a9a8-9291-44bf-9be2-d6d697ed0b24"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{MENU_ITEM_CODE}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="141" y="4" width="97" height="15" uuid="0595bed3-0eac-4213-8d9a-928320ff0068"/>
+					<reportElement x="141" y="3" width="329" height="15" uuid="0595bed3-0eac-4213-8d9a-928320ff0068"/>
 					<textElement verticalAlignment="Top">
 						<font size="8"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="484" y="2" width="90" height="17" uuid="e87ed04b-3b9d-4d3f-b570-45d213e629da"/>
+					<reportElement x="484" y="3" width="90" height="15" uuid="e87ed04b-3b9d-4d3f-b570-45d213e629da">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
 					<textElement textAlignment="Right">
 						<font size="8"/>
 					</textElement>
@@ -296,7 +298,7 @@ ORDER BY S.MENU_ITEM_CODE, S.MENU_CODE, S.TOT_STOCK]]>
 					<text><![CDATA[Subtotal :]]></text>
 				</staticText>
 				<line>
-					<reportElement x="285" y="2" width="289" height="1" uuid="e86288dd-f13e-4aaf-b433-75f137a6498f"/>
+					<reportElement x="258" y="2" width="315" height="1" uuid="e86288dd-f13e-4aaf-b433-75f137a6498f"/>
 				</line>
 			</band>
 		</groupFooter>
@@ -478,14 +480,14 @@ ORDER BY S.MENU_ITEM_CODE, S.MENU_CODE, S.TOT_STOCK]]>
 				<text><![CDATA[TOTAL QTY. SALES]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="275" y="131" width="59" height="30" uuid="0e9ec1d5-895a-42cb-8758-14538d6cc243"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<reportElement x="258" y="131" width="52" height="30" uuid="0e9ec1d5-895a-42cb-8758-14538d6cc243"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[MENU CODE]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="337" y="131" width="147" height="30" uuid="48916951-3faf-406f-b714-fda64b4a2a9c"/>
+				<reportElement x="317" y="131" width="163" height="30" uuid="48916951-3faf-406f-b714-fda64b4a2a9c"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -511,8 +513,8 @@ ORDER BY S.MENU_ITEM_CODE, S.MENU_CODE, S.TOT_STOCK]]>
 		<band height="17" splitType="Stretch">
 			<printWhenExpression><![CDATA[$P{detail}]]></printWhenExpression>
 			<textField>
-				<reportElement x="295" y="0" width="39" height="16" uuid="d525f3a8-3e16-4410-a9e2-b828b246de7b"/>
-				<textElement>
+				<reportElement x="260" y="0" width="50" height="16" uuid="d525f3a8-3e16-4410-a9e2-b828b246de7b"/>
+				<textElement textAlignment="Left">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{MENU_CODE}]]></textFieldExpression>
@@ -525,7 +527,7 @@ ORDER BY S.MENU_ITEM_CODE, S.MENU_CODE, S.TOT_STOCK]]>
 				<textFieldExpression><![CDATA[$F{TOT_STOCK}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="337" y="0" width="147" height="16" uuid="7d18f380-ccc9-4405-933e-e9b65a9e9fc2"/>
+				<reportElement x="317" y="0" width="163" height="16" uuid="7d18f380-ccc9-4405-933e-e9b65a9e9fc2"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
