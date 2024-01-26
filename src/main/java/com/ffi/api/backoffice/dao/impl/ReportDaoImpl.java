@@ -1471,9 +1471,21 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("fromTime", param.get("fromTime"));
         hashMap.put("toTime", param.get("toTime"));
         hashMap.put("outletCode", param.get("outletCode"));
-        hashMap.put("outletName", param.get("outletName"));
 
-        if (!param.get("outletBrand").toString().equalsIgnoreCase("TACOBELL")){
+        String queryOutlet = "SELECT mo.OUTLET_NAME, mo.ADDRESS_1, mo.ADDRESS_2, mo.PHONE FROM M_OUTLET mo WHERE mo.OUTLET_CODE = :outletCode";
+
+        List<Map<String, Object>> list = jdbcTemplate.query(queryOutlet, param, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                hashMap.put("outletName", rs.getString("OUTLET_NAME"));
+                hashMap.put("address1", rs.getString("ADDRESS_1"));
+                hashMap.put("address2", rs.getString("ADDRESS_2"));
+                hashMap.put("phone", rs.getString("PHONE"));
+                return null;
+            }
+        });
+
+        if (!param.get("outletBrand").toString().equalsIgnoreCase("TACOBELL")) {
             if (param.get("brand").toString().equalsIgnoreCase("SEMUA")) {
                 hashMap.put("brand", "Semua");
                 hashMap.put("brand1", "KFC");
@@ -1494,7 +1506,7 @@ public class ReportDaoImpl implements ReportDao {
             for (Map<String, Object> object : listPos) {
                 if (object.containsKey("posCode1")) {
                     hashMap.put("posCode1", object.get("posCode1"));
-                    posCode.append(object.get("posName1")).append(" s/d ");
+                    posCode.append(object.get("posName1")).append(" s.d. ");
                 } else {
                     hashMap.put("posCode2", object.get("posCode2"));
                     posCode.append(object.get("posName2"));
@@ -1513,7 +1525,7 @@ public class ReportDaoImpl implements ReportDao {
             for (Map<String, Object> object : listCashier) {
                 if (object.containsKey("cashierCode1")) {
                     hashMap.put("cashierCode1", object.get("cashierCode1"));
-                    cashierCode.append(object.get("cashierName1")).append(" s/d ");
+                    cashierCode.append(object.get("cashierName1")).append(" s.d. ");
                 } else {
                     hashMap.put("cashierCode2", object.get("cashierCode2"));
                     cashierCode.append(object.get("cashierName2"));
@@ -1532,7 +1544,7 @@ public class ReportDaoImpl implements ReportDao {
             for (Map<String, Object> object : listShift) {
                 if (object.containsKey("shiftCode1")) {
                     hashMap.put("shiftCode1", object.get("shiftCode1"));
-                    shiftCode.append(object.get("shiftName1")).append(" s/d ");
+                    shiftCode.append(object.get("shiftName1")).append(" s.d. ");
                 } else {
                     hashMap.put("shiftCode2", object.get("shiftCode2"));
                     shiftCode.append(object.get("shiftName2"));
