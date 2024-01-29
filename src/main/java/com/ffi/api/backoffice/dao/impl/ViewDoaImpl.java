@@ -3283,7 +3283,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "FROM T_STOCK_CARD SCARD "
                 + "LEFT JOIN M_ITEM MITEM ON SCARD.ITEM_CODE = MITEM.ITEM_CODE "
                 + "WHERE SCARD.TRANS_DATE between :startDate and :endDate "
-                + "AND SCARD.QTY_IN > 0 AND SCARD.QTY_OUT > 0 "
+                + "AND (SCARD.QTY_IN != 0 OR SCARD.QTY_OUT != 0) "
                 + "AND SCARD.ITEM_CODE LIKE :itemCode "
                 + "AND MITEM.FLAG_STOCK = 'Y' " + where
                 + "ORDER BY SCARD.ITEM_CODE ASC, SCARD.TRANS_DATE ASC ";
