@@ -1399,7 +1399,7 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listGlobal(Map<String, String> balance) {
-        String qry = "SELECT DESCRIPTION, TYPE_MENU AS CODE FROM m_menudtl WHERE TYPE_MENU = :cond AND STATUS = :status AND APLIKASI = :aplikasi ORDER BY ID_NO ASC";
+        String qry = "SELECT DESCRIPTION, TYPE_MENU AS CODE FROM m_menudtl WHERE TYPE_MENU = :cond AND STATUS = :status AND APLIKASI = :aplikasi ";
         if (balance.containsKey("outletBrand") && balance.get("outletBrand").equalsIgnoreCase("TACOBELL")) {
             qry += " AND DESCRIPTION IN ('Report Menu & Detail Modifier', 'Sales by Date', 'Sales by Item', 'Sales by Time', 'Summary Sales by Item Code', 'Report Stock Card')";
         }
