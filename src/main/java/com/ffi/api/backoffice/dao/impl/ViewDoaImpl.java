@@ -679,7 +679,7 @@ public class ViewDoaImpl implements ViewDao {
         String qry = "select * from m_mpcs_header WHERE OUTLET_CODE= :outlet";
         Map prm = new HashMap();
         prm.put("outlet", param.get("outlet"));
-        if (!param.get("date").isEmpty()) {
+        if (param.containsKey("date") && !param.get("date").isEmpty()) {
             prm.put("date", param.get("date"));
             qry += " AND MPCS_GROUP IN ( SELECT DISTINCT(MPCS_GROUP) FROM T_SUMM_MPCS WHERE OUTLET_CODE = :outlet AND DATE_MPCS = :date)";
         }
