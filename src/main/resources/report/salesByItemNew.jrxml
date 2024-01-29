@@ -708,7 +708,7 @@ ORDER BY menu_item_code ASC]]>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<text><![CDATA[ETA IN]]></text>
+				<text><![CDATA[EAT IN]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="200" y="143" width="60" height="18" uuid="9b1e629e-bcb7-49a5-b685-9ed5acaeed77"/>
