@@ -61,7 +61,7 @@ JOIN M_ITEM mi
 JOIN M_OUTLET o
 	ON a.OUTLET_CODE = o.OUTLET_CODE
 WHERE
-    b.outlet_code = '0321'
+    b.outlet_code = $P{outletCode}
     AND b.trans_date BETWEEN $P{fromDate} AND $P{toDate}
     AND b.pos_code BETWEEN $P{posCode1} AND $P{posCode2}
     AND b.shift_code BETWEEN $P{shiftCode1} AND $P{shiftCode2}
