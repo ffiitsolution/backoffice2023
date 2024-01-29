@@ -2993,17 +2993,6 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("toTime", param.get("toTime"));
         hashMap.put("outletCode", param.get("outletCode"));
 
-        if (!param.get("outletBrand").toString().equalsIgnoreCase("TACOBELL")) {
-            if (param.get("brand").toString().equalsIgnoreCase("SEMUA")) {
-                hashMap.put("brand", "Semua");
-                hashMap.put("brand1", "KFC");
-                hashMap.put("brand2", "BB");
-            } else {
-                hashMap.put("brand1", param.get("brand").toString().toUpperCase());
-                hashMap.put("brand2", param.get("brand").toString().toUpperCase());
-            }
-        }
-
         List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
         StringBuilder posCode = new StringBuilder();
         if (listPos.size() == 1) {
