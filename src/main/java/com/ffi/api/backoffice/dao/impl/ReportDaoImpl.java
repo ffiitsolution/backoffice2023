@@ -3504,4 +3504,22 @@ public class ReportDaoImpl implements ReportDao {
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }
+    
+    ///////////////// new report MPCS Management Fryer by aditya 30 Jan 2024
+    
+     @Override
+    public JasperPrint jesperReportMpcsManagementFryer(Map<String, Object> param, Connection connection) throws IOException, JRException {
+        Map<String, Object> hashMap = new HashMap<String, Object>();
+        hashMap.put("fromDate", param.get("fromDate"));
+        hashMap.put("toDate", param.get("toDate"));
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("outletBrand", param.get("outletBrand"));
+        hashMap.put("fryerType", param.get("fryerType"));
+        hashMap.put("user", param.get("user"));
+
+        ClassPathResource classPathResource = new ClassPathResource("report/reportMpcsManagementFryer.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
+    /////////////////////// done adit 30-01-2024
 }

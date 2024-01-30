@@ -110,4 +110,7 @@ public interface ReportDao {
     JasperPrint jasperReportItemSalesAnalysis (Map<String, Object> param, Connection connection) throws  JRException,IOException;
     JasperPrint jasperReportTimeManagement (Map<String, Object> param, Connection connection) throws  JRException,IOException;
     JasperPrint jasperReportSalesItembyTime (Map<String, Object> param, Connection connection) throws  JRException,IOException;
+    /////////// MPCS Management Fryer adit 30-01-2024
+    JasperPrint jesperReportMpcsManagementFryer (Map<String, Object> param, Connection connection) throws JRException, IOException;
+    /////////// done adit 30-01-2024
 }

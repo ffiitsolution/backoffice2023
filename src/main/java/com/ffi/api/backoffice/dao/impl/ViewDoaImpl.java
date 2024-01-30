@@ -4288,4 +4288,90 @@ public class ViewDoaImpl implements ViewDao {
                        """;
         return jdbcTemplate.query(query, mapping, new DynamicRowMapper());
     }
+    
+    ///////////////new method from aditya 30-01-2024////////////////////////////
+    @Override
+    public List<Map<String, Object>> listFryer(Map<String, String> balance) {
+        String qry = "SELECT DISTINCT A.FRYER_TYPE, C.DESCRIPTION, A.OUTLET_CODE, B.OUTLET_NAME, A.STATUS FROM M_MPCS_DETAIL A LEFT JOIN M_OUTLET B ON A.OUTLET_CODE = B.OUTLET_CODE LEFT JOIN M_GLOBAL C ON A.FRYER_TYPE = C.CODE AND C.COND = 'FRYER' WHERE A.OUTLET_CODE =:outletCode AND (A.FRYER_TYPE = :fryerType OR :fryerType IS NULL) AND A.STATUS = 'A' ORDER BY A.OUTLET_CODE ASC, A.FRYER_TYPE ASC";
+        Map prm = new HashMap();
+        prm.put("outletCode", balance.get("outletCode"));
+        prm.put("fryerType", balance.get("fryerType"));
+
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("outletCode", rs.getString("OUTLET_CODE"));
+                rt.put("fryerType", rs.getString("FRYER_TYPE"));
+                rt.put("FryerDesc", rs.getString("DESCRIPTION"));
+                rt.put("status", rs.getString("STATUS"));
+
+                return rt;
+            }
+        });
+        return list;
+    }
+    
+    ///////////////new method from aditya 30-01-2024////////////////////////////
+    @Override
+    public List<Map<String, Object>> listManagementFryer(Map<String, String> balance) {
+        String qry = "SELECT a.OUTLET_CODE, b.OUTLET_NAME, b.ADDRESS_1, b.ADDRESS_2, a.PROCESS_NO, a.NOTES, a.FRYER_NO, a.FRYER_TYPE, c.DESCRIPTION AS FRYER_DESC, a.OIL_USE, a.PRECENTAGE, a.USER_UPD, d.STAFF_NAME, a.DATE_UPD, a.TIME_UPD FROM T_MPCS_MANAGEMENT a JOIN M_OUTLET b ON a.OUTLET_CODE = b.OUTLET_CODE AND a.OUTLET_CODE =:outletCode JOIN M_GLOBAL c ON a.FRYER_TYPE = c.CODE AND COND = 'FRYER' JOIN M_STAFF d ON a.USER_UPD = d.STAFF_CODE WHERE a.DATE_UPD between :fromDate and :toDate ORDER BY a.DATE_UPD DESC, a.TIME_UPD DESC";
+        Map prm = new HashMap();
+        prm.put("outletCode", balance.get("outletCode"));
+        prm.put("fryerType", balance.get("fryerType"));
+        prm.put("fromDate", balance.get("fromDate"));
+        prm.put("toDate", balance.get("toDate"));
+
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("outletCode", rs.getString("OUTLET_CODE"));
+                rt.put("outletName", rs.getString("OUTLET_NAME"));
+                rt.put("address1", rs.getString("ADDRESS_1"));
+                rt.put("address2", rs.getString("ADDRESS_2"));
+                rt.put("processNo", rs.getString("PROCESS_NO"));
+                rt.put("notes", rs.getString("NOTES"));
+                rt.put("fryerNo", rs.getString("FRYER_NO"));
+                rt.put("fryerType", rs.getString("FRYER_TYPE"));
+                rt.put("fryerDesc", rs.getString("FRYER_DESC"));
+                rt.put("oilUse", rs.getString("OIL_USE"));
+                rt.put("precentage", rs.getString("PRECENTAGE"));
+                rt.put("userUpd", rs.getString("USER_UPD"));
+                rt.put("staffName", rs.getString("STAFF_NAME"));
+                rt.put("dateUpd", rs.getString("DATE_UPD"));
+                rt.put("timeUpd", rs.getString("TIME_UPD"));
+
+                return rt;
+            }
+        });
+        return list;
+    }
+    
+    ///////////////new method from aditya 30-01-2024////////////////////////////
+    @Override
+    public List<Map<String, Object>> listMpcsManagementFryer(Map<String, String> balance) {
+        String qry = "SELECT OUTLET_CODE, FRYER_TYPE, FRYER_DESCRIPTION, FRYER_TYPE_SEQ AS FRYER_NO, FRYER_TYPE_MAX AS FRYER_MAXIMUM, FRYER_TYPE_CNT AS OIL_USE, ROUND(FRYER_TYPE_CNT / FRYER_TYPE_MAX * 100, 0) AS PROGRESS FROM ( SELECT a.OUTLET_CODE, b.OUTLET_NAME, a.MPCS_DATE, a.MPCS_GROUP, c.DESCRIPTION AS MPCS_DESCRIPTION, a.RECIPE_CODE, d.RECIPE_REMARK, j.PRODUCT_CODE, j.PRODUCT_REMARK, i.ITEM_DESCRIPTION, j.QTY_STOCK, j.UOM_STOCK, a.FRYER_TYPE, g.DESCRIPTION AS FRYER_DESCRIPTION, g.VALUE AS FRYER_TYPE_MAX, a.FRYER_TYPE_SEQ, a.QUANTITY, f.FRYER_TYPE_CNT FROM T_MPCS_HIST a LEFT JOIN M_OUTLET b ON a.OUTLET_CODE = b.OUTLET_CODE AND a.OUTLET_CODE = :outletCode LEFT JOIN M_MPCS_HEADER c ON a.MPCS_GROUP = c.MPCS_GROUP LEFT JOIN M_RECIPE_HEADER d ON a.RECIPE_CODE = d.RECIPE_CODE LEFT JOIN M_MPCS_DETAIL f ON a.FRYER_TYPE = f.FRYER_TYPE AND a.FRYER_TYPE_SEQ = f.FRYER_TYPE_SEQ LEFT JOIN M_GLOBAL g ON a.FRYER_TYPE = g.CODE AND g.COND = 'FRYER' LEFT JOIN M_STAFF h ON a.USER_UPD = h.STAFF_CODE LEFT JOIN M_RECIPE_PRODUCT j ON a.RECIPE_CODE = j.RECIPE_CODE LEFT JOIN M_ITEM i ON j.PRODUCT_CODE = i.ITEM_CODE ORDER BY a.MPCS_DATE DESC, a.TIME_UPD DESC ) z WHERE FRYER_TYPE IN ('P', 'S', 'O') GROUP BY OUTLET_CODE, FRYER_TYPE, FRYER_DESCRIPTION, FRYER_TYPE_CNT, FRYER_TYPE_MAX, FRYER_TYPE_SEQ ORDER BY FRYER_TYPE ASC, FRYER_NO ASC";
+        Map prm = new HashMap();
+        prm.put("outletCode", balance.get("outletCode"));
+
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("fryerType", rs.getString("FRYER_TYPE"));
+                rt.put("fryerDescription", rs.getString("FRYER_DESCRIPTION"));
+                rt.put("fryerNo", rs.getString("FRYER_NO"));
+                rt.put("fryerMaximum", rs.getString("FRYER_MAXIMUM"));
+                rt.put("oilUse", rs.getString("OIL_USE"));
+                rt.put("progress", rs.getString("PROGRESS"));
+
+                return rt;
+            }
+        });
+        return list;
+    }
 }

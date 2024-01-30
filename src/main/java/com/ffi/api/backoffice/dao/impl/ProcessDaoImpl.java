@@ -3341,4 +3341,48 @@ INSERT INTO T_ABSENSI (
         }
         return true;
     }
+    
+    //////// new Method Insert MPCS Management Fryer aditya 29 Jan 2024
+    @Override
+    public void insertMpcsManagementFryer(JsonObject param) {
+        DateFormat df = new SimpleDateFormat("MM");
+        DateFormat dfYear = new SimpleDateFormat("yyyy");
+        Date tgl = new Date();
+        String month = df.format(tgl);
+        String year = dfYear.format(tgl);   
+        
+        String noProcess = returnOrderCounter(year, month, "FRY", param.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
+        
+        String queryHeader = "INSERT INTO T_MPCS_MANAGEMENT (OUTLET_CODE, PROCESS_NO, NOTES, FRYER_NO, FRYER_TYPE,"
+                + " OIL_USE, PRECENTAGE, USER_UPD, DATE_UPD, TIME_UPD) VALUES (:outletCode, :processNo, :notes,"
+                + " :fryerNo, :fryerType, :oilUse, :precentage, :userUpd, :dateUpd, :timeUpd)";
+        
+        Map<String, Object> prm = new HashMap<>();
+        prm.put("outletCode", param.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
+        prm.put("processNo", noProcess);
+        prm.put("notes", param.getAsJsonObject().getAsJsonPrimitive("notes").getAsString());
+        prm.put("fryerNo", param.getAsJsonObject().getAsJsonPrimitive("fryerNo").getAsString());
+        prm.put("fryerType", param.getAsJsonObject().getAsJsonPrimitive("fryerType").getAsString());
+        prm.put("oilUse", param.getAsJsonObject().getAsJsonPrimitive("oilUse").getAsString());
+        prm.put("precentage", param.getAsJsonObject().getAsJsonPrimitive("precentage").getAsString());
+        prm.put("userUpd", param.getAsJsonObject().getAsJsonPrimitive("userUpd").getAsString());
+        prm.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        prm.put("timeUpd", LocalDateTime.now().format(timeFormatter));
+        jdbcTemplate.update(queryHeader, prm);
+        
+        resetFryerCounter(param);
+    }
+    
+    
+    public void resetFryerCounter(JsonObject param) {
+        String queryHeader = "UPDATE M_MPCS_DETAIL SET FRYER_TYPE_CNT=0, USER_UPD=:userUpd, DATE_UPD=TO_CHAR(SYSDATE, 'DD MON YYYY') , TIME_UPD=TO_CHAR(SYSDATE, 'HH24MMII'), FRYER_TYPE_SEQ_CNT=FRYER_TYPE_SEQ_CNT+1 WHERE FRYER_TYPE_SEQ=:fryerNo AND FRYER_TYPE=:fryerType";
+        
+        Map<String, Object> prm = new HashMap<>();
+        prm.put("fryerNo", param.getAsJsonObject().getAsJsonPrimitive("fryerNo").getAsString());
+        prm.put("fryerType", param.getAsJsonObject().getAsJsonPrimitive("fryerType").getAsString());
+        prm.put("userUpd", param.getAsJsonObject().getAsJsonPrimitive("userUpd").getAsString());
+        jdbcTemplate.update(queryHeader, prm);
+    }
+    
+    
 }
