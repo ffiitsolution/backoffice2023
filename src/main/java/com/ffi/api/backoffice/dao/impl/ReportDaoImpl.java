@@ -1452,8 +1452,449 @@ public class ReportDaoImpl implements ReportDao {
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }
 
+    // Report Sales By Date by Dani 26 Januari 2023
     @Override
     public JasperPrint jasperReportSalesByDateNew(Map<String, Object> param, Connection connection) throws IOException, JRException {
+        
+        List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
+        StringBuilder posCode = new StringBuilder();
+        if (listPos.size() == 1) {
+            param.put("posCode", "Semua");
+            param.put("posCode1", "000");
+            param.put("posCode2", "zzz");
+        } else {
+            for (Map<String, Object> object : listPos) {
+                if (object.containsKey("posCode1")) {
+                    param.put("posCode1", object.get("posCode1"));
+                    posCode.append(object.get("posName1")).append(" s/d ");
+                } else {
+                    param.put("posCode2", object.get("posCode2"));
+                    posCode.append(object.get("posName2"));
+                }
+                param.put("posCode", posCode.toString());
+            }
+        }
+
+        List<Map<String, Object>> listCashier = (List<Map<String, Object>>) param.get("cashier");
+        StringBuilder cashierCode = new StringBuilder();
+        if (listCashier.size() == 1) {
+            param.put("cashierCode", "Semua");
+            param.put("cashierCode1", "000");
+            param.put("cashierCode2", "zzz");
+        } else {
+            for (Map<String, Object> object : listCashier) {
+                if (object.containsKey("cashierCode1")) {
+                    param.put("cashierCode1", object.get("cashierCode1"));
+                    cashierCode.append(object.get("cashierName1")).append(" s/d ");
+                } else {
+                    param.put("cashierCode2", object.get("cashierCode2"));
+                    cashierCode.append(object.get("cashierName2"));
+                }
+                param.put("cashierCode", cashierCode.toString());
+            }
+        }
+
+        List<Map<String, Object>> listShift = (List<Map<String, Object>>) param.get("shift");
+        StringBuilder shiftCode = new StringBuilder();
+        if (listShift.size() == 1) {
+            param.put("shiftCode", "Semua");
+            param.put("shiftCode1", "000");
+            param.put("shiftCode2", "zzz");
+        } else {
+            for (Map<String, Object> object : listShift) {
+                if (object.containsKey("shiftCode1")) {
+                    param.put("shiftCode1", object.get("shiftCode1"));
+                    shiftCode.append(object.get("shiftName1")).append(" s/d ");
+                } else {
+                    param.put("shiftCode2", object.get("shiftCode2"));
+                    shiftCode.append(object.get("shiftName2"));
+                }
+                param.put("shiftCode", shiftCode.toString());
+            }
+        }
+
+        if (param.get("orderTypeName") == null || param.get("orderTypeName").equals("All")) {
+            param.put("orderType", "Semua");
+            param.put("orderType1", "000");
+            param.put("orderType2", "zzz");
+        } else {
+            param.put("orderType", param.get("orderTypeCode") + "-" + param.get("orderTypeName"));
+            param.put("orderType1", param.get("orderTypeCode"));
+            param.put("orderType2", param.get("orderTypeCode"));
+        }
+        
+        String query1 = " SELECT D.*,  GROSS_SALES - TOTAL_CHARGE AS TOTAL_PENDAPATAN  FROM ( "
+        +" SELECT  COALESCE (TAXABLE, 0) TAXABLE , COALESCE(TAX, 0) TAX, COALESCE (PEMBULATAN, 0) PEMBULATAN, COALESCE (GROSS_SALES, 0) GROSS_SALES, COALESCE (BIAYA_ANTAR, 0) BIAYA_ANTAR, COALESCE (TAX_CHARGE, 0) TAX_CHARGE, COALESCE (REFUND, 0) REFUND,  "
+        +" COALESCE (CUSTOMER, 0) CUSTOMER, COALESCE (TOTAL_DP_PAID, 0) TOTAL_DP_PAID, "
+        +" COALESCE (TRANSAKSI, 0) TRANSAKSI, COALESCE (TOTAL_DISCOUNT, 0) TOTAL_DISCOUNT, COALESCE (CUST_AVERAGE, 0) CUST_AVERAGE, COALESCE (TICKET_AVG, 0) TICKET_AVG, COALESCE (DONASI, 0) DONASI,  "
+        +" SUM(NVL(TOTAL_CLAIM,0)) AS TOTAL_CLAIM, COALESCE (TOTAL_PAYMENT, 0) TOTAL_PAYMENT, COALESCE (TOTAL_CHARGE, 0) TOTAL_CHARGE , COALESCE (TOTAL_AMOUNT, 0) TOTAL_AMOUNT, "
+        +" COALESCE (CUSTOMER_EATIN,0) AS CUSTOMER_EATIN, COALESCE (CUSTOMER_TAKEAWAY, 0) AS CUSTOMER_TAKEAWAY, COALESCE (TRANSAKSI_EATIN, 0) AS TRANSAKSI_EATIN, COALESCE (TRANSAKSI_TAKEAWAY, 0) AS TRANSAKSI_TAKEAWAY FROM( "
+        +" SELECT (SUM(TOTAL_AMOUNT) - SUM(TOTAL_DISCOUNT)) TAXABLE, "
+        +" 	SUM(TOTAL_AMOUNT) TOTAL_AMOUNT, "
+        +"     SUM(TOTAL_TAX) TAX, "
+        +"     SUM(TOTAL_PAYMENT) TOTAL_PAYMENT, "
+        +"     SUM(TOTAL_ROUNDING) PEMBULATAN, "
+        +"     SUM(TOTAL_SALES) GROSS_SALES, "
+        +"     SUM(CASE WHEN TRANS_TYPE IN ('TA', ' ') THEN TOTAL_CUSTOMER ELSE 0 END) AS CUSTOMER_TAKEAWAY,"
+        +"     SUM(CASE WHEN TRANS_TYPE = 'EI' THEN TOTAL_CUSTOMER ELSE 0 END) AS CUSTOMER_EATIN,"
+        +"     SUM(CASE WHEN TRANS_TYPE IN ('TA', ' ') THEN 1 ELSE 0 END) AS TRANSAKSI_TAKEAWAY,"
+        +"     SUM(CASE WHEN TRANS_TYPE = 'EI' THEN 1 ELSE 0 END) AS TRANSAKSI_EATIN,"
+        +"     SUM(TOTAL_CHARGE) BIAYA_ANTAR, SUM(TOTAL_TAX_CHARGE) AS TAX_CHARGE, "
+        +"     SUM(TOTAL_REFUND) REFUND, "
+        +"     SUM(TOTAL_CUSTOMER) CUSTOMER, SUM(TOTAL_DP_PAID) AS TOTAL_DP_PAID, "
+        +"     COUNT(0) TRANSAKSI, SUM(TOTAL_DISCOUNT) TOTAL_DISCOUNT, "
+        +"     SUM(TOTAL_CHARGE) TOTAL_CHARGE, "
+        +"     ROUND((SUM(TOTAL_AMOUNT) - SUM(TOTAL_DISCOUNT)) / (NVL(SUM(TOTAL_CUSTOMER), "
+        +" 1))) CUST_AVERAGE, "
+        +"     ROUND((SUM(TOTAL_AMOUNT) - SUM(TOTAL_DISCOUNT)) / (COUNT(1))) TICKET_AVG,  "
+        +" SUM(TOTAL_DONATION) DONASI, 1 AS KODE FROM T_POS_BILL A "
+        +" WHERE (DELIVERY_STATUS IN (' ','CLS') OR DELIVERY_STATUS IS NULL) "
+        +" AND  OUTLET_CODE IN ( :outletCode)  AND TRANS_DATE BETWEEN :fromDate AND :toDate AND POS_CODE BETWEEN :posCode1 AND :posCode2 AND CASHIER_CODE BETWEEN :cashierCode1 AND :cashierCode2 "
+        +" AND SHIFT_CODE BETWEEN :shiftCode1 AND :shiftCode2 "
+        +" AND ORDER_TYPE IN (SELECT CODE FROM M_GLOBAL WHERE DESCRIPTION = 'GRPTP' AND  "
+        +" COND BETWEEN :orderType1 AND  :orderType2)) A "
+        +" LEFT JOIN "
+        +" ( "
+        +" SELECT 1 AS KODE, ORDER_TYPE, 0 AS TOTAL_CLAIM FROM "
+        +" ( "
+        +" SELECT CASE WHEN A.CASHBANK = 'HDL' THEN 'HMD' "
+        +" WHEN A.CASHBANK = 'OPS' THEN 'ETA' "
+        +" WHEN A.CASHBANK = 'CSP' THEN 'CSP' "
+        +" ELSE A.CASHBANK END AS ORDER_TYPE, SUM(C.TOTAL_IN) AS TOTAL_CLAIM "
+        +" FROM T_PC_CLAIM_HDR A "
+        +" JOIN T_PC_HDR C ON A.OUTLET_CODE = C.OUTLET_CODE AND A.CLAIM_NO = C.TRANS_TO "
+        +" WHERE C.DATE_UPD BETWEEN :fromDate AND :toDate  AND A.TYPE_PAYMENT = 'POT'GROUP BY CASE WHEN A.CASHBANK = 'HDL' THEN 'HMD' "
+        +" WHEN A.CASHBANK = 'OPS' THEN 'ETA' "
+        +" WHEN A.CASHBANK = 'CSP' THEN 'CSP' "
+        +" ELSE A.CASHBANK END,C.TRANS_NO "
+        +" ) "
+        +" WHERE ORDER_TYPE IN (SELECT CODE FROM M_GLOBAL WHERE DESCRIPTION = 'GRPTP' AND  "
+        +" COND BETWEEN :orderType1 AND :orderType2)GROUP BY ORDER_TYPE "
+        +" ) B ON A.KODE = B.KODE "
+        +" GROUP BY TAXABLE, TAX, PEMBULATAN, GROSS_SALES, BIAYA_ANTAR, TAX_CHARGE, REFUND, "
+        +"  CUSTOMER, TOTAL_DP_PAID, TRANSAKSI, TOTAL_DISCOUNT, CUST_AVERAGE, TICKET_AVG,  "
+        +" DONASI, TOTAL_PAYMENT, TOTAL_CHARGE, TOTAL_AMOUNT, CUSTOMER_TAKEAWAY, CUSTOMER_EATIN, TRANSAKSI_TAKEAWAY, TRANSAKSI_EATIN) D ";
+        Map<String, Object> resultQuery1 = jdbcTemplate.queryForObject(query1, param, new DynamicRowMapper());
+        
+        String query2 = " SELECT COALESCE (SUM(TOT_CD), 0) AS TOT_CD, COALESCE (SUM(PPN_CD), 0) AS PPN_CD FROM "
+        + " ( "
+        + " SELECT TRANS_DATE, TOT_CD, "
+        + " CASE WHEN TRANS_DATE < TANGGAL OR TANGGAL IS NULL THEN 0 ELSE  "
+        + " (TOT_CD*((SELECT VALUE FROM m_global WHERE COND='PPNCD' AND STATUS ='A')/100)) END AS PPN_CD FROM "
+        + " ( "
+        + " SELECT "
+        + " (SELECT TO_DATE(TO_CHAR( "
+        + "          TO_DATE(DESCRIPTION "
+        + "                 ,'DD/Month/YY') "
+        + "        ,'DD/MM/YYYY'),'DD/MM/YYYY') "
+        + " FROM M_GLOBAL WHERE COND = 'PPNCD') AS TANGGAL, trans_date, (SUM(Z.AMT_EI) +  "
+        + " SUM(Z.AMT_TA)) TOT_CD FROM "
+        + " ( "
+        + " SELECT A.OUTLET_CODE,A.TRANS_DATE,B.ORDER_TYPE,A.POS_CODE,B.CASHIER_CODE,'' AS  "
+        + " GROUP_CODE,A.MENU_ITEM_CODE AS ITEM_CODE,SUM(A.ITEM_QTY) AS QTY_EI,SUM(A.AMOUNT) AS AMT_EI, "
+        + " 0 AS QTY_TA,0 AS QTY_PERC, 0 AS AMT_TA, 0 AS AMT_PERC, B.SHIFT_CODE, 'ALA' AS  "
+        + " FLAG_MENU FROM T_POS_BILL_ITEM A "
+        + " JOIN T_POS_BILL B ON A.BILL_NO = B.BILL_NO AND A.REGION_CODE = B.REGION_CODE  "
+        + " AND A.OUTLET_CODE = B.OUTLET_CODE AND A.TRANS_DATE = B.TRANS_DATE "
+        + " AND A.POS_CODE = B.POS_CODE AND A.TRANS_DATE BETWEEN :fromDate AND  "
+        + " :toDate AND A.TRANS_TYPE = 'EI' AND B.DELIVERY_STATUS = 'CLS' "
+        + " GROUP BY A.OUTLET_CODE, A.TRANS_DATE, B.ORDER_TYPE,A.POS_CODE, B.CASHIER_CODE, "
+        + " A.MENU_ITEM_CODE,B.SHIFT_CODE "
+        + " UNION ALL "
+        + " SELECT A.OUTLET_CODE,A.TRANS_DATE,B.ORDER_TYPE,A.POS_CODE,B.CASHIER_CODE,'' AS  "
+        + " GROUP_CODE,A.MENU_ITEM_CODE AS ITEM_CODE,0 AS QTY_EI,0 AS AMT_EI, "
+        + " SUM(A.ITEM_QTY) AS QTY_TA,0 AS QTY_PERC, SUM(A.AMOUNT) AS AMT_TA, 0 AS AMT_PERC, "
+        + "  B.SHIFT_CODE, 'ALA' AS FLAG_MENU FROM T_POS_BILL_ITEM A "
+        + " JOIN T_POS_BILL B ON A.BILL_NO = B.BILL_NO AND A.REGION_CODE = B.REGION_CODE  "
+        + " AND A.OUTLET_CODE = B.OUTLET_CODE AND A.TRANS_DATE = B.TRANS_DATE "
+        + " AND A.POS_CODE = B.POS_CODE AND A.TRANS_DATE BETWEEN :fromDate AND  "
+        + " :toDate AND A.TRANS_TYPE <> 'EI' AND B.DELIVERY_STATUS = 'CLS' "
+        + " GROUP BY A.OUTLET_CODE, A.TRANS_DATE, B.ORDER_TYPE,A.POS_CODE, B.CASHIER_CODE, "
+        + " A.MENU_ITEM_CODE,B.SHIFT_CODE "
+        + " UNION ALL "
+        + " SELECT A.OUTLET_CODE, D.TRANS_DATE, D.ORDER_TYPE, D.POS_CODE, D.CASHIER_CODE,  "
+        + " '' AS GROUP_CODE, "
+        + " B.MENU_ITEM_CODE AS ITEM_CODE, SUM(B.ITEM_QTY) AS QTY_EI, SUM(B.AMOUNT) AS  "
+        + " AMT_EI, 0 AS QTY_TA, 0 AS QTY_PERC,0 AS AMT_TA, 0 AS AMT_PERC, D.SHIFT_CODE, 'ADD' AS FLAG_MENU "
+        + "       FROM T_POS_BILL_ITEM A "
+        + "       JOIN T_POS_BILL D ON A.BILL_NO = D.BILL_NO AND A.REGION_CODE =  "
+        + " D.REGION_CODE AND A.OUTLET_CODE = D.OUTLET_CODE AND A.TRANS_DATE = D.TRANS_DATE  "
+        + " AND A.POS_CODE = D.POS_CODE      AND D.DELIVERY_STATUS = 'CLS' "
+        + "       JOIN T_POS_BILL_ITEM_DETAIL B ON A.OUTLET_CODE = B.OUTLET_CODE AND  "
+        + " A.POS_CODE = B.POS_CODE AND A.TRANS_DATE = B.TRANS_DATE AND A.BILL_NO =  "
+        + " B.BILL_NO AND A.ITEM_SEQ = B.ITEM_SEQ "
+        + "       LEFT JOIN M_GLOBAL C ON C.CODE = B.MENU_ITEM_CODE AND C.COND = 'ITM_RPT'  "
+        + " AND STATUS = 'A' "
+        + "       WHERE A.TRANS_DATE BETWEEN :fromDate AND :toDate   AND  "
+        + " B.MENU_ITEM_CODE <> A.MENU_ITEM_CODE AND D.TRANS_TYPE = 'EI'      AND ((B.ITEM_TYPE IN ('MDF') AND B.AMOUNT <> 0 ) OR B.ITEM_TYPE = 'ADD') "
+        + "       GROUP BY A.OUTLET_CODE, D.TRANS_DATE, D.ORDER_TYPE, D.POS_CODE,  "
+        + " D.CASHIER_CODE, B.MENU_ITEM_CODE, D.SHIFT_CODE "
+        + " UNION ALL "
+        + " SELECT A.OUTLET_CODE, D.TRANS_DATE, D.ORDER_TYPE, D.POS_CODE, D.CASHIER_CODE,  "
+        + " '' AS GROUP_CODE, "
+        + " B.MENU_ITEM_CODE AS ITEM_CODE, 0 AS QTY_EI, 0 AS AMT_EI, SUM(B.ITEM_QTY) AS  "
+        + " QTY_TA, 0 AS QTY_PERC,SUM(B.AMOUNT) AS AMT_TA, 0 AS AMT_PERC, D.SHIFT_CODE, 'ADD' AS FLAG_MENU "
+        + "       FROM T_POS_BILL_ITEM A "
+        + "       JOIN T_POS_BILL D ON A.BILL_NO = D.BILL_NO AND A.REGION_CODE =  "
+        + " D.REGION_CODE AND A.OUTLET_CODE = D.OUTLET_CODE AND A.TRANS_DATE = D.TRANS_DATE  "
+        + " AND A.POS_CODE = D.POS_CODE      AND D.DELIVERY_STATUS = 'CLS' "
+        + "       JOIN T_POS_BILL_ITEM_DETAIL B ON A.OUTLET_CODE = B.OUTLET_CODE AND  "
+        + " A.POS_CODE = B.POS_CODE AND A.TRANS_DATE = B.TRANS_DATE AND A.BILL_NO =  "
+        + " B.BILL_NO AND A.ITEM_SEQ = B.ITEM_SEQ "
+        + "       LEFT JOIN M_GLOBAL C ON C.CODE = B.MENU_ITEM_CODE AND C.COND = 'ITM_RPT'  "
+        + " AND STATUS = 'A'      WHERE A.TRANS_DATE BETWEEN :fromDate AND :toDate "
+        + "       AND B.MENU_ITEM_CODE <> A.MENU_ITEM_CODE AND D.TRANS_TYPE <> 'EI' "
+        + "       AND ((B.ITEM_TYPE IN ('MDF') AND B.AMOUNT <> 0 ) OR B.ITEM_TYPE = 'ADD') "
+        + "       GROUP BY A.OUTLET_CODE, D.TRANS_DATE, D.ORDER_TYPE, D.POS_CODE,  "
+        + " D.CASHIER_CODE, B.MENU_ITEM_CODE, D.SHIFT_CODE "
+        + " UNION ALL "
+        + " SELECT A.OUTLET_CODE, D.TRANS_DATE, D.ORDER_TYPE, D.POS_CODE, D.CASHIER_CODE,  "
+        + " '' AS GROUP_CODE, "
+        + " A.MENU_ITEM_CODE AS ITEM_CODE, 0 AS QTY_EI, (SUM(B.AMOUNT)*-1) AS AMT_EI, 0 AS  "
+        + " QTY_TA, 0 AS QTY_PERC,0 AS AMT_TA, 0 AS AMT_PERC, D.SHIFT_CODE, 'ADD' AS FLAG_MENU "
+        + "       FROM T_POS_BILL_ITEM A "
+        + "       JOIN T_POS_BILL D ON A.BILL_NO = D.BILL_NO AND A.REGION_CODE =  "
+        + " D.REGION_CODE AND A.OUTLET_CODE = D.OUTLET_CODE AND A.TRANS_DATE = D.TRANS_DATE  "
+        + " AND A.POS_CODE = D.POS_CODE      AND D.DELIVERY_STATUS = 'CLS' "
+        + "       JOIN T_POS_BILL_ITEM_DETAIL B ON A.OUTLET_CODE = B.OUTLET_CODE AND  "
+        + " A.POS_CODE = B.POS_CODE AND A.TRANS_DATE = B.TRANS_DATE AND A.BILL_NO =  "
+        + " B.BILL_NO AND A.ITEM_SEQ = B.ITEM_SEQ "
+        + "       LEFT JOIN M_GLOBAL C ON C.CODE = B.MENU_ITEM_CODE AND C.COND = 'ITM_RPT'  "
+        + " AND STATUS = 'A'      WHERE A.TRANS_DATE BETWEEN :fromDate AND :toDate "
+        + "       AND B.MENU_ITEM_CODE <> A.MENU_ITEM_CODE AND D.TRANS_TYPE = 'EI' "
+        + "       AND ((B.ITEM_TYPE IN ('MDF') AND B.AMOUNT <> 0 ) OR B.ITEM_TYPE = 'ADD') "
+        + "       GROUP BY A.OUTLET_CODE, D.TRANS_DATE, D.ORDER_TYPE, D.POS_CODE,  "
+        + " D.CASHIER_CODE, A.MENU_ITEM_CODE, D.SHIFT_CODE "
+        + " UNION ALL "
+        + " SELECT A.OUTLET_CODE, D.TRANS_DATE, D.ORDER_TYPE, D.POS_CODE, D.CASHIER_CODE,  "
+        + " '' AS GROUP_CODE, "
+        + " A.MENU_ITEM_CODE AS ITEM_CODE, 0 AS QTY_EI, 0 AS AMT_EI, 0 AS QTY_TA, 0 AS  "
+        + " QTY_PERC,(SUM(B.AMOUNT)*-1) AS AMT_TA, 0 AS AMT_PERC, D.SHIFT_CODE, 'ADD' AS FLAG_MENU "
+        + "       FROM T_POS_BILL_ITEM A "
+        + "       JOIN T_POS_BILL D ON A.BILL_NO = D.BILL_NO AND A.REGION_CODE =  "
+        + " D.REGION_CODE AND A.OUTLET_CODE = D.OUTLET_CODE AND A.TRANS_DATE = D.TRANS_DATE  "
+        + " AND A.POS_CODE = D.POS_CODE      AND D.DELIVERY_STATUS = 'CLS' "
+        + "       JOIN T_POS_BILL_ITEM_DETAIL B ON A.OUTLET_CODE = B.OUTLET_CODE AND  "
+        + " A.POS_CODE = B.POS_CODE AND A.TRANS_DATE = B.TRANS_DATE AND A.BILL_NO =  "
+        + " B.BILL_NO AND A.ITEM_SEQ = B.ITEM_SEQ "
+        + "       LEFT JOIN M_GLOBAL C ON C.CODE = B.MENU_ITEM_CODE AND C.COND = 'ITM_RPT'  "
+        + " AND STATUS = 'A'      WHERE A.TRANS_DATE BETWEEN :fromDate AND :toDate "
+        + "       AND B.MENU_ITEM_CODE <> A.MENU_ITEM_CODE AND D.TRANS_TYPE <> 'EI' "
+        + "       AND ((B.ITEM_TYPE IN ('MDF') AND B.AMOUNT <> 0 ) OR B.ITEM_TYPE = 'ADD') "
+        + "       GROUP BY A.OUTLET_CODE, D.TRANS_DATE, D.ORDER_TYPE, D.POS_CODE,  "
+        + " D.CASHIER_CODE, A.MENU_ITEM_CODE, D.SHIFT_CODE "
+        + " ) Z "
+        + " JOIN M_MENU_ITEM Q ON  Z.OUTLET_CODE = Q.OUTLET_CODE AND Z.ITEM_CODE =  "
+        + " Q.MENU_ITEM_CODE JOIN M_ITEM R ON R.ITEM_CODE = Q.MENU_ITEM_CODE "
+        + " JOIN M_SALES_RECIPE M ON Q.MENU_ITEM_CODE = M.PLU_CODE "
+        + " WHERE Q.MENU_GROUP_CODE = 'G07' AND Z.POS_CODE BETWEEN :posCode1 AND :posCode2  AND  "
+        + " Z.ORDER_TYPE in (SELECT CODE FROM M_GLOBAL WHERE DESCRIPTION = 'GRPTP' AND COND  "
+        + " BETWEEN :orderType1 AND :orderType2 )GROUP BY TRANS_DATE "
+        + " )) ";
+        Map<String, Object> resultQuery2 = jdbcTemplate.queryForObject(query2, param, new DynamicRowMapper());
+
+        String query3 = " SELECT COUNT (0) count_kupon_digunakan, COALESCE (SUM(payment_amount), 0) kupon_digunakan, COALESCE (SUM(payment_used), 0) kupon_terpakai FROM t_pos_bill_payment a"
+        +" WHERE trim(a.outlet_code)||TRIM(A.POS_CODE)||TRIM(A.BILL_NO) IN ( SELECT "
+        +" trim(outlet_code)||TRIM(POS_CODE)||TRIM(BILL_NO) 	FROM T_POS_BILL"
+        +" 	WHERE  OUTLET_CODE = :outletCode  AND TRANS_DATE BETWEEN :fromDate AND :toDate	AND POS_CODE BETWEEN :posCode1 AND :posCode2 "
+        +" 	AND CASHIER_CODE BETWEEN :cashierCode1 AND :cashierCode2 "
+        +" 	AND SHIFT_CODE BETWEEN :shiftCode1 AND :shiftCode2 "
+        +" 	and delivery_status='CLS'"
+        +" 	and order_type in (SELECT CODE FROM M_GLOBAL WHERE DESCRIPTION = 'GRPTP' AND "
+        +" COND BETWEEN :orderType1 AND :orderType2))"
+        +"     AND payment_method_code = 'VCR'";
+        
+        Map<String, Object> resultQuery3 = jdbcTemplate.queryForObject(query3, param, new DynamicRowMapper());
+
+        String query4 = "SELECT PAYMENT_METHOD_REPORT, COALESCE (SUM(PAYMENT_AMOUNT), 0) AS sum, COALESCE (sum(kupon_digunakan_q), 0) AS count FROM ("
+        +" SELECT B.PAYMENT_METHOD_CODE, COUNT(*) KUPON_DIGUNAKAN_Q, SUM(A.PAYMENT_AMOUNT) PAYMENT_AMOUNT, "
+        +" 		CASE WHEN B.PAYMENT_METHOD_CODE NOT IN ('BCA', 'VCR', 'BRI', 'BNI', 'MND') THEN 'OTH' ELSE b.PAYMENT_METHOD_CODE END AS PAYMENT_METHOD_REPORT"
+        +" FROM T_POS_BILL_PAYMENT_DETAIL A , M_PAYMENT_METHOD B"
+        +" WHERE A.PAYMENT_METHOD_CODE = B.PAYMENT_METHOD_CODE AND A.OUTLET_CODE = "
+        +" B.OUTLET_CODE AND trim(a.outlet_code)||TRIM(A.POS_CODE)||TRIM(A.BILL_NO) IN ("
+        +"      SELECT trim(outlet_code)||TRIM(POS_CODE)||TRIM(BILL_NO)"
+        +"      FROM T_POS_BILL"
+        +"      WHERE  OUTLET_CODE = :outletCode"
+        +"      AND TRANS_DATE BETWEEN :fromDate AND :toDate"
+        +"      AND POS_CODE BETWEEN :posCode1 AND :posCode2 "
+        +"      AND CASHIER_CODE BETWEEN :cashierCode1 AND :cashierCode2 "
+        +"      AND SHIFT_CODE BETWEEN :shiftCode1 AND :shiftCode2 "
+        +" and delivery_status='CLS'"
+        +"      and order_type in (SELECT CODE FROM M_GLOBAL WHERE DESCRIPTION = 'GRPTP' "
+        +" AND COND BETWEEN :orderType1 AND :orderType2))GROUP BY B.PAYMENT_METHOD_CODE ) A GROUP BY A.PAYMENT_METHOD_REPORT";
+        List<Map<String, Object>> resultQuery4 = jdbcTemplate.query(query4, param, new DynamicRowMapper());
+        for (Map<String,Object> map : resultQuery4) {
+            param.put( "countDebit"+ (String) map.get("paymentMethodReport"), map.get("count"));
+            param.put( "sumDebit"+ (String) map.get("paymentMethodReport"), map.get("sum"));
+        }
+
+        String query5 = "SELECT TRANS_CODE, COUNT(0) COUNT_TRANS_AMOUNT,"
+        +"        ABS(COALESCE (SUM(TRANS_AMOUNT),0)) SUM_TRANS_AMOUNT"
+        +" FROM T_POS_DAY_TRANS"
+        +" WHERE OUTLET_CODE in (:outletCode)  AND TRANS_CODE IN ('OPF','TLO','PRS','CTR','CAN')"
+        +" AND TRANS_DATE BETWEEN :fromDate  AND :toDate "
+        +" AND POS_CODE BETWEEN :posCode1 AND :posCode2"
+        +" AND CASHIER_CODE BETWEEN :cashierCode1 AND :cashierCode2 AND SHIFT_CODE BETWEEN :shiftCode1 AND :shiftCode2"
+        +" AND POS_CODE IN"
+        +" ("
+        +" SELECT POS_CODE FROM T_POS_BILL WHERE OUTLET_CODE in (:outletCode)  AND TRANS_dATE "
+        +" BETWEEN :fromDate  AND :toDate AND POS_CODE BETWEEN :posCode1 AND :posCode2 "
+        +" AND CASHIER_CODE BETWEEN :cashierCode1 AND :cashierCode2 AND SHIFT_CODE BETWEEN :shiftCode1 AND :shiftCode2 "
+        +" AND DELIVERY_STATUS = 'CLS'"
+        +" and order_type in (SELECT CODE FROM M_GLOBAL WHERE DESCRIPTION = 'GRPTP' AND "
+        +" COND BETWEEN :orderType1 AND  :orderType2 )GROUP BY POS_CODE"
+        +" )"
+        +" GROUP BY TRANS_CODE";
+
+        List<Map<String, Object>> resultQuery5 = jdbcTemplate.query(query5, param, new DynamicRowMapper());
+        for (Map<String,Object> map : resultQuery5) {
+            param.put( "count"+ (String) map.get("transCode"), map.get("countTransAmount"));
+            param.put( "sum"+ (String) map.get("transCode"), map.get("sumTransAmount"));
+        }
+
+        String query6 = " SELECT COALESCE (SUM(discount_2), 0)dis1,COALESCE (SUM(discount_5), 0)dis2, COALESCE (SUM(discount_7),0)dis3,COALESCE (SUM(discount_10),0)dis4,COALESCE (SUM(discount_20),0)dis5,COALESCE (SUM(open),0)dis6, "
+        +" COALESCE (SUM(count_discount_2),0)count_dis1,COALESCE (SUM(count_discount_5),0)count_dis2,COALESCE (SUM(count_discount_7),0)count_dis3,COALESCE (SUM(count_discount_10),0)count_dis4,COALESCE (SUM(count_discount_20),0)count_dis5,COALESCE (SUM(count_open),0)count_dis6 FROM( "
+        +" SELECT "
+        +" CASE WHEN discount_method_code='1' THEN SUM(total_discount) ELSE 0 END AS discount_2, "
+        +" CASE WHEN discount_method_code='1' THEN COUNT(0) ELSE 0 END AS count_discount_2, "
+        +" CASE WHEN discount_method_code='2' THEN SUM(total_discount) ELSE 0 END AS discount_5, "
+        +" CASE WHEN discount_method_code='2' THEN COUNT(0) ELSE 0 END AS count_discount_5, "
+        +" CASE WHEN discount_method_code='3' THEN SUM(total_discount) ELSE 0 END AS discount_7, "
+        +" CASE WHEN discount_method_code='3' THEN COUNT(0) ELSE 0 END AS count_discount_7, "
+        +" CASE WHEN discount_method_code='4' THEN SUM(total_discount) ELSE 0 END AS discount_10, "
+        +" CASE WHEN discount_method_code='4' THEN COUNT(0) ELSE 0 END AS count_discount_10, "
+        +" CASE WHEN discount_method_code='5' THEN SUM(total_discount) ELSE 0 END AS discount_20, "
+        +" CASE WHEN discount_method_code='5' THEN COUNT(0) ELSE 0 END AS count_discount_20, "
+        +" CASE WHEN discount_method_code='6' THEN SUM(total_discount) ELSE 0 END AS open, "
+        +" CASE WHEN discount_method_code='6' THEN COUNT(0) ELSE 0 END AS count_open "
+        +" FROM t_pos_bill WHERE trans_date  BETWEEN :fromDate AND :toDate   "
+        +" AND POS_CODE BETWEEN :posCode1 AND :posCode2 AND CASHIER_CODE BETWEEN  "
+        +" :cashierCode1 AND :cashierCode2 AND SHIFT_CODE BETWEEN :shiftCode1 AND  "
+        +" :shiftCode2 AND (DELIVERY_STATUS IN (' ','CLS') OR DELIVERY_STATUS IS NULL) and  "
+        +" order_type in (SELECT CODE FROM M_GLOBAL WHERE DESCRIPTION = 'GRPTP' AND COND  "
+        +" BETWEEN :orderType1 AND :orderType2) "
+        +" GROUP BY discount_method_code)";
+        Map<String, Object> resultQuery6 = jdbcTemplate.queryForObject(query6, param, new DynamicRowMapper());
+
+        String query7 = " SELECT a.VOID_TYPE, "
+        + "        COUNT(0) SUM_COUNT, "
+        + "        COALESCE (SUM(a.AMOUNT), 0) SUM_AMOUNT "
+        + " FROM T_POS_ITEM_VOID a, T_POS_BILL b "
+        + " WHERE A.OUTLET_CODE = :outletCode AND a.OUTLET_CODE=b.OUTLET_CODE "
+        + " AND a.TRANS_DATE BETWEEN :fromDate AND :toDate AND  "
+        + " a.TRANS_DATE=b.TRANS_DATE AND a.POS_CODE BETWEEN :posCode1 AND :posCode2 AND a.POS_CODE=b.POS_CODE and  "
+        + " a.BILL_NO=b.BILL_NO AND a.DAY_SEQ=b.DAY_SEQ "
+        + " AND a.CASHIER_CODE BETWEEN :cashierCode1 AND :cashierCode2 AND a.CASHIER_CODE=b.CASHIER_CODE  "
+        + " AND b.SHIFT_CODE BETWEEN :shiftCode1 AND :shiftCode2 and B.order_type in (SELECT CODE FROM  "
+        + " M_GLOBAL WHERE DESCRIPTION = 'GRPTP' AND COND BETWEEN :orderType1 AND :orderType2) GROUP BY VOID_TYPE ";
+
+        List<Map<String, Object>> resultQuery7 = jdbcTemplate.query(query7, param, new DynamicRowMapper());
+        for (Map<String,Object> map : resultQuery7) {
+            param.put( "countCorrection"+ (String) map.get("voidType"), map.get("sumCount"));
+            param.put( "sumCorrection"+ (String) map.get("voidType"), map.get("sumAmount"));
+        }
+
+        String query8 = " SELECT DELIVERY_STATUS, "
+        +"       COUNT(0) TOTAL_BY_STATUS, "
+        +"       SUM(TOTAL_AMOUNT) AMOUNT_BY_STATUS "
+        +"       FROM T_POS_BILL "
+        +"       WHERE OUTLET_CODE  = :outletCode "
+        +"       AND DELIVERY_STATUS IN ('CAN','BAD') "
+        +"       AND TRANS_DATE BETWEEN :fromDate AND :toDate "
+        +"       AND POS_CODE BETWEEN :posCode1 AND :posCode2 "
+        +"       AND CASHIER_CODE BETWEEN :cashierCode1 AND :cashierCode2 AND SHIFT_CODE BETWEEN :shiftCode1  "
+        +" AND :shiftCode2 and order_type in (SELECT CODE FROM M_GLOBAL WHERE DESCRIPTION =  "
+        +" 'GRPTP' AND COND BETWEEN :orderType1 AND :orderType2) GROUP BY DELIVERY_STATUS ";
+
+        List<Map<String, Object>> resultQuery8 = jdbcTemplate.query(query8, param, new DynamicRowMapper());
+        for (Map<String,Object> map : resultQuery8) {
+            param.put( "countCorrectionTrx"+ (String) map.get("deliveryStatus"), map.get("totalByStatus"));
+            param.put( "sumCorrectionTrx"+ (String) map.get("deliveryStatus"), map.get("amountByStatus"));
+        }
+
+        String query9 = "select count(0) count_correction_refund, COALESCE ( SUM(TOTAL_REFUND), 0) sum_correction_refund from t_pos_bill where outlet_code = :outletCode "
+         +"and trans_date between :fromDate and :toDate and pos_code between "
+        +":posCode1 and :posCode2 and cashier_code between :cashierCode1 and :cashierCode2 and total_refund <> 0 "
+        +"and shift_code between :shiftCode1 and :shiftCode2 and refund_manager_code <> ' ' and "
+        +"refund_manager_code is not null and order_type in (SELECT CODE FROM M_GLOBAL "
+        +"WHERE DESCRIPTION = 'GRPTP' AND COND BETWEEN :orderType1 AND :orderType2)";
+        Map<String, Object> resultQuery9 = jdbcTemplate.queryForObject(query9, param, new DynamicRowMapper());
+
+        String query10 = "SELECT TAX AS CONST_TAX FROM m_outlet WHERE OUTLET_CODE =  :outletCode AND ROWNUM = 1 ";
+        Map<String, Object> resultQuery10 = jdbcTemplate.queryForObject(query10, param, new DynamicRowMapper());
+ 
+        String query11 = "SELECT PAYMENT_METHOD, SUM (PAYMENT_AMOUNT) AS PAYMENT_AMOUNT, SUM (PAYMENT_USED) AS PAYMENT_USED "
+        +" FROM (select b.payment_type_code, sum(a.payment_amount) AS PAYMENT_AMOUNT, sum(a.payment_used) AS PAYMENT_USED , CASE WHEN "
+        +" payment_type_code NOT IN ('CSH', 'VCR') THEN 'DBT' ELSE payment_type_code END AS PAYMENT_METHOD "
+        +" from t_pos_book_payment a, m_payment_method b"
+        +" where  a.outlet_code = :outletCode"
+        +" and a.outlet_code = b.outlet_code"
+        +" and a.payment_method_code = b.payment_method_code and a.trans_date between "
+        +" :fromDate and :toDate and a.book_no in (select book_no from "
+        +" t_pos_book where outlet_code = :outletCode and substr(book_no,1,3) between :posCode1 "
+        +" and :posCode2 and cashier_code between :cashierCode1 and :cashierCode2 and shift_code between :shiftCode1 "
+        +" and :shiftCode2 and order_type in (SELECT CODE FROM M_GLOBAL WHERE DESCRIPTION = "
+        +" 'GRPTP' AND COND BETWEEN :orderType1 AND :orderType2)) group by b.payment_type_code)a group by a.PAYMENT_METHOD";
+
+        List<Map<String, Object>> resultQuery11 = jdbcTemplate.query(query11, param, new DynamicRowMapper());
+        for (Map<String,Object> map : resultQuery11) {
+            param.put("dpAmountTerima" + (String) map.get("paymentMethod"), map.get("paymentAmount"));
+            param.put("dpUsedTerima" + (String) map.get("paymentMethod"), map.get("paymentUsed"));
+        }
+
+        String query12 = " SELECT payment_method, sum(payment_amount) payment_amount, sum(payment_used) AS payment_used FROM ( "
+        + " select b.payment_type_code, sum(a.payment_amount) AS payment_amount,  "
+        + " sum(a.payment_used) AS payment_used, "
+        + " CASE WHEN b.payment_type_code NOT IN ('VCR', 'CSH') THEN 'DBT' ELSE b.payment_type_code END AS payment_method "
+        + " from t_pos_book_payment a, m_payment_method b "
+        + " where a.outlet_code = :outletCode "
+        + " and a.outlet_code = b.outlet_code "
+        + " and a.payment_method_code = b.payment_method_code and a.book_no in (select  "
+        + " book_no from t_pos_bill where outlet_code = :outletCode  "
+        + " and trans_date between :fromDate and :toDate "
+        + " and pos_code between :posCode1 and :posCode2 "
+        + " and cashier_code between :cashierCode1 and :cashierCode2 and shift_code between :shiftCode1 and :shiftCode2 "
+        + " and (delivery_status in (' ','CLS') or delivery_status is null) and book_no <>  "
+        + " ' ' and order_type in (SELECT CODE FROM M_GLOBAL WHERE DESCRIPTION = 'GRPTP'  "
+        + " AND COND BETWEEN :orderType1 AND :orderType2))group by b.payment_type_code)a GROUP BY payment_method ";
+
+        List<Map<String, Object>> resultQuery12 = jdbcTemplate.query(query12, param, new DynamicRowMapper());
+        for (Map<String,Object> map : resultQuery12) {
+            param.put("dpAmountBayar" + (String) map.get("paymentMethod"), map.get("paymentAmount"));
+            param.put("dpUsedBayar" + (String) map.get("paymentMethod"), map.get("paymentUsed"));
+        }
+
+        String query13 = "select count(0)count_total_refund, COALESCE( SUM(TOTAL_REFUND), 0) AS total_refund from t_pos_bill where outlet_code = :outletCode "
+        +" and trans_date between :fromDate and :toDate and pos_code between "
+        +" :posCode1 and :posCode2 and cashier_code between :cashierCode1 and :cashierCode2 and total_refund <> 0 "
+        +" and shift_code between :shiftCode1 and :shiftCode2 and refund_manager_code <> ' ' and "
+        +" refund_manager_code is not null and order_type in (SELECT CODE FROM M_GLOBAL "
+        +" WHERE DESCRIPTION = 'GRPTP' AND COND BETWEEN :orderType1 AND :orderType2)";
+
+        Map<String, Object> resultQuery13 = jdbcTemplate.queryForObject(query13, param, new DynamicRowMapper());
+
+        String query14 = "SELECT COUNT(0) TTL_BILL_JOINT "
+        +" FROM t_pos_bill"
+        +" WHERE OUTLET_CODE = :outletCode AND BILL_JOINT <> ' ' "
+        +" AND TRANS_DATE BETWEEN :fromDate AND :toDate "
+        +" AND POS_CODE BETWEEN :posCode1 AND :posCode2"
+        +" AND CASHIER_CODE BETWEEN :cashierCode1 AND :cashierCode2 AND SHIFT_CODE BETWEEN :shiftCode1 AND :shiftCode2"
+        +" AND (DELIVERY_STATUS IN (' ','CLS') OR DELIVERY_STATUS IS NULL) and order_type "
+        +" in (SELECT CODE FROM M_GLOBAL WHERE DESCRIPTION = 'GRPTP' AND COND BETWEEN "
+        +" :orderType1 AND :orderType2)";
+        Map<String, Object> resultQuery14 = jdbcTemplate.queryForObject(query14, param, new DynamicRowMapper());
+
+        param.putAll(resultQuery1);
+        param.putAll(resultQuery2);
+        param.putAll(resultQuery3);
+        param.putAll(resultQuery6);
+        param.putAll(resultQuery9);
+        param.putAll(resultQuery10);
+        param.putAll(resultQuery13);
+        param.putAll(resultQuery14);
+
+        System.err.println("==============================================================================================");
+        System.err.println(param);
         ClassPathResource classPathResource = new ClassPathResource("report/laporanSalesDate.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, param, connection);
