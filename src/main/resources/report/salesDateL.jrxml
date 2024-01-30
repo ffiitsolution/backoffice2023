@@ -1,0 +1,648 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="salesDate" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="70dce86b-f548-4d5c-a232-910967db12e0">
+	<property name="ireport.zoom" value="3.79749833583243"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="99"/>
+	<parameter name="outletCode" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="fromDate" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="toDate" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="posCode" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="posCode1" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="posCode2" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="cashierCode" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="cashierCode1" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="cashierCode2" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="shiftCode" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="shiftCode1" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="shiftCode2" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="outletName" class="java.lang.String"/>
+	<parameter name="user" class="java.lang.String"/>
+	<parameter name="orderType" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="orderType1" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="orderType2" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="outletBrand" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT * FROM(
+SELECT TOTAL_PENDAPATAN,
+TOTAL_PENJUALAN,
+TOTAL_PENJUALAN_FNB,
+TOTAL_PENJUALAN_CD,
+KUPON_DIGUNAKAN,
+KUPON_TERPAKAI,
+DEBIT,
+BCA,
+MANDIRI,
+BNI,
+BRI,
+OTR,
+KEMBALIAN   ,
+BIAYA_ANTAR ,
+TAX_BIAYA_ANTAR,
+DONASI,
+DITERIMACSH ,
+DITERIMAVCR ,
+DITERIMADEBIT,
+CASH,
+TAXABLE,
+PAJAK_RESTORAN,
+PPN,
+PEMBULATAN,
+GROSS_SALES,
+MODAL,
+CASH_PULL,
+DIS1,
+DIS2,
+DIS3,
+DIS4,
+DIS5,
+DIS6,
+CANCEL_ORDER,
+OFFLINE_SERVER,
+TOTAL_CUSTOMER,
+CUSTOMER_EAT_IN,
+CUSTOMER_TAKE_AWAY,
+TOTAL_TRANSAKSI,
+TRANSAKSI_EI,
+CUSTOMER_AVARAGE,
+TICKET_AVARAGE
+FROM(
+
+SELECT
+A.PID                 ,
+A.TOTAL_PENDAPATAN    ,
+A.TOTAL_PENJUALAN     ,
+A.TOTAL_PENJUALAN_FNB ,
+A.TOTAL_PENJUALAN_CD  ,
+A.KUPON_DIGUNAKAN     ,
+A.KUPON_TERPAKAI      ,
+A.DEBIT               ,
+A.BCA                 ,
+A.MANDIRI             ,
+A.BNI                 ,
+A.BRI                 ,
+A.OTR                 ,
+A.KEMBALIAN           ,
+A.BIAYA_ANTAR         ,
+A.TAX_BIAYA_ANTAR     ,
+A.DONASI              ,
+A.DITERIMACSH         ,
+A.DITERIMAVCR         ,
+A.DITERIMADEBIT       ,
+A.DIBAYARKANCSH       ,
+A.DIBAYARKANVCR       ,
+A.DIBAYARKANDBT       ,
+A.CASH                ,
+A.TAXABLE             ,
+A.PAJAK_RESTORAN      ,
+A.PPN                 ,
+A.PEMBULATAN          ,
+A.GROSS_SALES         ,
+A.CASH_PULL           ,
+A.MODAL               ,
+A.DIS1                ,
+A.DIS2                ,
+A.DIS3                ,
+A.DIS4                ,
+A.DIS5                ,
+A.DIS6                ,
+C.SUM_AMOUNT AS CANCEL_ORDER,
+B.SUM_AMOUNT AS OFFLINE_SERVER,
+D.TOTAL_CUSTOMER,
+E.CUSTOMER_EAT_IN,
+F.CUSTOMER_TAKE_AWAY,
+G.TOTAL_TRANSAKSI,
+H.TRANSAKSI_EI,
+G.TAI AS CUSTOMER_AVARAGE,
+G.TELEK AS TICKET_AVARAGE
+ FROM(
+SELECT 'XX' pid,total_pendapatan,total_penjualan,total_penjualan_fnb,total_penjualan_cd,kupon_digunakan,kupon_terpakai,
+(BCA+MND+BNI+BRI+OTR) debit,BCA,MND AS MANDIRI,BNI,BRI,OTR,0 AS kembalian,biaya_antar,tax_biaya_antar,donasi,
+DITERIMACSH,DITERIMAVCR,DITERIMADEBIT,dibayarkancsh,dibayarkanvcr,dibayarkandbt,
+PCSH AS CASH,taxable,pajak_restoran,ppn,pembulatan,gross_sales,cash_pull,modal,
+dis1,dis2,dis3,dis4,dis5,dis6,can,bad
+ FROM (
+SELECT 'XX' pid,total_pendapatan,a AS total_penjualan,(a-amt_cd)total_penjualan_fnb,amt_cd AS total_penjualan_cd,
+kupon_digunakan,kupon_terpakai,0 AS kembalian, c AS biaya_antar,k AS tax_biaya_antar,j AS donasi,
+taxable,((d-tax_cd)+k)pajak_restoran,tax_cd ppn,total_pendapatan AS gross_sales, ((total_pendapatan-taxable)-((d-tax_cd)+k))-tax_cd AS pembulatan,
+cash_pull,modal
+FROM(
+SELECT 'XX' pid,
+SUM(total_amount)a,SUM(total_discount)b,SUM(total_charge)c,SUM(total_tax)d,SUM(total_rounding)e,SUM(total_sales)f,
+SUM(total_dp_paid)g,SUM(total_payment)h,SUM(total_sales)-SUM(total_charge) AS total_pendapatan,SUM(total_donation)j,SUM(total_tax_charge)k,SUM(total_amount)-SUM(total_discount)taxable
+FROM t_pos_bill WHERE
+OUTLET_CODE IN ($P{outletCode})
+AND TRANS_DATE BETWEEN $P{fromDate} AND  $P{toDate}
+AND POS_CODE BETWEEN $P{posCode1} AND $P{posCode2}
+AND CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+AND SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
+AND delivery_status='CLS') a
+JOIN
+(SELECT   'XX' pid, SUM (amount) amt_cd, SUM (amt_tax) tax_cd FROM   (SELECT   x.*
+ FROM (
+ SELECT * FROM t_pos_bill_item_detail WHERE TRANS_DATE BETWEEN $P{fromDate} AND  $P{toDate} AND POS_CODE BETWEEN $P{posCode1} AND $P{posCode2}
+ AND menu_item_code IN (SELECT   menu_item_code FROM m_menu_item WHERE   menu_group_code ='G07'
+UNION ALL
+SELECT   modifier_item_code FROM m_modifier_item WHERE   modifier_group_code IN ('M1Q','M19','M20')))x
+JOIN (SELECT * FROM t_pos_bill WHERE   TRANS_DATE BETWEEN $P{fromDate} AND  $P{toDate}
+AND POS_CODE BETWEEN $P{posCode1} AND $P{posCode2}
+AND delivery_status = 'CLS') y
+ON x.outlet_code = y.outlet_code AND x.pos_code = y.pos_code
+AND x.day_seq = y.day_seq
+AND x.bill_no = y.bill_no)) b
+ON a.pid = b.pid
+JOIN
+(SELECT 'XX' pid, SUM(payment_amount)kupon_digunakan,SUM(payment_used)kupon_terpakai
+FROM t_pos_bill_payment WHERE TRANS_DATE BETWEEN $P{fromDate} AND  $P{toDate} AND POS_CODE BETWEEN $P{posCode1} AND $P{posCode2} AND payment_method_code='VCR' ) c
+ON a.pid = c.pid
+JOIN
+(SELECT 'XX'pid,SUM(trans_amount)modal FROM t_pos_day_trans WHERE trans_date BETWEEN $P{fromDate} AND  $P{toDate} AND POS_CODE BETWEEN $P{posCode1} AND $P{posCode2} AND trans_code='OPF')d
+ON a.pid = d.pid
+JOIN
+(SELECT 'XX'pid,SUM(trans_amount)cash_pull FROM t_pos_day_trans WHERE trans_date BETWEEN $P{fromDate} AND  $P{toDate} AND POS_CODE BETWEEN $P{posCode1} AND $P{posCode2} AND trans_code IN('SLS','OPF','DP','DNT'))e
+ON a.pid = e.pid)X
+JOIN
+(SELECT 'XX'pid,DITERIMACSH,DITERIMAVCR,DITERIMADEBIT FROM(
+(SELECT 'XX'pid,SUM(CSH)DITERIMACSH,SUM(VCR)DITERIMAVCR,SUM(DEBIT)DITERIMADEBIT FROM (
+SELECT 'XX'pid,
+CASE WHEN payment_method_code='CSH' THEN SUM(payment_used) ELSE 0 END AS CSH,
+CASE WHEN payment_method_code='VCR' THEN SUM(payment_used) ELSE 0 END AS VCR,
+CASE WHEN payment_method_code NOT IN('CSH','VCR') THEN SUM(payment_used) ELSE 0 END AS debit
+FROM t_pos_book_payment WHERE TRANS_DATE BETWEEN $P{fromDate} AND  $P{toDate} GROUP BY payment_method_code))))y
+ON X.pid = y.pid
+JOIN
+(SELECT 'XX'pid,SUM(csh)pcsh,SUM(VCR)vcr,SUM(BCA)bca,SUM(MND)mnd,SUM(BNI)bni,SUM(BRI)BRI,SUM(otr)otr FROM(
+SELECT 'XX'pid,
+CASE WHEN payment_method_code='CSH' THEN SUM(payment_used) ELSE 0 END AS CSH,
+CASE WHEN payment_method_code='VCR' THEN SUM(payment_used) ELSE 0 END AS VCR,
+CASE WHEN payment_method_code='BCA' THEN SUM(payment_used) ELSE 0 END AS BCA,
+CASE WHEN payment_method_code='MND' THEN SUM(payment_used) ELSE 0 END AS MND,
+CASE WHEN payment_method_code='BNI' THEN SUM(payment_used) ELSE 0 END AS BNI,
+CASE WHEN payment_method_code='BRI' THEN SUM(payment_used) ELSE 0 END AS BRI,
+CASE WHEN payment_method_code NOT IN('CSH','VCR','BCA','MND','BNI','BRI') THEN SUM(payment_used) ELSE 0 END AS otr
+FROM t_pos_bill_payment u JOIN t_pos_bill s
+ON u.bill_no=s.bill_no
+AND u.trans_date = s.trans_date
+WHERE u.TRANS_DATE BETWEEN $P{fromDate} AND  $P{toDate} AND s.delivery_status='CLS' GROUP BY u.payment_method_code ))z
+ON X.pid = z.pid
+JOIN
+(SELECT 'XX'pid,SUM(CSH)dibayarkancsh,SUM(VCR)dibayarkanvcr,SUM(DEBIT)dibayarkandbt FROM(
+SELECT 'XX'pid,
+CASE WHEN payment_method_code='CSH' THEN SUM(payment_used) ELSE 0 END AS CSH,
+CASE WHEN payment_method_code='VCR' THEN SUM(payment_used) ELSE 0 END AS VCR,
+CASE WHEN payment_method_code NOT IN('CSH','VCR') THEN SUM(payment_used) ELSE 0 END AS debit
+FROM t_pos_book_payment WHERE book_no IN(
+SELECT book_no FROM t_pos_bill
+WHERE TRANS_DATE BETWEEN $P{fromDate} AND  $P{toDate}  AND book_no <>' ' AND delivery_status='CLS') GROUP BY payment_method_code))aa
+ON X.pid = aa.pid
+JOIN
+(SELECT 'XX'pid,SUM(cancel)can,SUM(bad)bad FROM (
+SELECT 'XX'pid,CASE WHEN delivery_status='CAN' THEN SUM(total_amount) ELSE 0 END AS cancel,
+CASE WHEN delivery_status='BAD' THEN SUM(total_amount) ELSE 0 END AS BAD
+ FROM t_pos_bill WHERE trans_date BETWEEN $P{fromDate} AND $P{toDate} GROUP BY delivery_status))ab
+ ON X.pid = aa.pid
+JOIN
+( SELECT 'XX'pid,SUM(discount_2)dis1,SUM(discount_5)dis2,SUM(discount_7)dis3,SUM(discount_10)dis4,SUM(discount_20)dis5,SUM(open)dis6 FROM(
+SELECT 'XX'pid,
+CASE WHEN discount_method_code='1' THEN SUM(total_discount) ELSE 0 END AS discount_2,
+CASE WHEN discount_method_code='2' THEN SUM(total_discount) ELSE 0 END AS discount_5,
+CASE WHEN discount_method_code='3' THEN SUM(total_discount) ELSE 0 END AS discount_7,
+CASE WHEN discount_method_code='4' THEN SUM(total_discount) ELSE 0 END AS discount_10,
+CASE WHEN discount_method_code='5' THEN SUM(total_discount) ELSE 0 END AS discount_20,
+CASE WHEN discount_method_code='6' THEN SUM(total_discount) ELSE 0 END AS open
+FROM t_pos_bill WHERE trans_date  BETWEEN $P{fromDate} AND $P{toDate} GROUP BY discount_method_code))ac
+ ON X.pid = ac.pid) A
+ LEFT JOIN (
+
+SELECT 'XX' AS PID, a.VOID_TYPE,
+       COUNT(0) SUM_COUNT,
+       SUM(a.AMOUNT) SUM_AMOUNT
+FROM T_POS_ITEM_VOID a, T_POS_BILL b
+WHERE A.OUTLET_CODE IN ($P{outletCode}) AND a.OUTLET_CODE=b.OUTLET_CODE
+AND a.TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}  AND a.TRANS_DATE=b.TRANS_DATE
+AND a.POS_CODE BETWEEN $P{posCode1} AND $P{posCode2} AND a.POS_CODE=b.POS_CODE AND
+a.BILL_NO=b.BILL_NO AND a.DAY_SEQ=b.DAY_SEQ
+AND a.CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2} AND a.CASHIER_CODE=b.CASHIER_CODE
+AND b.SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2} AND B.order_type IN (SELECT CODE FROM M_GLOBAL WHERE DESCRIPTION = 'GRPTP' AND COND
+BETWEEN $P{orderType1} AND $P{orderType2})
+AND VOID_TYPE='OFS'
+GROUP BY VOID_TYPE
+) B
+ON A.PID=B.PID
+LEFT JOIN
+(SELECT 'XX' AS PID, a.VOID_TYPE,
+       COUNT(0) SUM_COUNT,
+       SUM(a.AMOUNT) SUM_AMOUNT
+FROM T_POS_ITEM_VOID a, T_POS_BILL b
+WHERE A.OUTLET_CODE IN ($P{outletCode}) AND a.OUTLET_CODE=b.OUTLET_CODE
+AND a.TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}  AND a.TRANS_DATE=b.TRANS_DATE
+AND a.POS_CODE BETWEEN $P{posCode1} AND $P{posCode2} AND a.POS_CODE=b.POS_CODE AND
+a.BILL_NO=b.BILL_NO AND a.DAY_SEQ=b.DAY_SEQ
+AND a.CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2} AND a.CASHIER_CODE=b.CASHIER_CODE
+AND b.SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2} AND B.order_type IN (SELECT CODE FROM M_GLOBAL WHERE DESCRIPTION = 'GRPTP' AND COND
+BETWEEN $P{orderType1} AND $P{orderType2})
+AND VOID_TYPE='CAN'
+GROUP BY VOID_TYPE) C
+ON A.PID=C.PID
+LEFT JOIN (
+ SELECT  'XX' AS PID, SUM (NVL (TOTAL_CUSTOMER, 0)) AS TOTAL_CUSTOMER
+    FROM   T_POS_BILL
+   WHERE       (DELIVERY_STATUS IN (' ', 'CLS') OR DELIVERY_STATUS IS NULL)
+           AND OUTLET_CODE IN ($P{outletCode})
+           AND TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
+           AND POS_CODE BETWEEN $P{posCode1} AND $P{posCode2}
+           AND CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+           AND SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
+           AND order_type IN
+                    (SELECT   CODE
+                       FROM   M_GLOBAL
+                      WHERE   DESCRIPTION = 'GRPTP'
+                              AND COND BETWEEN $P{orderType1} AND $P{orderType2}
+                     )
+)D
+ON A.PID=D.PID
+LEFT JOIN(
+ SELECT  'XX' AS PID, SUM (NVL (TOTAL_CUSTOMER, 0)) AS CUSTOMER_EAT_IN
+    FROM   T_POS_BILL
+   WHERE       (DELIVERY_STATUS IN (' ', 'CLS') OR DELIVERY_STATUS IS NULL)
+           AND OUTLET_CODE IN ($P{outletCode})
+           AND TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
+           AND POS_CODE BETWEEN $P{posCode1} AND $P{posCode2}
+           AND CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+           AND SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
+           AND order_type IN
+                    (SELECT   CODE
+                       FROM   M_GLOBAL
+                      WHERE   DESCRIPTION = 'GRPTP'
+                              AND COND BETWEEN $P{orderType1} AND $P{orderType2}
+                              AND TRANS_TYPE='EI'
+                     )
+ )E
+ ON A.PID=E.PID
+ LEFT JOIN
+( SELECT  'XX' AS PID, SUM (NVL (TOTAL_CUSTOMER, 0)) AS CUSTOMER_TAKE_AWAY
+    FROM   T_POS_BILL
+   WHERE       (DELIVERY_STATUS IN (' ', 'CLS') OR DELIVERY_STATUS IS NULL)
+           AND OUTLET_CODE IN ($P{outletCode})
+           AND TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
+           AND POS_CODE BETWEEN $P{posCode1} AND $P{posCode2}
+           AND CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+           AND SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
+           AND order_type IN
+                    (SELECT   CODE
+                       FROM   M_GLOBAL
+                      WHERE   DESCRIPTION = 'GRPTP'
+                              AND COND BETWEEN $P{orderType1} AND $P{orderType2}
+                              AND TRANS_TYPE='TA'
+                     )
+)F
+ ON A.PID=F.PID
+LEFT JOIN
+( SELECT  'XX' AS PID, COUNT (BILL_NO) AS TOTAL_TRANSAKSI,         ROUND( (SUM (TOTAL_AMOUNT) - SUM (TOTAL_DISCOUNT))
+               / (NVL (SUM (TOTAL_CUSTOMER), 1)))
+            AS TAI,
+         ROUND ( (SUM (TOTAL_AMOUNT) - SUM (TOTAL_DISCOUNT)) / (COUNT (1)))
+            AS TELEK
+    FROM   T_POS_BILL
+   WHERE       (DELIVERY_STATUS IN (' ', 'CLS') OR DELIVERY_STATUS IS NULL)
+           AND OUTLET_CODE IN ($P{outletCode})
+           AND TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
+           AND POS_CODE BETWEEN $P{posCode1} AND $P{posCode2}
+           AND CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+           AND SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
+           AND order_type IN
+                    (SELECT   CODE
+                       FROM   M_GLOBAL
+                      WHERE   DESCRIPTION = 'GRPTP'
+                              AND COND BETWEEN $P{orderType1} AND $P{orderType2}
+
+                     )) G
+ON A.PID=G.PID
+LEFT JOIN
+( SELECT  'XX' AS PID, COUNT (BILL_NO) AS TRANSAKSI_EI
+    FROM   T_POS_BILL
+   WHERE       (DELIVERY_STATUS IN (' ', 'CLS') OR DELIVERY_STATUS IS NULL)
+           AND OUTLET_CODE IN ($P{outletCode})
+           AND TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
+           AND POS_CODE BETWEEN $P{posCode1} AND $P{posCode2}
+           AND CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+           AND SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
+           AND order_type IN
+                    (SELECT   CODE
+                       FROM   M_GLOBAL
+                      WHERE   DESCRIPTION = 'GRPTP'
+                              AND COND BETWEEN $P{orderType1} AND $P{orderType2}
+                             AND TRANS_TYPE='EI'
+                     )) H
+ON A.PID=H.PID
+LEFT JOIN
+( SELECT  'XX' AS PID, COUNT (BILL_NO) AS TRANSAKSI_TA
+    FROM   T_POS_BILL
+   WHERE       (DELIVERY_STATUS IN (' ', 'CLS') OR DELIVERY_STATUS IS NULL)
+           AND OUTLET_CODE IN ($P{outletCode})
+           AND TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
+           AND POS_CODE BETWEEN $P{posCode1} AND $P{posCode2}
+           AND CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+           AND SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
+           AND order_type IN
+                    (SELECT   CODE
+                       FROM   M_GLOBAL
+                      WHERE   DESCRIPTION = 'GRPTP'
+                              AND COND BETWEEN $P{orderType1} AND $P{orderType2}
+                             AND TRANS_TYPE='TA'
+                     )) I
+ON A.PID=I.PID
+
+))
+
+UNPIVOT
+
+(V  FOR K IN(
+TOTAL_PENDAPATAN ,
+TOTAL_PENJUALAN ,
+TOTAL_PENJUALAN_FNB ,
+TOTAL_PENJUALAN_CD ,
+KUPON_DIGUNAKAN ,
+KUPON_TERPAKAI ,
+DEBIT ,
+BCA ,
+MANDIRI ,
+BNI ,
+BRI ,
+OTR ,
+KEMBALIAN ,
+BIAYA_ANTAR ,
+TAX_BIAYA_ANTAR ,
+DONASI ,
+DITERIMACSH ,
+DITERIMAVCR ,
+DITERIMADEBIT ,
+CASH ,
+TAXABLE ,
+PAJAK_RESTORAN ,
+PPN ,
+PEMBULATAN ,
+GROSS_SALES ,
+MODAL ,
+CASH_PULL,
+DIS1,
+DIS2,
+DIS3,
+DIS4,
+DIS5,
+DIS6,
+CANCEL_ORDER,
+OFFLINE_SERVER,
+TOTAL_CUSTOMER,
+CUSTOMER_EAT_IN,
+CUSTOMER_TAKE_AWAY,
+TOTAL_TRANSAKSI,
+TRANSAKSI_EI,
+CUSTOMER_AVARAGE,
+TICKET_AVARAGE
+))
+U]]>
+	</queryString>
+	<field name="K" class="java.lang.String"/>
+	<field name="V" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="98" splitType="Stretch">
+			<staticText>
+				<reportElement x="5" y="78" width="100" height="20" uuid="68be17c9-a449-4f20-b2b1-c8d696905599"/>
+				<text><![CDATA[Keterangan]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="450" y="78" width="100" height="20" uuid="11a413b1-7c6a-4686-8840-352600dae2b8"/>
+				<text><![CDATA[Nilai]]></text>
+			</staticText>
+			<line>
+				<reportElement x="2" y="96" width="552" height="1" uuid="074a96c7-79f9-492b-b598-dfb89675a4ba"/>
+			</line>
+			<line>
+				<reportElement x="2" y="78" width="552" height="1" uuid="220c2045-a0e6-4c09-8e8b-6f39808cd864"/>
+			</line>
+			<staticText>
+				<reportElement x="5" y="28" width="549" height="19" uuid="ef16a081-aae5-409c-8f96-d1677b920d8e"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Daily Sales Report]]></text>
+			</staticText>
+			<image scaleImage="FillFrame">
+				<reportElement x="21" y="0" width="42" height="42" isPrintWhenDetailOverflows="true" uuid="6b7f9666-f046-4f4c-be14-b871ba198ca5"/>
+				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="78" y="0" width="112" height="11" uuid="500b4672-efad-4caa-9a0b-1da5628e7662"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="3" y="66" width="55" height="11" uuid="67b03c99-a623-4262-9307-c1c9a80eae0a"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Periode   ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="57" y="66" width="236" height="11" uuid="0daa34cb-b8f8-422b-8564-cbe3f7cde39e"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{fromDate}))
++ " s/d " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{toDate}))]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="78" y="10" width="141" height="11" uuid="1f271f3b-3000-4071-80b1-de01c66d2668"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{outletName}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="397" y="46" width="55" height="11" uuid="bc02c070-7050-4db4-b27a-9d8e87332c4d"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Pos]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="3" y="56" width="55" height="11" uuid="c89c7c49-f572-4534-99c7-ee9bef63687c"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Cashier ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="397" y="66" width="55" height="11" uuid="55f4928f-198f-4db1-8e23-fb602b2f3589"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Shift]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="397" y="56" width="55" height="11" uuid="79dd4346-d2c2-4163-9b65-65daa6f94c50"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[User ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="451" y="56" width="150" height="11" uuid="f6c34652-9cad-4ab1-8049-a5179913745a"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" : " + $P{user}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="494" y="1" width="150" height="11" uuid="ea79cb17-f4e7-41ea-88c0-fc38573510b6"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" : " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="440" y="1" width="55" height="11" uuid="1183a193-f824-429e-8b33-687d1966a6c1"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Halaman]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="57" y="56" width="211" height="11" uuid="e2713941-49de-43f2-a116-c42b27482ec1"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" : " + $P{cashierCode}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="451" y="46" width="150" height="11" uuid="c916868d-befd-4887-b656-a4f64c107937"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" : " + $P{posCode}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="451" y="66" width="150" height="11" uuid="3245e8b1-dedf-400b-9ff4-73391f7b2aa1"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" : " + $P{shiftCode}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="3" y="46" width="55" height="11" uuid="9536c5be-fde9-4096-ab13-72d2a110b1ec"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Order Type]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="57" y="46" width="211" height="11" uuid="e7a00b38-bc3b-4b06-9301-6eb55562e535"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" : " + $P{orderType}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="25" splitType="Stretch">
+			<textField>
+				<reportElement x="5" y="0" width="140" height="20" uuid="605c2bb0-8765-4d06-8445-5f2cb0ec2525"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{K}.equals("TOTAL_PENDAPATAN") ? "Total Pendapatan" :
+                    ($F{K}.equals("TOTAL_PENJUALAN") ? "Total Penjualan" :
+                    ($F{K}.equals("TOTAL_PENJUALAN_FNB") ? "Total Penjualan F & B" :
+                    ($F{K}.equals("TOTAL_PENJUALAN_CD") ? "Total Penjualan CD" :
+                    ($F{K}.equals("KUPON_DIGUNAKAN") ? "Kupon (Digunakan)" :
+                    ($F{K}.equals("KUPON_TERPAKAI") ? "Kupon (Terpakai)" :
+                    ($F{K}.equals("KEMBALIAN") ? "Kembalian Pre Paid" :
+                    ($F{K}.equals("BIAYA_ANTAR") ? "Biaya Antar" :
+                    ($F{K}.equals("TAX_BIAYA_ANTAR") ? "Tax Biaya Antar" :
+                    ($F{K}.equals("DONASI") ? "Donasi" :
+                    ($F{K}.equals("CASH") ? "Cash" :
+                    ($F{K}.equals("TAXABLE") ? "Taxable" :
+                    ($F{K}.equals("PAJAK_RESTORAN") ? "Pajak Restoran" :
+                    ($F{K}.equals("PPN") ? "Ppn" :
+                    ($F{K}.equals("PEMBULATAN") ? "Pembulatan" :
+                    ($F{K}.equals("GROSS_SALES") ? "Gross Sales" :
+                    ($F{K}.equals("MODAL") ? "Modal" :
+                    ($F{K}.equals("CASH_PULL") ? "Cash Pull" :
+                    ($F{K}.equals("DIS1") ? "Diskon 2.5%" :
+                    ($F{K}.equals("DIS2") ? "Diskon 5%" :
+                    ($F{K}.equals("DIS3") ? "Diskon 7.5%" :
+                    ($F{K}.equals("DIS4") ? "Diskon 10%" :
+                    ($F{K}.equals("DIS5") ? "Diskon 20%" :
+                    ($F{K}.equals("DIS6") ? "Diskon Open" :
+                    ($F{K}.equals("TOTAL_TRANSAKSI") ? "Total Transaksi" :
+                    ($F{K}.equals("TRANSAKSI_EI") ? "Transaksi Eat In" : $F{K})))))))))))))))))))))))))]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="450" y="0" width="100" height="20" uuid="546ac859-4792-4190-b188-4c213490d857"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{V})]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="20">
+			<textField>
+				<reportElement x="105" y="6" width="150" height="11" uuid="127fbb15-6f89-4a19-a941-de430a25dd17"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(new Date())]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="3" y="6" width="103" height="11" uuid="d794a27a-9463-4440-9819-8533216b01dc"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Tanggal dan Jam Cetak ]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>
