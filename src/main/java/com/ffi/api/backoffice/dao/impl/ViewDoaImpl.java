@@ -1799,7 +1799,7 @@ public class ViewDoaImpl implements ViewDao {
         String year = dfYear.format(tgl);
 
         String qry = "SELECT ORDER_ID||COUNTNO ORDER_ID FROM ( "
-                + "SELECT A.OUTLET_CODE||:month||A.YEAR AS ORDER_ID,A.COUNTER_NO+1 COUNTNO FROM M_COUNTER A "
+                + "SELECT A.OUTLET_CODE||0||:MONTH AS ORDER_ID,A.COUNTER_NO+1 COUNTNO FROM M_COUNTER A "
                 + "LEFT JOIN M_OUTLET B "
                 + "ON B.OUTLET_CODE=A.OUTLET_CODE "
                 + "WHERE A.YEAR = :year AND A.MONTH= :month AND A.TRANS_TYPE = :transType AND A.OUTLET_CODE= :outletCode)";
