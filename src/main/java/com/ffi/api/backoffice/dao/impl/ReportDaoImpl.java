@@ -1897,7 +1897,7 @@ public class ReportDaoImpl implements ReportDao {
 
         System.err.println("==============================================================================================");
         System.err.println(param);
-        ClassPathResource classPathResource = new ClassPathResource("report/laporanSalesDate.jrxml");
+        ClassPathResource classPathResource = new ClassPathResource("report/salesDate.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, param, connection);
     }
