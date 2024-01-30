@@ -1,164 +1,194 @@
 [
-    {
-        "title": true,
-        "name": "Back Office"
-    },
-    {
-        "name": "Dashboard",
-        "url": "/dashboard",
-        "icon": "fa fa-bar-chart"
-    },
-    {
-        "name": "Masters",
-        "url": "/master",
-        "icon": "fa fa-database",
-        "children": [
-            {
-                "name": "User",
-                "badge": {
-                    "color": "warning",
-                    "text": "On Progress"
-                }
-            },
-            {
-                "name": "Outlet",
-                "url": "/master/outlet"
-            },
-            {
-                "name": "Menu",
-                "url": "/master/menu"
-            },
-            {
-                "name": "Price",
-                "badge": {
-                    "color": "warning",
-                    "text": "On Progress"
-                }
-            },
-            {
-                "name": "Fryer Type",
-                "url": "/master/fryer"
-            },
-            {
-                "name": "Group Item",
-                "url": "/master/group-item"
-            },
-            {
-                "name": "Supplier",
-                "url": "/master/supplier"
-            },
-            {
-                "name": "Item",
-                "url": "/master/item"
-            },
-            {
-                "name": "Recipe",
-                "url": "/master/recipe"
-            },
-            {
-                "name": "MPCS",
-                "url": "/master/mpcs"
-            },
-            {
-                "name": "Item Cost",
-                "url": "/master/item-cost"
-            },
-            {
-                "name": "Sales Recipe",
-                "url": "/master/sales-recipe"
-            },
-            {
-                "name": "Global",
-                "url": "/master/global"
-            },
-            {
-                "name": "Kirim Terima Data",
-                "url": "/master/kirim-terima-data"
-            }
-        ]
-    },
-    {
-        "name": "Transactions",
-        "url": "/transaction",
-        "icon": "fa fa-exchange",
-        "children": [
-            {
-                "name": "Stock Opname",
-                "url": "/transaction/stock-opname"
-            },
-            {
-                "name": "Order Entry",
-                "url": "/transaction/order-entry"
-            },
-            {
-                "name": "Receiving",
-                "url": "/transaction/receiving"
-            },
-            {
-                "name": "Delivery Order",
-                "url": "/transaction/delivery-order"
-            },
-            {
-                "name": "Wastage",
-                "url": "/transaction/wastage"
-            },
-            {
-                "name": "Return Order",
-                "url": "/transaction/return-order"
-            },
-            {
-                "name": "MPCS",
-                "url": "/transaction/mpcs"
-            }
-        ]
-    },
-    {
-        "name": "Reports",
-        "url": "/report",
-        "icon": "fa fa-file-pdf-o",
-        "children": [
-            {
-                "name": "Inventory",
-                "url": "/report/report"
-            },
-            {
-                "name": "Mpcs Query",
-                "url": "/report/mpcs-query"
-            },
-            {
-                "name": "Pos Report",
-                "url": "/report/pos-report"
-            },
-            {
-                "name": "Query Stock Card",
-                "url": "/report/query-stock-card"
-            }
-        ]
-    },
-    {
-        "name": "Point Of Sales",
-        "url": "/pos",
-        "icon": "fa fa-television",
-        "children": [
-            {
-                "name": "Query Bill & Sales",
-                "url": "/pos/query-bill"
-            },
-            {
-                "name": "End Of Day",
-                "url": "/pos/end-of-day"
-            }
-        ]
-    },
-    {
-        "name": "Time Management",
-        "url": "/time-management",
-        "icon": "fa fa-clock-o",
-        "children": [
-            {
-                "name": "Transaksi",
-                "url": "/time-management/transaction"
-            }
-        ]
-    }
+  {
+    "title": true,
+    "name": "Back Office"
+  },
+  {
+    "name": "Dashboard",
+    "url": "/dashboard",
+    "icon": "fa fa-bar-chart"
+  },
+  {
+    "name": "Masters",
+    "url": "/master",
+    "icon": "fa fa-database",
+    "children": [
+      {
+        "name": "User",
+        "badge": {
+          "color": "warning",
+          "text": "On Progress"
+        }
+      },
+      {
+        "name": "Outlet",
+        "badge": {
+          "color": "warning",
+          "text": "On Progress"
+        }
+      },
+      {
+        "name": "Menu",
+        "url": "/master/menu"
+      },
+      {
+        "name": "Price",
+        "badge": {
+          "color": "warning",
+          "text": "On Progress"
+        }
+      },
+      {
+        "name": "Fryer Type",
+        "badge": {
+          "color": "warning",
+          "text": "On Progress"
+        }
+      },
+      {
+        "name": "Group Item",
+        "url": "/master/group-item"
+      },
+      {
+        "name": "Supplier",
+        "url": "/master/supplier"
+      },
+      {
+        "name": "Item",
+        "url": "/master/item"
+      },
+      {
+        "name": "Recipe",
+        "url": "/master/recipe"
+      },
+      {
+        "name": "MPCS",
+        "url": "/master/mpcs"
+      },
+      {
+        "name": "Item Cost",
+        "url": "/master/item-cost"
+      },
+      {
+        "name": "Sales Recipe",
+        "url": "/master/sales-recipe"
+      },
+      {
+        "name": "Global",
+        "url": "/master/global"
+      },
+      {
+        "name": "Kirim Terima Data",
+        "badge": {
+          "color": "warning",
+          "text": "On Progress"
+        }
+      }
+    ]
+  },
+  {
+    "name": "Transactions",
+    "url": "/transaction",
+    "icon": "fa fa-exchange",
+    "children": [
+      {
+        "name": "Stock Opname",
+        "url": "/transaction/stock-opname"
+      },
+      {
+        "name": "Order Entry",
+        "url": "/transaction/order-entry",
+        "badge": {
+          "color": "warning",
+          "text": "On Progress"
+        }
+      },
+      {
+        "name": "Receiving",
+        "url": "/transaction/receiving"
+      },
+      {
+        "name": "Delivery Order",
+        "url": "/transaction/delivery-order"
+      },
+      {
+        "name": "Wastage",
+        "url": "/transaction/wastage"
+      },
+      {
+        "name": "Return Order",
+        "url": "/transaction/return-order"
+      },
+      {
+        "name": "MPCS",
+        "url": "/transaction/mpcs"
+      }
+    ]
+  },
+  {
+    "name": "Reports",
+    "url": "/report",
+    "icon": "fa fa-file-pdf-o",
+    "children": [
+      {
+        "name": "Inventory",
+        "url": "/report/report"
+      },
+      {
+        "name": "Mpcs Query",
+        "badge": {
+          "color": "warning",
+          "text": "On Progress"
+        }
+      },
+      {
+        "name": "Pos Report",
+        "url": "/report/pos-report"
+      },
+      {
+        "name": "Query Stock Card",
+        "url": "/report/query-stock-card"
+      }
+    ]
+  },
+  {
+    "name": "Point Of Sales",
+    "url": "/pos",
+    "icon": "fa fa-television",
+    "children": [
+      {
+        "name": "Query Bill & Sales",
+        "url": "/pos/query-bill"
+      },
+      {
+        "name": "End Of Day",
+        "url": "/report/pos-report",
+        "badge": {
+          "color": "warning",
+          "text": "On Progress"
+        }
+      }
+    ]
+  },
+  {
+    "name": "Time Management",
+    "url": "/time-management",
+    "icon": "fa fa-clock-o",
+    "children": [
+      {
+        "name": "Transaksi",
+        "badge": {
+          "color": "warning",
+          "text": "On Progress"
+        }
+      },
+      {
+        "name": "Laporan Absensi",
+        "badge": {
+          "color": "warning",
+          "text": "On Progress"
+        }
+      }
+    ]
+  }
 ]

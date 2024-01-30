@@ -427,7 +427,7 @@ ORDER BY
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("hh:mm:ss").format(new Date())]]></textFieldExpression>
+				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="429" y="30" width="66" height="11" uuid="4af8306a-c321-4442-bb55-23db14771be6"/>

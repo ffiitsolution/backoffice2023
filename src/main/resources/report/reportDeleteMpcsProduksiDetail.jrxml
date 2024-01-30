@@ -140,34 +140,34 @@ ORDER BY A.MPCS_DATE, a.TIME_UPD]]>
 		<band splitType="Stretch"/>
 	</background>
 	<columnHeader>
-		<band height="109" splitType="Stretch">
+		<band height="124" splitType="Stretch">
 			<image scaleImage="FillFrame">
-				<reportElement x="22" y="1" width="48" height="48" isPrintWhenDetailOverflows="true" uuid="e97813fe-6bdd-4579-8fc4-915ca01dc9f1"/>
+				<reportElement x="3" y="1" width="48" height="48" isPrintWhenDetailOverflows="true" uuid="e97813fe-6bdd-4579-8fc4-915ca01dc9f1"/>
 				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
 			</image>
 			<staticText>
-				<reportElement x="81" y="0" width="112" height="11" uuid="01f34372-348f-4fd9-b8ad-4573af9f8ec9"/>
+				<reportElement x="62" y="0" width="112" height="11" uuid="01f34372-348f-4fd9-b8ad-4573af9f8ec9"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="81" y="10" width="122" height="11" uuid="abbc81ca-ac76-4c2d-a1d7-b16bce5f33fa"/>
+				<reportElement x="62" y="11" width="122" height="11" uuid="abbc81ca-ac76-4c2d-a1d7-b16bce5f33fa"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{OUTLET_NAME}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="81" y="20" width="122" height="11" uuid="944aade3-f718-4dee-826e-c97bb0132c53"/>
+				<reportElement x="62" y="22" width="122" height="11" uuid="944aade3-f718-4dee-826e-c97bb0132c53"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{ADDRESS_1}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="81" y="30" width="122" height="11" uuid="4b6193bf-341a-491e-8b7a-4820dfaffb6c"/>
+				<reportElement x="62" y="33" width="122" height="11" uuid="4b6193bf-341a-491e-8b7a-4820dfaffb6c"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -181,13 +181,13 @@ ORDER BY A.MPCS_DATE, a.TIME_UPD]]>
 				<text><![CDATA[REPORT DELETE MPCS PRODUKSI]]></text>
 			</staticText>
 			<line>
-				<reportElement x="1" y="93" width="552" height="1" uuid="acca77af-7fde-4636-a431-7c763e07e2fc"/>
+				<reportElement x="1" y="108" width="552" height="1" uuid="acca77af-7fde-4636-a431-7c763e07e2fc"/>
 			</line>
 			<line>
-				<reportElement x="1" y="108" width="552" height="1" uuid="bf86da33-f3e7-4902-adf9-3bf028fc428a"/>
+				<reportElement x="1" y="123" width="552" height="1" uuid="bf86da33-f3e7-4902-adf9-3bf028fc428a"/>
 			</line>
 			<staticText>
-				<reportElement mode="Transparent" x="490" y="94" width="62" height="15" uuid="db768710-72cf-413f-8f7d-93da6d977a0a">
+				<reportElement mode="Transparent" x="490" y="109" width="62" height="15" uuid="db768710-72cf-413f-8f7d-93da6d977a0a">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
@@ -196,7 +196,7 @@ ORDER BY A.MPCS_DATE, a.TIME_UPD]]>
 				<text><![CDATA[Time MPCS]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="428" y="94" width="62" height="15" uuid="e1e69c01-9f78-457c-9639-f1e5149fa8a2">
+				<reportElement mode="Transparent" x="428" y="109" width="62" height="15" uuid="e1e69c01-9f78-457c-9639-f1e5149fa8a2">
 					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -205,7 +205,7 @@ ORDER BY A.MPCS_DATE, a.TIME_UPD]]>
 				<text><![CDATA[User Name]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="0" y="94" width="62" height="15" uuid="ce7fa785-d473-4d03-8576-672d0a17b1c8">
+				<reportElement mode="Transparent" x="0" y="109" width="62" height="15" uuid="ce7fa785-d473-4d03-8576-672d0a17b1c8">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -214,7 +214,7 @@ ORDER BY A.MPCS_DATE, a.TIME_UPD]]>
 				<text><![CDATA[Date MPCS]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="124" y="94" width="242" height="15" uuid="34ab1602-7b76-489d-a10f-6090801bf16d">
+				<reportElement mode="Transparent" x="124" y="109" width="242" height="15" uuid="34ab1602-7b76-489d-a10f-6090801bf16d">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
@@ -223,7 +223,7 @@ ORDER BY A.MPCS_DATE, a.TIME_UPD]]>
 				<text><![CDATA[Description]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="366" y="94" width="62" height="15" uuid="154f3bf7-7886-4f78-84c9-b7162e6b5c79">
+				<reportElement mode="Transparent" x="366" y="109" width="62" height="15" uuid="154f3bf7-7886-4f78-84c9-b7162e6b5c79">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -232,7 +232,7 @@ ORDER BY A.MPCS_DATE, a.TIME_UPD]]>
 				<text><![CDATA[Quantity]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="62" y="94" width="62" height="15" uuid="d8f1484c-186b-4585-82e6-5370fb310cf5">
+				<reportElement mode="Transparent" x="62" y="109" width="62" height="15" uuid="d8f1484c-186b-4585-82e6-5370fb310cf5">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -241,28 +241,28 @@ ORDER BY A.MPCS_DATE, a.TIME_UPD]]>
 				<text><![CDATA[MPCS Group]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="81" y="42" width="122" height="11" uuid="ae8a948f-452f-4fd3-b55e-296957136a40"/>
+				<reportElement x="62" y="44" width="122" height="11" uuid="ae8a948f-452f-4fd3-b55e-296957136a40"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Phone : " + $F{PHONE}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="452" y="79" width="66" height="11" uuid="dc16c208-d99b-44d7-9d4b-d545f829430b"/>
+				<reportElement x="0" y="92" width="44" height="11" uuid="dc16c208-d99b-44d7-9d4b-d545f829430b"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Tipe Report]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="518" y="79" width="125" height="11" uuid="b2c17dc7-38b3-445c-85dc-e08a9a74855f"/>
+				<reportElement x="54" y="92" width="125" height="11" uuid="b2c17dc7-38b3-445c-85dc-e08a9a74855f"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<text><![CDATA[: Detail]]></text>
+				<text><![CDATA[Detail]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="79" width="44" height="11" uuid="de4dbc17-5357-4f97-bc49-199a7a2c6197">
+				<reportElement x="0" y="81" width="44" height="11" uuid="de4dbc17-5357-4f97-bc49-199a7a2c6197">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -271,7 +271,7 @@ ORDER BY A.MPCS_DATE, a.TIME_UPD]]>
 				<text><![CDATA[Periode]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="44" y="79" width="10" height="11" uuid="a5716438-1c66-4427-8c30-4b5e7cfe2921">
+				<reportElement x="44" y="81" width="10" height="11" uuid="a5716438-1c66-4427-8c30-4b5e7cfe2921">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -280,7 +280,7 @@ ORDER BY A.MPCS_DATE, a.TIME_UPD]]>
 				<text><![CDATA[:]]></text>
 			</staticText>
 			<textField textAdjust="StretchHeight">
-				<reportElement x="54" y="79" width="206" height="11" uuid="f250e930-a4a4-4b16-9260-79281778fabc">
+				<reportElement x="54" y="81" width="206" height="11" uuid="f250e930-a4a4-4b16-9260-79281778fabc">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement>
@@ -325,7 +325,7 @@ ORDER BY A.MPCS_DATE, a.TIME_UPD]]>
 				<textFieldExpression><![CDATA[new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="450" y="1" width="44" height="11" uuid="ffc6a14a-319c-4d9c-b581-6b0cf8371d25">
+				<reportElement x="430" y="1" width="62" height="11" uuid="ffc6a14a-319c-4d9c-b581-6b0cf8371d25">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -334,7 +334,7 @@ ORDER BY A.MPCS_DATE, a.TIME_UPD]]>
 				<text><![CDATA[Halaman]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="450" y="12" width="44" height="11" uuid="cd4fc558-6153-4ee0-8406-d7574ace778f">
+				<reportElement x="430" y="12" width="64" height="11" uuid="cd4fc558-6153-4ee0-8406-d7574ace778f">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -343,16 +343,16 @@ ORDER BY A.MPCS_DATE, a.TIME_UPD]]>
 				<text><![CDATA[User Cetak]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="450" y="23" width="44" height="11" uuid="08872033-0aca-4442-ad65-94ec89513bb5">
+				<reportElement x="430" y="23" width="64" height="11" uuid="08872033-0aca-4442-ad65-94ec89513bb5">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="false"/>
 				</textElement>
-				<text><![CDATA[Tanggal]]></text>
+				<text><![CDATA[Tanggal Cetak]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="450" y="34" width="44" height="11" uuid="81f01aea-cf83-431d-8c8b-2a04fd172d29">
+				<reportElement x="430" y="34" width="64" height="11" uuid="81f01aea-cf83-431d-8c8b-2a04fd172d29">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -389,6 +389,15 @@ ORDER BY A.MPCS_DATE, a.TIME_UPD]]>
 			</staticText>
 			<staticText>
 				<reportElement x="494" y="34" width="10" height="11" uuid="587577d1-d161-4ed5-9a20-f3881e364cea">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="44" y="92" width="10" height="11" uuid="5b84c34e-1fb8-4a20-8a0b-3849ca11ff52">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">

@@ -24,6 +24,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import javax.transaction.Transactional;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -61,11 +62,7 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> loginJson(ParameterLogin ref) {
-        String qry = "select S.REGION_CODE,O.TRANS_DATE,O.address_1,O.phone,G.DESCRIPTION REG_NAME,S.OUTLET_CODE,O.OUTLET_NAME,S.STAFF_CODE,S.STAFF_NAME,S.STAFF_FULL_NAME,S.ID_CARD,S.POSITION,S.GROUP_ID,O.CITY  "
-                + "from M_STAFF S "
-                + "JOIN M_OUTLET O ON O.OUTLET_CODE = S.OUTLET_CODE "
-                + "JOIN M_GLOBAL G ON G.CODE = S.REGION_CODE AND G.COND = 'REG_OUTLET'  "
-                + "where S.STAFF_CODE = :staffCode and S.PASSWORD = :pass and S.OUTLET_CODE = :outletCode and S.STATUS = 'A'";
+        String qry = "SELECT S.REGION_CODE, O.TRANS_DATE, O.ADDRESS_1, O.PHONE, G.DESCRIPTION AS REG_NAME, S.OUTLET_CODE, O.OUTLET_NAME, S.STAFF_CODE, S.STAFF_NAME, S.STAFF_FULL_NAME, S.ID_CARD, S.POSITION, S.GROUP_ID, O.CITY, S.STATUS FROM M_STAFF S JOIN M_OUTLET O ON O.OUTLET_CODE = S.OUTLET_CODE JOIN M_GLOBAL G ON G.CODE = S.REGION_CODE AND G.COND = 'REG_OUTLET' WHERE S.STAFF_CODE = :staffCode AND S.PASSWORD = :pass AND S.OUTLET_CODE = :outletCode";
         Map prm = new HashMap();
         prm.put("staffCode", ref.getUserName());
         prm.put("pass", ref.getPassword());
@@ -89,6 +86,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("transDate", rs.getString("TRANS_DATE"));
                 rt.put("address1", rs.getString("ADDRESS_1"));
                 rt.put("phone", rs.getString("PHONE"));
+                rt.put("status", rs.getString("STATUS"));
                 return rt;
             }
         });
@@ -97,14 +95,18 @@ public class ViewDoaImpl implements ViewDao {
     ///////////////new method from dona 28-02-2023////////////////////////////
 
     @Override
-    public List<Map<String, Object>> listSupplier(Map<String, String> balance) {
+    public List<Map<String, Object>> listSupplier(Map<String, Object> balance) {
         String qry = "SELECT  CD_SUPPLIER, SUPPLIER_NAME, CP_NAME, FLAG_CANVASING, STATUS, ADDRESS_1, "
                 + "ADDRESS_2, CITY, ZIP_CODE, PHONE, FAX, HOMEPAGE, CP_TITLE, CP_MOBILE, CP_PHONE, "
                 + "CP_PHONE_EXT, CP_EMAIL, USER_UPD, DATE_UPD, TIME_UPD FROM m_supplier"
                 + " where status like :status"
                 + " and city LIKE :city"
-                + " and FLAG_CANVASING Like :flagCanvasing"
-                + " order by cd_Supplier desc";
+                + " and FLAG_CANVASING Like :flagCanvasing";
+        if (balance.containsKey("isFSD")) {
+            boolean isFSD = (boolean) balance.get("isFSD");
+            qry += " and HOMEPAGE " + (isFSD ? "like '%FSD%'" : "not like '%FSD%'");
+        }
+        qry += " order by cd_Supplier desc";
         Map prm = new HashMap();
         prm.put("status", "%" + balance.get("status") + "%");
         prm.put("city", "%" + balance.get("city") + "%");
@@ -676,10 +678,12 @@ public class ViewDoaImpl implements ViewDao {
     public List<Map<String, Object>> listMpcsHeader(Map<String, String> param) {
         String qry = "select * from m_mpcs_header WHERE OUTLET_CODE= :outlet";
         Map prm = new HashMap();
-        System.err.println("q :" + qry);
         prm.put("outlet", param.get("outlet"));
+        if (param.containsKey("date") && !param.get("date").isEmpty()) {
+            prm.put("date", param.get("date"));
+            qry += " AND MPCS_GROUP IN ( SELECT DISTINCT(MPCS_GROUP) FROM T_SUMM_MPCS WHERE OUTLET_CODE = :outlet AND DATE_MPCS = :date)";
+        }
         var statusParam = param.get("status");
-        System.err.println("statusParam " + statusParam);
         if ("A".equals(statusParam)) {
             qry += " AND STATUS = 'A' ";
         }
@@ -708,7 +712,7 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> listMasterItemSupplier(Map<String, String> logan) {
         String qry = "select ITEM_CODE||'-'||ITEM_DESCRIPTION as name,item_description,"
-                + " item_code from m_item where Status='A' and FLAG_MATERIAL='Y' AND FLAG_STOCK='Y'";
+                + " item_code from m_item where Status='A' and FLAG_MATERIAL='Y'";
         Map prm = new HashMap();
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
@@ -728,13 +732,23 @@ public class ViewDoaImpl implements ViewDao {
     ///////////////new method from asep 29-mar-2023 //////////////      
     @Override
     public List<Map<String, Object>> listOutlet(Map<String, String> balance) {
-        String qry = "SELECT a.region_code,b.description region_name,a.outlet_code,a.area_code,c.description area_name, a.initial_outlet, a.outlet_name, a.type,d.description type_store, a.status "
-                + "FROM M_OUTLET a "
-                + "join m_global b on a.region_code=b.code and b.cond='REG_OUTLET'"
-                + "join m_global c on a.area_code=c.code  and c.cond='AREACODE'"
-                + "join m_global d on a.type=d.code  and d.cond='OUTLET_TP'"
-                + "where a.type <>'HO' and a.status='A' and  a.REGION_CODE LIKE :region AND a.AREA_CODE LIKE :area AND a.TYPE LIKE :type";
+        if(balance.containsKey("outletCode") && balance.get("outletCode").length() > 0 && balance.get("detail").endsWith("1")){
+            String qry = """
+                    SELECT a.REGION_CODE, b.DESCRIPTION AS REGION_NAME, a.AREA_CODE, c.DESCRIPTION AS AREA_NAME, a.TYPE, d.DESCRIPTION AS TYPE_STORE, a.OUTLET_CODE, a.OUTLET_NAME, a.ADDRESS_1, a.ADDRESS_2, a.CITY, a.POST_CODE, a.PHONE, a.FAX, a.CASH_BALANCE, TO_CHAR(a.TRANS_DATE,'YYYY-MM-DD') AS TRANS_DATE, a.DEL_LIMIT, a.DEL_CHARGE, a.RND_PRINT, a.RND_FACT, a.RND_LIMIT, a.TAX, a.DP_MIN, a.CANCEL_FEE, a.CAT_ITEMS, a.MAX_BILLS, a.MIN_ITEMS, a.REF_TIME, a.TIME_OUT, a.MAX_SHIFT, a.SEND_DATA, a.MIN_PULL_TRX, a.MAX_PULL_VALUE, a.STATUS, TO_CHAR(a.START_DATE,'YYYY-MM-DD') AS START_DATE, TO_CHAR(a.FINISH_DATE,'YYYY-MM-DD') AS FINISH_DATE, a.MAX_DISC_PERCENT, a.MAX_DISC_AMOUNT, a.OPEN_TIME, a.CLOSE_TIME, a.REFUND_TIME_LIMIT, a.MONDAY, a.TUESDAY, a.WEDNESDAY, a.THURSDAY, a.FRIDAY, a.SATURDAY, a.SUNDAY, a.HOLIDAY, a.OUTLET_24_HOUR, a.IP_OUTLET, a.PORT_OUTLET, a.USER_UPD, TO_CHAR(a.DATE_UPD,'YYYY-MM-DD') AS DATE_UPD, a.TIME_UPD, a.FTP_ADDR, a.FTP_USER, a.INITIAL_OUTLET, a.RSC_CODE, a.TAX_CHARGE
+                    FROM M_OUTLET a
+                    LEFT JOIN M_GLOBAL b ON a.region_code = b.code AND b.cond = 'REG_OUTLET'
+                    LEFT JOIN M_GLOBAL c ON a.area_code = c.code AND c.cond = 'AREACODE'
+                    LEFT JOIN M_GLOBAL d ON a.type = d.code AND d.cond = 'OUTLET_TP'
+                    WHERE a.OUTLET_CODE = :outletCode
+                         """;
+            return jdbcTemplate.query(qry, balance, new DynamicRowMapper());
+        }
         Map prm = new HashMap();
+        String qry = "SELECT a.REGION_CODE, b.DESCRIPTION AS REGION_NAME, a.OUTLET_CODE, a.AREA_CODE, c.DESCRIPTION AS AREA_NAME, a.INITIAL_OUTLET, a.OUTLET_NAME, a.TYPE, d.DESCRIPTION AS TYPE_STORE, a.STATUS FROM M_OUTLET a JOIN M_GLOBAL b ON a.REGION_CODE = b.CODE AND b.COND = 'REG_OUTLET' JOIN M_GLOBAL c ON a.AREA_CODE = c.CODE AND c.COND = 'AREACODE' JOIN M_GLOBAL d ON a.TYPE = d.CODE AND d.COND = 'OUTLET_TP' WHERE a.TYPE <> 'HO' AND a.STATUS = 'A' AND a.REGION_CODE LIKE :region AND a.AREA_CODE LIKE :area AND a.TYPE LIKE :type ";
+        if(balance.containsKey("outletCode") && !balance.get("outletCode").isBlank()){
+            qry += " AND a.OUTLET_CODE = :outletCode UNION ALL SELECT a.REGION_CODE, b.DESCRIPTION AS REGION_NAME, a.OUTLET_CODE, a.AREA_CODE, c.DESCRIPTION AS AREA_NAME, a.INITIAL_OUTLET, a.OUTLET_NAME, a.TYPE, d.DESCRIPTION AS TYPE_STORE, a.STATUS FROM M_OUTLET a JOIN M_GLOBAL b ON a.REGION_CODE = b.CODE AND b.COND = 'REG_OUTLET' JOIN M_GLOBAL c ON a.AREA_CODE = c.CODE AND c.COND = 'AREACODE' JOIN M_GLOBAL d ON a.TYPE = d.CODE AND d.COND = 'OUTLET_TP' WHERE a.TYPE <> 'HO' AND a.STATUS = 'A' AND a.REGION_CODE LIKE :region AND a.AREA_CODE LIKE :area AND a.TYPE LIKE :type AND a.OUTLET_CODE <> :outletCode";
+            prm.put("outletCode", balance.get("outletCode"));
+        }
         System.err.println("q :" + qry);
         prm.put("region", "%" + balance.get("region") + "%");
         prm.put("area", "%" + balance.get("area") + "%");
@@ -828,7 +842,11 @@ public class ViewDoaImpl implements ViewDao {
             qry = "SELECT * FROM M_ITEM WHERE STATUS = 'A' AND FLAG_STOCK = 'Y' AND FLAG_PAKET = 'N'"
                     + " AND CD_ITEM_LEFTOVER IS NOT NULL AND CD_ITEM_LEFTOVER != ' '";
         }
-        /////////////// End revised query for Leftover////////////// 
+        /////////////// End revised query for Leftover//////////////
+        //Condition when Non-Paket
+        if (Logan.get("paket").equalsIgnoreCase("N")) {
+            qry = "select * from m_item where status='A' and flag_paket='N' and flag_finished_good = 'Y' order by item_code asc";
+        } 
         Map prm = new HashMap();
         prm.put("FlagPaket", Logan.get("paket"));
         System.err.println("q :" + qry);
@@ -958,9 +976,7 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listRecipeProduct(Map<String, String> ref) {
-        String qry = "select rp.recipe_code, rp.product_code, rp.product_remark, rp.qty_stock, rp.uom_stock "
-                + "from m_recipe_product rp "
-                + "where rp.recipe_code = :reCode ";
+        String qry = "SELECT rp.RECIPE_CODE, rp.PRODUCT_CODE, CASE WHEN rp.PRODUCT_REMARK IS NOT NULL AND rp.PRODUCT_REMARK <> ' ' THEN rp.PRODUCT_REMARK ELSE mi.ITEM_DESCRIPTION END AS PRODUCT_REMARK, rp.QTY_STOCK, rp.UOM_STOCK FROM M_RECIPE_PRODUCT rp LEFT JOIN M_ITEM mi ON mi.ITEM_CODE = rp.PRODUCT_CODE WHERE rp.RECIPE_CODE = :reCode";
         Map prm = new HashMap();
         prm.put("reCode", ref.get("reCode"));
         System.err.println("q :" + qry);
@@ -1364,7 +1380,7 @@ public class ViewDoaImpl implements ViewDao {
     //type store 
     @Override
     public List<Map<String, Object>> viewTypeStore(Map<String, String> Logan) {
-        String qry = "select distinct type,type_store from V_STRUCTURE_STORE";
+        String qry = "SELECT DISTINCT a.type, d.description as type_store FROM m_outlet a JOIN M_GLOBAL b ON a.REGION_CODE = b.CODE and b.cond='REG_OUTLET' JOIN M_GLOBAL c ON a.AREA_CODE = c.CODE and c.cond='AREACODE' JOIN M_GLOBAL d ON a.type = d.CODE and d.cond='OUTLET_TP' where a.status='A' and a.type not in ('HO','REG')";
         Map prm = new HashMap();
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
@@ -1383,7 +1399,7 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listGlobal(Map<String, String> balance) {
-        String qry = "SELECT DESCRIPTION, TYPE_MENU AS CODE FROM m_menudtl WHERE TYPE_MENU = :cond AND STATUS = :status AND APLIKASI = :aplikasi ORDER BY ID_NO ASC";
+        String qry = "SELECT DESCRIPTION, TYPE_MENU AS CODE FROM m_menudtl WHERE TYPE_MENU = :cond AND STATUS = :status AND APLIKASI = :aplikasi ";
         if (balance.containsKey("outletBrand") && balance.get("outletBrand").equalsIgnoreCase("TACOBELL")) {
             qry += " AND DESCRIPTION IN ('Report Menu & Detail Modifier', 'Sales by Date', 'Sales by Item', 'Sales by Time', 'Summary Sales by Item Code', 'Report Stock Card')";
         }
@@ -1415,6 +1431,9 @@ public class ViewDoaImpl implements ViewDao {
                 SELECT 'PROGRAM', 'POS0003', 'Report Menu & Detail Modifier', 3, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0003')
                 UNION ALL
+                SELECT 'PROGRAM', 'POS0004', 'Item Sales Analisis', 4, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0004')
+                UNION ALL
                 SELECT 'PROGRAM', 'POS0005', 'Sales by Date', 5, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0005')
                 UNION ALL
@@ -1439,42 +1458,36 @@ public class ViewDoaImpl implements ViewDao {
                 SELECT 'PROGRAM', 'POS0012', 'Sales Void', 12, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0012')
                 UNION ALL
-                SELECT 'PROGRAM', 'POS0013', 'Item Selected by Time', 13, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                SELECT 'PROGRAM', 'POS0013', 'Laporan Item Selected By Time', 13, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0013')
                 UNION ALL
-                SELECT 'PROGRAM', 'POS0014', 'Laporan Item Selected By Time', 14, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                SELECT 'PROGRAM', 'POS0014', 'Refund Report', 14, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0014')
                 UNION ALL
-                SELECT 'PROGRAM', 'POS0015', 'Refund Report', 15, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                SELECT 'PROGRAM', 'POS0015', 'Laporan Down Payment (DP)', 15, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0015')
                 UNION ALL
-                SELECT 'PROGRAM', 'POS0016', 'Laporan Down Payment (DP)', 16, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                SELECT 'PROGRAM', 'POS0016', 'Actual Stock Opname', 16, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0016')
                 UNION ALL
-                SELECT 'PROGRAM', 'POS0017', 'Actual Stock Opname', 17, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                SELECT 'PROGRAM', 'POS0017', 'End of Day', 17, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0017')
                 UNION ALL
-                SELECT 'PROGRAM', 'POS0018', 'End of Day', 18, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                SELECT 'PROGRAM', 'POS0018', 'Laporan Selected by Item Detail', 18, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0018')
                 UNION ALL
-                SELECT 'PROGRAM', 'POS0019', 'Laporan Selected by Item Detail', 19, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                SELECT 'PROGRAM', 'POS0019', 'Laporan Product Efficiency', 19, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0019')
                 UNION ALL
-                SELECT 'PROGRAM', 'POS0020', 'Laporan Selected by Item Produksi', 20, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                SELECT 'PROGRAM', 'POS0020', 'Laporan Item Selected By Product', 20, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0020')
                 UNION ALL
-                SELECT 'PROGRAM', 'POS0021', 'Laporan Product Efficiency', 21, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                SELECT 'PROGRAM', 'POS0021', 'Report Pajak', 21, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0021')
                 UNION ALL
-                SELECT 'PROGRAM', 'POS0022', 'Laporan Item Selected By Product', 22, 'POS', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0022')
-                UNION ALL
-                SELECT 'PROGRAM', 'POS0023', 'Report Pajak', 23, 'POS', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0023')
-                UNION ALL
-                SELECT 'PROGRAM', 'POS0024', 'Item Sales Analisis', 24, 'POS', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0024')
-                UNION ALL
+                SELECT 'PROGRAM','POS0025','Report Sales Item By Time', 25, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0025')
+                UNION ALL               
                 SELECT 'PROGRAM', 'INV0001', 'Report Stock Card', 1, 'INV', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV0001')
                 UNION ALL
@@ -3269,7 +3282,8 @@ public class ViewDoaImpl implements ViewDao {
                 + "MITEM.UOM_STOCK AS UNIT, SCARD.REMARK "
                 + "FROM T_STOCK_CARD SCARD "
                 + "LEFT JOIN M_ITEM MITEM ON SCARD.ITEM_CODE = MITEM.ITEM_CODE "
-                + "WHERE SCARD.TRANS_DATE between TO_DATE(:startDate, 'DD/MM/YYYY') and (TO_DATE(:endDate, 'DD/MM/YYYY')+1) "
+                + "WHERE SCARD.TRANS_DATE between :startDate and :endDate "
+                + "AND (SCARD.QTY_IN != 0 OR SCARD.QTY_OUT != 0) "
                 + "AND SCARD.ITEM_CODE LIKE :itemCode "
                 + "AND MITEM.FLAG_STOCK = 'Y' " + where
                 + "ORDER BY SCARD.ITEM_CODE ASC, SCARD.TRANS_DATE ASC ";
@@ -3537,8 +3551,66 @@ public class ViewDoaImpl implements ViewDao {
     //////////////////////////////////DONE//////////////////////////////////////////////////////////
 
     // New Method List MPCS Production By Fathur 13 Dec 2023 //
+    // Updated code: insert into t_summ_mpcs when mpcs group not available Fathur 26 Jan 2024//
+    @Transactional
     @Override
     public List<Map<String, Object>> mpcsProductionList(Map<String, String> balance) {
+        Map prm = new HashMap();
+        prm.put("mpcsGroup", balance.get("mpcsGroup"));
+        prm.put("dateMpcs", balance.get("dateMpcs"));
+        prm.put("userUpd", balance.get("userUpd"));
+         prm.put("outletCode", balance.get("outletCode"));
+        String checkMPCSExist = "SELECT count(*) FROM T_SUMM_MPCS tsm WHERE tsm.MPCS_GROUP = :mpcsGroup AND tsm.DATE_MPCS = :dateMpcs";
+
+        Integer rowCount = jdbcTemplate.queryForObject(checkMPCSExist, prm, Integer.class);
+        if (rowCount.equals(0)) {
+            String insertMpcsProduction = "INSERT INTO t_summ_mpcs ( "
+                    + "	 SELECT sm.OUTLET_CODE,  "
+                    + "		 :mpcsGroup AS MPCS_GROUP,  "
+                    + "		 :dateMpcs AS DATE_MPCS,  "
+                    + "		 sm.SEQ_MPCS,  "
+                    + "		 sm.TIME_MPCS,  "
+                    + "		 0 AS QTY_PROJ_CONV,  "
+                    + "		 sm.UOM_PROJ_CONV,  "
+                    + "		 0 AS QTY_PROJ,  "
+                    + "		 sm.UOM_PROJ,  "
+                    + "		 0 AS QTY_ACC_PROJ,  "
+                    + "		 sm.UOM_ACC_PROJ,  "
+                    + "		 ' ' AS DESC_PROD,  "
+                    + "		 0 AS QTY_PROD,  "
+                    + "		 sm.UOM_PROD,  "
+                    + "		 0 AS QTY_ACC_PROD,  "
+                    + "		 sm.UOM_ACC_PROD,  "
+                    + "		 ' ' AS PROD_BY,  "
+                    + "		 0 AS QTY_SOLD,  "
+                    + "		 sm.UOM_SOLD,  "
+                    + "		 0 AS QTY_ACC_SOLD,  "
+                    + "		 sm.UOM_ACC_SOLD,  "
+                    + "		 0 AS QTY_REJECT,  "
+                    + "		 sm.UOM_REJECT,  "
+                    + "		 0 AS QTY_ACC_REJECT,  "
+                    + "		 sm.UOM_ACC_REJECT,  "
+                    + "		 0 AS QTY_WASTAGE,  "
+                    + "		 sm.UOM_WASTAGE,  "
+                    + "		 0 AS QTY_ACC_WASTAGE,  "
+                    + "		 sm.UOM_ACC_WASTAGE,  "
+                    + "		 0 AS QTY_ONHAND,  "
+                    + "		 sm.UOM_ONHAND,  "
+                    + "		 0 AS QTY_ACC_ONHAND,  "
+                    + "		 sm.UOM_ACC_ONHAND,  "
+                    + "		 0 AS QTY_VARIANCE,  "
+                    + "		 sm.UOM_VARIANCE,  "
+                    + "		 0 AS QTY_ACC_VARIANCE,  "
+                    + "		 sm.UOM_ACC_VARIANCE,  "
+                    + "		 :userUpd AS USER_UPD,  "
+                    + "		 TO_CHAR(SYSDATE, 'DD Mon YYYY') AS DATE_UPD,  "
+                    + "		 TO_CHAR(SYSDATE, 'HHMMII') AS TIME_UPD,  "
+                    + "		 0 AS QTY_IN,  "
+                    + "		 0 AS QTY_OUT  "
+                    + "	 FROM T_SUMM_MPCS sm LEFT JOIN M_OUTLET mo ON mo.OUTLET_CODE = sm.OUTLET_CODE WHERE sm.OUTLET_CODE = :outletCode AND sm.MPCS_GROUP = 'C02' AND sm.DATE_MPCS = mo.TRANS_DATE)";
+            jdbcTemplate.update((insertMpcsProduction), prm);
+            System.out.print("success insert");
+        }
 
         String qry = "select to_char(to_date(c.TIME_MPCS, 'hh24miss'), 'hh24:mi') as TIME_MPCS, c.QTY_PROD, c.QTY_ACC_PROD, c.QTY_ACC_PROD, NVL(c.DESC_PROD, ' ') AS DESC_PROD, c.PROD_BY, "
                 + "(to_char(c.DATE_UPD, 'YYYY-MM-dd') || ' ' || to_char(to_date(c.TIME_MPCS, 'hh24miss'), 'hh24:mi:ss')) AS DATE_UPD "
@@ -3546,24 +3618,15 @@ public class ViewDoaImpl implements ViewDao {
                 + "where c.date_mpcs = :dateMpcs "
                 + "AND c.MPCS_GROUP = :mpcsGroup";
 
-        Map prm = new HashMap();
-        prm.put("mpcsGroup", balance.get("mpcsGroup"));
-        prm.put("dateMpcs", balance.get("dateMpcs"));
-
-        System.err.println("q :" + qry);
-        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
-            @Override
-            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
-                Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("timeMpcs", rs.getString("TIME_MPCS"));
-                rt.put("qtyProd", rs.getString("QTY_PROD"));
-                rt.put("qtyAccProd", rs.getString("QTY_ACC_PROD"));
-                rt.put("descProd", rs.getString("DESC_PROD"));
-                rt.put("prodBy", rs.getString("PROD_BY"));
-                rt.put("dateUpd", rs.getString("DATE_UPD"));
-
-                return rt;
-            }
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, (ResultSet rs, int i) -> {
+            Map<String, Object> rt = new HashMap<>();
+            rt.put("timeMpcs", rs.getString("TIME_MPCS"));
+            rt.put("qtyProd", rs.getString("QTY_PROD"));
+            rt.put("qtyAccProd", rs.getString("QTY_ACC_PROD"));
+            rt.put("descProd", rs.getString("DESC_PROD"));
+            rt.put("prodBy", rs.getString("PROD_BY"));
+            rt.put("dateUpd", rs.getString("DATE_UPD"));
+            return rt;
         });
         return list;
     }

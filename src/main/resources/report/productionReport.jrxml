@@ -582,7 +582,7 @@ ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Jam Cetak : " + new SimpleDateFormat("hh:mm:ss").format(new Date())]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Jam Cetak : " + new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement x="0" y="104" width="802" height="1" uuid="f28629f3-9de6-4630-92c7-c29fd15e5479"/>

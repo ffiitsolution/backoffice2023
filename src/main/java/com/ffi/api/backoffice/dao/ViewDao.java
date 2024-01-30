@@ -18,7 +18,7 @@ public interface ViewDao {
     List<Map<String, Object>> loginJson(ParameterLogin ref);
     ///////////////new method from dona 28-02-2023////////////////////////////
 
-    List<Map<String, Object>> listSupplier(Map<String, String> ref);
+    List<Map<String, Object>> listSupplier(Map<String, Object> ref);
 
     /////////////////////////////done
     ///////////////new method from dona 03-03-2023////////////////////////////

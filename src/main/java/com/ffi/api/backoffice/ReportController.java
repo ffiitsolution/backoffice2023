@@ -520,11 +520,13 @@ public class ReportController {
 
         JasperPrint jasperPrint = reportServices.jasperReportSummarySalesByItemCode(prm, conn);
         conn.close();
-        byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=SummarySalesByItemCode.pdf");
-
-        return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        if (! jasperPrint.getPages().isEmpty()) {
+            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "inline; filename=summarySalesByItemCode.pdf");
+            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        } else
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
     }
 
     /////////////////////////////////DONE///////////////////////////////////////
@@ -569,10 +571,10 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        Integer cekDataReport = viewServices.cekDataReport(prm, "transaksiKasir");
-        if (cekDataReport > 0) {
-            JasperPrint jasperPrint = reportServices.jasperReportTransaksiKasir(prm, conn);
-            conn.close();
+//        Integer cekDataReport = viewServices.cekDataReport(prm, "transaksiKasir");
+        JasperPrint jasperPrint = reportServices.jasperReportTransaksiKasir(prm, conn);
+        conn.close();
+        if (! jasperPrint.getPages().isEmpty()) {
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=transaksiKasir.pdf");
@@ -722,10 +724,10 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        Integer cekDataReport = viewServices.cekDataReport(prm, "pemakaianBySales");
-        if (cekDataReport > 0) {
-            JasperPrint jasperPrint = reportServices.jasperReportPemakaianBySales(prm, conn);
-            conn.close();
+//        Integer cekDataReport = viewServices.cekDataReport(prm, "pemakaianBySales");
+        JasperPrint jasperPrint = reportServices.jasperReportPemakaianBySales(prm, conn);
+        conn.close();
+        if (!jasperPrint.getPages().isEmpty()) {
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=PemakaianBySales.pdf");
@@ -927,10 +929,10 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        Integer cekDataReport = viewServices.cekDataReport(prm, "itemSelectedByTime");
-        if (cekDataReport > 0) {
-            JasperPrint jasperPrint = reportServices.jasperReportItemSelectedByTime(prm, conn);
-            conn.close();
+//        Integer cekDataReport = viewServices.cekDataReport(prm, "itemSelectedByTime");
+        JasperPrint jasperPrint = reportServices.jasperReportItemSelectedByTime(prm, conn);
+        conn.close();
+        if (!jasperPrint.getPages().isEmpty()) {
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=itemSelectedByTime.pdf");
@@ -1279,6 +1281,28 @@ public class ReportController {
             headers.add("Content-Disposition", "inline; filename=reportTimeManagement.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
         } else
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+    }
+    
+    @CrossOrigin
+    @RequestMapping(value = "/report-sales-item-by-time-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Report Sales Item by Time - Fathur 26 Jan 2024", response = Object.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    public ResponseEntity<byte[]> jasperReportSalesItembyTime(@RequestBody String param) throws SQLException, JRException, IOException {
+        Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
+        Gson gsn = new Gson();
+        Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        JasperPrint jasperPrint = reportServices.jasperReportSalesItembyTime(prm, conn);
+        conn.close();
+        
+        if (!jasperPrint.getPages().isEmpty()) {
+            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "inline; filename=salesByItem.pdf");
+            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        }
+        else 
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
     }
 }

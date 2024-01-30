@@ -1,8 +1,192 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="transaksiKasir" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="886e2a39-56bf-4713-9b0c-a51daf92aa8d">
-	<property name="ireport.zoom" value="1.610510000000001"/>
+	<property name="ireport.zoom" value="1.3310000000000064"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<subDataset name="dataset1" uuid="cc800824-9c1e-4f02-9647-9165f6d04cf8">
+		<parameter name="outletCode" class="java.lang.String">
+			<parameterDescription><![CDATA[]]></parameterDescription>
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="fromDate" class="java.lang.String">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="toDate" class="java.lang.String">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="cashierCode1" class="java.lang.String">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="cashierCode2" class="java.lang.String">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="shiftCode1" class="java.lang.String" isForPrompting="false">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="shiftCode2" class="java.lang.String">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<queryString language="SQL">
+			<![CDATA[SELECT
+	TRANS_CODE,
+	TRANS_NAME,
+	SUM(TRANS_AMOUNT)
+FROM
+	(
+	SELECT
+		DENSE_RANK() OVER(ORDER BY A.CASHIER_CODE) AS num,
+		A.OUTLET_CODE,
+		A.CASHIER_CODE,
+		A.SHIFT_NAME,
+		A.POS_CODE,
+		A.TRANS_CODE,
+		A.TRANS_NAME,
+		A.TRANS_AMOUNT,
+		A.TRANS_DATE,
+		B.STAFF_NAME,
+		A.order_trans_name
+	FROM
+		(
+		SELECT
+			A.OUTLET_CODE,
+			A.CASHIER_CODE,
+			CASE
+				WHEN A.SHIFT_CODE = 'S1' THEN '(Shift Satu)'
+				WHEN A.SHIFT_CODE = 'S2' THEN '(Shift Dua)'
+				ELSE '(Shift Tiga)'
+			END AS SHIFT_NAME,
+			A.POS_CODE,
+			A.TRANS_CODE,
+			B.DESCRIPTION AS TRANS_NAME,
+			CASE
+				WHEN A.TRANS_CODE = 'OPF' THEN 'A'
+				WHEN A.TRANS_CODE = 'SLS' THEN 'G'
+				WHEN A.TRANS_CODE = 'PRS' THEN 'H'
+				WHEN A.TRANS_CODE = 'TLO' THEN 'I'
+			END AS order_trans_name,
+			ABS(A.TRANS_AMOUNT) AS TRANS_AMOUNT,
+			A.TRANS_DATE
+		FROM
+			T_POS_DAY_TRANS A,
+			M_GLOBAL B
+		WHERE
+			A.OUTLET_CODE = $P{outletCode}
+			AND A.TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
+			AND A.CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+			AND A.SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
+			AND A.TRANS_CODE = B.CODE
+			AND B.COND = 'TRANS'
+	UNION
+		SELECT
+			A.OUTLET_CODE,
+			c.CASHIER_CODE,
+			CASE
+				WHEN c.SHIFT_CODE = 'S1' THEN '(Shift Satu)'
+				WHEN c.SHIFT_CODE = 'S2' THEN '(Shift Dua)'
+				ELSE '(Shift Tiga)'
+			END AS SHIFT_NAME,
+			a.POS_CODE,
+			B.PAYMENT_TYPE_CODE AS TRANS_CODE,
+			CASE
+				WHEN B.PAYMENT_TYPE_CODE = 'DBT' THEN 'Debit'
+				WHEN B.PAYMENT_TYPE_CODE = 'VCR' THEN 'Voucher'
+			END AS TRANS_NAME,
+			CASE
+				WHEN B.PAYMENT_TYPE_CODE = 'DBT' THEN 'E'
+				WHEN B.PAYMENT_TYPE_CODE = 'VCR' THEN 'F'
+			END AS order_trans_name,
+			ABS(SUM(A.PAYMENT_AMOUNT)) AS TRANS_AMOUNT,
+			A.TRANS_DATE
+		FROM
+			T_POS_BILL_PAYMENT A,
+			M_PAYMENT_METHOD B,
+			T_POS_BILL C
+		WHERE
+			A.POS_CODE = c.POS_CODE
+			AND a.BILL_NO = c.BILL_NO
+			AND A.PAYMENT_METHOD_CODE = B.PAYMENT_METHOD_CODE
+			AND A.OUTLET_CODE = B.OUTLET_CODE
+			AND TRIM(A.POS_CODE)|| TRIM(A.BILL_NO) IN (
+			SELECT
+				TRIM(POS_CODE)|| TRIM(BILL_NO)
+			FROM
+				T_POS_BILL
+			WHERE
+				OUTLET_CODE = $P{outletCode}
+				AND TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
+				AND CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+				AND SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2})
+			AND B.PAYMENT_TYPE_CODE != 'CSH'
+		GROUP BY
+			c.CASHIER_CODE,
+			c.SHIFT_CODE,
+			a.POS_CODE,
+			B.PAYMENT_TYPE_CODE,
+			A.TRANS_DATE,
+			A.OUTLET_CODE
+	UNION
+		SELECT
+			b.OUTLET_CODE,
+			b.cashier_code,
+			CASE
+				WHEN b.SHIFT_CODE = 'S1' THEN '(Shift Satu)'
+				WHEN b.SHIFT_CODE = 'S2' THEN '(Shift Dua)'
+				ELSE '(Shift Tiga)'
+			END AS SHIFT_NAME,
+			SUBSTR(a.BOOK_NO, 1, 3) AS pos_code,
+			'DP' AS TRANS_CODE,
+			CASE
+				WHEN b.order_type = 'BTA' THEN 'Booking Take Away'
+				WHEN b.order_type = 'CAT' THEN 'Catering'
+				WHEN b.order_type = 'BRD' THEN 'Birthday'
+			END AS TRANS_NAME,
+			CASE
+				WHEN b.order_type = 'CAT' THEN 'B'
+				WHEN b.order_type = 'BRD' THEN 'C'
+				WHEN b.order_type = 'BTA' THEN 'D'
+			END AS order_trans_name,
+			ABS(sum(a.payment_used)) AS TRANS_AMOUNT,
+			b.TRANS_DATE
+		FROM
+			t_pos_book_payment a,
+			t_pos_book b
+		WHERE
+			b.outlet_code = $P{outletCode}
+			AND b.trans_date BETWEEN $P{fromDate} AND $P{toDate}
+			AND b.cashier_code BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+			AND b.shift_code BETWEEN $P{shiftCode1} AND $P{shiftCode2}
+			AND a.trans_date = b.trans_date
+			AND b.cashier_code = a.cashier_code
+		GROUP BY
+			b.shift_code,
+			b.cashier_code,
+			b.order_type,
+			SUBSTR(a.BOOK_NO , 1, 3),
+			b.TRANS_DATE,
+			b.OUTLET_CODE
+) A
+	LEFT JOIN
+	M_POS_STAFF B ON
+		A.CASHIER_CODE = B.STAFF_POS_CODE
+	WHERE
+		B.STAFF_NAME IS NOT NULL
+	ORDER BY
+		A.CASHIER_CODE,
+		A.SHIFT_NAME,
+		A.POS_CODE,
+		A.TRANS_DATE,
+		A.ORDER_TRANS_NAME ASC
+)
+GROUP BY
+	TRANS_NAME,
+	TRANS_CODE,
+	order_trans_name
+ORDER BY order_trans_name ASC]]>
+		</queryString>
+		<field name="TRANS_CODE" class="java.lang.String"/>
+		<field name="TRANS_NAME" class="java.lang.String"/>
+		<field name="SUM(TRANS_AMOUNT)" class="java.math.BigDecimal"/>
+	</subDataset>
 	<parameter name="fromDate" class="java.lang.String"/>
 	<parameter name="toDate" class="java.lang.String"/>
 	<parameter name="cashierCode" class="java.lang.String"/>
@@ -23,127 +207,158 @@
 	<parameter name="outletCode" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
-	<parameter name="address" class="java.lang.String"/>
+	<parameter name="address1" class="java.lang.String"/>
 	<parameter name="outletBrand" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
+	<parameter name="address2" class="java.lang.String"/>
+	<parameter name="outletName" class="java.lang.String"/>
+	<parameter name="phone" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT
-	a.*,
-	b."SUM(ABS(TRANS_AMOUNT))" AS TOTAL_MODAL_AWAL,
-	c."SUM(ABS(TRANS_AMOUNT))" AS TOTAL_SETOR,
-	d."SUM(ABS(TRANS_AMOUNT))" AS TOTAL_SALES,
-	e."SUM(ABS(TRANS_AMOUNT))" AS TOTAL_SETOR_SHIFT,
-	f.STAFF_NAME
-
+	DENSE_RANK() OVER(ORDER BY A.CASHIER_CODE) AS num,
+	A.OUTLET_CODE,
+	A.CASHIER_CODE,
+	A.SHIFT_NAME,
+	A.POS_CODE,
+	A.TRANS_CODE,
+	A.TRANS_NAME,
+	A.TRANS_AMOUNT,
+	A.TRANS_DATE,
+	B.STAFF_NAME
 FROM
 	(
 	SELECT
-		OUTLET_CODE,
-		DENSE_RANK() OVER(ORDER BY CASHIER_CODE) AS num,
-		CASHIER_CODE,
+		A.OUTLET_CODE,
+		A.CASHIER_CODE,
 		CASE
-			WHEN SHIFT_CODE = 'S1' THEN '(Shift Satu)'
-			WHEN SHIFT_CODE = 'S2' THEN '(Shift Dua)'
+			WHEN A.SHIFT_CODE = 'S1' THEN '(Shift Satu)'
+			WHEN A.SHIFT_CODE = 'S2' THEN '(Shift Dua)'
 			ELSE '(Shift Tiga)'
 		END AS SHIFT_NAME,
-		POS_CODE,
-		TRANS_CODE,
+		A.POS_CODE,
+		A.TRANS_CODE,
+		B.DESCRIPTION AS TRANS_NAME,
 		CASE
-			WHEN TRANS_CODE = 'OPF' THEN 'Modal Awal'
-			WHEN TRANS_CODE = 'PRS' THEN 'Stor'
-			WHEN TRANS_CODE = 'SLS' THEN 'Sales'
-			WHEN TRANS_CODE = 'TLO' THEN 'Stor End Shift'
-		END AS TRANS_NAME,
-		ABS(TRANS_AMOUNT) AS TRANS_AMOUNT,
-		TRANS_DATE
+			WHEN A.TRANS_CODE = 'OPF' THEN 'A'
+			WHEN A.TRANS_CODE = 'SLS' THEN 'G'
+			WHEN A.TRANS_CODE = 'PRS' THEN 'H'
+			WHEN A.TRANS_CODE = 'TLO' THEN 'I'
+		END AS order_trans_name,
+		ABS(A.TRANS_AMOUNT) AS TRANS_AMOUNT,
+		A.TRANS_DATE
 	FROM
-		T_POS_DAY_TRANS
+		T_POS_DAY_TRANS A,
+		M_GLOBAL B
 	WHERE
-		TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
-		AND CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
-		AND SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
-		AND TRANS_CODE != 'DNT'
-		AND OUTLET_CODE = $P{outletCode}
-	ORDER BY
-		TRANS_DATE,
-		CASHIER_CODE,
-		TRANS_CODE ASC
-)a
-LEFT JOIN (
+		A.OUTLET_CODE = $P{outletCode}
+		AND A.TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
+		AND A.CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+		AND A.SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
+		AND A.TRANS_CODE = B.CODE
+		AND B.COND = 'TRANS'
+UNION
 	SELECT
-		OUTLET_CODE,
-		SUM(ABS(TRANS_AMOUNT))
+		A.OUTLET_CODE,
+		c.CASHIER_CODE,
+		CASE
+			WHEN c.SHIFT_CODE = 'S1' THEN '(Shift Satu)'
+			WHEN c.SHIFT_CODE = 'S2' THEN '(Shift Dua)'
+			ELSE '(Shift Tiga)'
+		END AS SHIFT_NAME,
+		a.POS_CODE,
+		B.PAYMENT_TYPE_CODE AS TRANS_CODE,
+		CASE
+			WHEN B.PAYMENT_TYPE_CODE = 'DBT' THEN 'Debit'
+			WHEN B.PAYMENT_TYPE_CODE = 'VCR' THEN 'Voucher'
+		END AS TRANS_NAME,
+		CASE
+			WHEN B.PAYMENT_TYPE_CODE = 'DBT' THEN 'E'
+			WHEN B.PAYMENT_TYPE_CODE = 'VCR' THEN 'F'
+		END AS order_trans_name,
+		ABS(SUM(A.PAYMENT_AMOUNT)) AS TRANS_AMOUNT,
+		A.TRANS_DATE
 	FROM
-		T_POS_DAY_TRANS
+		T_POS_BILL_PAYMENT A,
+		M_PAYMENT_METHOD B,
+		T_POS_BILL C
 	WHERE
-		TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
-		AND CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
-		AND SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
-		AND TRANS_CODE = 'OPF'
-		AND OUTLET_CODE = $P{outletCode}
-	GROUP BY
-		OUTLET_CODE)b
-ON
-	a.OUTLET_CODE = b.OUTLET_CODE
-LEFT JOIN (
+		A.POS_CODE = c.POS_CODE
+		AND a.BILL_NO = c.BILL_NO
+		AND A.PAYMENT_METHOD_CODE = B.PAYMENT_METHOD_CODE
+		AND A.OUTLET_CODE = B.OUTLET_CODE
+		AND TRIM(A.POS_CODE)|| TRIM(A.BILL_NO) IN (
 		SELECT
-		OUTLET_CODE,
-		SUM(ABS(TRANS_AMOUNT))
-	FROM
-		T_POS_DAY_TRANS
-	WHERE
-		TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
-		AND CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
-		AND SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
-		AND TRANS_CODE = 'PRS'
-		AND OUTLET_CODE = $P{outletCode}
+			TRIM(POS_CODE)|| TRIM(BILL_NO)
+		FROM
+			T_POS_BILL
+		WHERE
+			OUTLET_CODE = $P{outletCode}
+			AND TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
+			AND CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+			AND SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2})
+		AND B.PAYMENT_TYPE_CODE != 'CSH'
 	GROUP BY
-		OUTLET_CODE)c
-ON
-	a.OUTLET_CODE = c.OUTLET_CODE
-LEFT JOIN (
-		SELECT
-		OUTLET_CODE,
-		SUM(ABS(TRANS_AMOUNT))
+		c.CASHIER_CODE,
+		c.SHIFT_CODE,
+		a.POS_CODE,
+		B.PAYMENT_TYPE_CODE,
+		A.TRANS_DATE,
+		A.OUTLET_CODE
+UNION
+	SELECT
+		b.OUTLET_CODE,
+		b.cashier_code,
+		CASE
+			WHEN b.SHIFT_CODE = 'S1' THEN '(Shift Satu)'
+			WHEN b.SHIFT_CODE = 'S2' THEN '(Shift Dua)'
+			ELSE '(Shift Tiga)'
+		END AS SHIFT_NAME,
+		SUBSTR(a.BOOK_NO, 1, 3) AS pos_code,
+		'DP' AS TRANS_CODE,
+		CASE
+			WHEN b.order_type = 'BTA' THEN 'Booking Take Away'
+			WHEN b.order_type = 'CAT' THEN 'Catering'
+			WHEN b.order_type = 'BRD' THEN 'Birthday'
+		END AS TRANS_NAME,
+		CASE
+			WHEN b.order_type = 'CAT' THEN 'B'
+			WHEN b.order_type = 'BRD' THEN 'C'
+			WHEN b.order_type = 'BTA' THEN 'D'
+		END AS order_trans_name,
+		ABS(sum(a.payment_used)) AS TRANS_AMOUNT,
+		b.TRANS_DATE
 	FROM
-		T_POS_DAY_TRANS
+		t_pos_book_payment a,
+		t_pos_book b
 	WHERE
-		TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
-		AND CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
-		AND SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
-		AND TRANS_CODE = 'SLS'
-		AND OUTLET_CODE = $P{outletCode}
+		b.outlet_code = $P{outletCode}
+		AND b.trans_date BETWEEN $P{fromDate} AND $P{toDate}
+		AND b.cashier_code BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+		AND b.shift_code BETWEEN $P{shiftCode1} AND $P{shiftCode2}
+		AND a.trans_date = b.trans_date
+		AND b.cashier_code = a.cashier_code
 	GROUP BY
-		OUTLET_CODE)d
-ON
-	a.OUTLET_CODE = d.OUTLET_CODE
-LEFT JOIN (
-		SELECT
-		OUTLET_CODE,
-		SUM(ABS(TRANS_AMOUNT))
-	FROM
-		T_POS_DAY_TRANS
-	WHERE
-		TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
-		AND CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
-		AND SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
-		AND TRANS_CODE = 'TLO'
-		AND OUTLET_CODE = $P{outletCode}
-	GROUP BY
-		OUTLET_CODE)e
-ON
-	a.OUTLET_CODE = e.OUTLET_CODE
+		b.shift_code,
+		b.cashier_code,
+		b.order_type,
+		SUBSTR(a.BOOK_NO , 1, 3),
+		b.TRANS_DATE,
+		b.OUTLET_CODE
+) A
 LEFT JOIN
-	M_POS_STAFF f ON a.CASHIER_CODE = f.STAFF_POS_CODE
+	M_POS_STAFF B ON  A.CASHIER_CODE = B.STAFF_POS_CODE
+WHERE
+	B.STAFF_NAME IS NOT NULL
 ORDER BY
-	a.NUM,
-	a.TRANS_DATE,
-	a.POS_CODE,
-	a.TRANS_CODE ASC]]>
+	A.CASHIER_CODE,
+	A.SHIFT_NAME,
+	A.POS_CODE,
+	A.TRANS_DATE,
+	A.ORDER_TRANS_NAME ASC]]>
 	</queryString>
-	<field name="OUTLET_CODE" class="java.lang.String"/>
 	<field name="NUM" class="java.math.BigDecimal"/>
+	<field name="OUTLET_CODE" class="java.lang.String"/>
 	<field name="CASHIER_CODE" class="java.lang.String"/>
 	<field name="SHIFT_NAME" class="java.lang.String"/>
 	<field name="POS_CODE" class="java.lang.String"/>
@@ -151,11 +366,66 @@ ORDER BY
 	<field name="TRANS_NAME" class="java.lang.String"/>
 	<field name="TRANS_AMOUNT" class="java.math.BigDecimal"/>
 	<field name="TRANS_DATE" class="java.sql.Timestamp"/>
-	<field name="TOTAL_MODAL_AWAL" class="java.math.BigDecimal"/>
-	<field name="TOTAL_SETOR" class="java.math.BigDecimal"/>
-	<field name="TOTAL_SALES" class="java.math.BigDecimal"/>
-	<field name="TOTAL_SETOR_SHIFT" class="java.math.BigDecimal"/>
 	<field name="STAFF_NAME" class="java.lang.String"/>
+	<group name="outlet">
+		<groupExpression><![CDATA[$F{OUTLET_CODE}]]></groupExpression>
+		<groupFooter>
+			<band height="23">
+				<componentElement>
+					<reportElement x="1" y="2" width="554" height="19" uuid="58cd74d4-6d30-4d2c-ad2e-4be174cfdf63"/>
+					<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+						<datasetRun subDataset="dataset1" uuid="8eefc46e-e3c0-4a47-b2e2-f16351a59828">
+							<datasetParameter name="outletCode">
+								<datasetParameterExpression><![CDATA[$P{outletCode}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="fromDate">
+								<datasetParameterExpression><![CDATA[$P{fromDate}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="toDate">
+								<datasetParameterExpression><![CDATA[$P{toDate}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="cashierCode1">
+								<datasetParameterExpression><![CDATA[$P{cashierCode1}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="cashierCode2">
+								<datasetParameterExpression><![CDATA[$P{cashierCode2}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="shiftCode1">
+								<datasetParameterExpression><![CDATA[$P{shiftCode1}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="shiftCode2">
+								<datasetParameterExpression><![CDATA[$P{shiftCode2}]]></datasetParameterExpression>
+							</datasetParameter>
+							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						</datasetRun>
+						<jr:listContents height="19" width="554">
+							<textField>
+								<reportElement x="271" y="0" width="150" height="15" uuid="5d673883-29e3-413a-ad5e-744ed9c5981f"/>
+								<textElement>
+									<font size="8" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{TRANS_CODE} + "-" + $F{TRANS_NAME}]]></textFieldExpression>
+							</textField>
+							<textField pattern="#,##0.00">
+								<reportElement x="421" y="0" width="131" height="15" uuid="189f1704-0212-4cec-96ae-b3441eff78ea"/>
+								<textElement textAlignment="Right">
+									<font size="8" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{SUM(TRANS_AMOUNT)}]]></textFieldExpression>
+							</textField>
+						</jr:listContents>
+					</jr:list>
+				</componentElement>
+				<staticText>
+					<reportElement x="171" y="2" width="100" height="15" isPrintInFirstWholeBand="true" uuid="4ff9a32c-0795-45ce-9c73-686bd77ee94b"/>
+					<textElement>
+						<font isBold="true" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Summary Total :]]></text>
+				</staticText>
+			</band>
+		</groupFooter>
+	</group>
 	<group name="group">
 		<groupExpression><![CDATA[$F{NUM}]]></groupExpression>
 		<groupFooter>
@@ -170,157 +440,192 @@ ORDER BY
 		<band splitType="Stretch"/>
 	</background>
 	<columnHeader>
-		<band height="98" splitType="Stretch">
+		<band height="115" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="83" width="31" height="15" uuid="d382db65-a26d-444a-a021-a576e0a59468"/>
+				<reportElement x="0" y="99" width="31" height="15" uuid="d382db65-a26d-444a-a021-a576e0a59468"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[NO]]></text>
 			</staticText>
 			<line>
-				<reportElement x="1" y="82" width="552" height="1" uuid="f6b8c15b-d1e5-4275-9e43-efbe3d70ffee"/>
+				<reportElement x="1" y="98" width="552" height="1" uuid="f6b8c15b-d1e5-4275-9e43-efbe3d70ffee"/>
 			</line>
 			<line>
-				<reportElement x="1" y="97" width="552" height="1" uuid="1b98b778-6a54-4ab4-9506-9dcff57b53d4"/>
+				<reportElement x="1" y="113" width="552" height="1" uuid="1b98b778-6a54-4ab4-9506-9dcff57b53d4"/>
 			</line>
 			<staticText>
-				<reportElement x="30" y="83" width="158" height="15" uuid="5c47be12-bbd4-4a92-8852-95538370eff7"/>
+				<reportElement x="30" y="99" width="158" height="15" uuid="5c47be12-bbd4-4a92-8852-95538370eff7"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[NAMA KASIR]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="258" y="83" width="25" height="15" uuid="653b2dc8-ec99-465a-8cea-27a7e0c93939"/>
+				<reportElement x="258" y="99" width="25" height="15" uuid="653b2dc8-ec99-465a-8cea-27a7e0c93939"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[POS]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="296" y="83" width="90" height="15" uuid="22ec6e10-17d8-4114-93bd-b3a594c9863f"/>
+				<reportElement x="296" y="99" width="90" height="15" uuid="22ec6e10-17d8-4114-93bd-b3a594c9863f"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[TRANSAKSI]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="386" y="83" width="90" height="15" uuid="dae31c7e-23e3-49cc-b812-f16222b676a8"/>
+				<reportElement x="386" y="99" width="90" height="15" uuid="dae31c7e-23e3-49cc-b812-f16222b676a8"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[NILAI]]></text>
 			</staticText>
 			<image scaleImage="FillFrame" isUsingCache="false">
-				<reportElement x="12" y="0" width="48" height="48" isPrintWhenDetailOverflows="true" uuid="ff2f527b-4d46-4f2c-8952-abafe1510b0a"/>
+				<reportElement x="1" y="0" width="48" height="48" isPrintWhenDetailOverflows="true" uuid="ff2f527b-4d46-4f2c-8952-abafe1510b0a"/>
 				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
 			</image>
 			<staticText>
-				<reportElement x="68" y="0" width="112" height="11" uuid="f818bc66-eb17-4152-aa44-5bc546c46714"/>
+				<reportElement x="57" y="0" width="112" height="11" uuid="f818bc66-eb17-4152-aa44-5bc546c46714"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="23" width="552" height="19" uuid="609d47a1-0ea6-4039-add3-3d54e01279bb"/>
+				<reportElement x="0" y="51" width="552" height="19" uuid="609d47a1-0ea6-4039-add3-3d54e01279bb"/>
 				<textElement textAlignment="Center">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Report Transaksi Kasir]]></text>
+				<text><![CDATA[REPORT TRANSAKSI KASIR]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1" y="44" width="55" height="11" uuid="1cfadcb4-0e8d-4569-b6b0-7034f4c91a98"/>
+				<reportElement x="1" y="75" width="55" height="11" uuid="1cfadcb4-0e8d-4569-b6b0-7034f4c91a98"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Periode       ]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="55" y="44" width="283" height="11" uuid="02a8871a-cc53-45f9-a1aa-af9540abc936"/>
+				<reportElement x="55" y="75" width="283" height="11" uuid="02a8871a-cc53-45f9-a1aa-af9540abc936"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{fromDate})) + " s/d " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{toDate}))]]></textFieldExpression>
+				<textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd-MMM-yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{fromDate})) + " - " + new SimpleDateFormat("dd-MMM-yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{toDate}))]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="1" y="54" width="55" height="11" uuid="dfc349fe-4a46-4081-ad64-4b1ec1f0f147"/>
+				<reportElement x="1" y="85" width="55" height="11" uuid="dfc349fe-4a46-4081-ad64-4b1ec1f0f147"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Cashier        ]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="55" y="54" width="283" height="11" uuid="4271d8dc-6bb2-433b-baee-58b4c57882bb"/>
+				<reportElement x="55" y="85" width="283" height="11" uuid="4271d8dc-6bb2-433b-baee-58b4c57882bb"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[" : " + $P{cashierCode}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="55" y="64" width="150" height="11" uuid="6ba3429b-352d-415a-b29b-513865ee1247"/>
+				<reportElement x="486" y="85" width="162" height="11" uuid="6ba3429b-352d-415a-b29b-513865ee1247"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[" : " + $P{shiftCode}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="1" y="64" width="55" height="11" uuid="9a71c4f6-2ba9-4645-b263-c1886c97792c"/>
+				<reportElement x="421" y="85" width="66" height="11" uuid="9a71c4f6-2ba9-4645-b263-c1886c97792c"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Shift]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="447" y="44" width="150" height="11" uuid="1c62b4af-d07c-4903-abce-f83beb6acecb"/>
+				<reportElement x="57" y="10" width="203" height="11" uuid="0c074c56-1eff-46c7-a492-5c083588d794"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[" : " + $V{PAGE_NUMBER}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{outletName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="57" y="20" width="203" height="11" uuid="e79b2870-4174-44ed-b385-5a9f60ffe8c0"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{address1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="57" y="30" width="203" height="11" uuid="b570c11b-d44f-483a-8148-59b34b8ed786"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{address2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="57" y="40" width="203" height="11" uuid="be554de8-5a3a-4367-a9a0-56f805db821f"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Phone :" + $P{phone}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="486" y="1" width="114" height="11" uuid="62ba0a62-9a76-445f-b69d-e0bc24da34a5"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="486" y="31" width="114" height="11" uuid="888b480a-01cc-4b79-b9dc-fcd5913d286d"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="345" y="44" width="103" height="11" uuid="839822f6-5c6e-4be6-8b69-50d57b0aaf6f"/>
+				<reportElement x="421" y="21" width="66" height="11" uuid="e26274d0-2f28-4260-8c63-5248df0ded53"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Tanggal Cetak]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="421" y="1" width="66" height="11" uuid="bb479530-f8ca-43dc-8bb1-047d214999dd"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Halaman]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="447" y="55" width="150" height="11" uuid="67f9a1bf-183b-48f1-a716-4712f8775737"/>
+				<reportElement x="486" y="21" width="114" height="11" uuid="648a9a94-fed3-4eb5-b785-bcbeae2fcbba"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[" : " + $P{user}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="345" y="55" width="103" height="11" uuid="23c816d6-fe58-42ba-a67c-a7026735b2d0"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[User ]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="345" y="65" width="103" height="11" uuid="5b42e036-203e-4202-9b63-445749321f73"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Tanggal dan Jam Cetak ]]></text>
-			</staticText>
-			<textField>
-				<reportElement x="447" y="65" width="150" height="11" uuid="bbe0e699-603a-4588-9a06-1676f4398afa"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(new Date())]]></textFieldExpression>
+				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="68" y="10" width="203" height="11" uuid="0c074c56-1eff-46c7-a492-5c083588d794"/>
+				<reportElement x="486" y="11" width="114" height="11" uuid="b9a6b903-8332-4d4b-ba8a-512c44ed5467"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{address}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[": " + $P{user}]]></textFieldExpression>
 			</textField>
+			<staticText>
+				<reportElement x="421" y="11" width="66" height="11" uuid="2ca72148-c38d-4962-a7df-d3474e7703d4"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[User Cetak]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="421" y="31" width="66" height="11" uuid="e37ee1a8-ed3a-4b8f-97ef-9be8246b3681"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Jam Cetak]]></text>
+			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
@@ -363,70 +668,17 @@ ORDER BY
 		</band>
 	</detail>
 	<summary>
-		<band height="98" splitType="Stretch">
+		<band height="30" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="5" width="555" height="1" uuid="d2872248-755f-47d8-9136-34daff986fc9"/>
+			</line>
 			<staticText>
-				<reportElement x="171" y="0" width="100" height="15" uuid="aa4831f4-7cf2-483e-bd33-898572716e75"/>
+				<reportElement x="463" y="6" width="100" height="15" uuid="ff6b299b-1947-4159-8374-5684d28ed635"/>
 				<textElement>
-					<font isBold="true" isItalic="true"/>
+					<font size="8" isItalic="true"/>
 				</textElement>
-				<text><![CDATA[Summary Total :]]></text>
+				<text><![CDATA[--End of Report--]]></text>
 			</staticText>
-			<staticText>
-				<reportElement x="271" y="16" width="115" height="15" uuid="1f56dd7c-6354-46c0-8fc7-5714c28fbf7e"/>
-				<textElement>
-					<font isBold="true" isItalic="false"/>
-				</textElement>
-				<text><![CDATA[OPF - Modal Awal]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="271" y="30" width="115" height="15" uuid="7e44a234-2e67-449b-8737-adb5c4d0faf1"/>
-				<textElement>
-					<font isBold="true" isItalic="false"/>
-				</textElement>
-				<text><![CDATA[PRS - Setor]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="271" y="44" width="115" height="15" uuid="ae5cb704-dd9b-4e32-814d-54422f4be8f8"/>
-				<textElement>
-					<font isBold="true" isItalic="false"/>
-				</textElement>
-				<text><![CDATA[SLS - Sales]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="271" y="58" width="115" height="15" uuid="43c765b7-3c6c-40a4-9cd5-bf28a0f1b7de"/>
-				<textElement>
-					<font isBold="true" isItalic="false"/>
-				</textElement>
-				<text><![CDATA[TOL - Setor End Shift]]></text>
-			</staticText>
-			<textField pattern="#,##0.00">
-				<reportElement x="386" y="16" width="100" height="15" uuid="8086ca27-1ce5-472d-939a-06fd08953394"/>
-				<textElement textAlignment="Right">
-					<font size="8" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{TOTAL_MODAL_AWAL}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement x="386" y="30" width="100" height="15" uuid="f8e299f9-e36d-48d0-8354-4de40e9be0a4"/>
-				<textElement textAlignment="Right">
-					<font size="8" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{TOTAL_SETOR}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement x="386" y="45" width="100" height="14" uuid="c9d1c37f-cd3e-4b87-bcd0-38cb7c2558e8"/>
-				<textElement textAlignment="Right">
-					<font size="8" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{TOTAL_SALES}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.00">
-				<reportElement x="386" y="59" width="100" height="14" uuid="d06373d9-ddbd-4fdf-af1c-56e06cce4984"/>
-				<textElement textAlignment="Right">
-					<font size="8" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{TOTAL_SETOR_SHIFT}]]></textFieldExpression>
-			</textField>
 		</band>
 	</summary>
 </jasperReport>

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="freeMeal" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="374d3280-e8d9-4a43-8811-5bfeed6fc65e">
 	<property name="ireport.zoom" value="1.610510000000011"/>
 	<property name="ireport.x" value="0"/>
@@ -116,28 +117,28 @@ ORDER BY a.DELIVERY_DATE, b.ITEM_CODE ASC]]>
 					<textElement textAlignment="Center">
 						<font size="8" isBold="true"/>
 					</textElement>
-					<text><![CDATA[Qty Bsr]]></text>
+					<text><![CDATA[Qty Besar]]></text>
 				</staticText>
 				<staticText>
 					<reportElement x="391" y="3" width="33" height="15" uuid="c73d98dd-eea9-4ff4-8b73-e3c313209bb9"/>
 					<textElement textAlignment="Center">
 						<font size="8" isBold="true"/>
 					</textElement>
-					<text><![CDATA[Umo]]></text>
+					<text><![CDATA[UOM]]></text>
 				</staticText>
 				<staticText>
 					<reportElement x="423" y="3" width="50" height="15" uuid="f6a39691-de17-48a4-8b56-37e83f7d6582"/>
 					<textElement textAlignment="Center">
 						<font size="8" isBold="true"/>
 					</textElement>
-					<text><![CDATA[Qty Kcl]]></text>
+					<text><![CDATA[Qty Kecil]]></text>
 				</staticText>
 				<staticText>
 					<reportElement x="472" y="3" width="33" height="15" uuid="cc401205-a805-4759-af2d-0b0bd4e18bd9"/>
 					<textElement textAlignment="Center">
 						<font size="8" isBold="true"/>
 					</textElement>
-					<text><![CDATA[Umo]]></text>
+					<text><![CDATA[UOM]]></text>
 				</staticText>
 				<staticText>
 					<reportElement x="504" y="3" width="50" height="15" uuid="f3c9c3af-7b3d-4ad0-a6d0-d9b2d6f92a87"/>
@@ -344,7 +345,7 @@ ORDER BY a.DELIVERY_DATE, b.ITEM_CODE ASC]]>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("hh:mm:ss").format(new Date())]]></textFieldExpression>
+				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="480" y="20" width="114" height="11" uuid="37a73dc9-6190-47d8-b824-3d772163c256"/>
@@ -415,9 +416,9 @@ ORDER BY a.DELIVERY_DATE, b.ITEM_CODE ASC]]>
 				<reportElement x="0" y="1" width="555" height="1" uuid="2ec4133e-2957-4a57-8471-90ff2617cdea"/>
 			</line>
 			<staticText>
-				<reportElement x="472" y="2" width="100" height="15" uuid="3ea2a03d-40b0-43b7-aeb3-bf2f72228a96"/>
-				<textElement>
-					<font size="8" isItalic="true"/>
+				<reportElement x="453" y="2" width="100" height="15" uuid="3ea2a03d-40b0-43b7-aeb3-bf2f72228a96"/>
+				<textElement textAlignment="Right">
+					<font size="8" isBold="true" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[--End of Report--]]></text>
 			</staticText>

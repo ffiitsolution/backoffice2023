@@ -79,29 +79,30 @@ public class IndexController {
     public @ResponseBody
     ResponseMessage listLogin(@RequestBody String param) throws JSONException {
         Gson gsn = new Gson();
-        String json = "";
         ParameterLogin balance = gsn.fromJson(param, new TypeToken<ParameterLogin>() {
         }.getType());
-        Map<String, Object> map1 = new HashMap<String, Object>();
         Map<String, Object> map = new LinkedHashMap<String, Object>();
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        List<Map<String, Object>> list1 = new ArrayList<Map<String, Object>>();
-        Response res = new Response();
+        List<Map<String, Object>> list = new ArrayList<>();
         ResponseMessage rm = new ResponseMessage();
+        rm.setItem(new ArrayList());
 
         list = viewServices.loginJson(balance);
-        //list = prosesServices.loginOutletJson(balance);
 
+        /// inactive tidak boleh login by M Joko - 24 Jan 2024
         try {
-            if (list.size() > 0) {
-                rm.setSuccess(true);
-                rm.setMessage("Login Success");
-                rm.setItem(list);
-//                rm.setItem(flag);
+            if (!list.isEmpty()) {
+                Map user = list.get(0);
+                if(user.getOrDefault("status", "I").equals("A")){
+                    rm.setSuccess(true);
+                    rm.setMessage("Login Success");
+                    rm.setItem(list);
+                } else {
+                    rm.setSuccess(false);
+                    rm.setMessage("Login failed, User is INACTIVE");
+                }
             } else {
                 rm.setSuccess(false);
-                rm.setMessage("Login Failed");
-                rm.setItem(null);
+                rm.setMessage("User and Password not match.");
             }
         } catch (Exception e) {
             rm.setSuccess(false);
@@ -113,9 +114,9 @@ public class IndexController {
         return rm;
     }
 //////Done
+    
     ///////////////new method from dona 27-02-2023////////////////////////////
-    //INSERT SUPPLIER================================================================================================
-
+    //INSERT SUPPLIER===============================================================================================
     @RequestMapping(value = "/insert-supplier", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk insert supplier", response = Object.class)
     @ApiResponses(value = {
@@ -156,7 +157,7 @@ public class IndexController {
     public @ResponseBody
     Response listSupplier(@RequestBody String param) throws IOException, Exception {
         Gson gsn = new Gson();
-        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        Map<String, Object> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
