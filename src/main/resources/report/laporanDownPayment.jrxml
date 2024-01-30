@@ -261,7 +261,7 @@
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("hh:mm:ss a").format(new Date())]]></textFieldExpression>
+				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="476" y="0" width="119" height="11" uuid="d45bfdb2-a045-40a3-a678-8841f1856bd9"/>
@@ -401,6 +401,24 @@
 					<font size="14" isBold="true"/>
 				</textElement>
 				<text><![CDATA[REPORT DP]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="394" y="75" width="83" height="11" uuid="9dc4fe21-1579-4e7b-bff7-9ef1e8dc8169">
+					<printWhenExpression><![CDATA[$P{detail}.equals(1.0)]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Tipe Report]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="478" y="75" width="83" height="11" uuid="1329bb56-3f54-4b0c-8633-ac1917b2bd61">
+					<printWhenExpression><![CDATA[$P{detail}.equals(1.0)]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[: Detail]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
