@@ -60,9 +60,9 @@ FROM
 			B.DESCRIPTION AS TRANS_NAME,
 			CASE
 				WHEN A.TRANS_CODE = 'OPF' THEN 'A'
-				WHEN A.TRANS_CODE = 'SLS' THEN 'F'
-				WHEN A.TRANS_CODE = 'PRS' THEN 'G'
-				WHEN A.TRANS_CODE = 'TLO' THEN 'H'
+				WHEN A.TRANS_CODE = 'SLS' THEN 'G'
+				WHEN A.TRANS_CODE = 'PRS' THEN 'H'
+				WHEN A.TRANS_CODE = 'TLO' THEN 'I'
 			END AS order_trans_name,
 			ABS(A.TRANS_AMOUNT) AS TRANS_AMOUNT,
 			A.TRANS_DATE
@@ -92,8 +92,8 @@ FROM
 				WHEN B.PAYMENT_TYPE_CODE = 'VCR' THEN 'Voucher'
 			END AS TRANS_NAME,
 			CASE
-				WHEN B.PAYMENT_TYPE_CODE = 'DBT' THEN 'D'
-				WHEN B.PAYMENT_TYPE_CODE = 'VCR' THEN 'E'
+				WHEN B.PAYMENT_TYPE_CODE = 'DBT' THEN 'E'
+				WHEN B.PAYMENT_TYPE_CODE = 'VCR' THEN 'F'
 			END AS order_trans_name,
 			ABS(SUM(A.PAYMENT_AMOUNT)) AS TRANS_AMOUNT,
 			A.TRANS_DATE
@@ -138,10 +138,12 @@ FROM
 			CASE
 				WHEN b.order_type = 'BTA' THEN 'Booking Take Away'
 				WHEN b.order_type = 'CAT' THEN 'Catering'
+				WHEN b.order_type = 'BRD' THEN 'Birthday'
 			END AS TRANS_NAME,
 			CASE
 				WHEN b.order_type = 'CAT' THEN 'B'
-				WHEN b.order_type = 'BTA' THEN 'C'
+				WHEN b.order_type = 'BRD' THEN 'C'
+				WHEN b.order_type = 'BTA' THEN 'D'
 			END AS order_trans_name,
 			ABS(sum(a.payment_used)) AS TRANS_AMOUNT,
 			b.TRANS_DATE
@@ -239,9 +241,9 @@ FROM
 		B.DESCRIPTION AS TRANS_NAME,
 		CASE
 			WHEN A.TRANS_CODE = 'OPF' THEN 'A'
-			WHEN A.TRANS_CODE = 'SLS' THEN 'F'
-			WHEN A.TRANS_CODE = 'PRS' THEN 'G'
-			WHEN A.TRANS_CODE = 'TLO' THEN 'H'
+			WHEN A.TRANS_CODE = 'SLS' THEN 'G'
+			WHEN A.TRANS_CODE = 'PRS' THEN 'H'
+			WHEN A.TRANS_CODE = 'TLO' THEN 'I'
 		END AS order_trans_name,
 		ABS(A.TRANS_AMOUNT) AS TRANS_AMOUNT,
 		A.TRANS_DATE
@@ -271,8 +273,8 @@ UNION
 			WHEN B.PAYMENT_TYPE_CODE = 'VCR' THEN 'Voucher'
 		END AS TRANS_NAME,
 		CASE
-			WHEN B.PAYMENT_TYPE_CODE = 'DBT' THEN 'D'
-			WHEN B.PAYMENT_TYPE_CODE = 'VCR' THEN 'E'
+			WHEN B.PAYMENT_TYPE_CODE = 'DBT' THEN 'E'
+			WHEN B.PAYMENT_TYPE_CODE = 'VCR' THEN 'F'
 		END AS order_trans_name,
 		ABS(SUM(A.PAYMENT_AMOUNT)) AS TRANS_AMOUNT,
 		A.TRANS_DATE
@@ -317,10 +319,12 @@ UNION
 		CASE
 			WHEN b.order_type = 'BTA' THEN 'Booking Take Away'
 			WHEN b.order_type = 'CAT' THEN 'Catering'
+			WHEN b.order_type = 'BRD' THEN 'Birthday'
 		END AS TRANS_NAME,
 		CASE
 			WHEN b.order_type = 'CAT' THEN 'B'
-			WHEN b.order_type = 'BTA' THEN 'C'
+			WHEN b.order_type = 'BRD' THEN 'C'
+			WHEN b.order_type = 'BTA' THEN 'D'
 		END AS order_trans_name,
 		ABS(sum(a.payment_used)) AS TRANS_AMOUNT,
 		b.TRANS_DATE
