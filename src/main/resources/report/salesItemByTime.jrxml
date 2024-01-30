@@ -4,7 +4,7 @@
 	<property name="ireport.zoom" value="4.0"/>
 	<property name="ireport.x" value="1322"/>
 	<property name="ireport.y" value="192"/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="orcl-data-adapter.jrdax"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="orcl-1028.jrdax"/>
 	<parameter name="outletCode" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
@@ -39,12 +39,12 @@
 	<parameter name="shiftCode2" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
+	<parameter name="outletName" class="java.lang.String"/>
+	<parameter name="address2" class="java.lang.String"/>
+	<parameter name="address1" class="java.lang.String"/>
+	<parameter name="phone" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT
-	max(o.OUTLET_NAME) AS OUTLET_NAME,
-	max(o.ADDRESS_1) AS ADDRESS_1,
-	max(o.ADDRESS_2) AS ADDRESS_2,
-	max(o.PHONE) AS PHONE,
     a.menu_item_code as item_code,
     mi.ITEM_DESCRIPTION,
     SUM(CASE WHEN a.trans_type = 'EI' THEN a.item_qty ELSE 0 END) AS QTY_EI,
@@ -58,8 +58,6 @@ JOIN t_pos_bill b
 	ON a.outlet_code = b.outlet_code AND a.pos_code = b.pos_code AND a.bill_no = b.bill_no
 JOIN M_ITEM mi 
 	ON a.menu_item_code = mi.item_code
-JOIN M_OUTLET o
-	ON a.OUTLET_CODE = o.OUTLET_CODE
 WHERE
     b.outlet_code = $P{outletCode}
     AND b.trans_date BETWEEN $P{fromDate} AND $P{toDate}
@@ -75,10 +73,6 @@ ORDER BY a.menu_item_code]]>
 	<field name="ITEM_DESCRIPTION" class="java.lang.String"/>
 	<field name="QTY_TA" class="java.lang.Integer"/>
 	<field name="QTY_EI" class="java.lang.Integer"/>
-	<field name="OUTLET_NAME" class="java.lang.String"/>
-	<field name="ADDRESS_1" class="java.lang.String"/>
-	<field name="ADDRESS_2" class="java.lang.String"/>
-	<field name="PHONE" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -101,7 +95,7 @@ ORDER BY a.menu_item_code]]>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{OUTLET_NAME}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{outletName}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="4" y="77" width="36" height="11" uuid="c954daff-734d-4504-9a4f-3e38d45d8f44"/>
@@ -294,21 +288,21 @@ ORDER BY a.menu_item_code]]>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{ADDRESS_1}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{address1}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight">
 				<reportElement x="60" y="40" width="142" height="11" isPrintWhenDetailOverflows="true" uuid="f10bfe90-79e2-4870-8942-922095f74e50"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Phone : " + $F{PHONE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Phone : " + $P{phone}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight">
 				<reportElement x="60" y="30" width="142" height="11" isPrintWhenDetailOverflows="true" uuid="b5bf4564-2d33-4a71-9f4f-50af3b56cc51"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{ADDRESS_2}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{address2}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="39" y="110" width="8" height="11" uuid="0715e40b-bf0c-4f56-be42-f8a2e8019e51"/>

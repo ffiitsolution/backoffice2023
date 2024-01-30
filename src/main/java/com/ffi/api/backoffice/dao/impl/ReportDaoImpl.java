@@ -3049,7 +3049,15 @@ public class ReportDaoImpl implements ReportDao {
                 hashMap.put("shiftCode", shiftCode.toString());
             }
         }
-        System.out.print(hashMap);
+        
+        String queryOutlet = "SELECT mo.OUTLET_NAME, mo.ADDRESS_1, mo.ADDRESS_2, mo.PHONE FROM M_OUTLET mo WHERE mo.OUTLET_CODE = :outletCode";
+        jdbcTemplate.query(queryOutlet, hashMap, (ResultSet rs, int i) -> {
+            hashMap.put("outletName", rs.getString("OUTLET_NAME"));
+            hashMap.put("address1", rs.getString("ADDRESS_1"));
+            hashMap.put("address2", rs.getString("ADDRESS_2"));
+            hashMap.put("phone", rs.getString("PHONE"));
+            return null;
+        });
 
         ClassPathResource classPathResource = new ClassPathResource("report/salesItemByTime.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
