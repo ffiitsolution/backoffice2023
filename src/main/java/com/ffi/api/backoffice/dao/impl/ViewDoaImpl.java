@@ -679,7 +679,7 @@ public class ViewDoaImpl implements ViewDao {
         String qry = "select * from m_mpcs_header WHERE OUTLET_CODE= :outlet";
         Map prm = new HashMap();
         prm.put("outlet", param.get("outlet"));
-        if (!param.get("date").isEmpty()) {
+        if (param.containsKey("date") && !param.get("date").isEmpty()) {
             prm.put("date", param.get("date"));
             qry += " AND MPCS_GROUP IN ( SELECT DISTINCT(MPCS_GROUP) FROM T_SUMM_MPCS WHERE OUTLET_CODE = :outlet AND DATE_MPCS = :date)";
         }
@@ -1399,7 +1399,7 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listGlobal(Map<String, String> balance) {
-        String qry = "SELECT DESCRIPTION, TYPE_MENU AS CODE FROM m_menudtl WHERE TYPE_MENU = :cond AND STATUS = :status AND APLIKASI = :aplikasi ORDER BY ID_NO ASC";
+        String qry = "SELECT DESCRIPTION, TYPE_MENU AS CODE FROM m_menudtl WHERE TYPE_MENU = :cond AND STATUS = :status AND APLIKASI = :aplikasi ";
         if (balance.containsKey("outletBrand") && balance.get("outletBrand").equalsIgnoreCase("TACOBELL")) {
             qry += " AND DESCRIPTION IN ('Report Menu & Detail Modifier', 'Sales by Date', 'Sales by Item', 'Sales by Time', 'Summary Sales by Item Code', 'Report Stock Card')";
         }
@@ -1485,6 +1485,9 @@ public class ViewDoaImpl implements ViewDao {
                 SELECT 'PROGRAM', 'POS0021', 'Report Pajak', 21, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0021')
                 UNION ALL
+                SELECT 'PROGRAM','POS0022','Report Sales Item By Time', 22, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0022')
+                UNION ALL               
                 SELECT 'PROGRAM', 'INV0001', 'Report Stock Card', 1, 'INV', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV0001')
                 UNION ALL
@@ -3280,7 +3283,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "FROM T_STOCK_CARD SCARD "
                 + "LEFT JOIN M_ITEM MITEM ON SCARD.ITEM_CODE = MITEM.ITEM_CODE "
                 + "WHERE SCARD.TRANS_DATE between :startDate and :endDate "
-                + "AND SCARD.QTY_IN > 0 AND SCARD.QTY_OUT > 0 "
+                + "AND (SCARD.QTY_IN != 0 OR SCARD.QTY_OUT != 0) "
                 + "AND SCARD.ITEM_CODE LIKE :itemCode "
                 + "AND MITEM.FLAG_STOCK = 'Y' " + where
                 + "ORDER BY SCARD.ITEM_CODE ASC, SCARD.TRANS_DATE ASC ";
