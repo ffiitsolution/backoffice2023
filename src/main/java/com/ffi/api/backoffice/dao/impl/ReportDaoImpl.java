@@ -692,8 +692,10 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("user", param.get("user"));
         if (param.get("detail").equals(1.0)) {
             hashMap.put("detail", 1);
+            hashMap.put("tipeReport", "Detail");
         } else {
             hashMap.put("detail", 0);
+            hashMap.put("tipeReport", "Rekap");
         }
 
         ClassPathResource classPathResource = new ClassPathResource("report/deliveryOrder.jrxml");
