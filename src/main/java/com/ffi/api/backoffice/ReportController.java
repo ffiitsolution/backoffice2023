@@ -276,7 +276,8 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        Integer cekDataReport = viewServices.cekDataReport(prm, "deliveryOrder");if (cekDataReport > 0) {
+        Integer cekDataReport = viewServices.cekDataReport(prm, "deliveryOrder");
+        if (cekDataReport > 0) {
             JasperPrint jasperPrint = reportServices.jesperReportDeliveryOrder(prm, conn);
             conn.close();
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);

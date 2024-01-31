@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="deliveryOrder" pageWidth="615" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="575" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="1356944a-c454-4393-99ee-8392e8ce3866">
-	<property name="ireport.zoom" value="1.3636363636363684"/>
+	<property name="ireport.zoom" value="1.9965000000000082"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="city" class="java.lang.String">
@@ -20,6 +20,7 @@
 	<parameter name="outletBrand" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
+	<parameter name="tipeReport" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT DENSE_RANK() over(ORDER BY a.DELIVERY_NO) AS num, a.DELIVERY_NO, a.REQUEST_NO, CONCAT(b.OUTLET_NAME,
 CONCAT(c.SUPPLIER_NAME, d.DESCRIPTION)) AS delivery_order_ke, a.REMARK,
@@ -380,23 +381,19 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.DELIVERY_DATE BETWEEN $P{fromDate} AND
 				<textFieldExpression><![CDATA["Phone : " + $F{PHONE}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="0" y="69" width="58" height="11" uuid="4ad11a56-4616-4926-bae2-2f4518d3bba4">
-					<printWhenExpression><![CDATA[$P{detail}.equals(1)]]></printWhenExpression>
-				</reportElement>
+				<reportElement x="0" y="69" width="58" height="11" uuid="4ad11a56-4616-4926-bae2-2f4518d3bba4"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Tipe Report]]></text>
 			</staticText>
-			<staticText>
-				<reportElement x="57" y="69" width="125" height="11" uuid="c6f6151c-319a-4746-be53-bf3d1fc1505d">
-					<printWhenExpression><![CDATA[$P{detail}.equals(1)]]></printWhenExpression>
-				</reportElement>
+			<textField>
+				<reportElement x="57" y="69" width="287" height="11" uuid="aa07287d-38ec-4e68-a205-e0ff8336e22a"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<text><![CDATA[: Detail]]></text>
-			</staticText>
+				<textFieldExpression><![CDATA[": " + $P{tipeReport}]]></textFieldExpression>
+			</textField>
 		</band>
 	</columnHeader>
 	<summary>
