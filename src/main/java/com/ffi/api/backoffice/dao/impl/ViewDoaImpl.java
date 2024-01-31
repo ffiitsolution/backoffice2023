@@ -831,7 +831,11 @@ public class ViewDoaImpl implements ViewDao {
         }
         //W for Wastage
         if (Logan.get("paket").equalsIgnoreCase("W")) {
-            qry = "SELECT * FROM M_ITEM WHERE FLAG_STOCK = 'Y' AND FLAG_MATERIAL = 'Y' AND STATUS = 'A' ORDER BY ITEM_CODE ASC";
+            /*qry = "SELECT * FROM M_ITEM WHERE FLAG_STOCK = 'Y' AND FLAG_MATERIAL = 'Y' AND STATUS = 'A' ORDER BY ITEM_CODE ASC";*/
+            qry = "SELECT a.*, ((b.QTY_BEGINNING + b.QTY_IN) - b.QTY_OUT) AS qty_ending FROM M_ITEM a " +
+                    "LEFT JOIN T_STOCK_CARD b ON a.ITEM_CODE = b.ITEM_CODE  AND b.TRANS_DATE = :transDate WHERE " +
+                    "a.FLAG_STOCK = 'Y' AND a.FLAG_MATERIAL = 'Y' AND a.STATUS = 'A' AND " +
+                    "((b.QTY_BEGINNING + b.QTY_IN) - b.QTY_OUT) > 0 ORDER BY a.ITEM_CODE ASC";
         }
         /////////////// Revised query for Leftover - Fathur 21-nov-2023 ////////////// 
         if (Logan.get("paket").equalsIgnoreCase("L")) {
@@ -839,8 +843,13 @@ public class ViewDoaImpl implements ViewDao {
                     + "WHERE (STATUS = 'A' AND FLAG_STOCK = 'Y' AND FLAG_PAKET = 'N') "
                     + "and CD_ITEM_LEFTOVER in (SELECT CODE FROM M_GLOBAL WHERE COND = 'LEFTOVER') "
                     + "order by ITEM_CODE ASC";*/
-            qry = "SELECT * FROM M_ITEM WHERE STATUS = 'A' AND FLAG_STOCK = 'Y' AND FLAG_PAKET = 'N'"
-                    + " AND CD_ITEM_LEFTOVER IS NOT NULL AND CD_ITEM_LEFTOVER != ' '";
+            /*qry = "SELECT * FROM M_ITEM WHERE STATUS = 'A' AND FLAG_STOCK = 'Y' AND FLAG_PAKET = 'N'"
+                    + " AND CD_ITEM_LEFTOVER IS NOT NULL AND CD_ITEM_LEFTOVER != ' '";*/
+            qry = "SELECT a.*, ((b.QTY_BEGINNING + b.QTY_IN) - b.QTY_OUT) AS qty_ending FROM M_ITEM a " +
+                    "LEFT JOIN T_STOCK_CARD b ON a.ITEM_CODE = b.ITEM_CODE AND b.TRANS_DATE = :transDate" +
+                    " WHERE a.STATUS = 'A' AND a.FLAG_STOCK = 'Y' AND a.FLAG_PAKET = 'N' AND a.CD_ITEM_LEFTOVER " +
+                    "IS NOT NULL AND a.CD_ITEM_LEFTOVER != ' ' AND ((b.QTY_BEGINNING + b.QTY_IN) - b.QTY_OUT) > 0";
+
         }
         /////////////// End revised query for Leftover//////////////
         //Condition when Non-Paket
@@ -849,6 +858,7 @@ public class ViewDoaImpl implements ViewDao {
         } 
         Map prm = new HashMap();
         prm.put("FlagPaket", Logan.get("paket"));
+        prm.put("transDate", Logan.get("transDate"));
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override

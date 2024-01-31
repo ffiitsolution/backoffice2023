@@ -628,9 +628,10 @@ public class IndexController {
         }.getType());
 
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-
+        list = viewServices.listItem(logan);
         Response res = new Response();
-        res.setData(viewServices.listItem(logan));
+        res.setData(list);
+        res.setRecordsTotal(list.size());
         return res;
 
     }
