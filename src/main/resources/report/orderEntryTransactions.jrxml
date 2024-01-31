@@ -125,7 +125,7 @@ WHERE
 				<textElement textAlignment="Center">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Permintaan Barang - Outlet]]></text>
+				<text><![CDATA[PERMINTAAN BARANG - OUTLET]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="5" y="73" width="90" height="11" uuid="19ec5eee-5232-48ca-8445-8e7d6d0adb0d"/>
@@ -183,7 +183,7 @@ WHERE
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("hh:mm:ss a").format(new Date())]]></textFieldExpression>
+				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="400" y="2" width="84" height="11" uuid="4f615133-fd3c-481c-9ab3-4e1740d3e50d"/>
@@ -283,7 +283,7 @@ WHERE
 				<textElement textAlignment="Center">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Permintaan Barang - Gudang]]></text>
+				<text><![CDATA[PERMINTAAN BARANG - GUDANG]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="5" y="83" width="90" height="11" uuid="01ca1f3a-033e-4984-86bd-783b0c09a0e2">
@@ -301,7 +301,7 @@ WHERE
 				<textElement textAlignment="Center">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Pembelian Barang - Supplier]]></text>
+				<text><![CDATA[PEMBELIAN BARANG - SUPPLIER]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="5" y="83" width="90" height="11" uuid="75f3f8b6-a39d-49c0-bf11-dae79fa7a3d5">

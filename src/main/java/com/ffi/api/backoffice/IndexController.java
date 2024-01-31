@@ -628,9 +628,10 @@ public class IndexController {
         }.getType());
 
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-
+        list = viewServices.listItem(logan);
         Response res = new Response();
-        res.setData(viewServices.listItem(logan));
+        res.setData(list);
+        res.setRecordsTotal(list.size());
         return res;
 
     }
@@ -3324,4 +3325,92 @@ public class IndexController {
         rm.setMessage(b ? "Absensi berhasil." : "Periksa kembali password anda.");
         return rm;
     }
+    
+    ///////////////new method Management Fryer from aditya 29-01-2024////////////////////////////
+    //INSERT MANAGEMENT FRYER===============================================================================================
+    @RequestMapping(value = "/insert-mpcs-management-fryer", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk insert MPCS Management Fryer", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage insertMpcsManagementFryer(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        JsonObject balance = gsn.fromJson(param, JsonObject.class);
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        ResponseMessage rm = new ResponseMessage();
+        
+        try {
+            processServices.insertMpcsManagementFryer(balance);
+            rm.setSuccess(true);
+            rm.setMessage("Insert Success Successfuly");
+
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Insert Failed : " + e.getMessage());
+            System.err.println(e);
+        }
+
+        rm.setItem(list);
+
+        return rm;
+    }
+    ///////////////done 
+    ///////////////new method list fryer from aditya 30-01-2024////////////////////////////
+    @RequestMapping(value = "/list-fryer", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view Fryer", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listFryer(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response res = new Response();
+        res.setData(viewServices.listFryer(balance));
+        return res;
+    }
+    ///////////////done
+    ///////////////new method list fryer from aditya 30-01-2024////////////////////////////
+    @RequestMapping(value = "/list-management-fryer", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view Fryer", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listManagementFryer(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response res = new Response();
+        res.setData(viewServices.listManagementFryer(balance));
+        return res;
+    }
+    ///////////////done
+    
+    ///////////////new method list fryer from aditya 30-01-2024////////////////////////////
+    @RequestMapping(value = "/list-mpcs-management-fryer", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view Fryer", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listMpcsManagementFryer(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Response res = new Response();
+        res.setData(viewServices.listMpcsManagementFryer(balance));
+        return res;
+    }
+    ///////////////done
+    
 }

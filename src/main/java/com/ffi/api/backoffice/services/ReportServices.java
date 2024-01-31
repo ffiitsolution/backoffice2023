@@ -267,4 +267,10 @@ public class ReportServices {
     public JasperPrint jasperReportSalesItembyTime(Map<String, Object> param, Connection connection) throws JRException, IOException {
         return dao.jasperReportSalesItembyTime(param, connection);
     }
+    
+    ////////////// new method report mpcs management fryer adit 30-01-2024
+    public JasperPrint jesperReportMpcsManagementFryer(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        return dao.jesperReportMpcsManagementFryer(param, connection);
+    }
+    ////////////// done adit 30-01-2024
 }

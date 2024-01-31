@@ -291,4 +291,10 @@ public class ProcessServices {
     public boolean insertAbsensi(Map<String, Object> param) {
         return dao.insertAbsensi(param);
     }
+    
+    ///////////////new method MPCS Management Fryer from aditya 29-01-2024////////////////////////////
+    public void insertMpcsManagementFryer(JsonObject param) {
+        dao.insertMpcsManagementFryer(param);
+    }
+    ////////////////////done
 }

@@ -298,4 +298,18 @@ public interface ViewDao {
 
     /////// NEW METHOD to mengambil data user absensi by id by M Joko 16 Jan 2024
     public  List<Map<String, Object>>  getIdAbsensi(Map<String, String> mapping);
+    
+    ///////////////new method list fryer from aditya 30-01-2024////////////////////////////
+    List<Map<String, Object>> listFryer(Map<String, String> ref);
+    ////// done 
+    
+    ///////////////new method list fryer from aditya 30-01-2024////////////////////////////
+    List<Map<String, Object>> listManagementFryer(Map<String, String> ref);
+    ////// done 
+    
+    ///////////////new method list fryer from aditya 30-01-2024////////////////////////////
+    List<Map<String, Object>> listMpcsManagementFryer(Map<String, String> ref);
+    ////// done 
+    
+    
 }

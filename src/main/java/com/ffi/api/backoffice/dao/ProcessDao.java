@@ -167,4 +167,8 @@ public interface ProcessDao {
     // Add menyimpan data user absensi by id by M Joko 16 Jan 2024
     public boolean insertAbsensi(Map<String, Object> params);
     
+    // Add MPCS Management Fryer by Aditya 29 Jan 2024   
+    void insertMpcsManagementFryer(JsonObject param);
+    ///////////////Done aditya 29-01-2024////////////////////////////
+    
 }

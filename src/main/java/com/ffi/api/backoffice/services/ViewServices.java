@@ -519,4 +519,21 @@ public class ViewServices {
     public List<Map<String, Object>> getIdAbsensi(Map<String, String> mapping) {
         return viewDao.getIdAbsensi(mapping);
     }
+    
+    ///////////////new method list fryer from aditya 30-01-2024////////////////////////////
+    public List<Map<String, Object>> listFryer(Map<String, String> ref) {
+        return viewDao.listFryer(ref);
+    }
+    
+    ///////////////new method list fryer from aditya 30-01-2024////////////////////////////
+    public List<Map<String, Object>> listManagementFryer(Map<String, String> ref) {
+        return viewDao.listManagementFryer(ref);
+    }
+    
+    ///////////////new method list fryer from aditya 30-01-2024////////////////////////////
+    public List<Map<String, Object>> listMpcsManagementFryer(Map<String, String> ref) {
+        return viewDao.listMpcsManagementFryer(ref);
+    }
+    
+    
 }
