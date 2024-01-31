@@ -1639,7 +1639,7 @@ public class ViewDoaImpl implements ViewDao {
         LocalDate beforeTransDate = localDate.minusDays(30);
         String where = "";
         if (!balance.get("orderDate").equals("")) {
-            where = "AND ORDER_DATE =:orderDate";
+            where = " AND ORDER_DATE =:orderDate ";
         } else {
             // where = "and ORDER_DATE between TO_CHAR(CURRENT_DATE-7,'dd-MON-yy') and TO_CHAR(CURRENT_DATE,'dd-MON-yy')";
             // WHERE CLOUSE USING BETWEEN TRANS_DATE AND ONE MONTH BEFORE TRANSDATE by Dani
@@ -1656,14 +1656,13 @@ public class ViewDoaImpl implements ViewDao {
                 + "               left join m_supplier S "
                 + "               on h.cd_supplier=s.cd_supplier "
                 + " LEFT JOIN HIST_KIRIM K ON K.NO_ORDER = H.ORDER_NO "
-                + "WHERE H.STATUS LIKE :status  "
-                + "AND H.ORDER_TYPE LIKE :orderType  "
-                + "AND H.OUTLET_CODE = :outletCode  "
-                + "AND H.Order_to LIKE :orderTo  "
-                + "" + where + ""
+                + "WHERE H.STATUS LIKE :status "
+                + "AND H.ORDER_TYPE LIKE :orderType "
+                + "AND H.OUTLET_CODE = :outletCode "
+                + "AND H.Order_to LIKE :orderTo " + where + " "
                 + "AND CASE WHEN G.DESCRIPTION is null and  m.outlet_name is null then s.supplier_name " 
-                + "WHEN G.DESCRIPTION is null and s.supplier_name  is null then m.outlet_name ELSE g.description end LIKE :delivery"
-                + " ORDER BY H.DATE_UPD DESC, H.TIME_UPD DESC ";
+                + "WHEN G.DESCRIPTION is null and s.supplier_name  is null then m.outlet_name ELSE g.description end LIKE :delivery "
+                + "ORDER BY H.DATE_UPD DESC, H.TIME_UPD DESC ";
         Map prm = new HashMap();
         prm.put("status", "%" + balance.get("status") + "%");
         prm.put("orderType", "%" + balance.get("orderType") + "%");
@@ -1673,30 +1672,27 @@ public class ViewDoaImpl implements ViewDao {
         prm.put("delivery", "%" + balance.get("delivery") + "%");
 
         System.err.println("q :" + qry);
-        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
-            @Override
-            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
-                Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("outletCode", rs.getString("OUTLET_CODE"));
-                rt.put("orderType", rs.getString("ORDER_TYPE"));
-                rt.put("orderId", rs.getString("ORDER_ID"));
-                rt.put("orderNo", rs.getString("ORDER_NO"));
-                rt.put("orderDate", rs.getString("ORDER_DATE"));
-                rt.put("orderTo", rs.getString("ORDER_TO"));
-                rt.put("cdSupplier", rs.getString("CD_SUPPLIER"));
-                rt.put("dtDue", rs.getString("DT_DUE"));
-                rt.put("dtExpired", rs.getString("DT_EXPIRED"));
-                rt.put("remark", rs.getString("REMARK"));
-                rt.put("noOfPrint", rs.getString("NO_OF_PRINT"));
-                rt.put("status", rs.getString("STATUS"));
-                rt.put("userUpd", rs.getString("USER_UPD"));
-                rt.put("dateUpd", rs.getString("DATE_UPD"));
-                rt.put("timeUpd", rs.getString("TIME_UPD"));
-                rt.put("gudangName", rs.getString("NAMA_GUDANG"));
-                rt.put("statusKirim", rs.getString("STATUS_KIRIM"));
-
-                return rt;
-            }
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, (ResultSet rs, int i) -> {
+            Map<String, Object> rt = new HashMap<String, Object>();
+            rt.put("outletCode", rs.getString("OUTLET_CODE"));
+            rt.put("orderType", rs.getString("ORDER_TYPE"));
+            rt.put("orderId", rs.getString("ORDER_ID"));
+            rt.put("orderNo", rs.getString("ORDER_NO"));
+            rt.put("orderDate", rs.getString("ORDER_DATE"));
+            rt.put("orderTo", rs.getString("ORDER_TO"));
+            rt.put("cdSupplier", rs.getString("CD_SUPPLIER"));
+            rt.put("dtDue", rs.getString("DT_DUE"));
+            rt.put("dtExpired", rs.getString("DT_EXPIRED"));
+            rt.put("remark", rs.getString("REMARK"));
+            rt.put("noOfPrint", rs.getString("NO_OF_PRINT"));
+            rt.put("status", rs.getString("STATUS"));
+            rt.put("userUpd", rs.getString("USER_UPD"));
+            rt.put("dateUpd", rs.getString("DATE_UPD"));
+            rt.put("timeUpd", rs.getString("TIME_UPD"));
+            rt.put("gudangName", rs.getString("NAMA_GUDANG"));
+            rt.put("statusKirim", rs.getString("STATUS_KIRIM"));
+            
+            return rt;
         });
         return list;
     }
