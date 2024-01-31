@@ -2819,7 +2819,7 @@ public class ProcessDaoImpl implements ProcessDao {
         String query = "UPDATE T_DEV_HEADER SET STATUS = '1' WHERE REQUEST_NO=:requestNo AND DELIVERY_NO =:deliveryNo";
         jdbcTemplate.update(query, data);
         // hit api to warehouse
-        String qhs = "SELECT OUTLET_TO as OUTLET_CODE, REQUEST_NO as ORDER_NO, STATUS FROM T_DEV_HEADER WHERE REQUEST_NO=:requestNo AND DELIVERY_NO = :deliveryNo";
+        String qhs = "SELECT OUTLET_TO as OUTLET_CODE, REQUEST_NO as ORDER_NO, STATUS, DELIVERY_NO as REMARK FROM T_DEV_HEADER WHERE REQUEST_NO=:requestNo AND DELIVERY_NO = :deliveryNo";
         Map<String, Object> hdr = jdbcTemplate.queryForObject(qhs, data, new DynamicRowMapper());
         hdr.put("userUpd", data.get("userUpd"));
         hdr.put("dateUpd", data.get("dateUpd"));
