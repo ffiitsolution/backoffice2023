@@ -83,6 +83,7 @@
       },
       {
         "name": "Kirim Terima Data",
+        "url": "/master/kirim-terima-data",
         "badge": {
           "color": "warning",
           "text": "On Progress"
