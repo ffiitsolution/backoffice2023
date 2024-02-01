@@ -26,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -39,6 +40,7 @@ import org.springframework.http.MediaType;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -3413,4 +3415,338 @@ public class IndexController {
     }
     ///////////////done
     
+    
+    // =============== New Method From Lukas 17-10-2023 ===============
+    // =============== Method Copy Data Local All / Selected / Single ===============
+    @RequestMapping(value = "/copy-all", method = RequestMethod.POST)
+    public @ResponseBody
+    ResponseMessage copyAll(@RequestBody Map<String, Object> param) throws IOException, Exception {
+        ResponseMessage rm = new ResponseMessage();
+        List<String> listTable = new ArrayList<>();
+        listTable.add("M_COLOR");
+        listTable.add("M_DISCOUNT_METHOD");
+        listTable.add("M_DISCOUNT_METHOD_LIMIT");
+        listTable.add("M_DONATE_METHOD");
+        listTable.add("M_DONATE_METHOD_LIMIT");
+        listTable.add("M_GLOBAL");
+        listTable.add("M_GROUP_ITEM");
+        listTable.add("M_ITEM");
+        listTable.add("M_ITEM_COST");
+//        listTable.add("M_LEVEL_1");
+//        listTable.add("M_LEVEL_2");
+//        listTable.add("M_LEVEL_3");
+//        listTable.add("M_LEVEL_4");
+        listTable.add("M_MENU_GROUP");
+        listTable.add("M_MENU_GROUP_LIMIT");
+        listTable.add("M_MENU_ITEM");
+        listTable.add("M_MENU_ITEM_LIMIT");
+        listTable.add("M_MENU_ITEM_SCHEDULE");
+        listTable.add("M_MENU_SET");
+        listTable.add("M_MODIFIER_ITEM");
+        listTable.add("M_MODIFIER_PRICE");
+        listTable.add("M_MPCS_HEADER");
+        listTable.add("M_MPCS_DETAIL");
+//        listTable.add("M_OPNAME_TEMPL_HEADER");
+//        listTable.add("M_OPNAME_TEMPL_DETAIL");
+        listTable.add("M_OUTLET");
+        listTable.add("M_PAYMENT_METHOD");
+        listTable.add("M_PAYMENT_METHOD_LIMIT");
+        listTable.add("M_OUTLET_PRICE");
+        listTable.add("M_PRICE");
+        listTable.add("M_RECIPE_HEADER");
+        listTable.add("M_RECIPE_DETAIL");
+        listTable.add("M_RECIPE_PRODUCT");
+        listTable.add("M_SALES_RECIPE");
+        listTable.add("M_UOM_CONV");
+        listTable.add("M_ITEM_SUPPLIER");
+//        listTable.add("M_DELETED");
+//        listTable.add("M_NPWP");
+//        listTable.add("M_MENUGRP");
+//        listTable.add("M_MENUDTL");
+
+        String dateCopy = (String) param.get("date");
+        if (dateCopy == null || "".equals(dateCopy)) {
+            dateCopy = new SimpleDateFormat("dd-MMM-yyyy").format(Calendar.getInstance().getTime());
+        }
+        System.out.println("Copy All Table Start At " + dateCopy);
+        List<String> listError = new ArrayList<>();
+        try {
+            for (String table : listTable) {
+                if (processServices.insertDataLocal(table, dateCopy) == false) {
+                    Date dateError = new Date();
+                    listError.add(table);
+                    System.out.println("Error Insert Table " + table + " At " + dateError);
+                }
+            }
+
+            if (listError.isEmpty()) {
+                rm.setSuccess(true);
+                rm.setMessage("Copy " + listTable.size() + " Table for " + dateCopy + " Successfuly");
+            } else {
+                rm.setSuccess(false);
+                rm.setMessage("Some Table Failed");
+                rm.setItem(listError);
+            }
+            System.out.println("Copy All Table End");
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Insert Failed: " + e.getMessage());
+
+        }
+        return rm;
+    }
+
+    @RequestMapping(value = "/copy-selected", method = RequestMethod.POST)
+    public @ResponseBody
+    ResponseMessage copySelected(@RequestBody Map<String, Object> param)
+            throws IOException, Exception {
+        ResponseMessage rm = new ResponseMessage();
+        List<String> nameTable = (List<String>) param.get("listTable");
+        String dateCopy = (String) param.get("date");
+        if (dateCopy == null || "".equals(dateCopy)) {
+            dateCopy = new SimpleDateFormat("dd-MMM-yyyy").format(Calendar.getInstance().getTime());
+        }
+
+        System.out.println("Copy Selected Table Start at " + dateCopy);
+        List<String> listError = new ArrayList<>();
+        try {
+            if (nameTable.isEmpty()) {
+                rm.setSuccess(false);
+                rm.setMessage("Please Choose Table First");
+            } else {
+                for (String table : nameTable) {
+                    if (processServices.insertDataLocal(table, dateCopy) == false) {
+                        Date dateError = new Date();
+                        listError.add(table);
+                        System.out.println("Error Insert Table " + table + " At " + dateError);
+                    } else {
+                        System.out.println("Done Insert Table " + table);
+                    }
+                }
+
+                if (listError.isEmpty()) {
+                    rm.setSuccess(true);
+                    rm.setMessage("Copy " + nameTable.size() + " Table for " + dateCopy + " Successfuly");
+                } else {
+                    rm.setSuccess(false);
+                    rm.setMessage("Some Table Failed");
+                    rm.setItem(listError);
+                }
+            }
+            System.out.println("Copy Selected Table End");
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Insert Failed: " + e.getMessage());
+        }
+        return rm;
+    }
+
+    @RequestMapping(value = "/copy-single", method = RequestMethod.POST)
+    public @ResponseBody
+    ResponseMessage copyPaste(@RequestBody Map<String, Object> param) throws IOException, Exception {
+        String tableName = (String) param.get("tableName");
+        String dateCopy = (String) param.get("date");
+        if (dateCopy == null || "".equals(dateCopy)) {
+            dateCopy = new SimpleDateFormat("dd-MMM-yyyy").format(Calendar.getInstance().getTime());
+        }
+
+        System.out.println("Copy Table " + tableName + " Start at " + dateCopy);
+        ResponseMessage rm = new ResponseMessage();
+        try {
+            if (processServices.insertDataLocal(tableName, dateCopy)) {
+                rm.setSuccess(true);
+                rm.setMessage("Insert " + tableName + " for " + dateCopy + " Successfuly");
+            } else {
+                rm.setSuccess(false);
+                rm.setMessage("Insert Failed. Please Check Log Insert");
+            }
+            System.out.println("Copy Table " + tableName + " End");
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Insert Failed: " + e.getMessage());
+        }
+        return rm;
+    }
+    
+    // ========= METHOD TRANSFER DATA TO MASTER =========
+    @RequestMapping(value = "/transfer-data-all", method = RequestMethod.POST)
+    public @ResponseBody
+    ResponseMessage transferDataAll(@RequestBody Map<String, Object> param) throws IOException, Exception {
+        ResponseMessage rm = new ResponseMessage();
+        List<String> listTable = new ArrayList<>();
+        listTable.add("T_ABSENSI");
+        listTable.add("T_AGENT_LOG");
+        listTable.add("T_COPNAME_DETAIL");
+        listTable.add("T_COPNAME_HEADER");
+        listTable.add("T_COST_SCHEDULE");
+        listTable.add("T_DEV_DETAIL");
+        listTable.add("T_DEV_HEADER");
+        listTable.add("T_EOD_HIST");
+        listTable.add("T_EOD_HIST_DTL");
+        listTable.add("T_HIST_DEL_PRD");
+        listTable.add("T_ITEM_PRICE_SCH");
+        listTable.add("T_KDS_HEADER");
+        listTable.add("T_KDS_ITEM");
+        listTable.add("T_KDS_ITEM_DETAIL");
+        listTable.add("T_KDS_KRUSHER");
+        listTable.add("T_KDS_NAME");
+        listTable.add("T_LOC_DETAIL");
+        listTable.add("T_LOC_HEADER");
+        listTable.add("T_MPCS_DETAIL");
+        listTable.add("T_MPCS_HIST");
+        listTable.add("T_MPCS_LOG");
+        listTable.add("T_OPNAME_DETAIL");
+        listTable.add("T_OPNAME_HEADER");
+        listTable.add("T_ORDER_DETAIL");
+        listTable.add("T_ORDER_HEADER");
+        listTable.add("T_PC_BALANCE");
+        listTable.add("T_PC_CLAIM_DTL");
+        listTable.add("T_PC_CLAIM_HDR");
+        listTable.add("T_PC_DTL");
+        listTable.add("T_PC_HDR");
+        listTable.add("T_POS_BILL");
+        listTable.add("T_POS_BILL_DONATE");
+        listTable.add("T_POS_BILL_ITEM");
+        listTable.add("T_POS_BILL_ITEM_DETAIL");
+        listTable.add("T_POS_BILL_PAYMENT");
+        listTable.add("T_POS_BILL_PAYMENT_DETAIL");
+        listTable.add("T_POS_BOOK");
+        listTable.add("T_POS_BOOK_DP_DETAIL");
+        listTable.add("T_POS_BOOK_ITEM");
+        listTable.add("T_POS_BOOK_ITEM_DETAIL");
+        listTable.add("T_POS_BOOK_PAYMENT");
+        listTable.add("T_POS_BOOK_PAYMENT_DETAIL");
+        listTable.add("T_POS_CAT");
+        listTable.add("T_POS_CATERING");
+        listTable.add("T_POS_CAT_ITEM");
+        listTable.add("T_POS_CAT_ITEM_DETAIL");
+        listTable.add("T_POS_CC");
+        listTable.add("T_POS_CC_ITEM");
+        listTable.add("T_POS_CC_ITEM_DETAIL");
+        listTable.add("T_POS_DAY");
+        listTable.add("T_POS_DAY_LOG");
+        listTable.add("T_POS_DAY_TRANS");
+        listTable.add("T_POS_FORM");
+        listTable.add("T_POS_FORM_ITEM");
+        listTable.add("T_POS_FORM_ITEM_DETAIL");
+        listTable.add("T_POS_ITEM_VOID");
+        listTable.add("T_PROJECTION_HEADER");
+        listTable.add("T_PROJECTION_TARGET");
+        listTable.add("T_RECIPE_HIST");
+        listTable.add("T_RECV_DETAIL");
+        listTable.add("T_RECV_HEADER");
+        listTable.add("T_RETURN_DETAIL");
+        listTable.add("T_RETURN_HEADER");
+        listTable.add("T_SCHEDULE_DETAIL");
+        listTable.add("T_SCHEDULE_HEADER");
+        listTable.add("T_SCHEDULE_SUBHEADER");
+        listTable.add("T_SEND_RECV_D");
+        listTable.add("T_SEND_RECV_H");
+        listTable.add("T_STOCK_CARD");
+        listTable.add("T_STOCK_CARD_DETAIL");
+        listTable.add("T_STOCK_CARD_HIST");
+        listTable.add("T_STOCK_CARD_HIST_TRIGGER");
+        listTable.add("T_STOCK_CARD_RECAP");
+        listTable.add("T_SUMM_MPCS");
+        listTable.add("T_SUM_ABSENSI");
+        listTable.add("T_WASTAGE_DETAIL");
+        listTable.add("T_WASTAGE_HEADER");
+        
+        String outletId = param.get("outletId") != null ? (String) param.get("outletId") : null;
+        String dateCopy = (String) param.get("date");
+        if (dateCopy == null || "".equals(dateCopy)) {
+            dateCopy = new SimpleDateFormat("dd-MMM-yyyy").format(Calendar.getInstance().getTime());
+        }
+        System.out.println("Copy All Table Start At " + dateCopy);
+        List<String> listError = new ArrayList<>();
+        try {
+            for (String table : listTable) {
+                if (processServices.sendDataLocal(table, dateCopy, outletId) == false) {
+                    Date dateError = new Date();
+                    listError.add(table);
+                    System.out.println("Error Insert Table " + table + " At " + dateError);
+                }
+            }
+
+            if (listError.isEmpty()) {
+                rm.setSuccess(true);
+                rm.setMessage("Copy " + listTable.size() + " Table for " + dateCopy + " Successfuly");
+            } else {
+                rm.setSuccess(false);
+                rm.setMessage("Some Table Failed");
+                rm.setItem(listError);
+            }
+            System.out.println("Copy All Table End");
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Insert Failed: " + e.getMessage());
+
+        }
+        return rm;
+    }
+    
+    @RequestMapping(value = "/transfer-data-selected", method = RequestMethod.POST)
+    public @ResponseBody
+    ResponseMessage transferDataSelected(@RequestBody Map<String, Object> param) throws IOException, Exception {
+        ResponseMessage rm = new ResponseMessage();
+        List<String> nameTable = (List<String>) param.get("listTable");
+        String outletId = param.get("outletId") != null ? (String) param.get("outletId") : null;
+        String dateCopy = (String) param.get("date");
+        if (dateCopy == null || "".equals(dateCopy)) {
+            dateCopy = new SimpleDateFormat("dd-MMM-yyyy").format(Calendar.getInstance().getTime());
+        }
+
+        System.out.println("Transfer Data Selected Table Start at " + dateCopy);
+        List<String> listError = new ArrayList<>();
+        try {
+            if (nameTable.isEmpty()) {
+                rm.setSuccess(false);
+                rm.setMessage("Please Choose Table First");
+            } else {
+                for (String table : nameTable) {
+                    if (processServices.sendDataLocal(table, dateCopy, outletId) == false) {
+                        Date dateError = new Date();
+                        listError.add(table);
+                        System.out.println("Error Transfer Table " + table + " At " + dateError);
+                    } else {
+                        System.out.println("Done Transfer Table " + table);
+                    }
+                }
+
+                if (listError.isEmpty()) {
+                    rm.setSuccess(true);
+                    rm.setMessage("Copy " + nameTable.size() + " Table for " + dateCopy + " Successfuly");
+                } else {
+                    rm.setSuccess(false);
+                    rm.setMessage("Some Table Failed");
+                    rm.setItem(listError);
+                }
+            }
+            System.out.println("Transfer Selected Table End");
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Transfer Failed: " + e.getMessage());
+        }
+        return rm;
+    }
+    // =============== End Method From Lukas 17-10-2023 ===============
+    
+
+    // =============== New Method From M Joko - 1 Feb 2024 ===============
+    @RequestMapping(value = "/list-log", method = RequestMethod.POST)
+    public @ResponseBody
+    ResponseMessage listLogger(@RequestBody Map<String, Object> param) throws IOException, Exception {
+        String moduleName = (String) param.get("moduleName");
+        ResponseMessage rm = new ResponseMessage();
+        try {
+            List<String> listLogs = viewServices.listLogger(param);
+            rm.setSuccess(true);
+            rm.setMessage("Successfuly get list " + moduleName);
+            rm.setItem(listLogs);
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage(moduleName + " Failed: " + e.getMessage());
+        }
+        return rm;
+    }
 }

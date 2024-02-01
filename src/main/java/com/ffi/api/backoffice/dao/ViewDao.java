@@ -311,5 +311,9 @@ public interface ViewDao {
     List<Map<String, Object>> listMpcsManagementFryer(Map<String, String> ref);
     ////// done 
     
+    // =============== New Method From M Joko - 1 Feb 2024 ===============
+    List<String> listLogger(Map<String, Object> ref);
+    ////// done 
+    
     
 }

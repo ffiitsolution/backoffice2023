@@ -9,17 +9,21 @@ import com.ffi.api.backoffice.dao.ProcessDao;
 import com.ffi.api.backoffice.model.DetailOpname;
 import com.ffi.api.backoffice.model.HeaderOpname;
 import com.ffi.api.backoffice.utils.DynamicRowMapper;
+import com.ffi.api.backoffice.utils.FileLoggerUtil;
 import com.ffi.api.backoffice.utils.RestApiUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -32,7 +36,9 @@ import javax.transaction.Transactional;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -44,7 +50,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -70,8 +75,11 @@ public class ProcessDaoImpl implements ProcessDao {
 
     @Value("${endpoint.warehouse}")
     private String urlWarehouse;
-    ///////////////new method from dona 27-02-2023////////////////////////////
 
+    @Value("${endpoint.master}")
+    private String urlMaster;
+    
+    ///////////////new method from dona 27-02-2023////////////////////////////
     @Override
     public void insertSupplier(Map<String, String> balance) {
         String sql = "INSERT INTO M_SUPPLIER (CD_SUPPLIER,SUPPLIER_NAME,ADDRESS_1,ADDRESS_2,CITY,ZIP_CODE,PHONE, "
@@ -3272,7 +3280,7 @@ public class ProcessDaoImpl implements ProcessDao {
         }
         
         String queryUpd = """
-INSERT INTO T_ABSENSI (
+            INSERT INTO T_ABSENSI (
               OUTLET_CODE, DAY_SEQ, STAFF_ID, SEQ_NO, 
               DATE_ABSEN, TIME_ABSEN, STATUS
             ) 
@@ -3385,4 +3393,592 @@ INSERT INTO T_ABSENSI (
     }
     
     
+    
+
+    // =========== New Method Copy Data Server From Lukas 17-10-2023 ===========
+    @Override
+    public boolean insertDataLocal(String tableName, String date) {
+        Date startApp = new Date();
+        Gson gson = new Gson();
+        Map<String, Object> map1 = new HashMap<String, Object>();
+        try {
+            System.out.println("Start Copy Data " + tableName + " At " + startApp.toString());
+            FileLoggerUtil.log("terimaDataMaster", ("Start Copy Data " + tableName), "SYSTEM");
+
+            // Start Get Data API Server
+            CloseableHttpClient client = HttpClients.createDefault();
+            String url = urlMaster + "/get-data";
+
+            System.out.println("URL Get : " + url);
+            FileLoggerUtil.log("terimaDataMaster", ("URL Get : " + url), "SYSTEM");
+
+            HttpGet getData = new HttpGet(url);
+
+            URI uri = new URIBuilder(getData.getURI()).addParameter("param", tableName).addParameter("date", date).build();
+            getData.setURI(uri);
+
+            CloseableHttpResponse response = client.execute(getData);
+
+            BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
+            StringBuilder content = new StringBuilder();
+            String line;
+            while (null != (line = br.readLine())) {
+                content.append(line);
+            }
+
+            String result = content.toString();
+            
+            System.out.println("Result: " + result);
+
+            map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
+            }.getType());
+
+            // End Get Data API Server
+            List<Map<String, Object>> listItem = (List<Map<String, Object>>) map1.get("item");
+            if (listItem == null) {
+                System.err.println("Error From Server API");
+                System.out.println("FAILED COPY DATA " + tableName);
+                FileLoggerUtil.log("terimaDataMaster", ("FAILED COPY DATA " + tableName), "SYSTEM");
+                return false;
+            } else {
+                compareData(listItem, tableName);
+                System.out.println("Ended Copy Data " + tableName);
+                FileLoggerUtil.log("terimaDataMaster", ("Ended Copy Data " + tableName), "SYSTEM");
+                return true;
+            }
+        } catch (JsonSyntaxException | IOException | UnsupportedOperationException | URISyntaxException e) {
+            Date failedApp = new Date();
+            System.out.println("FAILED COPY DATA " + tableName + " At " + failedApp.toString());
+            System.err.println(e.getMessage());
+            FileLoggerUtil.log("terimaDataMaster", ("FAILED COPY DATA " + tableName), "SYSTEM");
+            FileLoggerUtil.log("terimaDataMaster", ("Error: " + e.getMessage()), "SYSTEM");
+            
+            return false;
+        }
+    }
+
+    // ==== Function Stand Alone ====
+    public void compareData(List<Map<String, Object>> itemServer, String tableName) {
+        List<String> primaryKey = primaryKeyTable(tableName);
+        int totalUpdateRow = 0;
+        int totalInsertRow = 0;
+
+        for (Map<String, Object> item : itemServer) {
+            String conditionText = "";
+            int indexKey = 0;
+
+            if (primaryKey.isEmpty()) {
+                for (String key : item.keySet()) {
+                    conditionText += key + "='" + item.get(key) + "'";
+                    indexKey++;
+                    if (indexKey < item.keySet().size()) {
+                        conditionText += " AND ";
+                    }
+                }
+            } else {
+                for (String key : primaryKey) {
+                    conditionText += key + "='" + item.get(key) + "'";
+                    indexKey++;
+                    if (indexKey < primaryKey.size()) {
+                        conditionText += " AND ";
+                    }
+                }
+            }
+
+            String query = "SELECT * FROM " + tableName; // Need Update Condition HERE
+
+            if (!"".equals(conditionText)) {
+                query += " WHERE " + conditionText;
+            }
+
+            Map prm = new HashMap();
+
+            List<Map<String, Object>> list = jdbcTemplate.query(query, prm, (ResultSet rs, int index) -> convertObject(rs));
+
+            Map<String, Object> exist = list.isEmpty() ? null : list.get(0);
+
+            if (exist == null || "".equals(conditionText)) {
+                totalInsertRow++;
+                insertData(tableName, item);
+            } else if (checkAllColumn(item, exist) == false) {
+                totalUpdateRow++;
+                updateData(tableName, item, primaryKey);
+            }
+        }
+        
+        System.err.println("Total Update Data " + tableName + " : " + totalUpdateRow + " Row ");
+        System.err.println("Total Insert Data " + tableName + " : " + totalInsertRow + " Row ");
+        FileLoggerUtil.log("terimaDataMaster", ("Total Update Data " + tableName + " : " + totalUpdateRow + " Row "), "SYSTEM");
+        FileLoggerUtil.log("terimaDataMaster", ("Total Insert Data " + tableName + " : " + totalInsertRow + " Row "), "SYSTEM");
+
+    }
+
+    public void insertData(String tableName, Map<String, Object> data) {
+        String columnName = "";
+        String value = "";
+        int indexKey = 0;
+        Map<String, Object> params = new HashMap<>();
+
+        for (String key : data.keySet()) {
+            columnName += key;
+            value += ":" + key;
+
+            Object temp = data.get(key);
+            if (temp == null) {
+                params.put(key, null);
+            } else {
+                params.put(key, data.get(key));
+            }
+            indexKey++;
+            if (indexKey < data.keySet().size()) {
+                columnName += " ,";
+                value += " ,";
+            }
+        }
+
+        String query = "INSERT INTO " + tableName + " (" + columnName + ") VALUES (" + value + ")";
+        jdbcTemplate.update(query, params);
+    }
+
+    public void updateData(String tableName, Map<String, Object> data, List<String> primaryKey) {
+        String columnValue = "";
+        String conditionQuery = "";
+        int indexKey = 0;
+
+        Map<String, Object> params = new HashMap<>();
+        int counterKey = 0;
+        for (String key : data.keySet()) {
+            columnValue += key + "= :" + key + "";
+            if (primaryKey.contains(key)) {
+                conditionQuery += key + "= :" + key;
+                counterKey++;
+                if (counterKey < primaryKey.size()) {
+                    conditionQuery += " AND ";
+                }
+            }
+
+            Object temp = data.get(key);
+            if (temp == null) {
+                params.put(key, null);
+            } else {
+                params.put(key, data.get(key));
+            }
+            indexKey++;
+            if (indexKey < data.keySet().size()) {
+                columnValue += " ,";
+            }
+        }
+        String query = "UPDATE " + tableName + " SET " + columnValue + " WHERE " + conditionQuery;
+        jdbcTemplate.update(query, params);
+    }
+
+    // ======= New Method Send Data From Local to Server (Table with name "T_") =========
+    @Override
+    public boolean sendDataLocal(String tableName, String date, String outletId) {
+        Date startApp = new Date();
+        Gson gson = new Gson();
+        Map<String, Object> map1 = new HashMap<String, Object>();
+        String json = "";
+
+        try {
+            System.out.println("Start Transfer Data " + tableName + " At " + startApp.toString());
+            
+            // todo: cek column name
+            String conditionText = conditionTextTransfer(tableName, date);
+            
+            String query = "SELECT * FROM " + tableName + conditionText;
+            Map prm = new HashMap();
+            List<Map<String, Object>> list = jdbcTemplate.query(query, prm, (ResultSet rs, int index) -> convertObject(rs));
+
+            // START API to Send Master
+            CloseableHttpClient client = HttpClients.createDefault();
+            String url = urlMaster + "/recieve-data";
+            HttpPost post = new HttpPost(url);
+
+            post.setHeader("Accept", "*/*");
+            post.setHeader("Content-Type", "application/json");
+
+            Map<String, Object> param = new HashMap<String, Object>();
+            param.put("outletId", outletId);
+            param.put("tableName", tableName);
+            param.put("data", list);
+
+            json = new Gson().toJson(param);
+            StringEntity entity = new StringEntity(json);
+            post.setEntity(entity);
+            CloseableHttpResponse response = client.execute(post);
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(
+                            (response.getEntity().getContent())
+                    )
+            );
+            StringBuilder content = new StringBuilder();
+            String line;
+            while (null != (line = br.readLine())) {
+                content.append(line);
+            }
+            String result = content.toString();
+            map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
+            }.getType());
+            // END API to Send Master
+            boolean status = (boolean) map1.get("success");
+            if (status) {
+                return true;
+            } else {
+                System.err.println(map1.get("message"));
+                return false;
+            }
+        } catch (Exception e) {
+            Date failedApp = new Date();
+            System.out.println("FAILED SEND DATA " + tableName + " At " + failedApp.toString());
+            System.err.println(e.getMessage());
+            return false;
+        }
+    }
+    
+    public String conditionTextTransfer(String tableName, String date){
+        List<String> dateUpd = new ArrayList<>();
+        dateUpd.add("T_AGENT_LOG");
+        dateUpd.add("T_COPNAME_DETAIL");
+        dateUpd.add("T_COPNAME_HEADER");
+        dateUpd.add("T_COST_SCHEDULE");
+        dateUpd.add("T_DEV_DETAIL");
+        dateUpd.add("T_DEV_HEADER");
+        dateUpd.add("T_ITEM_PRICE_SCH");
+        dateUpd.add("T_LOC_DETAIL");
+        dateUpd.add("T_LOC_HEADER");
+        dateUpd.add("T_MPCS_DETAIL");
+        dateUpd.add("T_MPCS_HIST");
+        dateUpd.add("T_OPNAME_DETAIL");
+        dateUpd.add("T_OPNAME_HEADER");
+        dateUpd.add("T_ORDER_DETAIL");
+        dateUpd.add("T_ORDER_HEADER");
+        dateUpd.add("T_PC_CLAIM_DTL");
+        dateUpd.add("T_PC_CLAIM_HDR");
+        dateUpd.add("T_PC_DTL");
+        dateUpd.add("T_PROJECTION_HEADER");
+        dateUpd.add("T_PROJECTION_TARGET");
+        dateUpd.add("T_RECIPE_HIST");
+        dateUpd.add("T_RECV_DETAIL");
+        dateUpd.add("T_RECV_HEADER");
+        dateUpd.add("T_RETURN_DETAIL");
+        dateUpd.add("T_RETURN_HEADER");
+        dateUpd.add("T_SEND_RECV_D");
+        dateUpd.add("T_SUMM_MPCS");
+        dateUpd.add("T_WASTAGE_DETAIL");
+        dateUpd.add("T_WASTAGE_HEADER");
+        
+        List<String> transDate = new ArrayList<>();
+        transDate.add("T_POS_BILL_ITEM_DETAIL");
+        transDate.add("T_POS_DAY_TRANS");
+        transDate.add("T_PC_BALANCE");
+        transDate.add("T_POS_BILL_DONATE");
+        transDate.add("T_POS_BILL_PAYMENT");
+        transDate.add("T_POS_CAT_ITEM_DETAIL");
+        transDate.add("T_POS_CC");
+        transDate.add("T_KDS_ITEM");
+        transDate.add("T_MPCS_LOG");
+        transDate.add("T_POS_FORM_ITEM");
+        transDate.add("T_STOCK_CARD_HIST");
+        transDate.add("T_STOCK_CARD_RECAP");
+        transDate.add("T_KDS_ITEM_DETAIL");
+        transDate.add("T_STOCK_CARD_DETAIL");
+        transDate.add("T_STOCK_CARD_HIST_TRIGGER");
+        transDate.add("T_POS_CAT");
+        transDate.add("T_POS_CC_ITEM_DETAIL");
+        transDate.add("T_EOD_HIST");
+        transDate.add("T_POS_ITEM_VOID");
+        transDate.add("T_SCHEDULE_DETAIL");
+        transDate.add("T_POS_BOOK_PAYMENT");
+        transDate.add("T_POS_CAT_ITEM");
+        transDate.add("T_POS_DAY");
+        transDate.add("T_POS_BILL");
+        transDate.add("T_POS_FORM_ITEM_DETAIL");
+        transDate.add("T_STOCK_CARD");
+        transDate.add("T_POS_BILL_ITEM");
+        transDate.add("T_POS_BOOK");
+        transDate.add("T_POS_BOOK_DP_DETAIL");
+        transDate.add("T_POS_BOOK_ITEM");
+        transDate.add("T_POS_BOOK_ITEM_DETAIL");
+        transDate.add("T_POS_BOOK_PAYMENT_DETAIL");
+        transDate.add("T_POS_DAY_LOG");
+        transDate.add("T_EOD_HIST_DTL");
+        transDate.add("T_KDS_HEADER");
+        transDate.add("T_SUM_ABSENSI");
+        transDate.add("T_POS_BILL_PAYMENT_DETAIL");
+        transDate.add("T_PC_HDR");
+        transDate.add("T_POS_CATERING");
+        transDate.add("T_POS_CC_ITEM");
+        transDate.add("T_POS_FORM");
+        transDate.add("T_SCHEDULE_HEADER");
+        transDate.add("T_SCHEDULE_SUBHEADER");
+        transDate.add("T_SEND_RECV_D");
+        transDate.add("T_SEND_RECV_H");
+        
+        if (transDate.contains(tableName)) {
+            return " WHERE TRANS_DATE = '" + date + "' ";
+        } else if (dateUpd.contains(tableName)) {
+            return " WHERE DATE_UPD = '" + date + "' ";
+        }
+        return " WHERE DATE_UPD = '" + date + "' ";
+    }
+
+    public Map<String, Object> convertObject(ResultSet result) throws SQLException {
+        Map<String, Object> resultReturn = new HashMap<>();
+        ResultSetMetaData rsmd = result.getMetaData();
+        int cols = rsmd.getColumnCount();
+        for (int i = 0; i < cols; i++) {
+            switch (rsmd.getColumnName(i + 1)) {
+                // ---- Start Need to Discuss ----                
+//                case "DATE_UPD" -> {
+//                    resultReturn.put(rsmd.getColumnName(i + 1), dateNow);
+//                }
+//                case "TIME_UPD" -> {
+//                    resultReturn.put(rsmd.getColumnName(i + 1), timeStamp);
+//                }
+                // ---- End Need to Discuss ----
+                
+                // todo: set all date column to format dd-MMM-yyyy
+                case "ASSEMBLY_END_TIME", "ASSEMBLY_START_TIME", "BILL_DATE", "BOOK_DATE", "BUCKET_DATE", "CC_DATE", "DATE_1", "DATE_2", "DATE_3", "DATE_4", "DATE_5", "DATE_6", "DATE_ABSEN", "DATE_CREATE", "DATE_DEL", "DATE_END", "DATE_EOD", "DATE_MPCS", "DATE_OF_BIRTH", "DATE_SEND", "DATE_START", "DATE_TRANS", "DATE_UPD", "DELIVERY_DATE", "DISPATCH_END_TIME", "DISPATCH_START_TIME", "DT_DUE", "DT_EXPIRED", "EFFECTIVE_DATE", "EMPLOY_DATE", "END_DATE", "END_OF_DAY", "EVENT_DATE", "FINISH_DATE", "FINISH_TIME", "FLD4", "FLD5", "FLD6", "HOLIDAY_DATE", "KEY_3", "LAST_ORDER", "LAST_RECEIVE", "LAST_RETURN", "LAST_SALES", "LAST_TRANSFER_IN", "LAST_TRANSFER_OUT", "LOG_DATE", "MPCS_DATE", "OPNAME_DATE", "ORDER_DATE", "PAYMENT_DATE", "PERIODE", "PICKUP_END_TIME", "PICKUP_START_TIME", "RECV_DATE", "RESIGN_DATE", "RETURN_DATE", "START_DATE", "START_OF_DAY", "START_TIME", "SUGGEST_DATE", "SUPPLY_END_TIME", "SUPPLY_QUEUE_START_TIME", "SUPPLY_START_TIME", "TANGGAL", "TANGGAL_CREATE", "TANGGAL_MODAL", "TANGGAL_PESAN_TERAKHIR", "TANGGAL_SETOR", "TANGGAL_TARIK", "TANGGAL_TRANS", "TANGGAL_TRANSAKSI", "TD", "TGL_CREATE", "TGL_KIRIM", "TGL_MODAL", "TGL_PESAN_TERAKHIR", "TGL_RETURN", "TGL_SETOR", "TGL_TERIMA", "TGL_TRANSAKSI", "TMPFLD2", "TMPFLD9", "TMP_DATE_UPD", "TMP_TRANS_DATE", "TRANSFER_DATE", "TRANS_DATE", "VIEW_DATE_UPD", "VIEW_TRANS_DATE", "WASTAGE_DATE" -> {
+                    String dateData = new SimpleDateFormat("dd-MMM-yyyy").format(result.getObject(i + 1));
+                    resultReturn.put(rsmd.getColumnName(i + 1), dateData);
+                }
+                case "QTY_STOCK_E", "QTY_STOCK_T", "QTY_EI", "QTY_TA" -> {
+                    Object temp = result.getObject(i + 1);
+                    if (temp == null) {
+                        resultReturn.put(rsmd.getColumnName(i + 1), null);
+                    } else {
+                        resultReturn.put(rsmd.getColumnName(i + 1), result.getObject(i + 1));
+                    }
+                }
+                default -> {
+                    Object temp = result.getObject(i + 1);
+                    if (temp == null) {
+                        resultReturn.put(rsmd.getColumnName(i + 1), null);
+                    } else {
+                        resultReturn.put(rsmd.getColumnName(i + 1), result.getObject(i + 1).toString());
+                    }
+                }
+            }
+        }
+        return resultReturn;
+    }
+
+    public boolean checkAllColumn(Map<String, Object> itemServer, Map<String, Object> itemExist) {
+        boolean result = true;
+        
+        for (String key : itemServer.keySet()) {
+            switch (key) {
+                case "QTY_STOCK_E", "QTY_STOCK_T", "QTY_EI", "QTY_TA" -> {
+                    var temp = Double.valueOf(itemServer.get(key).toString());
+                    if (!itemServer.get(key).equals( temp)) {
+                        System.out.println("formatter " + temp);
+                        System.out.println("server " + itemServer.get(key));
+                        result = false;
+                    }
+                }
+                default -> {
+                    if (itemServer.get(key) != itemExist.get(key) && !itemServer.get(key).equals(itemExist.get(key))) {
+                        result = false;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    public List<String> primaryKeyTable(String tableName) {
+        List<String> primaryKey = new ArrayList<>();
+
+        switch (tableName) {
+            case "M_COLOR" ->
+                primaryKey.add("COLOR_CODE");
+            case "M_DISCOUNT_METHOD" -> {
+                primaryKey.add("REGION_CODE");
+                primaryKey.add("OUTLET_CODE");
+                primaryKey.add("DISCOUNT_METHOD_CODE");
+            }
+            case "M_DISCOUNT_METHOD_LIMIT" -> {
+                primaryKey.add("REGION_CODE");
+                primaryKey.add("OUTLET_CODE");
+                primaryKey.add("DISCOUNT_METHOD_CODE");
+                primaryKey.add("ORDER_TYPE");
+            }
+            case "M_DONATE_METHOD" -> {
+                primaryKey.add("REGION_CODE");
+                primaryKey.add("OUTLET_CODE");
+                primaryKey.add("DONATE_METHOD_CODE");
+            }
+            case "M_DONATE_METHOD_LIMIT" -> {
+                primaryKey.add("REGION_CODE");
+                primaryKey.add("OUTLET_CODE");
+                primaryKey.add("DONATE_METHOD_CODE");
+                primaryKey.add("ORDER_TYPE");
+            }
+            case "M_GLOBAL" -> {
+                primaryKey.add("COND");
+                primaryKey.add("CODE");
+            }
+            case "M_GROUP_ITEM" -> {
+                primaryKey.add("ITEM_CODE");
+                primaryKey.add("GROUP_ITEM_CODE");
+            }
+            case "M_ITEM" ->
+                primaryKey.add("ITEM_CODE");
+            case "M_LEVEL_1" ->
+                primaryKey.add("CD_LEVEL_1");
+            case "M_LEVEL_2" -> {
+                primaryKey.add("CD_LEVEL_1");
+                primaryKey.add("CD_LEVEL_2");
+            }
+            case "M_LEVEL_3" -> {
+                primaryKey.add("CD_LEVEL_1");
+                primaryKey.add("CD_LEVEL_2");
+                primaryKey.add("CD_LEVEL_3");
+            }
+            case "M_LEVEL_4" -> {
+                primaryKey.add("CD_LEVEL_1");
+                primaryKey.add("CD_LEVEL_2");
+                primaryKey.add("CD_LEVEL_3");
+                primaryKey.add("CD_LEVEL_4");
+            }
+            case "M_MENU_GROUP" -> {
+                primaryKey.add("REGION_CODE");
+                primaryKey.add("OUTLET_CODE");
+                primaryKey.add("MENU_GROUP_CODE");
+            }
+            case "M_MENU_GROUP_LIMIT" -> {
+                primaryKey.add("REGION_CODE");
+                primaryKey.add("OUTLET_CODE");
+                primaryKey.add("MENU_GROUP_CODE");
+                primaryKey.add("ORDER_TYPE");
+            }
+            case "M_MENU_ITEM" -> {
+                primaryKey.add("REGION_CODE");
+                primaryKey.add("OUTLET_CODE");
+                primaryKey.add("MENU_ITEM_CODE");
+            }
+            case "M_MENU_ITEM_LIMIT" -> {
+                primaryKey.add("REGION_CODE");
+                primaryKey.add("OUTLET_CODE");
+                primaryKey.add("MENU_ITEM_CODE");
+                primaryKey.add("ORDER_TYPE");
+            }
+            case "M_MENU_ITEM_SCHEDULE" -> {
+                primaryKey.add("REGION_CODE");
+                primaryKey.add("OUTLET_CODE");
+                primaryKey.add("MENU_ITEM_CODE");
+                primaryKey.add("START_DATE");
+            }
+            case "M_MENU_SET" -> {
+                primaryKey.add("REGION_CODE");
+                primaryKey.add("OUTLET_CODE");
+                primaryKey.add("MENU_SET_CODE");
+                primaryKey.add("MENU_SET_ITEM_CODE");
+            }
+            case "M_MODIFIER_ITEM" -> {
+                primaryKey.add("MODIFIER_ITEM_CODE");
+                primaryKey.add("OUTLET_CODE");
+                primaryKey.add("MODIFIER_GROUP_CODE");
+                primaryKey.add("REGION_CODE");
+            }
+            case "M_MODIFIER_PRICE" -> {
+                primaryKey.add("MODIFIER_GROUP_CODE");
+                primaryKey.add("MODIFIER_ITEM_CODE");
+                primaryKey.add("PRICE_TYPE_CODE");
+            }
+            case "M_MPCS_HEADER" -> {
+                primaryKey.add("OUTLET_CODE");
+                primaryKey.add("MPCS_GROUP");
+            }
+            case "M_MPCS_DETAIL" -> {
+                primaryKey.add("OUTLET_CODE");
+                primaryKey.add("FRYER_TYPE");
+                primaryKey.add("FRYER_TYPE_SEQ");
+            }
+            case "M_OPNAME_TEMPL_HEADER" ->
+                primaryKey.add("CD_TEMPLATE");
+            case "M_OPNAME_TEMPL_DETAIL" -> {
+                primaryKey.add("CD_TEMPLATE");
+                primaryKey.add("ITEM_CODE");
+            }
+            case "M_OUTLET" -> {
+                primaryKey.add("REGION_CODE");
+                primaryKey.add("OUTLET_CODE");
+            }
+            case "M_PAYMENT_METHOD" -> {
+                primaryKey.add("REGION_CODE");
+                primaryKey.add("OUTLET_CODE");
+                primaryKey.add("PAYMENT_METHOD_CODE");
+            }
+            case "M_PAYMENT_METHOD_LIMIT" -> {
+                primaryKey.add("REGION_CODE");
+                primaryKey.add("OUTLET_CODE");
+                primaryKey.add("PAYMENT_METHOD_CODE");
+                primaryKey.add("ORDER_TYPE");
+            }
+            case "M_OUTLET_PRICE" -> {
+                primaryKey.add("OUTLET_CODE");
+                primaryKey.add("ORDER_TYPE");
+            }
+            case "M_PRICE" -> {
+                primaryKey.add("MENU_ITEM_CODE");
+                primaryKey.add("PRICE_TYPE_CODE");
+            }
+            case "M_RECIPE_HEADER" ->
+                primaryKey.add("RECIPE_CODE");
+            case "M_RECIPE_DETAIL" -> {
+                primaryKey.add("RECIPE_CODE");
+                primaryKey.add("ITEM_CODE");
+            }
+            case "M_RECIPE_PRODUCT" -> {
+                primaryKey.add("RECIPE_CODE");
+                primaryKey.add("PRODUCT_CODE");
+            }
+            case "M_SALES_RECIPE" -> {
+                primaryKey.add("ITEM_CODE");
+                primaryKey.add("PLU_CODE");
+            }
+            case "M_UOM_CONV" -> {
+                primaryKey.add("FROM_UOM");
+                primaryKey.add("TO_UOM");
+            }
+            case "M_DELETED" -> {
+                primaryKey.add("OUTLET_CODE");
+                primaryKey.add("TABLE_CODE");
+                primaryKey.add("SEQ");
+            }
+            case "M_NPWP" ->
+                primaryKey.add("OUTLET_CODE");
+            case "M_MENUGRP" -> {
+                primaryKey.add("GROUP_ID");
+                primaryKey.add("APPL_ID");
+                primaryKey.add("MENU_ID");
+            }
+            case "M_MENUDTL" -> {
+                primaryKey.add("TYPE_ID");
+                primaryKey.add("MENU_ID");
+            }
+            case "M_MPCS_DETAIL_HIST" -> {
+                primaryKey.add("OUTLET_CODE");
+                primaryKey.add("FRYER_TYPE");
+                primaryKey.add("FRYER_TYPE_SEQ");
+                primaryKey.add("FRYER_TYPE_SEQ_CNT");
+                primaryKey.add("DATE_UPD");
+                primaryKey.add("TIME_UPD");
+            }
+            case "M_DELIVERY_TIME" -> {
+                primaryKey.add("REGION_CODE");
+                primaryKey.add("OUTLET_CODE");
+                primaryKey.add("AREA");
+            }
+            case "M_ITEM_SUPPLIER" -> {
+                primaryKey.add("ITEM_CODE");
+                primaryKey.add("CD_SUPPLIER");
+            }
+        }
+
+        return primaryKey;
+    }
+    // =========== End Method Copy Data Server From Lukas 17-10-2023 ===========
 }

@@ -8,6 +8,7 @@ import com.ffi.api.backoffice.dao.ViewDao;
 import com.ffi.api.backoffice.model.ParameterLogin;
 import com.ffi.api.backoffice.utils.AppUtil;
 import com.ffi.api.backoffice.utils.DynamicRowMapper;
+import com.ffi.api.backoffice.utils.FileLoggerUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -1011,15 +1012,7 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listStaff(Map<String, String> ref) {
-        String qry = """
-                    select b.code AS REGION_CODE,b.description AS REGIONAL_DESC,c.code AS AREA_CODE, c.description AS AREA_DESC,mo.outlet_name, staff_code,staff_name,sex AS SEX_TYPE,d.DESCRIPTION  AS POSITION_NAME,access_level,group_id AS ACCESS_NAME, a.status 
-                    from m_staff a
-                    left join m_outlet mo on a.outlet_code=mo.outlet_code
-                    left join m_global b on mo.region_code=b.code 
-                    left join m_global c on mo.area_code=c.code
-                    left join m_global d ON  a.POSITION=d.CODE 
-                    where b.cond='REG_OUTLET' and c.cond='AREACODE' and d.cond='POSITION' AND a.OUTLET_CODE = :outletCode AND a.STATUS LIKE :status AND a.POSITION LIKE :position
-                    """;
+        String qry = "SELECT DISTINCT b.DESCRIPTION AS REGIONAL_DESC,b.CODE AS REGION_CODE, mo.OUTLET_NAME,c.DESCRIPTION AS AREA_DESC,c.CODE AS AREA_CODE,G.DESCRIPTION CITY_STAFF, G1.DESCRIPTION POSITION_NAME,G2.DESCRIPTION ACCESS_NAME, S.*,PS.STAFF_POS_CODE,PS.PASSWORD AS PASS_POS_CODE, PS.STATUS AS STATUS_POS,S.ACCESS_LEVEL FROM M_STAFF S LEFT JOIN M_OUTLET mo ON mo.OUTLET_CODE = S.OUTLET_CODE left join M_GLOBAL b on mo.REGION_CODE =b.CODE left join M_GLOBAL c on mo.AREA_CODE =c.CODE AND c.COND LIKE '%AREACODE%' LEFT JOIN M_GLOBAL mg ON mg.COND LIKE '%REG_OUTLET%' AND mg.CODE = mo.AREA_CODE LEFT JOIN M_POS_STAFF PS ON PS.STAFF_CODE = S.STAFF_CODE LEFT JOIN M_GLOBAL G ON G.CODE = S.CITY AND G.COND = 'CITY' LEFT JOIN M_GLOBAL G1 ON G1.CODE = S.POSITION AND G1.COND = 'POSITION' LEFT JOIN M_GLOBAL G2 ON G2.CODE = S.ACCESS_LEVEL AND G2.COND = 'ACCESS' WHERE S.OUTLET_CODE = :outletCode AND S.STATUS LIKE :status AND S.POSITION LIKE :position";
         Map prm = new HashMap();
 
         // PARAMETER YG DIGUNAKAN SETELAH WHERE DIDALAM QUERY //
@@ -1028,66 +1021,46 @@ public class ViewDoaImpl implements ViewDao {
         prm.put("position", "%" + ref.get("position") + "%");
 
         System.err.println("q :" + qry);
-        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new DynamicRowMapper());
-//        String qry = "SELECT DISTINCT VS.REGIONAL_DESC,VS.OUTLET_NAME,VS.AREA_DESC,VS.AREA_CODE,G.DESCRIPTION CITY_STAFF, "
-//                + "G1.DESCRIPTION POSITION_NAME,G2.DESCRIPTION ACCESS_NAME, "
-//                + "S.*,PS.STAFF_POS_CODE,PS.PASSWORD AS PASS_POS_CODE, PS.STATUS AS STATUS_POS,s.access_level ACCESS_LEVEL FROM M_STAFF S "
-//                + "JOIN V_STRUCTURE_STORE VS ON VS.OUTLET_CODE = S.OUTLET_CODE  "
-//                + "LEFT JOIN M_POS_STAFF PS ON PS.STAFF_CODE = S.STAFF_CODE  "
-//                + "LEFT JOIN M_GLOBAL G ON G.CODE = S.CITY AND G.COND = 'CITY' "
-//                + "LEFT JOIN M_GLOBAL G1 ON G1.CODE = S.POSITION AND G1.COND = 'POSITION' "
-//                + "LEFT JOIN M_GLOBAL G2 ON G2.CODE = S.ACCESS_LEVEL AND G2.COND = 'ACCESS' "
-//                + "WHERE S.OUTLET_CODE = :outletCode AND S.STATUS LIKE :status AND S.POSITION LIKE :position";
-//        Map prm = new HashMap();
-//
-//        // PARAMETER YG DIGUNAKAN SETELAH WHERE DIDALAM QUERY //
-//        prm.put("outletCode", ref.get("outletCode"));
-//        prm.put("status", "%" + ref.get("status") + "%");
-//        prm.put("position", "%" + ref.get("position") + "%");
-//
-//        System.err.println("q :" + qry);
-//        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
-//            @Override
-//            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
-//                Map<String, Object> rt = new HashMap<String, Object>();
-//
-//                // PARAMETER YG DIGUNAKAN UNTUK MENAMPILKAN VALUE YANG ADA DIDALAM FIELD(KOLOM) SAAT MENGGUNAKAN QUERY //
-//                rt.put("regionCode", rs.getString("REGION_CODE"));
-//                rt.put("regionName", rs.getString("REGIONAL_DESC"));
-//                rt.put("outletName", rs.getString("OUTLET_NAME"));
-//                rt.put("areaName", rs.getString("AREA_DESC"));
-//                rt.put("areaCode", rs.getString("AREA_CODE"));
-//                rt.put("cityStaff", rs.getString("CITY_STAFF"));
-//                rt.put("positionName", rs.getString("POSITION_NAME"));
-//                rt.put("accessName", rs.getString("ACCESS_NAME"));
-//                rt.put("outletCode", rs.getString("OUTLET_CODE"));
-//                rt.put("staffCode", rs.getString("STAFF_CODE"));
-//                rt.put("staffName", rs.getString("STAFF_NAME"));
-//                rt.put("staffFullName", rs.getString("STAFF_FULL_NAME"));
-//                rt.put("passwordCode", rs.getString("PASSWORD"));
-//                rt.put("idCard", rs.getString("ID_CARD"));
-//                rt.put("sexType", rs.getString("SEX"));
-//                rt.put("dateOfBirth", rs.getString("DATE_OF_BIRTH"));
-//                rt.put("address1", rs.getString("ADDRESS_1"));
-//                rt.put("address2", rs.getString("ADDRESS_2"));
-//                rt.put("cityCode", rs.getString("CITY"));
-//                rt.put("phoneNumber", rs.getString("PHONE_NO"));
-//                rt.put("mobilePhoneNumber", rs.getString("MOBILE_PHONE_NO"));
-//                rt.put("employDate", rs.getString("EMPLOY_DATE"));
-//                rt.put("resignDate", rs.getString("RESIGN_DATE"));
-//                rt.put("positionCode", rs.getString("POSITION"));
-//                rt.put("accessLevel", rs.getString("ACCESS_LEVEL"));
-//                rt.put("riderFlag", rs.getString("RIDER_FLAG"));
-//                rt.put("groupId", rs.getString("GROUP_ID"));
-//                rt.put("statusName", rs.getString("STATUS"));
-//                rt.put("statusPos", rs.getString("STATUS_POS"));
-//                rt.put("staffPosCode", rs.getString("STAFF_POS_CODE"));
-//                rt.put("passPosCode", rs.getString("PASS_POS_CODE"));
-//
-//                //    rt.put("staffName", rs.getString("STAFF_NAME"));               
-//                return rt;
-//            }
-//        });
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+
+                // PARAMETER YG DIGUNAKAN UNTUK MENAMPILKAN VALUE YANG ADA DIDALAM FIELD(KOLOM) SAAT MENGGUNAKAN QUERY //
+                rt.put("regionCode", rs.getString("REGION_CODE"));
+                rt.put("regionName", rs.getString("REGIONAL_DESC"));
+                rt.put("outletName", rs.getString("OUTLET_NAME"));
+                rt.put("areaName", rs.getString("AREA_DESC"));
+                rt.put("areaCode", rs.getString("AREA_CODE"));
+                rt.put("cityStaff", rs.getString("CITY_STAFF"));
+                rt.put("positionName", rs.getString("POSITION_NAME"));
+                rt.put("accessName", rs.getString("ACCESS_NAME"));
+                rt.put("outletCode", rs.getString("OUTLET_CODE"));
+                rt.put("staffCode", rs.getString("STAFF_CODE"));
+                rt.put("staffName", rs.getString("STAFF_NAME"));
+                rt.put("staffFullName", rs.getString("STAFF_FULL_NAME"));
+                rt.put("passwordCode", rs.getString("PASSWORD"));
+                rt.put("idCard", rs.getString("ID_CARD"));
+                rt.put("sexType", rs.getString("SEX"));
+                rt.put("dateOfBirth", rs.getString("DATE_OF_BIRTH"));
+                rt.put("address1", rs.getString("ADDRESS_1"));
+                rt.put("address2", rs.getString("ADDRESS_2"));
+                rt.put("cityCode", rs.getString("CITY"));
+                rt.put("phoneNumber", rs.getString("PHONE_NO"));
+                rt.put("mobilePhoneNumber", rs.getString("MOBILE_PHONE_NO"));
+                rt.put("employDate", rs.getString("EMPLOY_DATE"));
+                rt.put("resignDate", rs.getString("RESIGN_DATE"));
+                rt.put("positionCode", rs.getString("POSITION"));
+                rt.put("accessLevel", rs.getString("ACCESS_LEVEL"));
+                rt.put("riderFlag", rs.getString("RIDER_FLAG"));
+                rt.put("groupId", rs.getString("GROUP_ID"));
+                rt.put("statusName", rs.getString("STATUS"));
+                rt.put("statusPos", rs.getString("STATUS_POS"));
+                rt.put("staffPosCode", rs.getString("STAFF_POS_CODE"));
+                rt.put("passPosCode", rs.getString("PASS_POS_CODE"));
+                return rt;
+            }
+        });
         return list;
     }
     // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL) ==========================================================================================//  
@@ -4392,5 +4365,19 @@ public class ViewDoaImpl implements ViewDao {
             }
         });
         return list;
+    }
+   
+    // =============== New Method From M Joko - 1 Feb 2024 ===============
+    @Override
+    public List<String> listLogger(Map<String, Object> param) {
+        String module = (String) param.get("module");
+        List<String> logs;
+        if(param.containsKey("log") && !param.get("log").toString().isBlank()){
+            String log = (String) param.get("log");
+            logs = FileLoggerUtil.readLogsFromFile(module,log);
+        } else {
+            logs = FileLoggerUtil.readAllLogs(module);
+        }
+        return logs;
     }
 }

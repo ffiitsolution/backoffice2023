@@ -171,4 +171,8 @@ public interface ProcessDao {
     void insertMpcsManagementFryer(JsonObject param);
     ///////////////Done aditya 29-01-2024////////////////////////////
     
+    //============== New Method From Lukas 17-10-2023 ================
+    public boolean insertDataLocal(String tableName, String date);
+    public boolean sendDataLocal(String tableName, String date, String outletId);
+    //============== End Method From Lukas 17-10-2023 ================
 }

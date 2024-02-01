@@ -297,4 +297,13 @@ public class ProcessServices {
         dao.insertMpcsManagementFryer(param);
     }
     ////////////////////done
+
+    //============== New Method Copy Data From Lukas 17-10-2023 ================
+    public boolean insertDataLocal(String tableName, String date) {
+        return dao.insertDataLocal(tableName,date);
+    }
+    public boolean sendDataLocal(String tableName, String date, String outletId) {
+        return dao.sendDataLocal(tableName,date, outletId);
+    }
+    //============== End Method Copy Data From Lukas 17-10-2023 ================
 }
