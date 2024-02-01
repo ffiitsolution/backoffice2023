@@ -1798,13 +1798,7 @@ public class ViewDoaImpl implements ViewDao {
     ///////new methode from Dona 2-Mei-23//////////////////
     @Override
     public List<Map<String, Object>> listCounter(Map<String, String> balance) {
-
-        DateFormat df = new SimpleDateFormat("MM");
-        DateFormat dfYear = new SimpleDateFormat("yyyy");
-        Date tgl = new Date();
-        String month = df.format(tgl);
-        String year = dfYear.format(tgl);
-
+        
         String qry = "SELECT ORDER_ID || LPAD(COUNTNO, 4, '0') AS ORDER_ID FROM ( "
                 + "SELECT :month || a.YEAR AS ORDER_ID,A.COUNTER_NO+1 AS COUNTNO FROM M_COUNTER A "
                 + "LEFT JOIN M_OUTLET B "
@@ -1813,8 +1807,8 @@ public class ViewDoaImpl implements ViewDao {
         Map prm = new HashMap();
         prm.put("transType", balance.get("transType"));
         prm.put("outletCode", balance.get("outletCode"));
-        prm.put("year", year);
-        prm.put("month", month);
+        prm.put("year", balance.get("year"));
+        prm.put("month", balance.get("month"));
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
