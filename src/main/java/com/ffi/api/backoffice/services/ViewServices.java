@@ -539,6 +539,9 @@ public class ViewServices {
     public List<String> listLogger(Map<String, Object> ref) {
         return viewDao.listLogger(ref);
     }
-    
-    
+
+    // MPCS Production List Fryer 2 Feb 2024 //
+    public List<Map<String, Object>> mpcsProductionListFryer(Map<String, String> ref) {
+        return viewDao.mpcsProductionListFryer(ref);
+    }
 }
