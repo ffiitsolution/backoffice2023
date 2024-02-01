@@ -15,6 +15,7 @@
     "children": [
       {
         "name": "User",
+        "url": "/master/user",
         "badge": {
           "color": "warning",
           "text": "On Progress"
@@ -22,6 +23,7 @@
       },
       {
         "name": "Outlet",
+        "url": "/master/outlet",
         "badge": {
           "color": "warning",
           "text": "On Progress"
@@ -29,21 +31,19 @@
       },
       {
         "name": "Menu",
-        "url": "/master/menu"
+        "url": "/master/menu",
+        "badge": {
+          "color": "warning",
+          "text": "On Progress"
+        }
       },
       {
         "name": "Price",
-        "badge": {
-          "color": "warning",
-          "text": "On Progress"
-        }
+        "url": "/master/price"
       },
       {
         "name": "Fryer Type",
-        "badge": {
-          "color": "warning",
-          "text": "On Progress"
-        }
+        "url": "/master/fryer"
       },
       {
         "name": "Group Item",
@@ -55,7 +55,11 @@
       },
       {
         "name": "Item",
-        "url": "/master/item"
+        "url": "/master/item",
+        "badge": {
+          "color": "warning",
+          "text": "On Progress"
+        }
       },
       {
         "name": "Recipe",
@@ -79,6 +83,7 @@
       },
       {
         "name": "Kirim Terima Data",
+        "url": "/master/kirim-terima-data",
         "badge": {
           "color": "warning",
           "text": "On Progress"
@@ -121,7 +126,11 @@
       },
       {
         "name": "MPCS",
-        "url": "/transaction/mpcs"
+        "url": "/transaction/mpcs",
+        "badge": {
+          "color": "warning",
+          "text": "On Progress"
+        }
       }
     ]
   },
@@ -136,6 +145,7 @@
       },
       {
         "name": "Mpcs Query",
+        "url": "/report/mpcs-query",
         "badge": {
           "color": "warning",
           "text": "On Progress"
@@ -162,11 +172,7 @@
       },
       {
         "name": "End Of Day",
-        "url": "/report/pos-report",
-        "badge": {
-          "color": "warning",
-          "text": "On Progress"
-        }
+        "url": "/pos/end-of-day"
       }
     ]
   },
@@ -177,6 +183,7 @@
     "children": [
       {
         "name": "Transaksi",
+        "url": "/time-management/transaction",
         "badge": {
           "color": "warning",
           "text": "On Progress"
@@ -184,6 +191,7 @@
       },
       {
         "name": "Laporan Absensi",
+        "url": "/time-management/report-time-management",
         "badge": {
           "color": "warning",
           "text": "On Progress"

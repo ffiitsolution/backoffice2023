@@ -535,5 +535,10 @@ public class ViewServices {
         return viewDao.listMpcsManagementFryer(ref);
     }
     
+    // =============== New Method From M Joko - 1 Feb 2024 ===============
+    public List<String> listLogger(Map<String, Object> ref) {
+        return viewDao.listLogger(ref);
+    }
+    
     
 }

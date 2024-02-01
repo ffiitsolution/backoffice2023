@@ -8,6 +8,7 @@ import com.ffi.api.backoffice.dao.ViewDao;
 import com.ffi.api.backoffice.model.ParameterLogin;
 import com.ffi.api.backoffice.utils.AppUtil;
 import com.ffi.api.backoffice.utils.DynamicRowMapper;
+import com.ffi.api.backoffice.utils.FileLoggerUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -1011,15 +1012,7 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listStaff(Map<String, String> ref) {
-        String qry = "SELECT DISTINCT VS.REGIONAL_DESC,VS.OUTLET_NAME,VS.AREA_DESC,VS.AREA_CODE,G.DESCRIPTION CITY_STAFF, "
-                + "G1.DESCRIPTION POSITION_NAME,G2.DESCRIPTION ACCESS_NAME, "
-                + "S.*,PS.STAFF_POS_CODE,PS.PASSWORD AS PASS_POS_CODE, PS.STATUS AS STATUS_POS,s.access_level ACCESS_LEVEL FROM M_STAFF S "
-                + "JOIN V_STRUCTURE_STORE VS ON VS.OUTLET_CODE = S.OUTLET_CODE  "
-                + "LEFT JOIN M_POS_STAFF PS ON PS.STAFF_CODE = S.STAFF_CODE  "
-                + "LEFT JOIN M_GLOBAL G ON G.CODE = S.CITY AND G.COND = 'CITY' "
-                + "LEFT JOIN M_GLOBAL G1 ON G1.CODE = S.POSITION AND G1.COND = 'POSITION' "
-                + "LEFT JOIN M_GLOBAL G2 ON G2.CODE = S.ACCESS_LEVEL AND G2.COND = 'ACCESS' "
-                + "WHERE S.OUTLET_CODE = :outletCode AND S.STATUS LIKE :status AND S.POSITION LIKE :position";
+        String qry = "SELECT DISTINCT b.DESCRIPTION AS REGIONAL_DESC,b.CODE AS REGION_CODE, mo.OUTLET_NAME,c.DESCRIPTION AS AREA_DESC,c.CODE AS AREA_CODE,G.DESCRIPTION CITY_STAFF, G1.DESCRIPTION POSITION_NAME,G2.DESCRIPTION ACCESS_NAME, S.*,PS.STAFF_POS_CODE,PS.PASSWORD AS PASS_POS_CODE, PS.STATUS AS STATUS_POS,S.ACCESS_LEVEL FROM M_STAFF S LEFT JOIN M_OUTLET mo ON mo.OUTLET_CODE = S.OUTLET_CODE left join M_GLOBAL b on mo.REGION_CODE =b.CODE left join M_GLOBAL c on mo.AREA_CODE =c.CODE AND c.COND LIKE '%AREACODE%' LEFT JOIN M_GLOBAL mg ON mg.COND LIKE '%REG_OUTLET%' AND mg.CODE = mo.AREA_CODE LEFT JOIN M_POS_STAFF PS ON PS.STAFF_CODE = S.STAFF_CODE LEFT JOIN M_GLOBAL G ON G.CODE = S.CITY AND G.COND = 'CITY' LEFT JOIN M_GLOBAL G1 ON G1.CODE = S.POSITION AND G1.COND = 'POSITION' LEFT JOIN M_GLOBAL G2 ON G2.CODE = S.ACCESS_LEVEL AND G2.COND = 'ACCESS' WHERE S.OUTLET_CODE = :outletCode AND S.STATUS LIKE :status AND S.POSITION LIKE :position";
         Map prm = new HashMap();
 
         // PARAMETER YG DIGUNAKAN SETELAH WHERE DIDALAM QUERY //
@@ -1065,8 +1058,6 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("statusPos", rs.getString("STATUS_POS"));
                 rt.put("staffPosCode", rs.getString("STAFF_POS_CODE"));
                 rt.put("passPosCode", rs.getString("PASS_POS_CODE"));
-
-                //    rt.put("staffName", rs.getString("STAFF_NAME"));               
                 return rt;
             }
         });
@@ -1798,13 +1789,7 @@ public class ViewDoaImpl implements ViewDao {
     ///////new methode from Dona 2-Mei-23//////////////////
     @Override
     public List<Map<String, Object>> listCounter(Map<String, String> balance) {
-
-        DateFormat df = new SimpleDateFormat("MM");
-        DateFormat dfYear = new SimpleDateFormat("yyyy");
-        Date tgl = new Date();
-        String month = df.format(tgl);
-        String year = dfYear.format(tgl);
-
+        
         String qry = "SELECT ORDER_ID || LPAD(COUNTNO, 4, '0') AS ORDER_ID FROM ( "
                 + "SELECT :month || a.YEAR AS ORDER_ID,A.COUNTER_NO+1 AS COUNTNO FROM M_COUNTER A "
                 + "LEFT JOIN M_OUTLET B "
@@ -1813,8 +1798,8 @@ public class ViewDoaImpl implements ViewDao {
         Map prm = new HashMap();
         prm.put("transType", balance.get("transType"));
         prm.put("outletCode", balance.get("outletCode"));
-        prm.put("year", year);
-        prm.put("month", month);
+        prm.put("year", balance.get("year"));
+        prm.put("month", balance.get("month"));
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
@@ -4380,5 +4365,19 @@ public class ViewDoaImpl implements ViewDao {
             }
         });
         return list;
+    }
+   
+    // =============== New Method From M Joko - 1 Feb 2024 ===============
+    @Override
+    public List<String> listLogger(Map<String, Object> param) {
+        String module = (String) param.get("module");
+        List<String> logs;
+        if(param.containsKey("log") && !param.get("log").toString().isBlank()){
+            String log = (String) param.get("log");
+            logs = FileLoggerUtil.readLogsFromFile(module,log);
+        } else {
+            logs = FileLoggerUtil.readAllLogs(module);
+        }
+        return logs;
     }
 }
