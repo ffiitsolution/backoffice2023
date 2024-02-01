@@ -1083,8 +1083,8 @@ public class ViewDoaImpl implements ViewDao {
 //                rt.put("statusPos", rs.getString("STATUS_POS"));
 //                rt.put("staffPosCode", rs.getString("STAFF_POS_CODE"));
 //                rt.put("passPosCode", rs.getString("PASS_POS_CODE"));
-
-                //    rt.put("staffName", rs.getString("STAFF_NAME"));               
+//
+//                //    rt.put("staffName", rs.getString("STAFF_NAME"));               
 //                return rt;
 //            }
 //        });
