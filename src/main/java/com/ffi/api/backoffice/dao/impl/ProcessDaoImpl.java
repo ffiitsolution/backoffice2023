@@ -466,11 +466,9 @@ public class ProcessDaoImpl implements ProcessDao {
     @Override
     public void updateMCounter(Map<String, String> balance) {
 
-        DateFormat df = new SimpleDateFormat("MM");
-        DateFormat dfYear = new SimpleDateFormat("yyyy");
-        Date tgl = new Date();
-        String month = df.format(tgl);
-        String year = dfYear.format(tgl);
+        LocalDate transDate = this.jdbcTemplate.queryForObject("SELECT TRANS_DATE FROM M_OUTLET WHERE OUTLET_CODE = :outletCode", balance, LocalDate.class); 
+        int month = transDate.getMonthValue();
+        int year = transDate.getYear();
 
         String qy1 = "update m_counter  "
                 + "       set COUNTER_NO = (select COUNTER_NO+1 FROM M_COUNTER  "
