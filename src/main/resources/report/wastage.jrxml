@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="wastage" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="543edcef-5422-4703-9aaa-1ed0024ba098">
-	<property name="ireport.zoom" value="1.5000000000000078"/>
+	<property name="ireport.zoom" value="1.6500000000000095"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="outletCode" class="java.lang.String">
@@ -21,6 +21,7 @@
 	<parameter name="typeTransaksi" class="java.lang.String"/>
 	<parameter name="user" class="java.lang.String"/>
 	<parameter name="detail" class="java.lang.Integer"/>
+	<parameter name="tipeReport" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT DENSE_RANK() over(ORDER BY a.WASTAGE_NO) AS num, a.WASTAGE_NO, CASE WHEN a.TYPE_TRANS = 'W' THEN 'Wastage' ELSE 'Left Over' END AS type_trans,
 a.REMARK, CASE WHEN a.STATUS = '0' THEN 'Open' WHEN a.STATUS = '1' THEN 'Close' ELSE 'Cancel' END AS status,
@@ -180,7 +181,7 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.TYPE_TRANS IN ($P{typeTrans1}, $P{type
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{OUTLET_NAME} ]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{OUTLET_NAME}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="68" y="20" width="122" height="11" uuid="970ee29f-9525-43cf-8503-b549c60113ba"/>
@@ -281,22 +282,11 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.TYPE_TRANS IN ($P{typeTrans1}, $P{type
 + " - " + new SimpleDateFormat("dd-MMM-yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{toDate}))]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="0" y="72" width="58" height="11" uuid="bbe2dc50-01a6-4730-b842-6b003ca70cd4">
-					<printWhenExpression><![CDATA[$P{detail}.equals(1)]]></printWhenExpression>
-				</reportElement>
+				<reportElement x="0" y="72" width="58" height="11" uuid="bbe2dc50-01a6-4730-b842-6b003ca70cd4"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Tipe Report]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="57" y="72" width="125" height="11" uuid="9f9bfa2e-4b4b-4196-91a0-e316b1b3bee9">
-					<printWhenExpression><![CDATA[$P{detail}.equals(1)]]></printWhenExpression>
-				</reportElement>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[: Detail]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="495" y="20" width="114" height="11" uuid="f29fdd4d-c0ab-45d8-b11a-48c70cd93179"/>
@@ -360,6 +350,13 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.TYPE_TRANS IN ($P{typeTrans1}, $P{type
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Phone : " + $F{PHONE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="57" y="72" width="287" height="11" uuid="4e3f1569-99b1-4814-ac72-0c4c5129537f"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + $P{tipeReport}]]></textFieldExpression>
 			</textField>
 		</band>
 	</columnHeader>

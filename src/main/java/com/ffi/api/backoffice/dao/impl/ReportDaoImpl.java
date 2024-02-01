@@ -578,8 +578,10 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("outletCode", param.get("outletCode"));
         if (param.get("detail").equals(1.0)) {
             hashMap.put("detail", 1);
+            hashMap.put("tipeReport", "Detail");
         } else {
             hashMap.put("detail", 0);
+            hashMap.put("tipeReport", "Rekap");
         }
         hashMap.put("user", param.get("user"));
 
@@ -658,8 +660,10 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("user", param.get("user"));
         if (param.get("detail").equals(1.0)) {
             hashMap.put("detail", 1);
+            hashMap.put("tipeReport", "Detail");
         } else {
             hashMap.put("detail", 0);
+            hashMap.put("tipeReport", "Rekap");
         }
 
         if (param.get("typeTransaksi").equals("ALL")) {
