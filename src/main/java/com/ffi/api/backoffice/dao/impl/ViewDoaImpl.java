@@ -4252,7 +4252,7 @@ public class ViewDoaImpl implements ViewDao {
     /////// NEW METHOD to get list order type report DP by Dani 9 Januari 2024
     @Override
     public List<Map<String, Object>> listOrderTypeReportDp() {
-        String query = "SELECT DISTINCT (TPB.ORDER_TYPE) , MG.DESCRIPTION  FROM T_POS_BOOK tpb LEFT JOIN M_GLOBAL mg ON MG.COND  = 'ORDER_TYPE' AND MG.CODE = TPB.ORDER_TYPE ";
+        String query = "SELECT DISTINCT (TPB.ORDER_TYPE), MG.DESCRIPTION FROM T_POS_BOOK tpb LEFT JOIN M_GLOBAL mg ON MG.COND  = 'ORDER_TYPE' AND MG.CODE = TPB.ORDER_TYPE ORDER BY LENGTH(MG.DESCRIPTION) ASC, TPB.ORDER_TYPE DESC ";
         return jdbcTemplate.query(query, new HashMap(), new DynamicRowMapper());
     }
 
