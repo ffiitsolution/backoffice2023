@@ -306,4 +306,9 @@ public class ProcessServices {
         return dao.sendDataLocal(tableName,date, outletId);
     }
     //============== End Method Copy Data From Lukas 17-10-2023 ================
+
+    // Delete order detail by DANI 2 Feb 2024 //
+    public void deleteOrderEntryDetail(Map<String, Object> ref) {
+        dao.deleteOrderEntryDetail(ref);
+    }
 }

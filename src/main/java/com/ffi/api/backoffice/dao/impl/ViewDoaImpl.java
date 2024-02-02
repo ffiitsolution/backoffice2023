@@ -1795,6 +1795,14 @@ public class ViewDoaImpl implements ViewDao {
                 + "LEFT JOIN M_OUTLET B "
                 + "ON B.OUTLET_CODE=A.OUTLET_CODE "
                 + "WHERE A.YEAR = :year AND A.MONTH= :month AND A.TRANS_TYPE = :transType AND A.OUTLET_CODE= :outletCode)";
+
+        if (balance.get("transType").equals("RO")) {
+            qry = "SELECT ORDER_ID || LPAD(COUNTNO, 4, '0') AS ORDER_ID FROM ( "
+                + "SELECT :outletCode || SUBSTR(:year, -2) || :month AS ORDER_ID,A.COUNTER_NO+1 AS COUNTNO FROM M_COUNTER A "
+                + "LEFT JOIN M_OUTLET B "
+                + "ON B.OUTLET_CODE=A.OUTLET_CODE "
+                + "WHERE A.YEAR = :year AND A.MONTH= :month AND A.TRANS_TYPE = :transType AND A.OUTLET_CODE= :outletCode)";
+        }
         Map prm = new HashMap();
         prm.put("transType", balance.get("transType"));
         prm.put("outletCode", balance.get("outletCode"));
@@ -2212,7 +2220,10 @@ public class ViewDoaImpl implements ViewDao {
                 + "                    0 TOTAL_JUMLAH, "
                 + "                    UOM_PURCHASE AS TOTAL "
                 + "                FROM M_ITEM WHERE "
-                + "                SUBSTR(ITEM_CODE,1,1) != 'X' AND STATUS = 'A' "
+                + "                SUBSTR(ITEM_CODE,1,1) != 'X' "
+                + "                AND STATUS = 'A' "
+                + "                AND FLAG_MATERIAL = 'Y' "
+                + "                AND FLAG_STOCK = 'Y' "
                 + "                ORDER BY item_code asc)";
         Map prm = new HashMap();
         prm.put("cdWarehouse", balance.get("cdWarehouse"));
@@ -4252,7 +4263,7 @@ public class ViewDoaImpl implements ViewDao {
     /////// NEW METHOD to get list order type report DP by Dani 9 Januari 2024
     @Override
     public List<Map<String, Object>> listOrderTypeReportDp() {
-        String query = "SELECT DISTINCT (TPB.ORDER_TYPE) , MG.DESCRIPTION  FROM T_POS_BOOK tpb LEFT JOIN M_GLOBAL mg ON MG.COND  = 'ORDER_TYPE' AND MG.CODE = TPB.ORDER_TYPE ";
+        String query = "SELECT DISTINCT (TPB.ORDER_TYPE), MG.DESCRIPTION FROM T_POS_BOOK tpb LEFT JOIN M_GLOBAL mg ON MG.COND  = 'ORDER_TYPE' AND MG.CODE = TPB.ORDER_TYPE ORDER BY LENGTH(MG.DESCRIPTION) ASC, TPB.ORDER_TYPE DESC ";
         return jdbcTemplate.query(query, new HashMap(), new DynamicRowMapper());
     }
 
@@ -4308,7 +4319,7 @@ public class ViewDoaImpl implements ViewDao {
     ///////////////new method from aditya 30-01-2024////////////////////////////
     @Override
     public List<Map<String, Object>> listManagementFryer(Map<String, String> balance) {
-        String qry = "SELECT a.OUTLET_CODE, b.OUTLET_NAME, b.ADDRESS_1, b.ADDRESS_2, a.PROCESS_NO, a.NOTES, a.FRYER_NO, a.FRYER_TYPE, c.DESCRIPTION AS FRYER_DESC, a.OIL_USE, a.PRECENTAGE, a.USER_UPD, d.STAFF_NAME, a.DATE_UPD, a.TIME_UPD FROM T_MPCS_MANAGEMENT a JOIN M_OUTLET b ON a.OUTLET_CODE = b.OUTLET_CODE AND a.OUTLET_CODE =:outletCode JOIN M_GLOBAL c ON a.FRYER_TYPE = c.CODE AND COND = 'FRYER' JOIN M_STAFF d ON a.USER_UPD = d.STAFF_CODE WHERE a.DATE_UPD between :fromDate and :toDate ORDER BY a.DATE_UPD DESC, a.TIME_UPD DESC";
+        String qry = "SELECT TO_CHAR(a.DATE_UPD, 'DD Mon YYYY') AS DATE_UPD, TO_CHAR(TO_DATE(a.TIME_UPD, 'HH24MISS'), 'HH24:MI:SS') AS TIME_UPD, a.OUTLET_CODE, a.PROCESS_NO, a.FRYER_TYPE, c.DESCRIPTION AS FRYER_DESC, a.FRYER_NO, a.OIL_USE, c.VALUE AS MAXIMUM_USE, a.PRECENTAGE AS PROGRESS, a.NOTES, a.USER_UPD, d.STAFF_NAME AS PIC FROM T_MPCS_MANAGEMENT a JOIN M_OUTLET b ON a.OUTLET_CODE = b.OUTLET_CODE AND a.OUTLET_CODE =:outletCode JOIN M_GLOBAL c ON a.FRYER_TYPE = c.CODE AND COND = 'FRYER' AND (:fryerType IS NULL OR a.FRYER_TYPE = :fryerType) JOIN M_STAFF d ON a.USER_UPD = d.STAFF_CODE WHERE a.DATE_UPD between :fromDate and :toDate ORDER BY a.DATE_UPD DESC, a.TIME_UPD, a.PROCESS_NO DESC";
         Map prm = new HashMap();
         prm.put("outletCode", balance.get("outletCode"));
         prm.put("fryerType", balance.get("fryerType"));
@@ -4320,22 +4331,20 @@ public class ViewDoaImpl implements ViewDao {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("outletCode", rs.getString("OUTLET_CODE"));
-                rt.put("outletName", rs.getString("OUTLET_NAME"));
-                rt.put("address1", rs.getString("ADDRESS_1"));
-                rt.put("address2", rs.getString("ADDRESS_2"));
+                rt.put("dateUpd", rs.getString("DATE_UPD"));
+                rt.put("timeUpd", rs.getString("TIME_UPD"));
                 rt.put("processNo", rs.getString("PROCESS_NO"));
-                rt.put("notes", rs.getString("NOTES"));
+                rt.put("outletCode", rs.getString("OUTLET_CODE"));
                 rt.put("fryerNo", rs.getString("FRYER_NO"));
                 rt.put("fryerType", rs.getString("FRYER_TYPE"));
                 rt.put("fryerDesc", rs.getString("FRYER_DESC"));
+                rt.put("notes", rs.getString("NOTES"));
                 rt.put("oilUse", rs.getString("OIL_USE"));
-                rt.put("precentage", rs.getString("PRECENTAGE"));
+                rt.put("maximumUse", rs.getString("MAXIMUM_USE"));
+                rt.put("progress", rs.getString("PROGRESS"));
                 rt.put("userUpd", rs.getString("USER_UPD"));
-                rt.put("staffName", rs.getString("STAFF_NAME"));
-                rt.put("dateUpd", rs.getString("DATE_UPD"));
-                rt.put("timeUpd", rs.getString("TIME_UPD"));
-
+                rt.put("staffName", rs.getString("PIC"));
+               
                 return rt;
             }
         });

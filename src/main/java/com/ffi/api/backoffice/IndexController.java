@@ -3764,4 +3764,28 @@ public class IndexController {
         res.setData(viewServices.mpcsProductionListFryer(balance));
         return res;
     }
+
+    // Delete order entry Detail by Dani 2 Feb 2024
+    @RequestMapping(value = "/delete-order-entry-detail", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Delete Order Entry Detail by Dani", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage deleteOrderEntryDetail(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, Object> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        ResponseMessage res = new ResponseMessage();
+        try {
+            processServices.deleteOrderEntryDetail(balance);
+            res.setMessage("Success!!");
+            res.setSuccess(true);
+        } catch (Exception e) {
+            res.setMessage(e.getMessage());
+            res.setSuccess(false);
+        }
+        return res;
+    }
 }
