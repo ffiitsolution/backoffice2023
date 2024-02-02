@@ -1795,6 +1795,14 @@ public class ViewDoaImpl implements ViewDao {
                 + "LEFT JOIN M_OUTLET B "
                 + "ON B.OUTLET_CODE=A.OUTLET_CODE "
                 + "WHERE A.YEAR = :year AND A.MONTH= :month AND A.TRANS_TYPE = :transType AND A.OUTLET_CODE= :outletCode)";
+
+        if (balance.get("transType").equals("RO")) {
+            qry = "SELECT ORDER_ID || LPAD(COUNTNO, 4, '0') AS ORDER_ID FROM ( "
+                + "SELECT :outletCode || SUBSTR(:year, -2) || :month AS ORDER_ID,A.COUNTER_NO+1 AS COUNTNO FROM M_COUNTER A "
+                + "LEFT JOIN M_OUTLET B "
+                + "ON B.OUTLET_CODE=A.OUTLET_CODE "
+                + "WHERE A.YEAR = :year AND A.MONTH= :month AND A.TRANS_TYPE = :transType AND A.OUTLET_CODE= :outletCode)";
+        }
         Map prm = new HashMap();
         prm.put("transType", balance.get("transType"));
         prm.put("outletCode", balance.get("outletCode"));
