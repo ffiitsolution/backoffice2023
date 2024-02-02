@@ -178,4 +178,7 @@ public interface ProcessDao {
 
     //============== Delete order entry detail by Dani 2 Feb 2024
     public void deleteOrderEntryDetail(Map<String, Object> param);
+    
+    //============== New Method From M Joko 1-2-2024 ================
+    List<Map<String, Object>> listTransferData(Map<String, Object> ref);
 }

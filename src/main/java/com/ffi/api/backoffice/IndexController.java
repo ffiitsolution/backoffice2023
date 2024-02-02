@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import javax.transaction.Transactional;
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
@@ -2586,6 +2587,7 @@ public class IndexController {
     }
 
     ////////////New method for Process EOD - M Joko 8-Dec-2023////////////
+    @Transactional
     @RequestMapping(value = "/process-eod", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk process data EOD sesuai trans_date Outlet dan POS yg masih open", response = Object.class)
     @ApiResponses(value = {
@@ -2641,11 +2643,7 @@ public class IndexController {
                     newParams.put("processEod", "N");
                     newParams.put("notes", " ");
                     newParams.put("userUpd", balance.getOrDefault("userUpd", "SYSTEM"));
-                    try {
-                        processServices.insertEodPosN(newParams);
-                    } catch (Exception e) {
-                        errors.add("insertEodPosN failed: " + e.getMessage());
-                    }
+                    processServices.insertEodPosN(newParams);
                     posOpen.add(newParams);
                 } else {
                     errors.add("! listPosOpen size: " + listPosOpen.size());
@@ -2665,30 +2663,19 @@ public class IndexController {
             res.setData(data);
             return res;
         }
+        
         try {
             processServices.insertTStockCard(balance);
-        } catch (Exception e) {
-            errors.add("insertTStockCard failed: " + e.getMessage());
-        }
-        try {
             processServices.insertTEodHist(balance);
-        } catch (Exception e) {
-            errors.add("insertTEodHist failed: " + e.getMessage());
-        }
-        try {
             processServices.insertTSummMpcs(balance);
-        } catch (Exception e) {
-            errors.add("insertTSummMpcs failed: " + e.getMessage());
-        }
-        try {
             processServices.updateOrderEntryExpired(balance);
-        } catch (Exception e) {
-            errors.add("updateOrderEntryExpired failed: " + e.getMessage());
-        }
-        try {
             processServices.increaseTransDateMOutlet(balance);
         } catch (Exception e) {
-            errors.add("increaseTransDateMOutlet failed: " + e.getMessage());
+            System.err.println("Error End of Day: " + e.getMessage());
+            d.put("message", "Process End of Day Failed: " + e.getMessage());
+            data.add(d);
+            res.setData(data);
+            return res;
         }
 
         data.add(d);
@@ -3415,13 +3402,7 @@ public class IndexController {
     }
     ///////////////done
     
-    
-    // =============== New Method From Lukas 17-10-2023 ===============
-    // =============== Method Copy Data Local All / Selected / Single ===============
-    @RequestMapping(value = "/copy-all", method = RequestMethod.POST)
-    public @ResponseBody
-    ResponseMessage copyAll(@RequestBody Map<String, Object> param) throws IOException, Exception {
-        ResponseMessage rm = new ResponseMessage();
+    public List listTableMaster(String typeTable){
         List<String> listTable = new ArrayList<>();
         listTable.add("M_COLOR");
         listTable.add("M_DISCOUNT_METHOD");
@@ -3463,7 +3444,100 @@ public class IndexController {
 //        listTable.add("M_NPWP");
 //        listTable.add("M_MENUGRP");
 //        listTable.add("M_MENUDTL");
+        return listTable;
+    }
+    
+    public List listTableTransaction(String typeTable){
+        List<String> listTable = new ArrayList<>();
+        listTable.add("T_ABSENSI");
+        listTable.add("T_AGENT_LOG");
+        listTable.add("T_COPNAME_DETAIL");
+        listTable.add("T_COPNAME_HEADER");
+        listTable.add("T_COST_SCHEDULE");
+        listTable.add("T_DEV_DETAIL");
+        listTable.add("T_DEV_HEADER");
+        listTable.add("T_EOD_HIST");
+        listTable.add("T_EOD_HIST_DTL");
+        listTable.add("T_HIST_DEL_PRD");
+        listTable.add("T_ITEM_PRICE_SCH");
+        listTable.add("T_KDS_HEADER");
+        listTable.add("T_KDS_ITEM");
+        listTable.add("T_KDS_ITEM_DETAIL");
+        listTable.add("T_KDS_KRUSHER");
+        listTable.add("T_KDS_NAME");
+        listTable.add("T_LOC_DETAIL");
+        listTable.add("T_LOC_HEADER");
+        listTable.add("T_MPCS_DETAIL");
+        listTable.add("T_MPCS_HIST");
+        listTable.add("T_MPCS_LOG");
+        listTable.add("T_OPNAME_DETAIL");
+        listTable.add("T_OPNAME_HEADER");
+        listTable.add("T_ORDER_DETAIL");
+        listTable.add("T_ORDER_HEADER");
+        listTable.add("T_PC_BALANCE");
+        listTable.add("T_PC_CLAIM_DTL");
+        listTable.add("T_PC_CLAIM_HDR");
+        listTable.add("T_PC_DTL");
+        listTable.add("T_PC_HDR");
+        listTable.add("T_POS_BILL");
+        listTable.add("T_POS_BILL_DONATE");
+        listTable.add("T_POS_BILL_ITEM");
+        listTable.add("T_POS_BILL_ITEM_DETAIL");
+        listTable.add("T_POS_BILL_PAYMENT");
+        listTable.add("T_POS_BILL_PAYMENT_DETAIL");
+        listTable.add("T_POS_BOOK");
+        listTable.add("T_POS_BOOK_DP_DETAIL");
+        listTable.add("T_POS_BOOK_ITEM");
+        listTable.add("T_POS_BOOK_ITEM_DETAIL");
+        listTable.add("T_POS_BOOK_PAYMENT");
+        listTable.add("T_POS_BOOK_PAYMENT_DETAIL");
+        listTable.add("T_POS_CAT");
+        listTable.add("T_POS_CATERING");
+        listTable.add("T_POS_CAT_ITEM");
+        listTable.add("T_POS_CAT_ITEM_DETAIL");
+        listTable.add("T_POS_CC");
+        listTable.add("T_POS_CC_ITEM");
+        listTable.add("T_POS_CC_ITEM_DETAIL");
+        listTable.add("T_POS_DAY");
+        listTable.add("T_POS_DAY_LOG");
+        listTable.add("T_POS_DAY_TRANS");
+        listTable.add("T_POS_FORM");
+        listTable.add("T_POS_FORM_ITEM");
+        listTable.add("T_POS_FORM_ITEM_DETAIL");
+        listTable.add("T_POS_ITEM_VOID");
+        listTable.add("T_PROJECTION_HEADER");
+        listTable.add("T_PROJECTION_TARGET");
+        listTable.add("T_RECIPE_HIST");
+        listTable.add("T_RECV_DETAIL");
+        listTable.add("T_RECV_HEADER");
+        listTable.add("T_RETURN_DETAIL");
+        listTable.add("T_RETURN_HEADER");
+        listTable.add("T_SCHEDULE_DETAIL");
+        listTable.add("T_SCHEDULE_HEADER");
+        listTable.add("T_SCHEDULE_SUBHEADER");
+        listTable.add("T_SEND_RECV_D");
+        listTable.add("T_SEND_RECV_H");
+        listTable.add("T_STOCK_CARD");
+        listTable.add("T_STOCK_CARD_DETAIL");
+        listTable.add("T_STOCK_CARD_HIST");
+        listTable.add("T_STOCK_CARD_HIST_TRIGGER");
+        listTable.add("T_STOCK_CARD_RECAP");
+        listTable.add("T_SUMM_MPCS");
+        listTable.add("T_SUM_ABSENSI");
+        listTable.add("T_WASTAGE_DETAIL");
+        listTable.add("T_WASTAGE_HEADER");
+        return listTable;
+    }
+    
+    // =============== New Method From Lukas 17-10-2023 ===============
+    // =============== Method Copy Data Local All / Selected / Single ===============
+    @RequestMapping(value = "/copy-all", method = RequestMethod.POST)
+    public @ResponseBody
+    ResponseMessage copyAll(@RequestBody Map<String, Object> param) throws IOException, Exception {
+        ResponseMessage rm = new ResponseMessage();
 
+        List<String> listTable = listTableMaster("All");
+        
         String dateCopy = (String) param.get("date");
         if (dateCopy == null || "".equals(dateCopy)) {
             dateCopy = new SimpleDateFormat("dd-MMM-yyyy").format(Calendar.getInstance().getTime());
@@ -3573,84 +3647,7 @@ public class IndexController {
     public @ResponseBody
     ResponseMessage transferDataAll(@RequestBody Map<String, Object> param) throws IOException, Exception {
         ResponseMessage rm = new ResponseMessage();
-        List<String> listTable = new ArrayList<>();
-        listTable.add("T_ABSENSI");
-        listTable.add("T_AGENT_LOG");
-        listTable.add("T_COPNAME_DETAIL");
-        listTable.add("T_COPNAME_HEADER");
-        listTable.add("T_COST_SCHEDULE");
-        listTable.add("T_DEV_DETAIL");
-        listTable.add("T_DEV_HEADER");
-        listTable.add("T_EOD_HIST");
-        listTable.add("T_EOD_HIST_DTL");
-        listTable.add("T_HIST_DEL_PRD");
-        listTable.add("T_ITEM_PRICE_SCH");
-        listTable.add("T_KDS_HEADER");
-        listTable.add("T_KDS_ITEM");
-        listTable.add("T_KDS_ITEM_DETAIL");
-        listTable.add("T_KDS_KRUSHER");
-        listTable.add("T_KDS_NAME");
-        listTable.add("T_LOC_DETAIL");
-        listTable.add("T_LOC_HEADER");
-        listTable.add("T_MPCS_DETAIL");
-        listTable.add("T_MPCS_HIST");
-        listTable.add("T_MPCS_LOG");
-        listTable.add("T_OPNAME_DETAIL");
-        listTable.add("T_OPNAME_HEADER");
-        listTable.add("T_ORDER_DETAIL");
-        listTable.add("T_ORDER_HEADER");
-        listTable.add("T_PC_BALANCE");
-        listTable.add("T_PC_CLAIM_DTL");
-        listTable.add("T_PC_CLAIM_HDR");
-        listTable.add("T_PC_DTL");
-        listTable.add("T_PC_HDR");
-        listTable.add("T_POS_BILL");
-        listTable.add("T_POS_BILL_DONATE");
-        listTable.add("T_POS_BILL_ITEM");
-        listTable.add("T_POS_BILL_ITEM_DETAIL");
-        listTable.add("T_POS_BILL_PAYMENT");
-        listTable.add("T_POS_BILL_PAYMENT_DETAIL");
-        listTable.add("T_POS_BOOK");
-        listTable.add("T_POS_BOOK_DP_DETAIL");
-        listTable.add("T_POS_BOOK_ITEM");
-        listTable.add("T_POS_BOOK_ITEM_DETAIL");
-        listTable.add("T_POS_BOOK_PAYMENT");
-        listTable.add("T_POS_BOOK_PAYMENT_DETAIL");
-        listTable.add("T_POS_CAT");
-        listTable.add("T_POS_CATERING");
-        listTable.add("T_POS_CAT_ITEM");
-        listTable.add("T_POS_CAT_ITEM_DETAIL");
-        listTable.add("T_POS_CC");
-        listTable.add("T_POS_CC_ITEM");
-        listTable.add("T_POS_CC_ITEM_DETAIL");
-        listTable.add("T_POS_DAY");
-        listTable.add("T_POS_DAY_LOG");
-        listTable.add("T_POS_DAY_TRANS");
-        listTable.add("T_POS_FORM");
-        listTable.add("T_POS_FORM_ITEM");
-        listTable.add("T_POS_FORM_ITEM_DETAIL");
-        listTable.add("T_POS_ITEM_VOID");
-        listTable.add("T_PROJECTION_HEADER");
-        listTable.add("T_PROJECTION_TARGET");
-        listTable.add("T_RECIPE_HIST");
-        listTable.add("T_RECV_DETAIL");
-        listTable.add("T_RECV_HEADER");
-        listTable.add("T_RETURN_DETAIL");
-        listTable.add("T_RETURN_HEADER");
-        listTable.add("T_SCHEDULE_DETAIL");
-        listTable.add("T_SCHEDULE_HEADER");
-        listTable.add("T_SCHEDULE_SUBHEADER");
-        listTable.add("T_SEND_RECV_D");
-        listTable.add("T_SEND_RECV_H");
-        listTable.add("T_STOCK_CARD");
-        listTable.add("T_STOCK_CARD_DETAIL");
-        listTable.add("T_STOCK_CARD_HIST");
-        listTable.add("T_STOCK_CARD_HIST_TRIGGER");
-        listTable.add("T_STOCK_CARD_RECAP");
-        listTable.add("T_SUMM_MPCS");
-        listTable.add("T_SUM_ABSENSI");
-        listTable.add("T_WASTAGE_DETAIL");
-        listTable.add("T_WASTAGE_HEADER");
+        List<String> listTable = listTableTransaction("All");
         
         String outletId = param.get("outletId") != null ? (String) param.get("outletId") : null;
         String dateCopy = (String) param.get("date");
@@ -3787,5 +3784,21 @@ public class IndexController {
             res.setSuccess(false);
         }
         return res;
+    }
+    
+    //============== New Method From M Joko 1-2-2024 ================
+    @RequestMapping(value = "/list-transfer-data", method = RequestMethod.POST)
+    public @ResponseBody
+    ResponseMessage listTransferData(@RequestBody Map<String, Object> param) throws IOException, Exception {
+        ResponseMessage rm = new ResponseMessage();
+        String type = param.getOrDefault("type", "TERIMA DATA").toString();
+        String typeTable = param.getOrDefault("type", "ALL").toString();
+        List<String> listTable = listTableMaster(typeTable);
+        param.put("listTable", listTable);
+        List<Map<String, Object>> list = processServices.listTransferData(param);
+        rm.setItem(list);
+        rm.setSuccess(list != null);
+        rm.setMessage(list != null ? "Success get list" : "Failed get list");
+        return rm;
     }
 }

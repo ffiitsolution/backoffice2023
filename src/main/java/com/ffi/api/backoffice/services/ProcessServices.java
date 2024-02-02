@@ -311,4 +311,9 @@ public class ProcessServices {
     public void deleteOrderEntryDetail(Map<String, Object> ref) {
         dao.deleteOrderEntryDetail(ref);
     }
+    
+    //============== New Method From M Joko 1-2-2024 ================
+    public List<Map<String, Object>> listTransferData(Map<String, Object> ref) {
+        return dao.listTransferData(ref);
+    }
 }
