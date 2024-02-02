@@ -19,36 +19,42 @@
 	<parameter name="user" class="java.lang.String"/>
 	<parameter name="fryerType" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[SELECT a."OUTLET_CODE",
-	b."OUTLET_NAME",
-	b."ADDRESS_1",
-	b."ADDRESS_2",
-	b.PHONE,
-	a."PROCESS_NO",
-	a."NOTES",
-	a."FRYER_NO",
-	a."FRYER_TYPE",
-	c."DESCRIPTION" AS FRYER_DESC,
-	a."OIL_USE",
-	a."PRECENTAGE",
-	a."USER_UPD",
-	d."STAFF_NAME",
-	a."DATE_UPD",
-	a."TIME_UPD"
-FROM "T_MPCS_MANAGEMENT" a
-	JOIN "M_OUTLET" b ON 
-	 a."OUTLET_CODE" = b."OUTLET_CODE" 
-	 AND a."OUTLET_CODE" = $P{outletCode} 
-	JOIN "M_GLOBAL" c ON 
-	 a."FRYER_TYPE" = c."CODE" 
-	 AND c."COND" = 'FRYER' 
-	JOIN "M_STAFF" d ON 
-	 a."USER_UPD" = d."STAFF_CODE" 
-WHERE 
-	 a."DATE_UPD" BETWEEN $P{fromDate} AND $P{toDate} 
-ORDER BY a."DATE_UPD" DESC,
-	a."TIME_UPD" DESC]]>
+		<![CDATA[SELECT 
+TO_CHAR(a.DATE_UPD, 'DD Mon YYYY') AS DATE_UPD,
+TO_CHAR(TO_DATE(a.TIME_UPD, 'HH24MISS'), 'HH24:MI:SS') AS TIME_UPD, 
+a.PROCESS_NO,
+a.OUTLET_CODE,
+b.OUTLET_NAME,
+b.ADDRESS_1,
+b.ADDRESS_2,
+b.PHONE,
+a.FRYER_TYPE, 
+c.DESCRIPTION AS FRYER_DESC,
+a.FRYER_NO,
+a.OIL_USE,
+c.VALUE AS MAXIMUM_USE,
+a.PRECENTAGE AS PROGRESS,
+a.NOTES,
+a.USER_UPD,
+d.STAFF_NAME AS PIC
+FROM T_MPCS_MANAGEMENT a 
+JOIN M_OUTLET b ON a.OUTLET_CODE = b.OUTLET_CODE AND a.OUTLET_CODE = $P{outletCode} 
+JOIN M_GLOBAL c ON a.FRYER_TYPE = c.CODE AND COND = 'FRYER' AND ( $P{fryerType} IS NULL OR a.FRYER_TYPE = $P{fryerType})
+JOIN M_STAFF d ON a.USER_UPD = d.STAFF_CODE 
+WHERE a.DATE_UPD between  $P{fromDate}  and $P{toDate} ORDER BY a.DATE_UPD DESC, a.TIME_UPD, a.PROCESS_NO  DESC]]>
 	</queryString>
+	<field name="DATE_UPD" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="DATE_UPD"/>
+		<property name="com.jaspersoft.studio.field.label" value="DATE_UPD"/>
+	</field>
+	<field name="TIME_UPD" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="TIME_UPD"/>
+		<property name="com.jaspersoft.studio.field.label" value="TIME_UPD"/>
+	</field>
+	<field name="PROCESS_NO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="PROCESS_NO"/>
+		<property name="com.jaspersoft.studio.field.label" value="PROCESS_NO"/>
+	</field>
 	<field name="OUTLET_CODE" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="OUTLET_CODE"/>
 		<property name="com.jaspersoft.studio.field.label" value="OUTLET_CODE"/>
@@ -69,18 +75,6 @@ ORDER BY a."DATE_UPD" DESC,
 		<property name="com.jaspersoft.studio.field.name" value="PHONE"/>
 		<property name="com.jaspersoft.studio.field.label" value="PHONE"/>
 	</field>
-	<field name="PROCESS_NO" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="PROCESS_NO"/>
-		<property name="com.jaspersoft.studio.field.label" value="PROCESS_NO"/>
-	</field>
-	<field name="NOTES" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="NOTES"/>
-		<property name="com.jaspersoft.studio.field.label" value="NOTES"/>
-	</field>
-	<field name="FRYER_NO" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="FRYER_NO"/>
-		<property name="com.jaspersoft.studio.field.label" value="FRYER_NO"/>
-	</field>
 	<field name="FRYER_TYPE" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="FRYER_TYPE"/>
 		<property name="com.jaspersoft.studio.field.label" value="FRYER_TYPE"/>
@@ -89,29 +83,33 @@ ORDER BY a."DATE_UPD" DESC,
 		<property name="com.jaspersoft.studio.field.name" value="FRYER_DESC"/>
 		<property name="com.jaspersoft.studio.field.label" value="FRYER_DESC"/>
 	</field>
+	<field name="FRYER_NO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="FRYER_NO"/>
+		<property name="com.jaspersoft.studio.field.label" value="FRYER_NO"/>
+	</field>
 	<field name="OIL_USE" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="OIL_USE"/>
 		<property name="com.jaspersoft.studio.field.label" value="OIL_USE"/>
 	</field>
-	<field name="PRECENTAGE" class="java.math.BigDecimal">
-		<property name="com.jaspersoft.studio.field.name" value="PRECENTAGE"/>
-		<property name="com.jaspersoft.studio.field.label" value="PRECENTAGE"/>
+	<field name="MAXIMUM_USE" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="MAXIMUM_USE"/>
+		<property name="com.jaspersoft.studio.field.label" value="MAXIMUM_USE"/>
+	</field>
+	<field name="PROGRESS" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="PROGRESS"/>
+		<property name="com.jaspersoft.studio.field.label" value="PROGRESS"/>
+	</field>
+	<field name="NOTES" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="NOTES"/>
+		<property name="com.jaspersoft.studio.field.label" value="NOTES"/>
 	</field>
 	<field name="USER_UPD" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="USER_UPD"/>
 		<property name="com.jaspersoft.studio.field.label" value="USER_UPD"/>
 	</field>
-	<field name="STAFF_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="STAFF_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="STAFF_NAME"/>
-	</field>
-	<field name="DATE_UPD" class="java.sql.Timestamp">
-		<property name="com.jaspersoft.studio.field.name" value="DATE_UPD"/>
-		<property name="com.jaspersoft.studio.field.label" value="DATE_UPD"/>
-	</field>
-	<field name="TIME_UPD" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="TIME_UPD"/>
-		<property name="com.jaspersoft.studio.field.label" value="TIME_UPD"/>
+	<field name="PIC" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="PIC"/>
+		<property name="com.jaspersoft.studio.field.label" value="PIC"/>
 	</field>
 	<background>
 		<band splitType="Stretch"/>
@@ -394,7 +392,7 @@ ORDER BY a."DATE_UPD" DESC,
 				<textElement>
 					<font size="8" isUnderline="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{FRYER_TYPE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{FRYER_DESC}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
@@ -435,20 +433,21 @@ ORDER BY a."DATE_UPD" DESC,
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
+				<textFieldExpression><![CDATA[$F{MAXIMUM_USE}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,###.###;#,###.###-">
 				<reportElement x="394" y="0" width="80" height="14" uuid="6fa9a5d6-eacd-4211-97e2-19d99dc86967"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{PRECENTAGE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{PROGRESS}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="474" y="0" width="80" height="14" uuid="3e2ccfa1-a6b5-4a8a-8ce0-b30307152ca2"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{STAFF_NAME}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{PIC}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
