@@ -2975,7 +2975,7 @@ public class ProcessDaoImpl implements ProcessDao {
         jdbcTemplate.update(updateQuantityAccQuery, prm);
 
         String insertHistoryQuery = "INSERT INTO T_MPCS_HIST (HIST_SEQ,HIST_TYPE,OUTLET_CODE,MPCS_DATE,MPCS_GROUP,RECIPE_CODE,FRYER_TYPE,FRYER_TYPE_SEQ,SEQ_MPCS,QUANTITY,USER_UPD,DATE_UPD,TIME_UPD) "
-                + "VALUES ((SELECT (max(tmh.HIST_SEQ) + 1)  FROM T_MPCS_HIST tmh),'C',:outletCode, :mpcsDate,:mpcsGroup,:recipeCode,' ',' ',(SELECT tsm.SEQ_MPCS FROM T_SUMM_MPCS tsm WHERE DATE_MPCS = :mpcsDate AND MPCS_GROUP = :mpcsGroup "
+                + "VALUES ((SELECT (max(tmh.HIST_SEQ) + 1)  FROM T_MPCS_HIST tmh),'C',:outletCode, :mpcsDate,:mpcsGroup,:recipeCode, :fryerType, :fryerTypeSeq, (SELECT tsm.SEQ_MPCS FROM T_SUMM_MPCS tsm WHERE DATE_MPCS = :mpcsDate AND MPCS_GROUP = :mpcsGroup "
                 + "AND TIME_MPCS > :timeUpd "
                 + "AND ROWNUM = 1),:qtyMpcs,:userUpd, :dateUpd, :timeUpd) ";
         jdbcTemplate.update(insertHistoryQuery, prm);
