@@ -175,4 +175,7 @@ public interface ProcessDao {
     public boolean insertDataLocal(String tableName, String date);
     public boolean sendDataLocal(String tableName, String date, String outletId);
     //============== End Method From Lukas 17-10-2023 ================
+
+    //============== Delete order entry detail by Dani 2 Feb 2024
+    public void deleteOrderEntryDetail(Map<String, Object> param);
 }

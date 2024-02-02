@@ -3979,4 +3979,10 @@ public class ProcessDaoImpl implements ProcessDao {
         return primaryKey;
     }
     // =========== End Method Copy Data Server From Lukas 17-10-2023 ===========
+
+    
+    public void deleteOrderEntryDetail(Map<String, Object> param) {
+        String query = "DELETE T_ORDER_DETAIL WHERE OUTLET_CODE = :outletCode AND ORDER_NO = :orderNo AND ITEM_CODE = :itemCode";
+        jdbcTemplate.update(query, param);
+    }
 }
