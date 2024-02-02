@@ -578,8 +578,10 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("outletCode", param.get("outletCode"));
         if (param.get("detail").equals(1.0)) {
             hashMap.put("detail", 1);
+            hashMap.put("tipeReport", "Detail");
         } else {
             hashMap.put("detail", 0);
+            hashMap.put("tipeReport", "Rekap");
         }
         hashMap.put("user", param.get("user"));
 
@@ -658,8 +660,10 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("user", param.get("user"));
         if (param.get("detail").equals(1.0)) {
             hashMap.put("detail", 1);
+            hashMap.put("tipeReport", "Detail");
         } else {
             hashMap.put("detail", 0);
+            hashMap.put("tipeReport", "Rekap");
         }
 
         if (param.get("typeTransaksi").equals("ALL")) {
@@ -2791,12 +2795,13 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jasperReportProduksiAktual(Map<String, Object> param, Connection connection) throws JRException, IOException {
         Map<String, Object> hashMap = new HashMap<>();
-        hashMap.put("outletBrand", param.get("outletBrand"));
+        hashMap.put("city", param.get("city"));
         hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("date", param.get("date"));
         hashMap.put("time1", param.get("startTime"));
         hashMap.put("time2", param.get("endTime"));
-        hashMap.put("userId", param.get("user"));
+        hashMap.put("user", param.get("user"));
 
         ClassPathResource classPathResource = new ClassPathResource("report/laporanActualReport.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());

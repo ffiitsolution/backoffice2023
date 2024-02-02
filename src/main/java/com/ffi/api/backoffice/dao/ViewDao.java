@@ -315,5 +315,7 @@ public interface ViewDao {
     List<String> listLogger(Map<String, Object> ref);
     ////// done 
     
+    // MPCS Production List Fryer 2 Feb 2024 //
+    List<Map<String, Object>> mpcsProductionListFryer(Map<String, String> ref); 
     
 }

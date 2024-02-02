@@ -4380,4 +4380,23 @@ public class ViewDoaImpl implements ViewDao {
         }
         return logs;
     }
+
+    // MPCS Production List Fryer 2 Feb 2024 //
+    @Override
+    public List<Map<String, Object>> mpcsProductionListFryer(Map<String, String> balance) {
+        String qry = "SELECT G.DESCRIPTION, D.FRYER_TYPE, d.FRYER_TYPE_SEQ, d.FRYER_TYPE_CNT, d.FRYER_TYPE_SEQ_CNT FROM M_MPCS_DETAIL d LEFT JOIN M_GLOBAL g ON d.FRYER_TYPE = g.CODE AND g.COND = 'FRYER' WHERE d.STATUS = 'A' AND d.OUTLET_CODE = :outletCode ORDER BY d.FRYER_TYPE ASC ";
+        Map prm = new HashMap();
+        prm.put("outletCode", balance.get("outletCode"));
+
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, (ResultSet rs, int i) -> {
+            Map<String, Object> rt = new HashMap<>();
+            rt.put("description", rs.getString("DESCRIPTION"));
+            rt.put("fryerType", rs.getString("FRYER_TYPE"));
+            rt.put("fryerTypeSeq", rs.getString("FRYER_TYPE_SEQ"));
+            rt.put("fryerTypeCnt", rs.getString("FRYER_TYPE_CNT"));
+            rt.put("fryerTypeSeqCnt", rs.getString("FRYER_TYPE_SEQ_CNT"));
+            return rt;
+        });
+        return list;
+    }
 }

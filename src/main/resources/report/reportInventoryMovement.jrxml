@@ -407,6 +407,20 @@ ORDER BY
 				</textElement>
 				<text><![CDATA[Tanggal Cetak]]></text>
 			</staticText>
+			<staticText>
+				<reportElement x="449" y="78" width="66" height="11" uuid="79e092b0-bd22-460e-82d1-bc6c96d0d048"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Tipe Report]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="514" y="78" width="66" height="11" uuid="adb29a92-d3d8-45de-91f2-a15cc7c3c819"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[: Rekap]]></text>
+			</staticText>
 		</band>
 	</pageHeader>
 	<detail>

@@ -18,6 +18,10 @@
         "url": "/master/user"
       },
       {
+        "name": "Global",
+        "url": "/master/global"
+      },
+      {
         "name": "Outlet",
         "url": "/master/outlet"
       },
@@ -32,6 +36,10 @@
       {
         "name": "Fryer Type",
         "url": "/master/fryer"
+      },
+      {
+        "name": "Kirim Terima Data",
+        "url": "/master/kirim-terima-data"
       },
       {
         "name": "Group Item",
@@ -60,14 +68,6 @@
       {
         "name": "Sales Recipe",
         "url": "/master/sales-recipe"
-      },
-      {
-        "name": "Global",
-        "url": "/master/global"
-      },
-      {
-        "name": "Kirim Terima Data",
-        "url": "/master/kirim-terima-data"
       }
     ]
   },
