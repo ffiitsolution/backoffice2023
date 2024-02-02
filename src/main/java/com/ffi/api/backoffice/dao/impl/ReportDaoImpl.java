@@ -3508,8 +3508,12 @@ public class ReportDaoImpl implements ReportDao {
             hashMap.put("phone", rs.getString("PHONE"));
             return null;
         });
+        String report = "report/salesItemByTime.jrxml";
+        if(param.get("item").equals("Item Detail")) {
+            report = "report/salesItemByTime-detail.jrxml";
+        }
 
-        ClassPathResource classPathResource = new ClassPathResource("report/salesItemByTime.jrxml");
+        ClassPathResource classPathResource = new ClassPathResource(report);
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }

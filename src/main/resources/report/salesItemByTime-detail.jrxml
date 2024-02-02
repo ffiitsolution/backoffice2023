@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="itemAll" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4150f53d-ffac-475a-9fcc-16894332e0dd">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Sales Item by Time Detail" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4150f53d-ffac-475a-9fcc-16894332e0dd">
 	<property name="ireport.zoom" value="4.0"/>
 	<property name="ireport.x" value="1322"/>
 	<property name="ireport.y" value="192"/>
@@ -44,35 +44,49 @@
 	<parameter name="address1" class="java.lang.String"/>
 	<parameter name="phone" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[SELECT
-    a.menu_item_code as item_code,
-    mi.ITEM_DESCRIPTION,
-    SUM(CASE WHEN a.trans_type = 'EI' THEN a.item_qty ELSE 0 END) AS QTY_EI,
-    SUM(CASE 
-	    WHEN a.trans_type = ' ' THEN a.item_qty 
-	    WHEN a.trans_type = 'TA' THEN a.item_qty 
-	    ELSE 0 
-    END) AS QTY_TA
-FROM t_pos_bill_item a
-JOIN t_pos_bill b 
-	ON a.outlet_code = b.outlet_code AND a.pos_code = b.pos_code AND a.bill_no = b.bill_no
-JOIN M_ITEM mi 
-	ON a.menu_item_code = mi.item_code
-WHERE
-    b.outlet_code = $P{outletCode}
-    AND b.trans_date BETWEEN $P{fromDate} AND $P{toDate}
-    AND b.pos_code BETWEEN $P{posCode1} AND $P{posCode2}
-    AND b.shift_code BETWEEN $P{shiftCode1} AND $P{shiftCode2}
-    AND b.cashier_code BETWEEN $P{cashierCode1} AND $P{cashierCode2}
-    AND b.bill_time BETWEEN $P{fromTime} AND $P{toTime}
-    AND (b.delivery_status IN (' ', 'CLS') OR b.delivery_status IS NULL)
-GROUP BY a.menu_item_code, mi.ITEM_DESCRIPTION
-ORDER BY a.menu_item_code]]>
+		<![CDATA[SELECT d.*, (d.QTY_TA + d.QTY_EI) AS TOTAL_QTY
+	FROM (
+        SELECT
+            MENU_ITEM_CODE,
+            item_DESCRIPTION,
+            MAX(DECODE(TRANS_TYPE, 'EI', TOTAL_QTY, 0)) QTY_EI,
+            MAX(DECODE(TRANS_TYPE, 'TA', TOTAL_QTY, 0)) QTY_TA
+        FROM (
+            SELECT
+                a.menu_item_code,
+                mi.item_DESCRIPTION,
+                SUM(a.item_qty) total_qty,
+                NVL(CASE WHEN C.TRANS_TYPE IN (' ', NULL) THEN 'TA' ELSE C.TRANS_TYPE END, 'TA') AS TRANS_TYPE
+            FROM
+                t_pos_bill b
+                JOIN t_pos_bill_item_detail a ON a.outlet_code = b.outlet_code
+                                            AND a.pos_code = b.pos_code
+                                            AND a.bill_no = b.bill_no
+                                            AND b.outlet_code = $P{outletCode}
+                                            AND b.trans_date BETWEEN $P{fromDate} AND $P{toDate}
+                                            AND b.pos_code BETWEEN $P{posCode1} AND $P{posCode2}
+                                            AND b.shift_code BETWEEN $P{shiftCode1} AND $P{shiftCode2}
+                                            AND b.cashier_code BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+                                            AND b.BILL_time BETWEEN $P{fromTime} AND $P{toTime}
+                                            AND (b.delivery_status IN (' ', 'CLS') OR b.delivery_status IS NULL)
+                LEFT JOIN t_pos_bill_item c ON a.bill_no = c.bill_no
+                                            AND a.pos_code = c.pos_code
+                                            AND a.outlet_code = c.outlet_code
+                                            AND a.item_seq = c.item_seq
+                                            AND a.trans_date = c.trans_date
+                                            AND c.trans_date BETWEEN $P{fromDate} AND $P{toDate}
+            LEFT JOIN M_ITEM mi ON a.menu_item_code = mi.item_code
+            GROUP BY a.menu_item_code, mi.item_DESCRIPTION, NVL(CASE WHEN C.TRANS_TYPE IN (' ', NULL) THEN 'TA' ELSE C.TRANS_TYPE END, 'TA')
+            ORDER BY a.menu_item_code
+        )
+        GROUP BY MENU_ITEM_CODE, item_DESCRIPTION
+        ORDER BY MENU_ITEM_CODE) d]]>
 	</queryString>
-	<field name="ITEM_CODE" class="java.lang.String"/>
+	<field name="MENU_ITEM_CODE" class="java.lang.String"/>
 	<field name="ITEM_DESCRIPTION" class="java.lang.String"/>
 	<field name="QTY_TA" class="java.lang.Integer"/>
 	<field name="QTY_EI" class="java.lang.Integer"/>
+	<field name="TOTAL_QTY" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -370,11 +384,11 @@ ORDER BY a.menu_item_code]]>
 				<textFieldExpression><![CDATA[$P{cashierCode}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="501" y="119" width="50" height="11" uuid="e7fab874-4801-4d03-8b4f-bfd8adfe2180"/>
+				<reportElement x="501" y="119" width="50" height="11" uuid="51107875-163b-4e49-8aed-65822651e837"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
-				<text><![CDATA[Item Menu]]></text>
+				<text><![CDATA[Item Detail]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
@@ -392,7 +406,7 @@ ORDER BY a.menu_item_code]]>
 				<textElement textAlignment="Left">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{ITEM_CODE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{MENU_ITEM_CODE}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="63" y="0" width="217" height="15" uuid="8ace14b3-b5ca-462d-9707-f9f9e990d241"/>
@@ -406,7 +420,7 @@ ORDER BY a.menu_item_code]]>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{QTY_TA} + $F{QTY_EI}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{TOTAL_QTY}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="290" y="0" width="80" height="15" uuid="c3388ce2-0d5c-48ea-83d7-8970f4f13fd5"/>
