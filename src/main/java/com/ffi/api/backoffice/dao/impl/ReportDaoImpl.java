@@ -2815,6 +2815,7 @@ public class ReportDaoImpl implements ReportDao {
         if (param.get("rangeData").equals(1.0)) {
             hashMap.put("query1", "QTY_BEGINNING <> 0");
             hashMap.put("query2", "(quantity_in <> 0 OR quantity <> 0)");
+            hashMap.put("query3", " WHERE QTY_IN <> 0 OR QTY_OUT <> 0");
         }
         if (param.get("typeReport").equals(1.0)) {
             ClassPathResource classPathResource = new ClassPathResource("report/reportInventoryMovement.jrxml");

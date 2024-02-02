@@ -16,8 +16,11 @@
 	<parameter name="query2" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["1 = 1"]]></defaultValueExpression>
 	</parameter>
+	<parameter name="query3" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[" WHERE 1 = 1"]]></defaultValueExpression>
+	</parameter>
 	<queryString>
-		<![CDATA[SELECT
+		<![CDATA[SELECT * FROM ( SELECT
 	a.OUTLET_CODE,
 	a.ITEM_CODE,
 	b.ITEM_DESCRIPTION,
@@ -31,6 +34,8 @@
 	SUM(a.DELOUT)+SUM(a.PRDOUT) AS prod_out,
 	SUM(a.FMLIN)+SUM(a.FMLOUT) AS free_meal,
 	SUM(a.SOPIN)-SUM(a.SOPOUT) AS adjustment,
+	SUM(a.RCVIN)+SUM(a.RCVOUT)+SUM(a.DELIN)+SUM(a.PRDIN) AS QTY_IN,
+	SUM(a.RCVOUT)+SUM(a.SLSOUT)+SUM(a.DELOUT)+SUM(a.LOCOUT)+SUM(a.LOVOUT)+SUM(a.FMLOUT)+SUM(a.DLVOUT)+SUM(a.WSTOUT)+SUM(a.RTROUT)+SUM(a.PRDOUT) AS QTY_OUT,
 	(SUM(a."BEGIN")+SUM(a.RCVIN)+SUM(a.SLSIN)+SUM(a.DELIN)+SUM(a.LOCIN)+SUM(a.LOVIN)+SUM(a.FMLIN)+SUM(a.DLVIN)+SUM(a.WSTIN)+SUM(a.RTRIN)+SUM(a.PRDIN)+SUM(a.SOPIN))-
 	(SUM(a.RCVOUT)+SUM(a.SLSOUT)+SUM(a.DELOUT)+SUM(a.LOCOUT)+SUM(a.LOVOUT)+SUM(a.FMLOUT)+SUM(a.DLVOUT)+SUM(a.WSTOUT)+SUM(a.RTROUT)+SUM(a.PRDOUT)+SUM(a.SOPOUT)) AS stock_ending,
 	SUM(a.LOCIN)+SUM(a.LOCOUT) AS transfer_location,
@@ -218,7 +223,7 @@ GROUP BY
 	c.PHONE,
 	d.ITEM_COST
 ORDER BY
-	a.ITEM_CODE ASC]]>
+	a.ITEM_CODE ASC) $P!{query3}]]>
 	</queryString>
 	<field name="OUTLET_CODE" class="java.lang.String"/>
 	<field name="ITEM_CODE" class="java.lang.String"/>

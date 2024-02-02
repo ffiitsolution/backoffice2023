@@ -16,6 +16,9 @@
 	<parameter name="query2" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["1 = 1"]]></defaultValueExpression>
 	</parameter>
+		<parameter name="query3" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[" WHERE 1 = 1"]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[SELECT * FROM (SELECT
 	a.OUTLET_CODE,
@@ -203,7 +206,7 @@ GROUP BY
 	c.ADDRESS_2,
 	c.PHONE
 ORDER BY
-	a.ITEM_CODE ASC) WHERE QTY_IN <> 0 OR QTY_OUT <> 0]]>
+	a.ITEM_CODE ASC) $P!{query3}]]>
 	</queryString>
 	<field name="OUTLET_CODE" class="java.lang.String"/>
 	<field name="ITEM_CODE" class="java.lang.String"/>
