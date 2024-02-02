@@ -2212,7 +2212,10 @@ public class ViewDoaImpl implements ViewDao {
                 + "                    0 TOTAL_JUMLAH, "
                 + "                    UOM_PURCHASE AS TOTAL "
                 + "                FROM M_ITEM WHERE "
-                + "                SUBSTR(ITEM_CODE,1,1) != 'X' AND STATUS = 'A' "
+                + "                SUBSTR(ITEM_CODE,1,1) != 'X' "
+                + "                AND STATUS = 'A' "
+                + "                AND FLAG_MATERIAL = 'Y' "
+                + "                AND FLAG_STOCK = 'Y' "
                 + "                ORDER BY item_code asc)";
         Map prm = new HashMap();
         prm.put("cdWarehouse", balance.get("cdWarehouse"));
