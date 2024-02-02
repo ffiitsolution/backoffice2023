@@ -6,8 +6,8 @@
 	<property name="ireport.y" value="96"/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w1" value="370"/>
-	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w2" value="616"/>
+	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w1" value="476"/>
+	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w2" value="510"/>
 	<parameter name="outletCode" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
@@ -36,6 +36,7 @@ FROM
          type,
          address_1,
          address_2,
+         phone,
          item_code,
          item_description,
          CASE
@@ -86,6 +87,7 @@ FROM
                    type,
                    address_1,
                    address_2,
+                   phone,
                    ITEM_CODE,
                    item_description,
                    CD_TRANS,
@@ -123,6 +125,7 @@ FROM
                              type,
                              address_1,
                              address_2,
+                             phone,
                              ITEM_CODE,
                              item_description,
                              CD_TRANS,
@@ -167,6 +170,7 @@ FROM
                                          TYPE,
                                          ADDRESS_1,
                                          ADDRESS_2,
+                                         PHONE,
                                          TRANS_DATE,
                                          ITEM_CODE,
                                          ITEM_DESCRIPTION,
@@ -206,6 +210,7 @@ FROM
                                                    b.type,
                                                    b.address_1,
                                                    b.address_2,
+                                                   b.phone,
                                                    a.trans_date,
                                                    a.item_code,
                                                    m.item_description,
@@ -242,7 +247,8 @@ FROM
                                                                    outlet_name,
                                                                    type,
                                                                    address_1,
-                                                                   address_2
+                                                                   address_2,
+                                                                   phone
                                                             FROM   m_outlet
                                                            WHERE   outlet_code =
                                                                       $P{outletCode}) b
@@ -263,6 +269,7 @@ FROM
                                                    c.type,
                                                    c.address_1,
                                                    c.address_2,
+                                                   c.phone,
                                                    A.TRANS_DATE,
                                                    A.ITEM_CODE,
                                                    m.item_description,
@@ -467,7 +474,8 @@ FROM
                                                                    outlet_name,
                                                                    type,
                                                                    address_1,
-                                                                   address_2
+                                                                   address_2,
+                                                                   phone
                                                             FROM   m_outlet
                                                            WHERE   outlet_code =
                                                                       $P{outletCode}) c
@@ -523,6 +531,7 @@ FROM
 	<field name="TYPE" class="java.lang.String"/>
 	<field name="ADDRESS_1" class="java.lang.String"/>
 	<field name="ADDRESS_2" class="java.lang.String"/>
+	<field name="PHONE" class="java.lang.String"/>
 	<variable name="TOTALIN" class="java.lang.Double" resetType="Group" resetGroup="itemCode" calculation="Sum">
 		<variableExpression><![CDATA[$F{QTY_IN}]]></variableExpression>
 	</variable>
@@ -1169,13 +1178,6 @@ FROM
 				</textElement>
 				<textFieldExpression><![CDATA[$F{ADDRESS_1}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="59" y="33" width="122" height="11" uuid="944ac969-d9b3-49fc-a19f-b42f200d11ba"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Jam Cetak : " + new SimpleDateFormat("hh:mm:ss").format(new Date())]]></textFieldExpression>
-			</textField>
 			<staticText>
 				<reportElement x="430" y="0" width="64" height="11" uuid="e4df922d-ddbb-4293-9295-35a5681a4040">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -1391,6 +1393,13 @@ FROM
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="59" y="33" width="122" height="11" uuid="e501fa94-7332-4a75-a3dd-535e9a2928c4"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Phone : " + $F{PHONE}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>

@@ -49,7 +49,8 @@
     mo.OUTLET_NAME,
     mo.TYPE,
     mo.ADDRESS_1,
-    mo.ADDRESS_2
+    mo.ADDRESS_2,
+    mo.PHONE
 FROM 
     T_SUMM_MPCS tsm
 JOIN M_OUTLET mo ON tsm.OUTLET_CODE = mo.OUTLET_CODE
@@ -200,6 +201,10 @@ ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS
 	<field name="ADDRESS_2" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="ADDRESS_2"/>
 		<property name="com.jaspersoft.studio.field.label" value="ADDRESS_2"/>
+	</field>
+	<field name="PHONE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="PHONE"/>
+		<property name="com.jaspersoft.studio.field.label" value="PHONE"/>
 	</field>
 	<variable name="countMyGroup" class="java.lang.Integer" resetType="Group" resetGroup="MPCS" incrementType="Group" incrementGroup="Time" calculation="Count">
 		<variableExpression><![CDATA[""]]></variableExpression>
@@ -843,6 +848,13 @@ ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS
 				</textElement>
 				<text><![CDATA[Detail]]></text>
 			</staticText>
+			<textField>
+				<reportElement x="59" y="41" width="122" height="11" uuid="7879c6e8-1c19-44e8-8377-e3d72c817066"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Phone : " + $F{PHONE}]]></textFieldExpression>
+			</textField>
 		</band>
 	</columnHeader>
 	<detail>
