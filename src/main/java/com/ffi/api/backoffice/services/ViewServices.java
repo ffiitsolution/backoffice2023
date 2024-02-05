@@ -544,4 +544,9 @@ public class ViewServices {
     public List<Map<String, Object>> mpcsProductionListFryer(Map<String, String> ref) {
         return viewDao.mpcsProductionListFryer(ref);
     }
+
+    // =============== New Method From Sifa 05-02-2024 ===============
+    public List<Map<String, Object>> listWarehouseFSD(Map<String, String> ref) {
+        return viewDao.listWarehouseFSD(ref);
+    }
 }

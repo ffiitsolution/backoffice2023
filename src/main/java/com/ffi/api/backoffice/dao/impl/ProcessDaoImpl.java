@@ -31,6 +31,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.transaction.Transactional;
 
@@ -78,7 +80,7 @@ public class ProcessDaoImpl implements ProcessDao {
 
     @Value("${endpoint.master}")
     private String urlMaster;
-    
+
     ///////////////new method from dona 27-02-2023////////////////////////////
     @Override
     public void insertSupplier(Map<String, String> balance) {
@@ -474,7 +476,7 @@ public class ProcessDaoImpl implements ProcessDao {
     @Override
     public void updateMCounter(Map<String, String> balance) {
 
-        LocalDate transDate = this.jdbcTemplate.queryForObject("SELECT TRANS_DATE FROM M_OUTLET WHERE OUTLET_CODE = :outletCode", balance, LocalDate.class); 
+        LocalDate transDate = this.jdbcTemplate.queryForObject("SELECT TRANS_DATE FROM M_OUTLET WHERE OUTLET_CODE = :outletCode", balance, LocalDate.class);
         int month = transDate.getMonthValue();
         int year = transDate.getYear();
 
@@ -662,10 +664,10 @@ public class ProcessDaoImpl implements ProcessDao {
         } catch (DataAccessException e) {
             System.err.println("DataAccessException : " + e);
         }
-        
+
         System.err.println("result : " + result);
-        if(result == null || result.equalsIgnoreCase("[]") || result.isEmpty()){
-            updateMCounterSop(transType,outletCode);
+        if (result == null || result.equalsIgnoreCase("[]") || result.isEmpty()) {
+            updateMCounterSop(transType, outletCode);
             return opnameNumber(year, month, transType, outletCode);
         } else {
             return result;
@@ -680,7 +682,6 @@ public class ProcessDaoImpl implements ProcessDao {
         // Date tgl = new Date();
         // String month = df.format(tgl);
         // String year = dfYear.format(tgl);
-
         // update query ambil no, handle jika kosong by M Joko 19-12-23
         String selectSql = "SELECT COUNT(*) FROM m_counter WHERE OUTLET_CODE = :outletCode AND TRANS_TYPE = :transType AND YEAR = :year AND MONTH = :month";
         String updateSql = "UPDATE m_counter SET COUNTER_NO = COUNTER_NO + 1 WHERE OUTLET_CODE = :outletCode AND TRANS_TYPE = :transType AND YEAR = :year AND MONTH = :month";
@@ -696,7 +697,7 @@ public class ProcessDaoImpl implements ProcessDao {
                 params, String.class));
         params.addValue("year", transDate.getYear());
         params.addValue("month", transDate.getMonthValue());
- 
+
         int count = jdbcTemplate.queryForObject(selectSql, params, Integer.class);
 
         if (count > 0) {
@@ -714,15 +715,15 @@ public class ProcessDaoImpl implements ProcessDao {
     public List updateOpnameStatus(Map balance) {
         Map param = new HashMap();
         Integer status = Integer.valueOf(balance.get("status").toString());
-        Integer confirmZero = Integer.valueOf(balance.getOrDefault("confirmZero",0).toString());
+        Integer confirmZero = Integer.valueOf(balance.getOrDefault("confirmZero", 0).toString());
         List<Map<String, Object>> list = new ArrayList();
         System.out.println("updateOpnameStatus status = " + status);
         param.put("outletCode", balance.get("outletCode"));
         param.put("opnameNo", balance.get("opnameNo"));
         param.put("status", status);
-        
+
         // cek jika ada nilai nol dan belum di confirmZero, kembalikan list
-        if(confirmZero < 1 && (status == 1 || status == '1')){
+        if (confirmZero < 1 && (status == 1 || status == '1')) {
             String qry = """
                 select o.opname_no, o.item_code, mi.item_description, o.qty_purch, o.uom_purch, o.qty_stock, o.uom_stock, o.total_qty 
                 from t_opname_detail o
@@ -730,43 +731,43 @@ public class ProcessDaoImpl implements ProcessDao {
                 where o.outlet_code = :outletCode and o.opname_no = :opnameNo and o.qty_purch = 0 and o.qty_stock = 0 and o.total_qty = 0
             """;
             list = jdbcTemplate.query(qry, param, new DynamicRowMapper());
-            if( !list.isEmpty()){
+            if (!list.isEmpty()) {
                 System.out.println("terdapat nilai semua 0 saat opname");
                 return list;
             }
         }
-        
+
         String qy = "update t_opname_header set status =:status WHERE OPNAME_NO = :opnameNo and OUTLET_CODE= :outletCode";
         jdbcTemplate.update(qy, param);
-        if(status == 1 || status == '1'){
+        if (status == 1 || status == '1') {
             itemOpnameToStockCard(balance);
             // update by M Joko 20-dec-23 
             updateMCounterAfterStockOpname(balance);
         }
         return list;
     }
-    
+
     public void itemOpnameToStockCard(Map<String, String> balance) {
-            // update by M Joko 18-12-23
-            Map param = new HashMap();
-            param.put("opnameNo", balance.get("opnameNo"));
-            param.put("userUpd", balance.getOrDefault("userUpd", "SYSTEM"));
-            param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
-            param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
-            // hanya yg ada nilai di in dan out yg dimasukkan ke stock card detail
-            String qryListStockOpname = "SELECT * FROM ( SELECT od.OUTLET_CODE, (SELECT trans_date FROM m_outlet WHERE outlet_code = od.outlet_code) AS TRANS_DATE, od.ITEM_CODE, 'SOP' AS CD_TRANS, CASE WHEN od.qty_freeze < od.total_qty THEN od.total_qty - od.qty_freeze ELSE 0 END AS QUANTITY_IN, CASE WHEN od.qty_freeze > od.total_qty THEN od.qty_freeze - od.total_qty ELSE 0 END AS QUANTITY, :userUpd AS USER_UPD, :dateUpd AS DATE_UPD, :timeUpd AS TIME_UPD FROM T_OPNAME_DETAIL od WHERE od.opname_no = :opnameNo ) WHERE QUANTITY_IN NOT IN (0, '0') UNION ALL SELECT * FROM ( SELECT od.OUTLET_CODE, (SELECT trans_date FROM m_outlet WHERE outlet_code = od.outlet_code) AS TRANS_DATE, od.ITEM_CODE, 'SOP' AS CD_TRANS, CASE WHEN od.qty_freeze < od.total_qty THEN od.total_qty - od.qty_freeze ELSE 0 END AS QUANTITY_IN, CASE WHEN od.qty_freeze > od.total_qty THEN od.qty_freeze - od.total_qty ELSE 0 END AS QUANTITY, :userUpd AS USER_UPD, :dateUpd AS DATE_UPD, :timeUpd AS TIME_UPD FROM T_OPNAME_DETAIL od WHERE od.opname_no = :opnameNo ) WHERE QUANTITY NOT IN (0, '0')";
-        
+        // update by M Joko 18-12-23
+        Map param = new HashMap();
+        param.put("opnameNo", balance.get("opnameNo"));
+        param.put("userUpd", balance.getOrDefault("userUpd", "SYSTEM"));
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
+        // hanya yg ada nilai di in dan out yg dimasukkan ke stock card detail
+        String qryListStockOpname = "SELECT * FROM ( SELECT od.OUTLET_CODE, (SELECT trans_date FROM m_outlet WHERE outlet_code = od.outlet_code) AS TRANS_DATE, od.ITEM_CODE, 'SOP' AS CD_TRANS, CASE WHEN od.qty_freeze < od.total_qty THEN od.total_qty - od.qty_freeze ELSE 0 END AS QUANTITY_IN, CASE WHEN od.qty_freeze > od.total_qty THEN od.qty_freeze - od.total_qty ELSE 0 END AS QUANTITY, :userUpd AS USER_UPD, :dateUpd AS DATE_UPD, :timeUpd AS TIME_UPD FROM T_OPNAME_DETAIL od WHERE od.opname_no = :opnameNo ) WHERE QUANTITY_IN NOT IN (0, '0') UNION ALL SELECT * FROM ( SELECT od.OUTLET_CODE, (SELECT trans_date FROM m_outlet WHERE outlet_code = od.outlet_code) AS TRANS_DATE, od.ITEM_CODE, 'SOP' AS CD_TRANS, CASE WHEN od.qty_freeze < od.total_qty THEN od.total_qty - od.qty_freeze ELSE 0 END AS QUANTITY_IN, CASE WHEN od.qty_freeze > od.total_qty THEN od.qty_freeze - od.total_qty ELSE 0 END AS QUANTITY, :userUpd AS USER_UPD, :dateUpd AS DATE_UPD, :timeUpd AS TIME_UPD FROM T_OPNAME_DETAIL od WHERE od.opname_no = :opnameNo ) WHERE QUANTITY NOT IN (0, '0')";
+
         String qryToStockCardDetail = "insert into t_stock_card_detail ( " + qryListStockOpname + " )";
-        try{
+        try {
             jdbcTemplate.update(qryToStockCardDetail, param);
-        } catch (DataAccessException e){
+        } catch (DataAccessException e) {
             System.out.println("error insert so to sc detail: " + param);
         }
-        
+
         // update method update by M Joko 15 Jan 24
         List<Map<String, Object>> list = jdbcTemplate.query(qryListStockOpname, param, new DynamicRowMapper());
-        
-        if( !list.isEmpty()){
+
+        if (!list.isEmpty()) {
             for (Map<String, Object> sc : list) {
                 Map paramUpd = new HashMap();
                 paramUpd.put("itemCode", sc.get("itemCode"));
@@ -780,10 +781,10 @@ public class ProcessDaoImpl implements ProcessDao {
                         sc.QTY_OUT = NVL(sc.QTY_OUT,0) + NVL(:quantity,0)
                     WHERE sc.trans_date = (SELECT trans_date FROM m_outlet WHERE outlet_code = :outletCode) AND sc.item_code = :itemCode
                                             """;
-                try{
+                try {
                     System.out.println("akan update so to sc detail: " + paramUpd);
                     jdbcTemplate.update(qryUpd, paramUpd);
-                } catch (DataAccessException e){
+                } catch (DataAccessException e) {
                     System.out.println("error update sc: " + paramUpd);
                 }
             }
@@ -1265,7 +1266,7 @@ public class ProcessDaoImpl implements ProcessDao {
         }
 
         // call updateMCounterSop to update counter rcv by Dani 20 Desc 2023
-        updateMCounterSop(balancing.getAsJsonObject().getAsJsonPrimitive("transType").getAsString(),balancing.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
+        updateMCounterSop(balancing.getAsJsonObject().getAsJsonPrimitive("transType").getAsString(), balancing.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
         // update status t_order_header menjadi close by Dani 29 Dec 2023
         String qu = " UPDATE T_ORDER_HEADER SET STATUS = '1' WHERE ORDER_NO = :ord_no ";
         jdbcTemplate.update(qu, param);
@@ -1292,7 +1293,7 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
         param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         jdbcTemplate.update(qy, param);
-        
+
         // call insert to t_stock_card_dtl by Dani 18 December 2023
         updateRecvStockCard(param);
     }
@@ -1534,7 +1535,7 @@ public class ProcessDaoImpl implements ProcessDao {
         if (balancing.getAsJsonObject().getAsJsonPrimitive("transType").getAsString().contains("W")) {
             try {
                 String queryInsetStockCardDetail = "insert into t_stock_card_detail(SELECT a.OUTLET_CODE, (SELECT TRANS_DATE FROM M_OUTLET WHERE OUTLET_CODE = a.OUTLET_CODE) AS TRANS_DATE, a.ITEM_CODE, 'WST' AS CD_TRANS, 0 AS QUANTITY_IN, a.QUANTITY AS QUANTITY, :userUpd AS USER_UPD, :dateUpd AS DATE_UPD, :timeUpd AS TIME_UPD FROM T_WASTAGE_DETAIL a WHERE a.WASTAGE_NO = :wastageNo)";
-                jdbcTemplate.update(queryInsetStockCardDetail,param);
+                jdbcTemplate.update(queryInsetStockCardDetail, param);
             } catch (Exception ex) {
                 String queryInsetStockCardDetail = "UPDATE T_STOCK_CARD_DETAIL a SET a.QUANTITY = a.QUANTITY + NVL((SELECT b.QUANTITY FROM T_WASTAGE_DETAIL b WHERE b.WASTAGE_NO =:wastageNo AND b.ITEM_CODE = a.ITEM_CODE), 0) WHERE a.TRANS_DATE = (SELECT TRANS_DATE FROM M_OUTLET WHERE OUTLET_CODE = a.OUTLET_CODE) AND a.CD_TRANS = 'WST'";
                 jdbcTemplate.update(queryInsetStockCardDetail, param);
@@ -1674,7 +1675,7 @@ public class ProcessDaoImpl implements ProcessDao {
         String year = dfYear.format(tgl);
 
         String typeReturn = param.getAsJsonPrimitive("typeReturn").getAsString();
-        
+
         //Getting last number for Return Order
         String noID = returnOrderCounter(year, month, "ID", param.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
         String noReturn = returnOrderCounter(year, month, "RTR", param.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
@@ -1722,7 +1723,7 @@ public class ProcessDaoImpl implements ProcessDao {
         query.append(" SELECT * FROM dual");
         String queryDetail = query.toString();
         jdbcTemplate.update(queryDetail, new HashMap<>());
-        
+
         // insert t_stock_card_detail
         String qryRO = "SELECT h.type_return, h.return_to, h.remark, TO_CHAR(h.return_date, 'DD-MON-YY') AS return_date, d.outlet_code, d.return_id, d.return_no, d.item_code, d.qty_warehouse, d.uom_warehouse, d.qty_purchase, d.uom_purchase, d.total_qty, d.user_upd, TO_CHAR(d.date_upd, 'DD-MON-YY') AS date_upd, d.time_upd FROM t_return_detail d JOIN t_return_header h ON d.return_no = h.return_no AND d.outlet_code = h.outlet_code WHERE d.return_no = :returnNo AND d.outlet_code = :outletCode";
         Map<String, Object> prmRO = new HashMap<>();
@@ -1730,20 +1731,20 @@ public class ProcessDaoImpl implements ProcessDao {
         prmRO.put("outletCode", outletCode);
         List<Map<String, Object>> listDetailRO = jdbcTemplate.query(qryRO, prmRO, new DynamicRowMapper());
         System.err.println("listDetailRO to wh : " + listDetailRO);
-        
+
         // update stock card by M Joko - 22-12-23
         updateStockCardRO(listDetailRO, noReturn, outletCode);
-        
+
         // kirim return order ke gudang by M Joko - 22-12-23
-        if(typeReturn.equalsIgnoreCase("1") ){
+        if (typeReturn.equalsIgnoreCase("1")) {
             System.err.println("send return order to wh : " + noReturn);
-            if(sendReturnOrderDetailToWH(listDetailRO)){
+            if (sendReturnOrderDetailToWH(listDetailRO)) {
                 String qryUpdStatus = "update t_return_header set status = 1 where return_no = :returNo and outlet_code = :outletCode";
                 jdbcTemplate.update(qryUpdStatus, prmRO);
             }
         }
     }
-    
+
     // kirim return order ke api warehouse by M Joko - 22-12-23
     public void updateStockCardRO(List<Map<String, Object>> listDetailRO, String noReturn, String outletCode) {
         for (int i = 0; i < listDetailRO.size(); i++) {
@@ -1758,7 +1759,7 @@ public class ProcessDaoImpl implements ProcessDao {
             System.err.println("qryInsert: " + qryInsert);
             System.err.println("detailRO: " + detailRO);
             jdbcTemplate.update(qryInsert, prm);
-            
+
             //update t_stock_card by M Joko - 22-12-23
             String qryUpdateStockCard = "UPDATE t_stock_card SET QTY_OUT = QTY_OUT + NVL(:qtyOut, 0) WHERE trans_date = (SELECT trans_date FROM m_outlet WHERE outlet_code = :outletCode) and item_code = :itemCode";
             System.err.println("qryUpdateStockCard: " + qryInsert);
@@ -1766,13 +1767,13 @@ public class ProcessDaoImpl implements ProcessDao {
         }
     }
 
-       // kirim ulang return order
+    // kirim ulang return order
     @Override
     public boolean sendReturnOrderToWH(JsonObject balance) {
         String outletCode = balance.getAsJsonPrimitive("outletCode").getAsString();
         String returnNo = balance.getAsJsonPrimitive("returnNo").getAsString();
         String userUpd = balance.getAsJsonPrimitive("userUpd").getAsString();
-        
+
         // insert t_stock_card_detail
         String qryRO = "SELECT h.type_return, h.return_to, h.remark, TO_CHAR(h.return_date, 'DD-MON-YY') AS return_date, d.outlet_code, d.return_id, d.return_no, d.item_code, d.qty_warehouse, d.uom_warehouse, d.qty_purchase, d.uom_purchase, d.total_qty, d.user_upd, TO_CHAR(d.date_upd, 'DD-MON-YY') AS date_upd, d.time_upd FROM t_return_detail d JOIN t_return_header h ON d.return_no = h.return_no AND d.outlet_code = h.outlet_code WHERE d.return_no = :returnNo AND d.outlet_code = :outletCode";
         Map<String, Object> prmRO = new HashMap<>();
@@ -1781,20 +1782,20 @@ public class ProcessDaoImpl implements ProcessDao {
         prmRO.put("userUpd", userUpd);
         List<Map<String, Object>> listDetailRO = jdbcTemplate.query(qryRO, prmRO, new DynamicRowMapper());
         System.err.println("listDetailRO to wh : " + listDetailRO);
-        
-        if(sendReturnOrderDetailToWH(listDetailRO)){
+
+        if (sendReturnOrderDetailToWH(listDetailRO)) {
             String qryUpdStatus = "update t_return_header set status = 1 where return_no = :returnNo and outlet_code = :outletCode";
-            try{
+            try {
                 jdbcTemplate.update(qryUpdStatus, prmRO);
                 return true;
-            } catch (DataAccessException e){
+            } catch (DataAccessException e) {
                 System.err.println("qryUpdStatus error: " + e.getMessage());
                 return false;
             }
         }
         return false;
     }
-    
+
     // kirim return order ke api warehouse by M Joko - 22-12-23
     public boolean sendReturnOrderDetailToWH(List<Map<String, Object>> listDetailRO) {
         try {
@@ -1813,7 +1814,7 @@ public class ProcessDaoImpl implements ProcessDao {
             return false;
         }
     }
-    
+
     public String returnOrderCounter(String year, String month, String transType, String outletCode) {
         if (transType.equalsIgnoreCase("ID")) {
             String dateMonth = month.concat("-").concat(year);
@@ -2717,7 +2718,7 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("userUpd", balance.get("userUpd"));
         param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
         param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
-        
+
         jdbcTemplate.update(qy, param);
     }
 
@@ -2728,7 +2729,7 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("outletCode", balance.get("outletCode"));
         String qryCounter = "INSERT INTO m_counter (OUTLET_CODE, TRANS_TYPE, YEAR, MONTH, COUNTER_NO) ( SELECT mo.OUTLET_CODE, menu_id AS TRANS_TYPE, CASE WHEN EXTRACT(MONTH FROM mo.TRANS_DATE) = 12 THEN EXTRACT(YEAR FROM mo.TRANS_DATE) + 1 ELSE EXTRACT(YEAR FROM mo.TRANS_DATE) END AS YEAR, CASE WHEN EXTRACT(MONTH FROM mo.TRANS_DATE) = 12 THEN 1 ELSE EXTRACT(MONTH FROM mo.TRANS_DATE) + 1 END AS MONTH, 0 AS COUNTER_NO FROM M_MENUDTL m JOIN m_outlet mo ON mo.OUTLET_CODE = :outletCode WHERE m.TYPE_ID = 'counter' AND m.APLIKASI = 'SOP' AND m.STATUS = 'A' AND NOT EXISTS ( SELECT 1 FROM m_counter mc WHERE mc.OUTLET_CODE = mo.OUTLET_CODE AND mc.TRANS_TYPE = m.menu_id AND mc.YEAR = CASE WHEN EXTRACT(MONTH FROM mo.TRANS_DATE) = 12 THEN EXTRACT(YEAR FROM mo.TRANS_DATE) + 1 ELSE EXTRACT(YEAR FROM mo.TRANS_DATE) END AND mc.MONTH = CASE WHEN EXTRACT(MONTH FROM mo.TRANS_DATE) = 12 THEN 1 ELSE EXTRACT(MONTH FROM mo.TRANS_DATE) + 1 END ) )";
         System.err.println("q updateMCounterAfterStockOpname: " + qryCounter);
-        jdbcTemplate.update(qryCounter,param);
+        jdbcTemplate.update(qryCounter, param);
     }
 
     ////////////New method for update t_order_header jika expired setelah End of Day - M Joko M 27-Dec-2023////////////
@@ -2738,7 +2739,7 @@ public class ProcessDaoImpl implements ProcessDao {
         Map<String, Object> prmOE = new HashMap<>();
         prmOE.put("outletCode", balance.get("outletCode"));
         List<Map<String, Object>> listOE = jdbcTemplate.query(qryList, prmOE, new DynamicRowMapper());
-        if(!listOE.isEmpty()){
+        if (!listOE.isEmpty()) {
             for (int i = 0; i < listOE.size(); i++) {
                 Map<String, Object> orderEntry = listOE.get(i);
                 System.err.println("orderEntry (" + i + "): " + orderEntry);
@@ -2747,11 +2748,11 @@ public class ProcessDaoImpl implements ProcessDao {
                 prmUpd.put("orderNo", orderEntry.get("orderNo"));
                 String qryUpd = "update t_order_header set status = 2 where order_no = :orderNo and outlet_code = :outletCode";
                 System.err.println("updateOrderEntryExpired (" + orderEntry.get("orderNo") + "): " + qryUpd);
-                jdbcTemplate.update(qryUpd,prmUpd);
+                jdbcTemplate.update(qryUpd, prmUpd);
             }
         }
     }
-    
+
     // New Method for insert or update to t_dev_header and t_dev_detail by Dani 27 Dec 2023
     @Transactional
     public void insertUpdateDeliveryOrder(Map<String, Object> resource) throws Exception {
@@ -2762,21 +2763,21 @@ public class ProcessDaoImpl implements ProcessDao {
         resource.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         if (countHeader > 0) {
             // query update header
-            String queryHeaderUpdate = "UPDATE T_DEV_HEADER " +
-                    " SET DELIVERY_DATE=:deliveryDate, REMARK=:remark, STATUS=:status, USER_UPD=:userUpd, DATE_UPD=:dateUpd, TIME_UPD=:timeUpd" +
-                    " WHERE OUTLET_CODE=:outletCode AND OUTLET_TO=:outletTo AND REQUEST_NO=:requestNo";
-                    jdbcTemplate.update(queryHeaderUpdate, resource);
+            String queryHeaderUpdate = "UPDATE T_DEV_HEADER "
+                    + " SET DELIVERY_DATE=:deliveryDate, REMARK=:remark, STATUS=:status, USER_UPD=:userUpd, DATE_UPD=:dateUpd, TIME_UPD=:timeUpd"
+                    + " WHERE OUTLET_CODE=:outletCode AND OUTLET_TO=:outletTo AND REQUEST_NO=:requestNo";
+            jdbcTemplate.update(queryHeaderUpdate, resource);
         } else {
             // query insert header
             LocalDate transDate = LocalDate.parse(this.jdbcTemplate.queryForObject(
-                "SELECT DISTINCT TO_CHAR(TRANS_DATE, 'YYYY-MM-DD') FROM M_OUTLET WHERE OUTLET_CODE = :outletCode and status = 'A'",
-                resource, String.class));
-            String dlvNo = opnameNumber(transDate.getYear() + "", transDate.getMonthValue() +"", "DLV", (String) resource.get("outletCode"));
+                    "SELECT DISTINCT TO_CHAR(TRANS_DATE, 'YYYY-MM-DD') FROM M_OUTLET WHERE OUTLET_CODE = :outletCode and status = 'A'",
+                    resource, String.class));
+            String dlvNo = opnameNumber(transDate.getYear() + "", transDate.getMonthValue() + "", "DLV", (String) resource.get("outletCode"));
             updateMCounterSop("DLV", (String) resource.get("outletCode"));
             resource.put("deliveryNo", dlvNo);
-            String queryHeaderInsert = "INSERT INTO T_DEV_HEADER " +
-                    " (OUTLET_CODE, OUTLET_TO, REQUEST_NO, DELIVERY_NO, DELIVERY_DATE, REMARK, STATUS, USER_UPD, DATE_UPD, TIME_UPD)" +
-                    " VALUES(:outletCode, :outletTo, :requestNo, :deliveryNo, :deliveryDate, :remark, :status, :userUpd, :dateUpd, :timeUpd)";
+            String queryHeaderInsert = "INSERT INTO T_DEV_HEADER "
+                    + " (OUTLET_CODE, OUTLET_TO, REQUEST_NO, DELIVERY_NO, DELIVERY_DATE, REMARK, STATUS, USER_UPD, DATE_UPD, TIME_UPD)"
+                    + " VALUES(:outletCode, :outletTo, :requestNo, :deliveryNo, :deliveryDate, :remark, :status, :userUpd, :dateUpd, :timeUpd)";
             jdbcTemplate.update(queryHeaderInsert, resource);
         }
         JsonArray details = gson.toJsonTree(resource.get("details")).getAsJsonArray();
@@ -2803,16 +2804,16 @@ public class ProcessDaoImpl implements ProcessDao {
             Integer countDetail = jdbcTemplate.queryForObject(queryDetail, map, Integer.class);
             if (countDetail > 0) {
                 // query update detail
-                String queryDetailUpdate = "UPDATE T_DEV_DETAIL" +
-                        " SET DELIVERY_NO=:deliveryNo, QTY_PURCH=:qtyPurch, UOM_PURCH=:uomPurch, QTY_STOCK=:qtyStock, UOM_STOCK=:uomStock, TOTAL_QTY=:totalQty, USER_UPD=:userUpd, DATE_UPD=:dateUpd, TIME_UPD=:timeUpd" +
-                        " WHERE OUTLET_CODE=:outletCode AND OUTLET_TO=:outletTo AND REQUEST_NO=:requestNo AND ITEM_CODE=:itemCode";
-                        jdbcTemplate.update(queryDetailUpdate, map);
+                String queryDetailUpdate = "UPDATE T_DEV_DETAIL"
+                        + " SET DELIVERY_NO=:deliveryNo, QTY_PURCH=:qtyPurch, UOM_PURCH=:uomPurch, QTY_STOCK=:qtyStock, UOM_STOCK=:uomStock, TOTAL_QTY=:totalQty, USER_UPD=:userUpd, DATE_UPD=:dateUpd, TIME_UPD=:timeUpd"
+                        + " WHERE OUTLET_CODE=:outletCode AND OUTLET_TO=:outletTo AND REQUEST_NO=:requestNo AND ITEM_CODE=:itemCode";
+                jdbcTemplate.update(queryDetailUpdate, map);
             } else {
                 // query insert detail
-                String queryDetailInsert = " INSERT INTO T_DEV_DETAIL " +
-                        " (OUTLET_CODE, OUTLET_TO, REQUEST_NO, DELIVERY_NO, ITEM_CODE, QTY_PURCH, UOM_PURCH, QTY_STOCK, UOM_STOCK, TOTAL_QTY, USER_UPD, DATE_UPD, TIME_UPD)" +
-                        " VALUES(:outletCode, :outletTo, :requestNo, :deliveryNo, :itemCode, :qtyPurch, :uomPurch, :qtyStock, :uomStock, :totalQty, :userUpd, :dateUpd, :timeUpd)";
-                        jdbcTemplate.update(queryDetailInsert, map);
+                String queryDetailInsert = " INSERT INTO T_DEV_DETAIL "
+                        + " (OUTLET_CODE, OUTLET_TO, REQUEST_NO, DELIVERY_NO, ITEM_CODE, QTY_PURCH, UOM_PURCH, QTY_STOCK, UOM_STOCK, TOTAL_QTY, USER_UPD, DATE_UPD, TIME_UPD)"
+                        + " VALUES(:outletCode, :outletTo, :requestNo, :deliveryNo, :itemCode, :qtyPurch, :uomPurch, :qtyStock, :uomStock, :totalQty, :userUpd, :dateUpd, :timeUpd)";
+                jdbcTemplate.update(queryDetailInsert, map);
             }
         }
     }
@@ -2870,7 +2871,7 @@ public class ProcessDaoImpl implements ProcessDao {
         map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
         }.getType());
         JsonObject job = gson.fromJson(result, JsonObject.class);
-        
+
         // update stock card below
         dtls.forEach(dtl -> {
             updateDelvStockCard(dtl);
@@ -2879,7 +2880,7 @@ public class ProcessDaoImpl implements ProcessDao {
 
     // update receive stock card for delery order stock by Dani 28 December 2023
     // this method is for update table t_stock_card and t_stock_card_detail for delivery order stock
-        public void updateDelvStockCard(Map<String, Object> balance) {
+    public void updateDelvStockCard(Map<String, Object> balance) {
         String qf = "SELECT CASE WHEN QUANTITY IS NULL THEN 0 ELSE QUANTITY END AS QUANTITY FROM T_STOCK_CARD_DETAIL WHERE OUTLET_CODE = :outletCode AND TRANS_DATE = :transDate AND item_code= :itemCode AND cd_trans='DLV'";
         Map<String, Object> param = new HashMap<>();
         param.put("outletCode", balance.get("realOutletCode"));
@@ -3258,25 +3259,25 @@ public class ProcessDaoImpl implements ProcessDao {
     @Override
     public void addCounterPrintReceiving(Map<String, Object> param) {
         String query = "UPDATE T_RECV_HEADER a SET a.NO_OF_PRINT  = NO_OF_PRINT+1 WHERE a.ORDER_NO = :noOrder AND a.RECV_NO = :recvNo";
-        jdbcTemplate.update(query, param); 
+        jdbcTemplate.update(query, param);
     }
-    
+
     // Add Counter Print Order Entry adit 16 Jan 2024
     @Override
     public void addCounterPrintOrderEntry(Map<String, Object> param) {
         String query = "UPDATE T_ORDER_HEADER a SET a.NO_OF_PRINT  = a.NO_OF_PRINT+1 WHERE a.ORDER_NO = :orderNo";
-        jdbcTemplate.update(query, param); 
+        jdbcTemplate.update(query, param);
     }
-    
+
     // Add menyimpan data user absensi by id by M Joko 16 Jan 2024
     @Override
     public boolean insertAbsensi(Map<String, Object> param) {
         String query = "SELECT * FROM M_STAFF ms WHERE ms.STAFF_CODE = :staffCode AND ms.PASSWORD = :password";
         List list = jdbcTemplate.query(query, param, new DynamicRowMapper());
-        if(list.isEmpty()){
+        if (list.isEmpty()) {
             return false;
         }
-        
+
         String queryUpd = """
             INSERT INTO T_ABSENSI (
               OUTLET_CODE, DAY_SEQ, STAFF_ID, SEQ_NO, 
@@ -3339,15 +3340,15 @@ public class ProcessDaoImpl implements ProcessDao {
             WHERE 
               rownum = 1
                        """;
-        try{
+        try {
             jdbcTemplate.update(queryUpd, param);
-        } catch(DataAccessException e){
+        } catch (DataAccessException e) {
             System.err.println("err insertAbsensi: " + e.getMessage());
             return false;
         }
         return true;
     }
-    
+
     //////// new Method Insert MPCS Management Fryer aditya 29 Jan 2024
     @Override
     public void insertMpcsManagementFryer(JsonObject param) {
@@ -3355,14 +3356,14 @@ public class ProcessDaoImpl implements ProcessDao {
         DateFormat dfYear = new SimpleDateFormat("yyyy");
         Date tgl = new Date();
         String month = df.format(tgl);
-        String year = dfYear.format(tgl);   
-        
+        String year = dfYear.format(tgl);
+
         String noProcess = returnOrderCounter(year, month, "FRY", param.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
-        
+
         String queryHeader = "INSERT INTO T_MPCS_MANAGEMENT (OUTLET_CODE, PROCESS_NO, NOTES, FRYER_NO, FRYER_TYPE,"
                 + " OIL_USE, PRECENTAGE, USER_UPD, DATE_UPD, TIME_UPD) VALUES (:outletCode, :processNo, :notes,"
                 + " :fryerNo, :fryerType, :oilUse, :precentage, :userUpd, :dateUpd, :timeUpd)";
-        
+
         Map<String, Object> prm = new HashMap<>();
         prm.put("outletCode", param.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
         prm.put("processNo", noProcess);
@@ -3375,23 +3376,58 @@ public class ProcessDaoImpl implements ProcessDao {
         prm.put("dateUpd", LocalDateTime.now().format(dateFormatter));
         prm.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         jdbcTemplate.update(queryHeader, prm);
-        
+
         resetFryerCounter(param);
     }
-    
-    
+
     public void resetFryerCounter(JsonObject param) {
         String queryHeader = "UPDATE M_MPCS_DETAIL SET FRYER_TYPE_CNT=0, USER_UPD=:userUpd, DATE_UPD=TO_CHAR(SYSDATE, 'DD MON YYYY') , TIME_UPD=TO_CHAR(SYSDATE, 'HH24MMII'), FRYER_TYPE_SEQ_CNT=FRYER_TYPE_SEQ_CNT+1 WHERE FRYER_TYPE_SEQ=:fryerNo AND FRYER_TYPE=:fryerType";
-        
+
         Map<String, Object> prm = new HashMap<>();
         prm.put("fryerNo", param.getAsJsonObject().getAsJsonPrimitive("fryerNo").getAsString());
         prm.put("fryerType", param.getAsJsonObject().getAsJsonPrimitive("fryerType").getAsString());
         prm.put("userUpd", param.getAsJsonObject().getAsJsonPrimitive("userUpd").getAsString());
         jdbcTemplate.update(queryHeader, prm);
     }
-    
-    
-    
+
+    @Override
+    public List<Map<String, Object>> listTransferData(Map<String, Object> mapping) {
+        List<Map<String, Object>> list = new ArrayList();
+        List<String> tables = (List<String>) mapping.getOrDefault("listTable", new ArrayList<String>());
+
+        try {
+            // todo
+            for (String tableName : tables) {
+                Gson gson = new Gson();
+                Map<String, Object> map1;
+                CloseableHttpClient client = HttpClients.createDefault();
+                String url = urlMaster + "/get-data";
+                HttpGet getData = new HttpGet(url);
+                String date = mapping.get("date").toString();
+                URI uri = new URIBuilder(getData.getURI()).addParameter("param", tableName).addParameter("date", date).build();
+                getData.setURI(uri);
+                CloseableHttpResponse response = client.execute(getData);
+                BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
+                StringBuilder content = new StringBuilder();
+                String line;
+                while (null != (line = br.readLine())) {
+                    content.append(line);
+                }
+                String result = content.toString();
+                map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
+                }.getType());
+                List<Map<String, Object>> listItem = (List<Map<String, Object>>) map1.get("item");
+                if (listItem != null && !listItem.isEmpty()) {
+                    Map<String, Object> mapq = new HashMap();
+                    mapq.put(tableName, listItem);
+                    list.add(mapq);
+                }
+            }
+        } catch (IOException | URISyntaxException ex) {
+            Logger.getLogger(ProcessDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return list;
+    }
 
     // =========== New Method Copy Data Server From Lukas 17-10-2023 ===========
     @Override
@@ -3425,7 +3461,7 @@ public class ProcessDaoImpl implements ProcessDao {
             }
 
             String result = content.toString();
-            
+
             System.out.println("Result: " + result);
 
             map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
@@ -3450,7 +3486,7 @@ public class ProcessDaoImpl implements ProcessDao {
             System.err.println(e.getMessage());
             FileLoggerUtil.log("terimaDataMaster", ("FAILED COPY DATA " + tableName), "SYSTEM");
             FileLoggerUtil.log("terimaDataMaster", ("Error: " + e.getMessage()), "SYSTEM");
-            
+
             return false;
         }
     }
@@ -3503,7 +3539,7 @@ public class ProcessDaoImpl implements ProcessDao {
                 updateData(tableName, item, primaryKey);
             }
         }
-        
+
         System.err.println("Total Update Data " + tableName + " : " + totalUpdateRow + " Row ");
         System.err.println("Total Insert Data " + tableName + " : " + totalInsertRow + " Row ");
         FileLoggerUtil.log("terimaDataMaster", ("Total Update Data " + tableName + " : " + totalUpdateRow + " Row "), "SYSTEM");
@@ -3580,10 +3616,10 @@ public class ProcessDaoImpl implements ProcessDao {
 
         try {
             System.out.println("Start Transfer Data " + tableName + " At " + startApp.toString());
-            
+
             // todo: cek column name
             String conditionText = conditionTextTransfer(tableName, date);
-            
+
             String query = "SELECT * FROM " + tableName + conditionText;
             Map prm = new HashMap();
             List<Map<String, Object>> list = jdbcTemplate.query(query, prm, (ResultSet rs, int index) -> convertObject(rs));
@@ -3633,8 +3669,8 @@ public class ProcessDaoImpl implements ProcessDao {
             return false;
         }
     }
-    
-    public String conditionTextTransfer(String tableName, String date){
+
+    public String conditionTextTransfer(String tableName, String date) {
         List<String> dateUpd = new ArrayList<>();
         dateUpd.add("T_AGENT_LOG");
         dateUpd.add("T_COPNAME_DETAIL");
@@ -3665,7 +3701,7 @@ public class ProcessDaoImpl implements ProcessDao {
         dateUpd.add("T_SUMM_MPCS");
         dateUpd.add("T_WASTAGE_DETAIL");
         dateUpd.add("T_WASTAGE_HEADER");
-        
+
         List<String> transDate = new ArrayList<>();
         transDate.add("T_POS_BILL_ITEM_DETAIL");
         transDate.add("T_POS_DAY_TRANS");
@@ -3712,7 +3748,7 @@ public class ProcessDaoImpl implements ProcessDao {
         transDate.add("T_SCHEDULE_SUBHEADER");
         transDate.add("T_SEND_RECV_D");
         transDate.add("T_SEND_RECV_H");
-        
+
         if (transDate.contains(tableName)) {
             return " WHERE TRANS_DATE = '" + date + "' ";
         } else if (dateUpd.contains(tableName)) {
@@ -3735,7 +3771,7 @@ public class ProcessDaoImpl implements ProcessDao {
 //                    resultReturn.put(rsmd.getColumnName(i + 1), timeStamp);
 //                }
                 // ---- End Need to Discuss ----
-                
+
                 // todo: set all date column to format dd-MMM-yyyy
                 case "ASSEMBLY_END_TIME", "ASSEMBLY_START_TIME", "BILL_DATE", "BOOK_DATE", "BUCKET_DATE", "CC_DATE", "DATE_1", "DATE_2", "DATE_3", "DATE_4", "DATE_5", "DATE_6", "DATE_ABSEN", "DATE_CREATE", "DATE_DEL", "DATE_END", "DATE_EOD", "DATE_MPCS", "DATE_OF_BIRTH", "DATE_SEND", "DATE_START", "DATE_TRANS", "DATE_UPD", "DELIVERY_DATE", "DISPATCH_END_TIME", "DISPATCH_START_TIME", "DT_DUE", "DT_EXPIRED", "EFFECTIVE_DATE", "EMPLOY_DATE", "END_DATE", "END_OF_DAY", "EVENT_DATE", "FINISH_DATE", "FINISH_TIME", "FLD4", "FLD5", "FLD6", "HOLIDAY_DATE", "KEY_3", "LAST_ORDER", "LAST_RECEIVE", "LAST_RETURN", "LAST_SALES", "LAST_TRANSFER_IN", "LAST_TRANSFER_OUT", "LOG_DATE", "MPCS_DATE", "OPNAME_DATE", "ORDER_DATE", "PAYMENT_DATE", "PERIODE", "PICKUP_END_TIME", "PICKUP_START_TIME", "RECV_DATE", "RESIGN_DATE", "RETURN_DATE", "START_DATE", "START_OF_DAY", "START_TIME", "SUGGEST_DATE", "SUPPLY_END_TIME", "SUPPLY_QUEUE_START_TIME", "SUPPLY_START_TIME", "TANGGAL", "TANGGAL_CREATE", "TANGGAL_MODAL", "TANGGAL_PESAN_TERAKHIR", "TANGGAL_SETOR", "TANGGAL_TARIK", "TANGGAL_TRANS", "TANGGAL_TRANSAKSI", "TD", "TGL_CREATE", "TGL_KIRIM", "TGL_MODAL", "TGL_PESAN_TERAKHIR", "TGL_RETURN", "TGL_SETOR", "TGL_TERIMA", "TGL_TRANSAKSI", "TMPFLD2", "TMPFLD9", "TMP_DATE_UPD", "TMP_TRANS_DATE", "TRANSFER_DATE", "TRANS_DATE", "VIEW_DATE_UPD", "VIEW_TRANS_DATE", "WASTAGE_DATE" -> {
                     String dateData = new SimpleDateFormat("dd-MMM-yyyy").format(result.getObject(i + 1));
@@ -3764,12 +3800,12 @@ public class ProcessDaoImpl implements ProcessDao {
 
     public boolean checkAllColumn(Map<String, Object> itemServer, Map<String, Object> itemExist) {
         boolean result = true;
-        
+
         for (String key : itemServer.keySet()) {
             switch (key) {
                 case "QTY_STOCK_E", "QTY_STOCK_T", "QTY_EI", "QTY_TA" -> {
                     var temp = Double.valueOf(itemServer.get(key).toString());
-                    if (!itemServer.get(key).equals( temp)) {
+                    if (!itemServer.get(key).equals(temp)) {
                         System.out.println("formatter " + temp);
                         System.out.println("server " + itemServer.get(key));
                         result = false;

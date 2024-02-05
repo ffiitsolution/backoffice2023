@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="freeMeal" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="374d3280-e8d9-4a43-8811-5bfeed6fc65e">
-	<property name="ireport.zoom" value="3.4522712143931256"/>
-	<property name="ireport.x" value="924"/>
-	<property name="ireport.y" value="109"/>
+	<property name="ireport.zoom" value="1.6105100000000114"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
 	<parameter name="fromDate" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
@@ -291,21 +291,21 @@ ORDER BY a.DELIVERY_DATE, b.ITEM_CODE ASC]]>
 				<text><![CDATA[No. Delivery Order]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1" y="73" width="56" height="11" uuid="07ed996b-609b-4e0d-a9fd-fb3a288e6650"/>
+				<reportElement x="1" y="83" width="56" height="11" uuid="07ed996b-609b-4e0d-a9fd-fb3a288e6650"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Departemen  ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1" y="83" width="56" height="11" uuid="5622543b-b96c-41e8-bcd4-6a755f7c0217"/>
+				<reportElement x="1" y="73" width="56" height="11" uuid="5622543b-b96c-41e8-bcd4-6a755f7c0217"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Periode   ]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="56" y="73" width="214" height="11" uuid="ad170859-97fd-4a30-8161-4fc7054fa961"/>
+				<reportElement x="56" y="83" width="214" height="11" uuid="ad170859-97fd-4a30-8161-4fc7054fa961"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -368,7 +368,7 @@ ORDER BY a.DELIVERY_DATE, b.ITEM_CODE ASC]]>
 				<text><![CDATA[Halaman]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="56" y="83" width="287" height="11" uuid="9960b4fe-91bc-4610-ad14-0c363cbb3ffd"/>
+				<reportElement x="56" y="73" width="287" height="11" uuid="9960b4fe-91bc-4610-ad14-0c363cbb3ffd"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>

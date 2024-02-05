@@ -1653,7 +1653,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "AND H.Order_to LIKE :orderTo " + where + " "
                 + "AND CASE WHEN G.DESCRIPTION is null and  m.outlet_name is null then s.supplier_name " 
                 + "WHEN G.DESCRIPTION is null and s.supplier_name  is null then m.outlet_name ELSE g.description end LIKE :delivery "
-                + "ORDER BY H.DATE_UPD DESC, H.TIME_UPD DESC ";
+                + "ORDER BY H.STATUS ASC, H.DATE_UPD DESC, H.TIME_UPD DESC ";
         Map prm = new HashMap();
         prm.put("status", "%" + (balance.get("status") != null ? balance.get("status") : "") + "%");
         prm.put("orderType", "%" + (balance.get("orderType") != null ? balance.get("orderType") : "") + "%");
@@ -1796,7 +1796,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "ON B.OUTLET_CODE=A.OUTLET_CODE "
                 + "WHERE A.YEAR = :year AND A.MONTH= :month AND A.TRANS_TYPE = :transType AND A.OUTLET_CODE= :outletCode)";
 
-        if (balance.get("transType").equals("RO")) {
+        if (balance.get("transType").equals("RO") || balance.get("transType").equals("PO")) {
             qry = "SELECT ORDER_ID || LPAD(COUNTNO, 4, '0') AS ORDER_ID FROM ( "
                 + "SELECT :outletCode || SUBSTR(:year, -2) || :month AS ORDER_ID,A.COUNTER_NO+1 AS COUNTNO FROM M_COUNTER A "
                 + "LEFT JOIN M_OUTLET B "
@@ -4405,6 +4405,26 @@ public class ViewDoaImpl implements ViewDao {
             rt.put("fryerTypeCnt", rs.getString("FRYER_TYPE_CNT"));
             rt.put("fryerTypeSeqCnt", rs.getString("FRYER_TYPE_SEQ_CNT"));
             return rt;
+        });
+        return list;
+    }
+
+    // =============== New Method From Sifa 05-02-2024 ===============
+    @Override
+    public List<Map<String, Object>> listWarehouseFSD(Map<String, String> balance) {
+        String qry = "SELECT CODE, DESCRIPTION " +
+                        "FROM M_GLOBAL " +
+                        "WHERE COND = 'WAREHOUSE' AND STATUS = 'A' AND CODE LIKE '%00009%'";
+        Map prm = new HashMap();
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("CODE", rs.getString("CODE"));
+                rt.put("DESCRIPTION", rs.getString("DESCRIPTION"));
+                return rt;
+            }
         });
         return list;
     }
