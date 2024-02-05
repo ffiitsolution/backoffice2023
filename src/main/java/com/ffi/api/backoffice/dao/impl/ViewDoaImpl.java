@@ -4353,28 +4353,59 @@ public class ViewDoaImpl implements ViewDao {
     
     ///////////////new method from aditya 30-01-2024////////////////////////////
     @Override
-    public List<Map<String, Object>> listMpcsManagementFryer(Map<String, String> balance) {
-        String qry = "SELECT OUTLET_CODE, FRYER_TYPE, FRYER_DESCRIPTION, FRYER_TYPE_SEQ AS FRYER_NO, FRYER_TYPE_MAX AS FRYER_MAXIMUM, FRYER_TYPE_CNT AS OIL_USE, ROUND(FRYER_TYPE_CNT / FRYER_TYPE_MAX * 100, 0) AS PROGRESS FROM ( SELECT a.OUTLET_CODE, b.OUTLET_NAME, a.MPCS_DATE, a.MPCS_GROUP, c.DESCRIPTION AS MPCS_DESCRIPTION, a.RECIPE_CODE, d.RECIPE_REMARK, j.PRODUCT_CODE, j.PRODUCT_REMARK, i.ITEM_DESCRIPTION, j.QTY_STOCK, j.UOM_STOCK, a.FRYER_TYPE, g.DESCRIPTION AS FRYER_DESCRIPTION, g.VALUE AS FRYER_TYPE_MAX, a.FRYER_TYPE_SEQ, a.QUANTITY, f.FRYER_TYPE_CNT FROM T_MPCS_HIST a LEFT JOIN M_OUTLET b ON a.OUTLET_CODE = b.OUTLET_CODE AND a.OUTLET_CODE = :outletCode LEFT JOIN M_MPCS_HEADER c ON a.MPCS_GROUP = c.MPCS_GROUP LEFT JOIN M_RECIPE_HEADER d ON a.RECIPE_CODE = d.RECIPE_CODE LEFT JOIN M_MPCS_DETAIL f ON a.FRYER_TYPE = f.FRYER_TYPE AND a.FRYER_TYPE_SEQ = f.FRYER_TYPE_SEQ LEFT JOIN M_GLOBAL g ON a.FRYER_TYPE = g.CODE AND g.COND = 'FRYER' LEFT JOIN M_STAFF h ON a.USER_UPD = h.STAFF_CODE LEFT JOIN M_RECIPE_PRODUCT j ON a.RECIPE_CODE = j.RECIPE_CODE LEFT JOIN M_ITEM i ON j.PRODUCT_CODE = i.ITEM_CODE ORDER BY a.MPCS_DATE DESC, a.TIME_UPD DESC ) z WHERE FRYER_TYPE IN ('P', 'S', 'O') GROUP BY OUTLET_CODE, FRYER_TYPE, FRYER_DESCRIPTION, FRYER_TYPE_CNT, FRYER_TYPE_MAX, FRYER_TYPE_SEQ ORDER BY FRYER_TYPE ASC, FRYER_NO ASC";
-        Map prm = new HashMap();
-        prm.put("outletCode", balance.get("outletCode"));
+public List<Map<String, Object>> listMpcsManagementFryer(Map<String, String> balance) {
+    String qry = "SELECT OUTLET_CODE, FRYER_TYPE, FRYER_DESCRIPTION, FRYER_TYPE_SEQ AS FRYER_NO, FRYER_TYPE_MAX AS FRYER_MAXIMUM, FRYER_TYPE_CNT AS OIL_USE, ROUND(FRYER_TYPE_CNT / FRYER_TYPE_MAX * 100, 0) AS PROGRESS FROM ( SELECT a.OUTLET_CODE, b.OUTLET_NAME, a.MPCS_DATE, a.MPCS_GROUP, c.DESCRIPTION AS MPCS_DESCRIPTION, a.RECIPE_CODE, d.RECIPE_REMARK, j.PRODUCT_CODE, j.PRODUCT_REMARK, i.ITEM_DESCRIPTION, j.QTY_STOCK, j.UOM_STOCK, a.FRYER_TYPE, g.DESCRIPTION AS FRYER_DESCRIPTION, g.VALUE AS FRYER_TYPE_MAX, a.FRYER_TYPE_SEQ, a.QUANTITY, f.FRYER_TYPE_CNT, f.FRYER_TYPE_SEQ AS FRYER_NO FROM T_MPCS_HIST a LEFT JOIN M_OUTLET b ON a.OUTLET_CODE = b.OUTLET_CODE AND a.OUTLET_CODE = :outletCode LEFT JOIN M_MPCS_HEADER c ON a.MPCS_GROUP = c.MPCS_GROUP LEFT JOIN M_RECIPE_HEADER d ON a.RECIPE_CODE = d.RECIPE_CODE LEFT JOIN M_MPCS_DETAIL f ON a.FRYER_TYPE = f.FRYER_TYPE AND a.FRYER_TYPE_SEQ = f.FRYER_TYPE_SEQ LEFT JOIN M_GLOBAL g ON a.FRYER_TYPE = g.CODE AND g.COND = 'FRYER' LEFT JOIN M_STAFF h ON a.USER_UPD = h.STAFF_CODE LEFT JOIN M_RECIPE_PRODUCT j ON a.RECIPE_CODE = j.RECIPE_CODE LEFT JOIN M_ITEM i ON j.PRODUCT_CODE = i.ITEM_CODE ORDER BY a.MPCS_DATE DESC, a.TIME_UPD DESC ) z WHERE FRYER_TYPE IN ('P', 'S', 'O') GROUP BY OUTLET_CODE, FRYER_TYPE, FRYER_DESCRIPTION, FRYER_TYPE_CNT, FRYER_TYPE_MAX, FRYER_TYPE_SEQ ORDER BY FRYER_TYPE ASC, FRYER_NO ASC";
+    Map prm = new HashMap();
+    prm.put("outletCode", balance.get("outletCode"));
 
-        System.err.println("q :" + qry);
-        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
-            @Override
-            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
-                Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("fryerType", rs.getString("FRYER_TYPE"));
-                rt.put("fryerDescription", rs.getString("FRYER_DESCRIPTION"));
-                rt.put("fryerNo", rs.getString("FRYER_NO"));
-                rt.put("fryerMaximum", rs.getString("FRYER_MAXIMUM"));
-                rt.put("oilUse", rs.getString("OIL_USE"));
-                rt.put("progress", rs.getString("PROGRESS"));
+    System.err.println("q :" + qry);
 
-                return rt;
-            }
-        });
-        return list;
+    List<Map<String, Object>> resultList = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+        @Override
+        public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+            Map<String, Object> rt = new HashMap<String, Object>();
+            rt.put("fryerType", rs.getString("FRYER_TYPE"));
+            rt.put("fryerDescription", rs.getString("FRYER_DESCRIPTION"));
+            rt.put("fryerMaximum", rs.getString("FRYER_MAXIMUM"));
+            rt.put("oilUse", rs.getString("OIL_USE"));
+            rt.put("fryerNo", rs.getString("FRYER_NO"));
+            rt.put("progress", rs.getString("PROGRESS"));
+            return rt;
+        }
+    });
+
+    // Transform the result to the desired output structure
+    List<Map<String, Object>> finalResultList = new ArrayList<>();
+    Map<String, Map<String, Object>> fryerTypeMap = new HashMap<>();
+
+    for (Map<String, Object> result : resultList) {
+        String fryerType = (String) result.get("fryerType");
+
+        if (!fryerTypeMap.containsKey(fryerType)) {
+            Map<String, Object> fryerTypeEntry = new HashMap<>();
+            fryerTypeEntry.put("fryerType", fryerType);
+            fryerTypeEntry.put("fryerDescription", result.get("fryerDescription"));
+            fryerTypeEntry.put("fryerMaximum", result.get("fryerMaximum"));
+            fryerTypeEntry.put("listFryer", new ArrayList<Map<String, Object>>());
+            fryerTypeMap.put(fryerType, fryerTypeEntry);
+            finalResultList.add(fryerTypeEntry);
+        }
+
+        Map<String, Object> fryerEntry = new HashMap<>();
+        fryerEntry.put("fryerType", fryerType);
+        fryerEntry.put("fryerDescription", result.get("fryerDescription"));
+        fryerEntry.put("oilUse", result.get("oilUse"));
+        fryerEntry.put("fryerNo", result.get("fryerNo"));
+        fryerEntry.put("fryerMaximum", result.get("fryerMaximum"));
+        fryerEntry.put("progress", result.get("progress"));
+
+        ((List<Map<String, Object>>) fryerTypeMap.get(fryerType).get("listFryer")).add(fryerEntry);
     }
+
+    return finalResultList;
+}
+
+
    
     // =============== New Method From M Joko - 1 Feb 2024 ===============
     @Override
