@@ -105,7 +105,7 @@ public class ViewDoaImpl implements ViewDao {
                 + " and FLAG_CANVASING Like :flagCanvasing";
         if (balance.containsKey("isFSD")) {
             boolean isFSD = (boolean) balance.get("isFSD");
-            qry += " and HOMEPAGE " + (isFSD ? "like '%FSD%'" : "not like '%FSD%'");
+            qry += " AND (HOMEPAGE " + (isFSD ? "LIKE '%FSD%'" : "NOT LIKE '%FSD%' OR HOMEPAGE IS NULL") + ")";
         }
         qry += " order by cd_Supplier desc";
         Map prm = new HashMap();
@@ -4412,7 +4412,7 @@ public class ViewDoaImpl implements ViewDao {
     // =============== New Method From Sifa 05-02-2024 ===============
     @Override
     public List<Map<String, Object>> listWarehouseFSD(Map<String, String> balance) {
-        String qry = "SELECT CODE, DESCRIPTION " +
+        String qry = "SELECT * " +
                         "FROM M_GLOBAL " +
                         "WHERE COND = 'WAREHOUSE' AND STATUS = 'A' AND CODE LIKE '%00009%'";
         Map prm = new HashMap();
@@ -4421,8 +4421,11 @@ public class ViewDoaImpl implements ViewDao {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("CODE", rs.getString("CODE"));
-                rt.put("DESCRIPTION", rs.getString("DESCRIPTION"));
+                rt.put("code", rs.getString("CODE"));
+                rt.put("cond", rs.getString("COND"));
+                rt.put("description", rs.getString("DESCRIPTION"));
+                rt.put("status", rs.getString("STATUS"));
+                rt.put("value", rs.getString("VALUE"));
                 return rt;
             }
         });
