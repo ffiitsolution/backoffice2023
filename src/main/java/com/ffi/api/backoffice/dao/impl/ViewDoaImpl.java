@@ -1653,7 +1653,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "AND H.Order_to LIKE :orderTo " + where + " "
                 + "AND CASE WHEN G.DESCRIPTION is null and  m.outlet_name is null then s.supplier_name " 
                 + "WHEN G.DESCRIPTION is null and s.supplier_name  is null then m.outlet_name ELSE g.description end LIKE :delivery "
-                + "ORDER BY H.DATE_UPD DESC, H.TIME_UPD DESC ";
+                + "ORDER BY H.STATUS ASC, H.DATE_UPD DESC, H.TIME_UPD DESC ";
         Map prm = new HashMap();
         prm.put("status", "%" + (balance.get("status") != null ? balance.get("status") : "") + "%");
         prm.put("orderType", "%" + (balance.get("orderType") != null ? balance.get("orderType") : "") + "%");
