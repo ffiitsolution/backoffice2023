@@ -244,10 +244,17 @@ FROM
 				</textElement>
 				<textFieldExpression><![CDATA["LISTING RECIPE "]]></textFieldExpression>
 			</textField>
+			<staticText>
+				<reportElement x="0" y="68" width="32" height="12" uuid="c954daff-734d-4504-9a4f-3e38d45d8f44"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Status]]></text>
+			</staticText>
 			<textField>
-				<reportElement x="0" y="63" width="556" height="16" uuid="6928934b-71f1-4e3f-84fd-8a21a3e59686"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="12" isBold="true"/>
+				<reportElement x="40" y="68" width="198" height="12" uuid="8ace14b3-b5ca-462d-9707-f9f9e990d241"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{STATUS}.equals("A") ? "Active" : "Inactive"]]></textFieldExpression>
 			</textField>
@@ -314,6 +321,13 @@ FROM
 				</textElement>
 				<textFieldExpression><![CDATA["Phone : " + $P{phone}]]></textFieldExpression>
 			</textField>
+			<staticText>
+				<reportElement x="31" y="68" width="10" height="12" uuid="1405163d-7747-4d23-bb66-a3c585d4dc86"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
 		</band>
 	</columnHeader>
 	<detail>

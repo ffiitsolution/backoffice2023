@@ -182,7 +182,7 @@ ORDER BY ITEM_CODE ASC]]>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new SimpleDateFormat("hh:mm:ss a").format(new Date())]]></textFieldExpression>
+				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="470" y="11" width="81" height="11" isPrintWhenDetailOverflows="true" uuid="9417f646-3939-4a1a-8204-62201eb689b6"/>
