@@ -466,8 +466,8 @@ public class ReportController {
 
         return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
     }
-
     /////////////////////////////////DONE///////////////////////////////////////
+
     ///////////////NEW METHOD REPORT BY PASCA 26 August 2023////
     @CrossOrigin
     @RequestMapping(value = "/report-sales-by-item-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -478,14 +478,17 @@ public class ReportController {
         Gson gsn = new Gson();
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-
         JasperPrint jasperPrint = reportServices.jasperReportSalesByItem(prm, conn);
         conn.close();
-        byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=salesByItem.pdf");
 
-        return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        if (!jasperPrint.getPages().isEmpty()) {
+            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "inline; filename=salesByItem.pdf");
+            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        } else {   
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
     }
 
     @CrossOrigin
