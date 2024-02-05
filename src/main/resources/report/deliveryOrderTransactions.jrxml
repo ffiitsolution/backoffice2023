@@ -381,7 +381,7 @@ ORDER BY
 				<textElement textAlignment="Center">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Delivery Order]]></text>
+				<text><![CDATA[DELIVERY ORDER]]></text>
 			</staticText>
 		</band>
 	</columnHeader>

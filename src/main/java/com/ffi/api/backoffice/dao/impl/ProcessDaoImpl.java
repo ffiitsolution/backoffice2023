@@ -1220,11 +1220,11 @@ public class ProcessDaoImpl implements ProcessDao {
     //Add Insert to Receiving Header & Detail by KP (07-06-2023)
     @Override
     public void InsertRecvHeaderDetail(JsonObject balancing) {
-        DateFormat df = new SimpleDateFormat("MM");
-        DateFormat dfYear = new SimpleDateFormat("yyyy");
-        Date tgl = new Date();
-        String month = df.format(tgl);
-        String year = dfYear.format(tgl);
+        Map<String,Object> balance = new HashMap();
+        balance.put("outletCode", balancing.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
+        LocalDate transDate = this.jdbcTemplate.queryForObject("SELECT TRANS_DATE FROM M_OUTLET WHERE OUTLET_CODE = :outletCode", balance, LocalDate.class); 
+        String month = String.valueOf(transDate.getMonthValue());
+        String year = String.valueOf(transDate.getYear());
         String opNo = opnameNumber(year, month, balancing.getAsJsonObject().getAsJsonPrimitive("transType").getAsString(),
                 balancing.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
 
