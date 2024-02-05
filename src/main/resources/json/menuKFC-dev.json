@@ -148,7 +148,7 @@
         "url": "/report/pos-report"
       },
       {
-        "icon": "fa fa-file-pdf-o",
+        "icon": "fa fa-list-ol",
         "name": "Query Stock Card",
         "url": "/report/query-stock-card"
       },
@@ -182,7 +182,7 @@
     "icon": "fa fa-clock-o",
     "children": [
       {
-        "icon": "fa fa-exchange",
+        "icon": "fa fa-id-badge",
         "name": "Transaksi",
         "url": "/time-management/transaction"
       },
