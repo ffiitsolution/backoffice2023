@@ -3801,4 +3801,22 @@ public class IndexController {
         rm.setMessage(list != null ? "Success get list" : "Failed get list");
         return rm;
     }
+
+    // =============== New Method From Sifa 05-02-2024 ===============
+    @RequestMapping(value = "/list-warehouse-fsd", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk list gudang FSD", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listWarehouseFSD(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        Response res = new Response();
+        res.setData(viewServices.listWarehouseFSD(balance));
+        return res;
+    }
 }

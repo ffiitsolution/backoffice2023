@@ -317,5 +317,8 @@ public interface ViewDao {
     
     // MPCS Production List Fryer 2 Feb 2024 //
     List<Map<String, Object>> mpcsProductionListFryer(Map<String, String> ref); 
+
+    // =============== New Method From Sifa 05-02-2024 ===============
+    List<Map<String, Object>> listWarehouseFSD(Map<String, String> ref);
     
 }

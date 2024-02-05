@@ -4408,4 +4408,24 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
+
+    // =============== New Method From Sifa 05-02-2024 ===============
+    @Override
+    public List<Map<String, Object>> listWarehouseFSD(Map<String, String> balance) {
+        String qry = "SELECT CODE, DESCRIPTION " +
+                        "FROM M_GLOBAL " +
+                        "WHERE COND = 'WAREHOUSE' AND STATUS = 'A' AND CODE LIKE '%00009%'";
+        Map prm = new HashMap();
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("CODE", rs.getString("CODE"));
+                rt.put("DESCRIPTION", rs.getString("DESCRIPTION"));
+                return rt;
+            }
+        });
+        return list;
+    }
 }
