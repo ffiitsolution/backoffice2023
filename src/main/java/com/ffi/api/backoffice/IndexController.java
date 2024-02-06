@@ -21,10 +21,13 @@ import com.google.gson.reflect.TypeToken;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -3787,7 +3790,12 @@ public class IndexController {
     }
     
     //============== New Method From M Joko 1-2-2024 ================
-    @RequestMapping(value = "/list-transfer-data", method = RequestMethod.POST)
+    @ApiOperation(value = "Delete Order Entry Detail by Dani", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    @RequestMapping(value = "/list-transfer-data", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
     ResponseMessage listTransferData(@RequestBody Map<String, Object> param) throws IOException, Exception {
         ResponseMessage rm = new ResponseMessage();
@@ -3818,5 +3826,17 @@ public class IndexController {
         Response res = new Response();
         res.setData(viewServices.listWarehouseFSD(balance));
         return res;
+    }
+    
+    //============== New Method From M Joko 5-2-2024 ================
+    @ApiOperation(value = "Get List And Process Backup Database by M Joko", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    @RequestMapping(value = "/backup-database", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody
+    ResponseMessage processBackupDb(@RequestBody Map<String, Object> param) throws IOException, Exception {
+        return processServices.processBackupDb(param);
     }
 }

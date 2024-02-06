@@ -14,6 +14,7 @@
     "icon": "fa fa-database",
     "children": [
       {
+        "icon": "fa fa-user-circle",
         "name": "User",
         "url": "/master/user",
         "badge": {
@@ -22,6 +23,12 @@
         }
       },
       {
+        "icon": "fa fa-globe",
+        "name": "Global",
+        "url": "/master/global"
+      },
+      {
+        "icon": "fa fa-building",
         "name": "Outlet",
         "url": "/master/outlet",
         "badge": {
@@ -30,6 +37,7 @@
         }
       },
       {
+        "icon": "fa fa-cutlery",
         "name": "Menu",
         "url": "/master/menu",
         "badge": {
@@ -38,22 +46,36 @@
         }
       },
       {
+        "icon": "fa fa-tags",
         "name": "Price",
         "url": "/master/price"
       },
       {
+        "icon": "fa fa-fire",
         "name": "Fryer Type",
         "url": "/master/fryer"
       },
       {
+        "icon": "fa fa-retweet",
+        "name": "Kirim Terima Data",
+        "url": "/master/kirim-terima-data",
+        "badge": {
+          "color": "warning",
+          "text": "On Progress"
+        }
+      },
+      {
+        "icon": "fa fa-cubes",
         "name": "Group Item",
         "url": "/master/group-item"
       },
       {
+        "icon": "fa fa-users",
         "name": "Supplier",
         "url": "/master/supplier"
       },
       {
+        "icon": "fa fa-list",
         "name": "Item",
         "url": "/master/item",
         "badge": {
@@ -62,32 +84,24 @@
         }
       },
       {
+        "icon": "fa fa-list-alt",
         "name": "Recipe",
         "url": "/master/recipe"
       },
       {
+        "icon": "fa fa-industry",
         "name": "MPCS",
         "url": "/master/mpcs"
       },
       {
+        "icon": "fa fa-calculator",
         "name": "Item Cost",
         "url": "/master/item-cost"
       },
       {
+        "icon": "fa fa-th-large",
         "name": "Sales Recipe",
         "url": "/master/sales-recipe"
-      },
-      {
-        "name": "Global",
-        "url": "/master/global"
-      },
-      {
-        "name": "Kirim Terima Data",
-        "url": "/master/kirim-terima-data",
-        "badge": {
-          "color": "warning",
-          "text": "On Progress"
-        }
       }
     ]
   },
@@ -97,10 +111,12 @@
     "icon": "fa fa-exchange",
     "children": [
       {
+        "icon": "fa fa-refresh",
         "name": "Stock Opname",
         "url": "/transaction/stock-opname"
       },
       {
+        "icon": "fa fa-book",
         "name": "Order Entry",
         "url": "/transaction/order-entry",
         "badge": {
@@ -109,22 +125,27 @@
         }
       },
       {
+        "icon": "fa fa-truck",
         "name": "Receiving",
         "url": "/transaction/receiving"
       },
       {
+        "icon": "fa fa-send",
         "name": "Delivery Order",
         "url": "/transaction/delivery-order"
       },
       {
+        "icon": "fa fa-trash",
         "name": "Wastage",
         "url": "/transaction/wastage"
       },
       {
+        "icon": "fa fa-backward",
         "name": "Return Order",
         "url": "/transaction/return-order"
       },
       {
+        "icon": "fa fa-industry",
         "name": "MPCS",
         "url": "/transaction/mpcs",
         "badge": {
@@ -140,10 +161,12 @@
     "icon": "fa fa-file-pdf-o",
     "children": [
       {
+        "icon": "fa fa-archive",
         "name": "Inventory",
         "url": "/report/report"
       },
       {
+        "icon": "fa fa-industry",
         "name": "Mpcs Query",
         "url": "/report/mpcs-query",
         "badge": {
@@ -152,12 +175,19 @@
         }
       },
       {
+        "icon": "fa fa-desktop",
         "name": "Pos Report",
         "url": "/report/pos-report"
       },
       {
+        "icon": "fa fa-list-ol",
         "name": "Query Stock Card",
         "url": "/report/query-stock-card"
+      },
+      {
+        "icon": "fa fa-fire",
+        "name": "Management Fryer",
+        "url": "/report/management-fryer"
       }
     ]
   },
@@ -167,10 +197,12 @@
     "icon": "fa fa-television",
     "children": [
       {
+        "icon": "fa fa-area-chart",
         "name": "Query Bill & Sales",
         "url": "/pos/query-bill"
       },
       {
+        "icon": "fa fa-calendar-check-o",
         "name": "End Of Day",
         "url": "/pos/end-of-day"
       }
@@ -182,6 +214,7 @@
     "icon": "fa fa-clock-o",
     "children": [
       {
+        "icon": "fa fa-id-badge",
         "name": "Transaksi",
         "url": "/time-management/transaction",
         "badge": {
@@ -190,6 +223,7 @@
         }
       },
       {
+        "icon": "fa fa-file-pdf-o",
         "name": "Laporan Absensi",
         "url": "/time-management/report-time-management",
         "badge": {

@@ -6,6 +6,7 @@ package com.ffi.api.backoffice.dao;
 
 import com.ffi.api.backoffice.model.DetailOpname;
 import com.ffi.api.backoffice.model.HeaderOpname;
+import com.ffi.paging.ResponseMessage;
 import com.google.gson.JsonObject;
 import java.util.List;
 import java.util.Map;
@@ -181,4 +182,7 @@ public interface ProcessDao {
     
     //============== New Method From M Joko 1-2-2024 ================
     List<Map<String, Object>> listTransferData(Map<String, Object> ref);
+    
+    //============== New Method From M Joko 5-2-2024 ================
+    ResponseMessage processBackupDb(Map<String, Object> ref);
 }

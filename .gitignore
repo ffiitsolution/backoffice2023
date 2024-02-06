@@ -33,3 +33,7 @@ build/
 .vscode/
 /logs/
 *.logger
+/backup/
+*.dmp
+*.DMP
+*.log

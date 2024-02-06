@@ -8,15 +8,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ffi.api.backoffice.dao.ProcessDao;
 import com.ffi.api.backoffice.model.DetailOpname;
 import com.ffi.api.backoffice.model.HeaderOpname;
+import com.ffi.api.backoffice.utils.AppUtil;
 import com.ffi.api.backoffice.utils.DynamicRowMapper;
 import com.ffi.api.backoffice.utils.FileLoggerUtil;
 import com.ffi.api.backoffice.utils.RestApiUtil;
+import com.ffi.paging.ResponseMessage;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
@@ -25,7 +28,9 @@ import java.net.URISyntaxException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -74,6 +79,9 @@ public class ProcessDaoImpl implements ProcessDao {
     public ProcessDaoImpl(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
+
+    @Autowired
+    AppUtil appUtil;
 
     @Value("${endpoint.warehouse}")
     private String urlWarehouse;
@@ -1221,9 +1229,9 @@ public class ProcessDaoImpl implements ProcessDao {
     //Add Insert to Receiving Header & Detail by KP (07-06-2023)
     @Override
     public void InsertRecvHeaderDetail(JsonObject balancing) {
-        Map<String,Object> balance = new HashMap();
+        Map<String, Object> balance = new HashMap();
         balance.put("outletCode", balancing.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
-        LocalDate transDate = this.jdbcTemplate.queryForObject("SELECT TRANS_DATE FROM M_OUTLET WHERE OUTLET_CODE = :outletCode", balance, LocalDate.class); 
+        LocalDate transDate = this.jdbcTemplate.queryForObject("SELECT TRANS_DATE FROM M_OUTLET WHERE OUTLET_CODE = :outletCode", balance, LocalDate.class);
         String month = String.valueOf(transDate.getMonthValue());
         String year = String.valueOf(transDate.getYear());
         String opNo = opnameNumber(year, month, balancing.getAsJsonObject().getAsJsonPrimitive("transType").getAsString(),
@@ -1559,46 +1567,35 @@ public class ProcessDaoImpl implements ProcessDao {
     //Insert MPCS by Kevin (08-08-2023)
     @Override
     public void InsertMPCSTemplate(JsonObject balancing) {
-        DateFormat df = new SimpleDateFormat("HH:mm");
-        DateFormat df2 = new SimpleDateFormat("HHmmss");
-        int interval = balancing.getAsJsonObject().getAsJsonPrimitive("interval").getAsInt();
+        //Delete existing
+        String outletCode = balancing.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString();
+        String userUpd = balancing.getAsJsonObject().getAsJsonPrimitive("userUpd").getAsString();
+        Integer interval = balancing.getAsJsonObject().getAsJsonPrimitive("interval").getAsInt();
         String startTime = balancing.getAsJsonObject().getAsJsonPrimitive("startTime").getAsString();
         String endTime = balancing.getAsJsonObject().getAsJsonPrimitive("endTime").getAsString();
-
-        //Delete existing
         String sqlDel = "delete from template_mpcs where outlet_code = :outletCode ";
-        Map paramDel = new HashMap();
-        paramDel.put("outletCode", balancing.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
-        jdbcTemplate.update(sqlDel, paramDel);
-
-        String sql = "insert into template_mpcs(outlet_code, seq_mpcs, time_mpcs, user_upd, date_upd, time_upd) "
-                + "values(:outletCode, :seq, :timeMpcs, :userUpd, :dateUpd, :timeUpd) ";
-        System.err.println("MPCS query :" + sql);
         Map param = new HashMap();
-        try {
-            Date strTime = df.parse(startTime);
-            Date enTime = df.parse(endTime);
-            Date countTime = df.parse(startTime);
-            long differ = (enTime.getTime() - strTime.getTime()) / 1000;
-            int loop = (int) differ / 3600;
-            //System.err.println("How many hours: " + loop);
-            loop = (loop % 3600) * (60 / interval);
-            //System.err.println("How many 30 minutes: " + loop);
-            for (int i = 0; i <= loop; i++) {
-                //System.err.println("Iteration: " + i + ", the time is: " + df.format(countTime));
-                param.put("outletCode", balancing.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
-                param.put("seq", (i + 1));
-                param.put("timeMpcs", df2.format(countTime));
-                param.put("userUpd", balancing.getAsJsonObject().getAsJsonPrimitive("userUpd").getAsString());
-                param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
-                param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
-                jdbcTemplate.update(sql, param);
-                //System.err.println(param);
-                param.clear();
-                countTime = new Date(countTime.getTime() + (interval * 60 * 1000));
-            }
-        } catch (Exception ex) {
-            System.err.println("Error DateTime: " + ex);
+        param.put("outletCode", outletCode);
+        jdbcTemplate.update(sqlDel, param);
+
+        // improvement query insert by M Joko 5 Feb 2024
+        Timestamp startTimestamp = Timestamp.valueOf("1970-01-01 " + startTime + ":00");
+        Timestamp endTimestamp = Timestamp.valueOf("1970-01-01 " + endTime + ":00");
+        long sequence = 1;
+        while (startTimestamp.compareTo(endTimestamp) <= 0) {
+            String sqlInsert = "INSERT INTO TEMPLATE_MPCS (OUTLET_CODE, SEQ_MPCS, TIME_MPCS, USER_UPD, DATE_UPD, TIME_UPD) "
+                    + "VALUES (:outletCode, :seqMpcs, :timeMpcs, :userUpd, :dateUpd, :timeUpd)";
+            Long currentTimeMillis = System.currentTimeMillis();
+            MapSqlParameterSource params = new MapSqlParameterSource();
+            params.addValue("outletCode", outletCode);
+            params.addValue("seqMpcs", sequence);
+            params.addValue("timeMpcs", String.format("%tH%tM%tS", startTimestamp, startTimestamp,startTimestamp).substring(0,6));
+            params.addValue("userUpd", userUpd);
+            params.addValue("dateUpd", String.format("%td %tb %tY", currentTimeMillis, currentTimeMillis, currentTimeMillis));
+            params.addValue("timeUpd", String.format("%tH%tM%S", currentTimeMillis, currentTimeMillis, currentTimeMillis).substring(0,6));
+            jdbcTemplate.update(sqlInsert, params);
+            sequence++;
+            startTimestamp.setTime(startTimestamp.getTime() + (interval * 60 * 1000));
         }
     }
 
@@ -4016,9 +4013,141 @@ public class ProcessDaoImpl implements ProcessDao {
     }
     // =========== End Method Copy Data Server From Lukas 17-10-2023 ===========
 
-    
     public void deleteOrderEntryDetail(Map<String, Object> param) {
         String query = "DELETE T_ORDER_DETAIL WHERE OUTLET_CODE = :outletCode AND ORDER_NO = :orderNo AND ITEM_CODE = :itemCode";
         jdbcTemplate.update(query, param);
+    }
+
+    //============== New Method From M Joko 5-2-2024 ================
+    @Override
+    public ResponseMessage processBackupDb(Map<String, Object> param) {
+        ResponseMessage rm = new ResponseMessage();
+        rm.setItem(new ArrayList());
+        rm.setSuccess(false);
+        String backupDirectoryName = "BOFFI_BACKUP_DIRECTORY";
+        if (param.containsKey("process") && param.get("process").equals(true)) {
+            // proses backup
+            try {
+                String currentWorkingDirectory = new File(".").getCanonicalPath();
+                String backupFolderPath = currentWorkingDirectory + File.separator + "backup";
+                File backupFolder = new File(backupFolderPath);
+                if (!backupFolder.exists()) {
+                    boolean created = backupFolder.mkdirs();
+                    if (!created) {
+                        System.err.println("Failed to create the backup folder.");
+                        rm.setMessage("Failed to create the backup folder: " + backupFolderPath);
+                        return rm;
+                    }
+                }
+                String url = appUtil.get("spring.datasource.url");
+                String db = url.substring(url.lastIndexOf(':') + 1);
+                String username = appUtil.get("spring.datasource.username");
+                String password = appUtil.get("spring.datasource.password");
+                LocalDateTime currentDateTime = LocalDateTime.now();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HHmmss");
+                String dateName = currentDateTime.format(formatter);
+                String fileName = dateName + "_" + param.getOrDefault("outletCode", "") + "_" + param.getOrDefault("userUpd", "") + "_BOFFI";
+                String checkIfExistsQuery = "SELECT COUNT(*) FROM all_directories WHERE directory_name = '" + backupDirectoryName + "'";
+                int count = jdbcTemplate.queryForObject(checkIfExistsQuery, param, Integer.class);
+                if (count > 0) {
+                    String dropQuery = "DROP DIRECTORY " + backupDirectoryName;
+                    jdbcTemplate.execute(dropQuery, ps -> ps.executeUpdate());
+                }
+                String createQuery = "CREATE DIRECTORY " + backupDirectoryName + " AS '" + backupFolderPath + "'";
+                jdbcTemplate.execute(createQuery, ps -> ps.executeUpdate());
+                ProcessBuilder processBuilder = new ProcessBuilder(
+                        "expdp", username + "/" + password + "@" + db,
+                        "dumpfile=" + fileName + ".dmp", "directory=" + backupDirectoryName,
+                        "schemas=kfc", "LOGFILE=" + fileName + ".log"
+                );
+                processBuilder.inheritIO();
+                Process process = processBuilder.start();
+                int exitCode = process.waitFor();
+                if (exitCode == 0) {
+                    System.out.println("Backup completed successfully.");
+                    rm.setMessage("Backup completed successfully.");
+                    rm.setSuccess(true);
+                } else {
+                    System.err.println("Backup failed. Exit code: " + exitCode);
+                    rm.setMessage("Backup failed. Exit code: " + exitCode);
+                }
+            } catch (IOException | InterruptedException e) {
+                System.err.println("Error processBackupDb : " + e.getMessage());
+                rm.setMessage("Error processBackupDb : " + e.getMessage());
+            }
+        } else if (param.containsKey("delete") && param.get("delete").toString().length() > 0) {
+            // fungsi hapus backup dan log di parameter delete
+            String fileName = param.get("delete").toString();
+            String currentWorkingDirectory = System.getProperty("user.dir");
+            String backupFolderPath = currentWorkingDirectory + File.separator + "backup";
+            File backupFolder = new File(backupFolderPath);
+            if (backupFolder.exists() && backupFolder.isDirectory()) {
+                File fileToDelete = new File(backupFolder, fileName);
+                File logFileToDelete = new File(backupFolder, fileName.toUpperCase().replace(".DMP", ".log"));
+                if (fileToDelete.exists() && fileToDelete.isFile()) {
+                    if (fileToDelete.delete()) {
+                        System.out.println("Backup and log deleted successfully: " + fileName);
+                        rm.setMessage("Backup and log deleted successfully: " + fileName);
+                        rm.setSuccess(true);
+                        if(logFileToDelete.exists() && logFileToDelete.isFile()){
+                            logFileToDelete.delete();
+                        }
+                    } else {
+                        System.err.println("Failed to delete backup: " + fileName);
+                        rm.setMessage("Failed to delete backup: " + fileName);
+                    }
+                } else {
+                    rm.setMessage("File not found: " + fileName);
+                }
+            } else {
+                System.err.println("Backup folder does not exist.");
+                rm.setMessage("Backup folder does not exist.");
+            }
+        } else {
+            // Kembalikan list backup
+            try {
+                String currentWorkingDirectory = System.getProperty("user.dir");
+                String backupFolderPath = currentWorkingDirectory + File.separator + "backup";
+                File backupFolder = new File(backupFolderPath);
+                if (backupFolder.exists() && backupFolder.isDirectory()) {
+                    File[] backupFiles = backupFolder.listFiles((dir, name) -> name.toLowerCase().endsWith(".dmp"));
+                    if (backupFiles != null && backupFiles.length > 0) {
+                        Arrays.sort(backupFiles, Comparator.comparingLong(File::lastModified).reversed());
+                        DecimalFormat df = new DecimalFormat("#.##");
+                        List<Map<String, Object>> fileList = new ArrayList<>();
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
+                        for (File file : backupFiles) {
+                            Map<String, Object> fileInfo = new HashMap<>();
+                            fileInfo.put("fileName", file.getName());
+                            fileInfo.put("lastModified", dateFormat.format(new Date(file.lastModified())));
+                            double sizeInMB = ((double) file.length()) / (1024 * 1024);
+                            double sizeInGB = ((double) file.length()) / (1024 * 1024 * 1024);
+                            fileInfo.put("sizeInGB", Double.valueOf(df.format(sizeInGB)));
+                            fileInfo.put("sizeInMB", Double.valueOf(df.format(sizeInMB)));
+                            fileInfo.put("sizeInB", file.length());
+                            String[] parts = file.getName().split("_");
+                            if (parts.length >= 4) {
+                                fileInfo.put("datetime", parts[0]);
+                                fileInfo.put("outletCode", parts[1]);
+                                fileInfo.put("userId", parts[2]);
+                                fileInfo.put("app", parts[3].toUpperCase().replace(".DMP", ""));
+                            }
+                            fileList.add(fileInfo);
+                        }
+                        rm.setMessage("Success get list.");
+                        rm.setItem(fileList);
+                        rm.setSuccess(true);
+                    } else {
+                        rm.setMessage("No backup files found.");
+                    }
+                } else {
+                    rm.setMessage("Backup folder does not exist.");
+                }
+            } catch (NumberFormatException e) {
+                System.err.println("Error while getting the list of backup files: " + e.getMessage());
+                rm.setMessage("Error while getting the list of backup files: " + e.getMessage());
+            }
+        }
+        return rm;
     }
 }

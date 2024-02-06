@@ -7,6 +7,7 @@ package com.ffi.api.backoffice.services;
 import com.ffi.api.backoffice.dao.ProcessDao;
 import com.ffi.api.backoffice.model.DetailOpname;
 import com.ffi.api.backoffice.model.HeaderOpname;
+import com.ffi.paging.ResponseMessage;
 import com.google.gson.JsonObject;
 import java.util.List;
 import java.util.Map;
@@ -315,5 +316,10 @@ public class ProcessServices {
     //============== New Method From M Joko 1-2-2024 ================
     public List<Map<String, Object>> listTransferData(Map<String, Object> ref) {
         return dao.listTransferData(ref);
+    }
+    
+    //============== New Method From M Joko 5-2-2024 ================
+    public ResponseMessage processBackupDb(Map<String, Object> ref) {
+        return dao.processBackupDb(ref);
     }
 }
