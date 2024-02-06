@@ -2944,6 +2944,16 @@ public class ProcessDaoImpl implements ProcessDao {
         prm.put("mpcsDate", params.get("mpcsDate"));
         prm.put("outletCode", params.get("outletCode"));
 
+        prm.put("fryerType", params.getOrDefault("fryerType", " "));
+        prm.put("fryerTypeSeq", params.getOrDefault("fryerTypeSeq"," "));
+
+        if (!prm.get("fryerType").equals(" ") || !prm.get("fryerTypeSeq").equals(" ")) {
+            String updateFryer = "Update M_MPCS_DETAIL "
+            + " SET FRYER_TYPE_CNT = (FRYER_TYPE_CNT + (SELECT (sum(QTY_STOCK) * :qtyMpcs) FROM m_recipe_product WHERE RECIPE_CODE = :recipeCode)) " 
+            + " WHERE OUTLET_CODE = :outletCode AND FRYER_TYPE = :fryerType and FRYER_TYPE_SEQ = :fryerTypeSeq ";
+            jdbcTemplate.update(updateFryer, prm);
+        } 
+
         String insertProductionQuery = "UPDATE T_SUMM_MPCS SET "
                 + "QTY_PROD = (QTY_PROD + (SELECT (sum(QTY_STOCK) * :qtyMpcs) FROM m_recipe_product WHERE RECIPE_CODE = :recipeCode)), "
                 + "DESC_PROD = :remark, "
