@@ -3507,32 +3507,18 @@ public class ViewDoaImpl implements ViewDao {
     ///////////////NEW METHOD LIST MPCS PLAN BY DONA 12 DECEMBER 2023////
     @Override
     public List<Map<String, Object>> listMpcsPlan(Map<String, String> balance) {
-        String getCity = getCity(balance.get("outletCode"));
-
-            String qry = "SELECT  OUTLET_CODE, MPCS_GROUP, DATE_MPCS, TIME_MPCS, QTY_PROJ, QTY_PROJ_CONV,  "
-                    + "QTY_ACC_PROJ, QTY_SOLD, QTY_ACC_SOLD, QTY_VARIANCE, QTY_ACC_VARIANCE, USER_UPD,  "
-                    + "DATE_UPD, TIME_UPD, SEQ_MPCS FROM t_summ_mpcs "
-                    + "WHERE OUTLET_CODE =:outletCode   "
-                    + "AND MPCS_GROUP =:mpcsGroup   "
-                    + "AND DATE_MPCS =:dateMpcs "
-                    + "AND TIME_MPCS >='000000' "
-                    + "ORDER BY  "
-                    + "OUTLET_CODE  ASC, MPCS_GROUP  ASC, DATE_MPCS  ASC, TIME_MPCS  ASC, SEQ_MPCS   "
-                    + "ASC ";
-
+        String qry = "SELECT * FROM T_SUMM_MPCS tsm WHERE tsm.DATE_MPCS = :dateMpcs AND tsm.MPCS_GROUP = :mpcsGroup AND tsm.OUTLET_CODE = :outletCode";
         Map prm = new HashMap();
         prm.put("outletCode", balance.get("outletCode"));
         prm.put("mpcsGroup", balance.get("mpcsGroup"));
         prm.put("dateMpcs", balance.get("dateMpcs"));
-
-        System.err.println("q :" + qry);
+        
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
                 rt.put("outletCode", rs.getString("OUTLET_CODE"));
                 rt.put("mpcsGroup", rs.getString("MPCS_GROUP"));
-                rt.put("dateMpcs", rs.getString("DATE_MPCS"));
                 rt.put("timeMpcs", rs.getString("TIME_MPCS"));
                 rt.put("qtyProj", rs.getString("QTY_PROJ"));
                 rt.put("qtyProjConv", rs.getString("QTY_PROJ_CONV"));
@@ -3545,10 +3531,15 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("dateUpd", rs.getString("DATE_UPD"));
                 rt.put("timeUpd", rs.getString("TIME_UPD"));
                 rt.put("seqMpcs", rs.getString("SEQ_MPCS"));
-
                 return rt;
             }
         });
+        if(list.isEmpty()){
+            String insertTSummMpcs = "INSERT INTO t_summ_mpcs (SELECT a.OUTLET_CODE, b.MPCS_GROUP, :dateMpcs AS DATE_MPCS, a.SEQ_MPCS, a.TIME_MPCS, 0 as QTY_PROJ, d.UOM_STOCK AS UOM_PROJ, 0 AS QTY_PROJ_CONV, d.UOM_STOCK AS UOM_PROJ_CONV, 0 AS QTY_ACC_PROJ, d.UOM_STOCK AS UOM_ACC_PROJ, ' ' AS DESC_PROD, 0 AS QTY_PROD, d.UOM_STOCK AS UOM_PROD, 0 AS QTY_ACC_PROD, d.UOM_STOCK AS UOM_ACC_PROD, ' ' AS PROD_BY, 0 AS QTY_SOLD, d.UOM_STOCK AS UOM_SOLD, 0 AS QTY_ACC_SOLD, d.UOM_STOCK AS UOM_ACC_SOLD, 0 AS QTY_REJECT, d.UOM_STOCK AS UOM_REJECT, 0 AS QTY_ACC_REJECT, d.UOM_STOCK AS UOM_ACC_REJECT, 0 AS QTY_WASTAGE, d.UOM_STOCK AS UOM_WASTAGE, 0 AS QTY_ACC_WASTAGE, d.UOM_STOCK AS UOM_ACC_WASTAGE, 0 AS QTY_ONHAND, d.UOM_STOCK AS UOM_ONHAND, 0 AS QTY_ACC_ONHAND, d.UOM_STOCK AS UOM_ACC_ONHAND, 0 AS QTY_VARIANCE, d.UOM_STOCK AS UOM_VARIANCE, 0 AS QTY_ACC_VARIANCE, d.UOM_STOCK AS UOM_ACC_VARIANCE, a.USER_UPD AS USER_UPD, :dateMpcs AS DATE_UPD, TO_CHAR(SYSDATE, 'HH24MISS') AS TIME_UPD , 0 AS QTY_IN, 0 AS QTY_OUT FROM TEMPLATE_MPCS a JOIN M_MPCS_HEADER b ON a.OUTLET_CODE = b.OUTLET_CODE JOIN M_RECIPE_HEADER c ON b.MPCS_GROUP = c.MPCS_GROUP JOIN M_RECIPE_PRODUCT d ON c.RECIPE_CODE = d.RECIPE_CODE WHERE b.MPCS_GROUP =:mpcsGroup AND a.OUTLET_CODE =:outletCode)";
+            jdbcTemplate.update(insertTSummMpcs, prm);
+            System.out.print("success insert");
+            list = listMpcsPlan(balance);
+        }
         return list;
     }
     //////////////////////////////////DONE//////////////////////////////////////////////////////////
