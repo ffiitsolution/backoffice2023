@@ -218,7 +218,7 @@ ORDER BY a.TRANS_DATE ASC]]>
 				<text><![CDATA[Discount]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="254" y="105" width="100" height="18" uuid="e8126b50-83b9-4fd0-97a3-c108991637e2">
+				<reportElement x="254" y="105" width="116" height="18" uuid="e8126b50-83b9-4fd0-97a3-c108991637e2">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
@@ -227,7 +227,7 @@ ORDER BY a.TRANS_DATE ASC]]>
 				<text><![CDATA[Pendapatan Non Tax]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="356" y="105" width="100" height="18" uuid="2652d4b8-9ef8-4b2d-934d-eeaeafa5cb35">
+				<reportElement x="376" y="105" width="80" height="18" uuid="2652d4b8-9ef8-4b2d-934d-eeaeafa5cb35">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
@@ -488,7 +488,7 @@ ORDER BY a.TRANS_DATE ASC]]>
 				<textFieldExpression><![CDATA[$F{DISCOUNT}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,###.###;#,###.###-">
-				<reportElement x="356" y="1" width="98" height="13" uuid="f4709026-762f-41d8-b3d7-c6e246399495">
+				<reportElement x="376" y="1" width="78" height="13" uuid="f4709026-762f-41d8-b3d7-c6e246399495">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
@@ -513,7 +513,7 @@ ORDER BY a.TRANS_DATE ASC]]>
 				<textFieldExpression><![CDATA[$F{TRANS_DATE}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,###.###;#,###.###-">
-				<reportElement x="254" y="1" width="98" height="13" uuid="9d984a25-39cd-43bc-abc8-f25f9537c4ff">
+				<reportElement x="254" y="1" width="116" height="13" uuid="9d984a25-39cd-43bc-abc8-f25f9537c4ff">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
@@ -583,7 +583,7 @@ ORDER BY a.TRANS_DATE ASC]]>
 				<textFieldExpression><![CDATA[$V{total_diskon}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.###;#,##0.###-">
-				<reportElement x="254" y="3" width="98" height="13" uuid="c5dd54c2-b2d1-452d-9204-35e51bac2d29">
+				<reportElement x="254" y="3" width="116" height="13" uuid="c5dd54c2-b2d1-452d-9204-35e51bac2d29">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -593,7 +593,7 @@ ORDER BY a.TRANS_DATE ASC]]>
 				<textFieldExpression><![CDATA[$V{total_non_tax}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.###;#,##0.###-">
-				<reportElement x="356" y="3" width="98" height="13" uuid="bab4fd31-fe78-4d88-81a6-e5561b5f683a">
+				<reportElement x="376" y="3" width="78" height="13" uuid="bab4fd31-fe78-4d88-81a6-e5561b5f683a">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>

@@ -2717,6 +2717,22 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
 
         jdbcTemplate.update(qy, param);
+        
+        String updateQuantityAccQuery = "MERGE INTO T_SUMM_MPCS tsm "
+                + "USING ("
+                + "	SELECT SEQ_MPCS, QTY_PROJ, sum(QTY_PROJ) OVER (ORDER BY seq_mpcs) AS UPDATED_QTY_ACC_PROJ "
+                + "		FROM T_SUMM_MPCS tsm "
+                + "		WHERE tsm.MPCS_GROUP =:mpcsGroup AND tsm.DATE_MPCS = :dateMpcs "
+                + "	) up "
+                + "ON (tsm.SEQ_MPCS = up.SEQ_MPCS AND tsm.DATE_MPCS = :dateMpcs AND tsm.MPCS_GROUP = :mpcsGroup) "
+                + "WHEN MATCHED THEN "
+                + "	UPDATE SET "
+                + "		tsm.QTY_ACC_PROJ = up.UPDATED_QTY_ACC_PROJ, "
+                + "		tsm.USER_UPD = :userUpd,"
+                + "		tsm.DATE_UPD = :dateUpd,"
+                + "		tsm.TIME_UPD = :timeUpd ";
+
+        jdbcTemplate.update(updateQuantityAccQuery, param);
     }
 
     ////////////New method for insert m_counter setelah Stock Opname - M Joko M 20-Dec-2023////////////
