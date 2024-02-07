@@ -4318,30 +4318,43 @@ public List<Map<String, Object>> listMpcsManagementFryer(Map<String, String> bal
     Map<String, Map<String, Object>> fryerTypeMap = new HashMap<>();
 
     for (Map<String, Object> result : resultList) {
-        String fryerType = (String) result.get("fryerType");
+    String fryerType = (String) result.get("fryerType");
 
-        if (!fryerTypeMap.containsKey(fryerType)) {
-            Map<String, Object> fryerTypeEntry = new HashMap<>();
-            fryerTypeEntry.put("fryerType", fryerType);
-            fryerTypeEntry.put("fryerDescription", result.get("fryerDescription"));
-            fryerTypeEntry.put("fryerMaximum", result.get("fryerMaximum"));
-            fryerTypeEntry.put("listFryer", new ArrayList<Map<String, Object>>());
-            fryerTypeMap.put(fryerType, fryerTypeEntry);
-            finalResultList.add(fryerTypeEntry);
-        }
-
-        Map<String, Object> fryerEntry = new HashMap<>();
-        fryerEntry.put("fryerType", fryerType);
-        fryerEntry.put("fryerDescription", result.get("fryerDescription"));
-        fryerEntry.put("oilUse", result.get("oilUse"));
-        fryerEntry.put("fryerNo", result.get("fryerNo"));
-        fryerEntry.put("fryerMaximum", result.get("fryerMaximum"));
-        fryerEntry.put("progress", result.get("progress"));
-
-        ((List<Map<String, Object>>) fryerTypeMap.get(fryerType).get("listFryer")).add(fryerEntry);
+    if (!fryerTypeMap.containsKey(fryerType)) {
+        Map<String, Object> fryerTypeEntry = new HashMap<>();
+        fryerTypeEntry.put("fryerType", fryerType);
+        fryerTypeEntry.put("fryerDescription", result.get("fryerDescription"));
+        fryerTypeEntry.put("fryerMaximum", result.get("fryerMaximum"));
+        fryerTypeEntry.put("listFryer", new ArrayList<Map<String, Object>>());
+        fryerTypeMap.put(fryerType, fryerTypeEntry);
+        finalResultList.add(fryerTypeEntry);
     }
 
-    return finalResultList;
+    Map<String, Object> fryerEntry = new HashMap<>();
+    fryerEntry.put("fryerType", fryerType);
+    fryerEntry.put("fryerDescription", result.get("fryerDescription"));
+    fryerEntry.put("oilUse", result.get("oilUse"));
+    fryerEntry.put("fryerNo", result.get("fryerNo"));
+    fryerEntry.put("fryerMaximum", result.get("fryerMaximum"));
+    fryerEntry.put("progress", result.get("progress"));
+
+    // Adding color based on the progress value
+    int progressValue = Integer.parseInt((String) result.get("progress"));
+    String color;
+    if (progressValue >= 0 && progressValue <= 50) {
+        color = "success";
+    } else if (progressValue >= 51 && progressValue <= 97) {
+        color = "warning";
+    } else {
+        color = "danger";
+    }
+    fryerEntry.put("color", color);
+
+    ((List<Map<String, Object>>) fryerTypeMap.get(fryerType).get("listFryer")).add(fryerEntry);
+}
+
+return finalResultList;
+
 }
 
 
