@@ -584,6 +584,7 @@ public class ReportDaoImpl implements ReportDao {
             hashMap.put("tipeReport", "Rekap");
         }
         hashMap.put("user", param.get("user"));
+        hashMap.put("outletBrand", param.get("outletBrand"));
 
         ClassPathResource classPathResource = new ClassPathResource("report/orderEntry.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
@@ -659,6 +660,7 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("toDate", param.get("toDate"));
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("user", param.get("user"));
+        hashMap.put("outletBrand", param.get("outletBrand"));
         if (param.get("detail").equals(1.0)) {
             hashMap.put("detail", 1);
             hashMap.put("tipeReport", "Detail");
@@ -695,6 +697,7 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("toDate", param.get("toDate"));
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("user", param.get("user"));
+        hashMap.put("outletBrand", param.get("outletBrand"));
         if (param.get("detail").equals(1.0)) {
             hashMap.put("detail", 1);
             hashMap.put("tipeReport", "Detail");
@@ -797,6 +800,7 @@ public class ReportDaoImpl implements ReportDao {
             hashMap.put("query", query.toString());
         }
         hashMap.put("itemCategory", itemCategory);
+        hashMap.put("outletBrand", param.get("outletBrand"));
         ClassPathResource classPathResource = new ClassPathResource("report/item.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);

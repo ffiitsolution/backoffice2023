@@ -41,6 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -2649,11 +2650,12 @@ public class IndexController {
                     processServices.insertEodPosN(newParams);
                     posOpen.add(newParams);
                 } else {
-                    errors.add("! listPosOpen size: " + listPosOpen.size());
+                    errors.add("listPosOpen size: " + listPosOpen.size());
                 }
             }
         }
 
+        d.put("success", false);
         d.put("errors", errors);
         d.put("prevEod", prevEod);
         d.put("listMPosActive", listMPosActive);
@@ -2673,14 +2675,17 @@ public class IndexController {
             processServices.insertTSummMpcs(balance);
             processServices.updateOrderEntryExpired(balance);
             processServices.increaseTransDateMOutlet(balance);
+            d.put("success", true);
         } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             System.err.println("Error End of Day: " + e.getMessage());
+            errors.add("Error End of Day: " + e.getMessage());
+            d.put("errors", errors);
             d.put("message", "Process End of Day Failed: " + e.getMessage());
             data.add(d);
             res.setData(data);
             return res;
         }
-
         data.add(d);
         res.setData(data);
         double elapsedTimeSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
@@ -3790,7 +3795,7 @@ public class IndexController {
     }
     
     //============== New Method From M Joko 1-2-2024 ================
-    @ApiOperation(value = "Delete Order Entry Detail by Dani", response = Object.class)
+    @ApiOperation(value = "List Transfer Data by M Joko", response = Object.class)
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 404, message = "The resource not found"),}
@@ -3798,16 +3803,11 @@ public class IndexController {
     @RequestMapping(value = "/list-transfer-data", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
     ResponseMessage listTransferData(@RequestBody Map<String, Object> param) throws IOException, Exception {
-        ResponseMessage rm = new ResponseMessage();
         String type = param.getOrDefault("type", "TERIMA DATA").toString();
         String typeTable = param.getOrDefault("type", "ALL").toString();
         List<String> listTable = listTableMaster(typeTable);
         param.put("listTable", listTable);
-        List<Map<String, Object>> list = processServices.listTransferData(param);
-        rm.setItem(list);
-        rm.setSuccess(list != null);
-        rm.setMessage(list != null ? "Success get list" : "Failed get list");
-        return rm;
+        return processServices.listTransferData(param);
     }
 
     // =============== New Method From Sifa 05-02-2024 ===============

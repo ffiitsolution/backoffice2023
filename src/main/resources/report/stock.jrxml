@@ -24,6 +24,9 @@
 	<parameter name="item" class="java.lang.String"/>
 	<parameter name="itemName" class="java.lang.String"/>
 	<parameter name="typePrint" class="java.lang.String"/>
+	<parameter name="outletBrand" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[SELECT a.TRANS_DATE, a.ITEM_CODE, b.ITEM_DESCRIPTION, a.QTY_BEGINNING, a.QTY_IN, a.QTY_OUT, (a.QTY_BEGINNING + a.QTY_IN - a.QTY_OUT) AS qty_ending, b.UOM_STOCK,
 d.OUTLET_NAME, d."TYPE", d.ADDRESS_1, d.ADDRESS_2, d.PHONE
@@ -174,10 +177,6 @@ WHERE a.OUTLET_CODE = $P{outletCode} AND a.TRANS_DATE BETWEEN $P{fromDate} AND $
 				</textElement>
 				<textFieldExpression><![CDATA[$F{ADDRESS_2}]]></textFieldExpression>
 			</textField>
-			<image>
-				<reportElement x="0" y="0" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="20d3bcff-f0d7-478c-a02f-0749c04cea22"/>
-				<imageExpression><![CDATA["logo/logoKfc.png"]]></imageExpression>
-			</image>
 			<line>
 				<reportElement x="1" y="101" width="552" height="1" uuid="3cdebe2b-aff3-4ace-9774-cb15acb5b834"/>
 			</line>
@@ -311,6 +310,10 @@ WHERE a.OUTLET_CODE = $P{outletCode} AND a.TRANS_DATE BETWEEN $P{fromDate} AND $
 				</textElement>
 				<textFieldExpression><![CDATA["Phone : " + $F{PHONE}]]></textFieldExpression>
 			</textField>
+			<image scaleImage="FillFrame">
+				<reportElement x="0" y="1" width="48" height="48" isPrintWhenDetailOverflows="true" uuid="dc41666b-1ed6-46f7-9a6b-d1ce82a0c4a8"/>
+				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
+			</image>
 		</band>
 	</columnHeader>
 	<detail>

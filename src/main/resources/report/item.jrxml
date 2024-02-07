@@ -70,10 +70,6 @@ ORDER BY ITEM_CODE ASC]]>
 	<columnHeader>
 		<band height="160" splitType="Stretch">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
-			<image scaleImage="FillFrame">
-				<reportElement x="0" y="1" width="48" height="48" isPrintWhenDetailOverflows="true" uuid="c4587009-5c6a-46d8-83b5-b4d79a81e2ff"/>
-				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
-			</image>
 			<staticText>
 				<reportElement x="60" y="0" width="112" height="11" uuid="6df5ebd3-46a4-4d78-b267-baca3bd5fb6b"/>
 				<textElement>
@@ -182,7 +178,7 @@ ORDER BY ITEM_CODE ASC]]>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
+				<textFieldExpression><![CDATA[ new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="470" y="11" width="81" height="11" isPrintWhenDetailOverflows="true" uuid="9417f646-3939-4a1a-8204-62201eb689b6"/>
@@ -355,6 +351,10 @@ ORDER BY ITEM_CODE ASC]]>
 				</textElement>
 				<text><![CDATA[Kategori Item]]></text>
 			</staticText>
+			<image scaleImage="FillFrame">
+				<reportElement x="0" y="1" width="48" height="48" isPrintWhenDetailOverflows="true" uuid="54b4687d-91c5-45e6-83a9-5e129e6bbc72"/>
+				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
+			</image>
 		</band>
 	</columnHeader>
 	<detail>

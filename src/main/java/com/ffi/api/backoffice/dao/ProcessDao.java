@@ -181,7 +181,7 @@ public interface ProcessDao {
     public void deleteOrderEntryDetail(Map<String, Object> param);
     
     //============== New Method From M Joko 1-2-2024 ================
-    List<Map<String, Object>> listTransferData(Map<String, Object> ref);
+    ResponseMessage listTransferData(Map<String, Object> ref);
     
     //============== New Method From M Joko 5-2-2024 ================
     ResponseMessage processBackupDb(Map<String, Object> ref);
