@@ -3413,8 +3413,11 @@ public class ProcessDaoImpl implements ProcessDao {
         jdbcTemplate.update(queryHeader, prm);
     }
 
+    // =========== New Method List Transfer Data From M Joko 6 Feb 2024 ===========
     @Override
-    public List<Map<String, Object>> listTransferData(Map<String, Object> mapping) {
+    public ResponseMessage listTransferData(Map<String, Object> mapping) {
+        ResponseMessage rm = new ResponseMessage();
+        rm.setSuccess(false);
         List<Map<String, Object>> list = new ArrayList();
         List<String> tables = (List<String>) mapping.getOrDefault("listTable", new ArrayList<String>());
 
@@ -3446,10 +3449,19 @@ public class ProcessDaoImpl implements ProcessDao {
                     list.add(mapq);
                 }
             }
+            rm.setItem(list);
+            rm.setSuccess(true);
+            rm.setMessage("Success get list.");
         } catch (IOException | URISyntaxException ex) {
+            if(ex.getMessage().contains("Connection refused:")){
+                rm.setMessage("Failed get list: Connection to HQ refused.");
+            } else {
+                rm.setMessage("Failed get list: " + ex.getMessage());
+            }
+            
             Logger.getLogger(ProcessDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return list;
+        return rm;
     }
 
     // =========== New Method Copy Data Server From Lukas 17-10-2023 ===========
@@ -4136,7 +4148,7 @@ public class ProcessDaoImpl implements ProcessDao {
                 String backupFolderPath = currentWorkingDirectory + File.separator + "backup";
                 File backupFolder = new File(backupFolderPath);
                 if (backupFolder.exists() && backupFolder.isDirectory()) {
-                    File[] backupFiles = backupFolder.listFiles((dir, name) -> name.toLowerCase().endsWith(".dmp"));
+                    File[] backupFiles = backupFolder.listFiles((dir, name) -> name.toUpperCase().endsWith(".DMP"));
                     if (backupFiles != null && backupFiles.length > 0) {
                         Arrays.sort(backupFiles, Comparator.comparingLong(File::lastModified).reversed());
                         DecimalFormat df = new DecimalFormat("#.##");
@@ -4153,7 +4165,10 @@ public class ProcessDaoImpl implements ProcessDao {
                             fileInfo.put("sizeInB", file.length());
                             String[] parts = file.getName().split("_");
                             if (parts.length >= 4) {
-                                fileInfo.put("datetime", parts[0]);
+                                DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HHmmss");
+                                LocalDateTime datetime = LocalDateTime.parse(parts[0], inputFormatter);
+                                DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                                fileInfo.put("datetime", datetime.format(outputFormatter));
                                 fileInfo.put("outletCode", parts[1]);
                                 fileInfo.put("userId", parts[2]);
                                 fileInfo.put("app", parts[3].toUpperCase().replace(".DMP", ""));
