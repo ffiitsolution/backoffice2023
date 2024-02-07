@@ -1401,9 +1401,10 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> listGlobal(Map<String, String> balance) {
         String qry = "SELECT DESCRIPTION, TYPE_MENU AS CODE FROM m_menudtl WHERE TYPE_MENU = :cond AND STATUS = :status AND APLIKASI = :aplikasi ";
-        if (balance.containsKey("outletBrand") && balance.get("outletBrand").equalsIgnoreCase("TACOBELL")) {
-            qry += " AND DESCRIPTION IN ('Report Menu & Detail Modifier', 'Sales by Date', 'Sales by Item', 'Sales by Time', 'Summary Sales by Item Code', 'Report Stock Card')";
-        }
+        // open limit report tacobell 7/2/24 by M Joko acc Dona
+//        if (balance.containsKey("outletBrand") && balance.get("outletBrand").equalsIgnoreCase("TACOBELL")) {
+//            qry += " AND DESCRIPTION IN ('Report Menu & Detail Modifier', 'Sales by Date', 'Sales by Item', 'Sales by Time', 'Summary Sales by Item Code', 'Report Stock Card')";
+//        }
         Map prm = new HashMap();
         prm.put("cond", balance.get("cond"));
         prm.put("status", balance.get("status"));
@@ -1426,7 +1427,7 @@ public class ViewDoaImpl implements ViewDao {
                 SELECT 'PROGRAM', 'POS0001', 'Cashier By Date', 1, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0001')
                 UNION ALL
-                SELECT 'PROGRAM', 'POS0002', 'Laporan Pemakaian Sales', 2, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                SELECT 'PROGRAM', 'POS0002', 'Laporan Pemakaian by Sales', 2, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0002')
                 UNION ALL
                 SELECT 'PROGRAM', 'POS0003', 'Report Menu & Detail Modifier', 3, 'POS', 'R', 'A', 'REPORT' FROM DUAL
@@ -1486,9 +1487,9 @@ public class ViewDoaImpl implements ViewDao {
                 SELECT 'PROGRAM', 'POS0021', 'Report Pajak', 21, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0021')
                 UNION ALL
-                SELECT 'PROGRAM','POS0025','Report Sales Item By Time', 25, 'POS', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0025')
-                UNION ALL               
+                SELECT 'PROGRAM','POS0022','Report Sales Item By Time', 22, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0022')
+                UNION ALL
                 SELECT 'PROGRAM', 'INV0001', 'Report Stock Card', 1, 'INV', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV0001')
                 UNION ALL
