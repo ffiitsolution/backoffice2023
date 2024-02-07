@@ -599,6 +599,7 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("toDate", param.get("toDate"));
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("user", param.get("user"));
+        hashMap.put("outletBrand", param.get("outletBrand"));
         if (param.get("detail").equals(1.0)) {
             hashMap.put("detail", 1);
         } else {

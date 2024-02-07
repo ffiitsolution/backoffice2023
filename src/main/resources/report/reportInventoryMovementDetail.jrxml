@@ -19,6 +19,9 @@
 	<parameter name="query3" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[" WHERE 1 = 1"]]></defaultValueExpression>
 	</parameter>
+	<parameter name="outletBrand" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[SELECT * FROM ( SELECT
 	a.OUTLET_CODE,
@@ -258,7 +261,7 @@ ORDER BY
 		<band height="133" splitType="Stretch">
 			<image>
 				<reportElement x="9" y="0" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="a198c294-f414-4b0c-af01-97cf74e766d6"/>
-				<imageExpression><![CDATA["logo/logoKfc.png"]]></imageExpression>
+				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
 			</image>
 			<staticText>
 				<reportElement x="0" y="52" width="650" height="18" uuid="8eb48b4e-afab-438f-be1c-487b2b303024"/>
