@@ -584,6 +584,7 @@ public class ReportDaoImpl implements ReportDao {
             hashMap.put("tipeReport", "Rekap");
         }
         hashMap.put("user", param.get("user"));
+        hashMap.put("outletBrand", param.get("outletBrand"));
 
         ClassPathResource classPathResource = new ClassPathResource("report/orderEntry.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
