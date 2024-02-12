@@ -52,7 +52,7 @@
 	c.ADDRESS_1,
 	c.ADDRESS_2,
 	c.PHONE,
-	d.ITEM_COST
+	NVL(d.ITEM_COST, 0) as ITEM_COST
 FROM
 	(
 	SELECT
@@ -529,7 +529,7 @@ ORDER BY
 	</pageHeader>
 	<detail>
 		<band height="36" splitType="Stretch">
-			<textField>
+			<textField textAdjust="StretchHeight">
 				<reportElement x="0" y="0" width="40" height="15" uuid="75d857b9-c195-4c19-9b37-5bbea4129ae5"/>
 				<textElement>
 					<font size="8"/>
