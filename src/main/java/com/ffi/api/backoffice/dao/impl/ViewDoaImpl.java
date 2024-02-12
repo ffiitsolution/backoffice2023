@@ -107,6 +107,10 @@ public class ViewDoaImpl implements ViewDao {
             boolean isFSD = (boolean) balance.get("isFSD");
             qry += " AND (HOMEPAGE " + (isFSD ? "LIKE '%FSD%'" : "NOT LIKE '%FSD%' OR HOMEPAGE IS NULL") + ")";
         }
+        if (balance.containsKey("isSDD")) {
+            boolean isSDD = (boolean) balance.get("isSDD");
+            qry += " AND (HOMEPAGE " + (isSDD ? "LIKE '%SDD%'" : "NOT LIKE '%SDD%' OR HOMEPAGE IS NULL") + ")";
+        }
         qry += " order by cd_Supplier desc";
         Map prm = new HashMap();
         prm.put("status", "%" + balance.get("status") + "%");
