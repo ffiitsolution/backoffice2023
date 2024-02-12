@@ -808,7 +808,7 @@ public class ReportController {
     @RequestMapping(value = "/report-order-entry-transactions-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report order entry transactions", response = Object.class)
     @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
-    public ResponseEntity<byte[]> jesperReportOrderEntryTransactions(@RequestBody String param) throws SQLException, JRException, IOException {
+    public ResponseEntity<?> jesperReportOrderEntryTransactions(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
@@ -826,8 +826,9 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=orderEntryTransactions.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Detail item tidak tersedia");
+        }
     }
 
     @CrossOrigin
