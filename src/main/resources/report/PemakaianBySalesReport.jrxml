@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="PemakaianBySalesReport" pageWidth="595" pageHeight="840" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="341841ad-479a-4fd4-b008-afc4dd840486">
 	<property name="ireport.zoom" value="1.6105100000000039"/>
 	<property name="ireport.x" value="0"/>
@@ -13,6 +14,7 @@
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<parameter name="user" class="java.lang.String"/>
+	<parameter name="outletBrand" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT   END.*,M.OUTLET_NAME,M.ADDRESS_1,M.ADDRESS_2, M.PHONE, v.grand_total_unit_cost, p.total_net_sales
     FROM   (SELECT  $P{outletCode} AS OUTLET_CODE, item,
@@ -712,9 +714,9 @@ ORDER BY   ITEM ASC]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{ADDRESS_1}]]></textFieldExpression>
 			</textField>
-			<image>
+			<image scaleImage="FillFrame">
 				<reportElement x="0" y="0" width="48" height="48" isPrintWhenDetailOverflows="true" uuid="a74f4b64-21cf-43c4-b134-dc4525922b36"/>
-				<imageExpression><![CDATA["logo/logoKfc.png"]]></imageExpression>
+				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
 			</image>
 			<staticText>
 				<reportElement x="53" y="0" width="153" height="11" uuid="b6175580-26b7-4d24-a0da-c1a98b446e71"/>

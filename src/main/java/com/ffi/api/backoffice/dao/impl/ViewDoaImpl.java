@@ -107,6 +107,10 @@ public class ViewDoaImpl implements ViewDao {
             boolean isFSD = (boolean) balance.get("isFSD");
             qry += " AND (HOMEPAGE " + (isFSD ? "LIKE '%FSD%'" : "NOT LIKE '%FSD%' OR HOMEPAGE IS NULL") + ")";
         }
+        if (balance.containsKey("isSDD")) {
+            boolean isSDD = (boolean) balance.get("isSDD");
+            qry += " AND (HOMEPAGE " + (isSDD ? "LIKE '%SDD%'" : "NOT LIKE '%SDD%' OR HOMEPAGE IS NULL") + ")";
+        }
         qry += " order by cd_Supplier desc";
         Map prm = new HashMap();
         prm.put("status", "%" + balance.get("status") + "%");
@@ -1401,9 +1405,10 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> listGlobal(Map<String, String> balance) {
         String qry = "SELECT DESCRIPTION, TYPE_MENU AS CODE FROM m_menudtl WHERE TYPE_MENU = :cond AND STATUS = :status AND APLIKASI = :aplikasi ";
-        if (balance.containsKey("outletBrand") && balance.get("outletBrand").equalsIgnoreCase("TACOBELL")) {
-            qry += " AND DESCRIPTION IN ('Report Menu & Detail Modifier', 'Sales by Date', 'Sales by Item', 'Sales by Time', 'Summary Sales by Item Code', 'Report Stock Card')";
-        }
+        // open limit report tacobell 7/2/24 by M Joko acc Dona
+//        if (balance.containsKey("outletBrand") && balance.get("outletBrand").equalsIgnoreCase("TACOBELL")) {
+//            qry += " AND DESCRIPTION IN ('Report Menu & Detail Modifier', 'Sales by Date', 'Sales by Item', 'Sales by Time', 'Summary Sales by Item Code', 'Report Stock Card')";
+//        }
         Map prm = new HashMap();
         prm.put("cond", balance.get("cond"));
         prm.put("status", balance.get("status"));
@@ -1426,7 +1431,7 @@ public class ViewDoaImpl implements ViewDao {
                 SELECT 'PROGRAM', 'POS0001', 'Cashier By Date', 1, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0001')
                 UNION ALL
-                SELECT 'PROGRAM', 'POS0002', 'Laporan Pemakaian Sales', 2, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                SELECT 'PROGRAM', 'POS0002', 'Laporan Pemakaian by Sales', 2, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0002')
                 UNION ALL
                 SELECT 'PROGRAM', 'POS0003', 'Report Menu & Detail Modifier', 3, 'POS', 'R', 'A', 'REPORT' FROM DUAL
@@ -1486,9 +1491,9 @@ public class ViewDoaImpl implements ViewDao {
                 SELECT 'PROGRAM', 'POS0021', 'Report Pajak', 21, 'POS', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0021')
                 UNION ALL
-                SELECT 'PROGRAM','POS0025','Report Sales Item By Time', 25, 'POS', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0025')
-                UNION ALL               
+                SELECT 'PROGRAM','POS0022','Report Sales Item By Time', 22, 'POS', 'R', 'A', 'REPORT' FROM DUAL
+                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0022')
+                UNION ALL
                 SELECT 'PROGRAM', 'INV0001', 'Report Stock Card', 1, 'INV', 'R', 'A', 'REPORT' FROM DUAL
                 WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV0001')
                 UNION ALL
@@ -3286,7 +3291,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "FROM T_STOCK_CARD SCARD "
                 + "LEFT JOIN M_ITEM MITEM ON SCARD.ITEM_CODE = MITEM.ITEM_CODE "
                 + "WHERE SCARD.TRANS_DATE between :startDate and :endDate "
-                + "AND (SCARD.QTY_IN != 0 OR SCARD.QTY_OUT != 0) "
+                + "AND (SCARD.QTY_IN != 0 OR SCARD.QTY_OUT != 0 OR SCARD.QTY_BEGINNING != 0) "
                 + "AND SCARD.ITEM_CODE LIKE :itemCode "
                 + "AND MITEM.FLAG_STOCK = 'Y' " + where
                 + "ORDER BY SCARD.ITEM_CODE ASC, SCARD.TRANS_DATE ASC ";
@@ -4295,7 +4300,7 @@ public class ViewDoaImpl implements ViewDao {
     ///////////////new method from aditya 30-01-2024////////////////////////////
     @Override
 public List<Map<String, Object>> listMpcsManagementFryer(Map<String, String> balance) {
-    String qry = "SELECT OUTLET_CODE, FRYER_TYPE, FRYER_DESCRIPTION, FRYER_TYPE_SEQ AS FRYER_NO, FRYER_TYPE_MAX AS FRYER_MAXIMUM, FRYER_TYPE_CNT AS OIL_USE, ROUND(FRYER_TYPE_CNT / FRYER_TYPE_MAX * 100, 0) AS PROGRESS FROM ( SELECT a.OUTLET_CODE, b.OUTLET_NAME, a.MPCS_DATE, a.MPCS_GROUP, c.DESCRIPTION AS MPCS_DESCRIPTION, a.RECIPE_CODE, d.RECIPE_REMARK, j.PRODUCT_CODE, j.PRODUCT_REMARK, i.ITEM_DESCRIPTION, j.QTY_STOCK, j.UOM_STOCK, a.FRYER_TYPE, g.DESCRIPTION AS FRYER_DESCRIPTION, g.VALUE AS FRYER_TYPE_MAX, a.FRYER_TYPE_SEQ, a.QUANTITY, f.FRYER_TYPE_CNT, f.FRYER_TYPE_SEQ AS FRYER_NO FROM T_MPCS_HIST a LEFT JOIN M_OUTLET b ON a.OUTLET_CODE = b.OUTLET_CODE AND a.OUTLET_CODE = :outletCode LEFT JOIN M_MPCS_HEADER c ON a.MPCS_GROUP = c.MPCS_GROUP LEFT JOIN M_RECIPE_HEADER d ON a.RECIPE_CODE = d.RECIPE_CODE LEFT JOIN M_MPCS_DETAIL f ON a.FRYER_TYPE = f.FRYER_TYPE AND a.FRYER_TYPE_SEQ = f.FRYER_TYPE_SEQ LEFT JOIN M_GLOBAL g ON a.FRYER_TYPE = g.CODE AND g.COND = 'FRYER' LEFT JOIN M_STAFF h ON a.USER_UPD = h.STAFF_CODE LEFT JOIN M_RECIPE_PRODUCT j ON a.RECIPE_CODE = j.RECIPE_CODE LEFT JOIN M_ITEM i ON j.PRODUCT_CODE = i.ITEM_CODE ORDER BY a.MPCS_DATE DESC, a.TIME_UPD DESC ) z WHERE FRYER_TYPE IN ('P', 'S', 'O') GROUP BY OUTLET_CODE, FRYER_TYPE, FRYER_DESCRIPTION, FRYER_TYPE_CNT, FRYER_TYPE_MAX, FRYER_TYPE_SEQ ORDER BY FRYER_TYPE ASC, FRYER_NO ASC";
+    String qry = "SELECT OUTLET_CODE, FRYER_TYPE, FRYER_DESCRIPTION, FRYER_NO, FRYER_MAXIMUM, ROUND(OIL_USE * CASE WHEN FRYER_TYPE = 'O' THEN 7 WHEN FRYER_TYPE = 'P' THEN 9 ELSE 1 END ) AS OIL_USE, ROUND( ( (OIL_USE / CASE WHEN FRYER_TYPE = 'O' THEN 7 WHEN FRYER_TYPE = 'P' THEN 9 ELSE 1 END ) / FRYER_MAXIMUM) * 100 ) AS PROGRESS FROM ( SELECT a.OUTLET_CODE, a.FRYER_TYPE, b.DESCRIPTION AS FRYER_DESCRIPTION, a.FRYER_TYPE_SEQ AS FRYER_NO, a.FRYER_TYPE_CNT AS OIL_USE, b.VALUE AS FRYER_MAXIMUM FROM M_MPCS_DETAIL a JOIN M_GLOBAL b ON a.FRYER_TYPE = b.CODE AND b.COND = 'FRYER' WHERE a.STATUS = 'A' AND a.OUTLET_CODE = :outletCode ) z GROUP BY OUTLET_CODE, FRYER_TYPE, FRYER_DESCRIPTION, OIL_USE, FRYER_MAXIMUM, FRYER_NO ORDER BY FRYER_TYPE ASC, FRYER_NO ASC";
     Map prm = new HashMap();
     prm.put("outletCode", balance.get("outletCode"));
 

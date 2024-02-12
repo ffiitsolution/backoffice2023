@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="laporanActualReport" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="65db9392-07bc-483d-89ef-9cd6b98bce0c">
-	<property name="ireport.zoom" value="1.3310000000000146"/>
+	<property name="ireport.zoom" value="1.6105100000000008"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Localhost"/>
@@ -28,7 +27,7 @@
     b.OUTLET_NAME,
     b.ADDRESS_1,
     b.ADDRESS_2,
-    b.PHONE, 
+    b.PHONE,
     a.RECIPE_CODE,
     c.RECIPE_REMARK,
     TO_CHAR(TO_DATE(a.TIME_UPD, 'HH24MISS'), 'HH24:MI') AS TIME_UPD,
@@ -36,8 +35,8 @@
     a.QUANTITY,
     COALESCE(SUM(a.QUANTITY) OVER (PARTITION BY a.RECIPE_CODE ORDER BY TO_DATE(a.TIME_UPD, 'HH24MISS')), 0) AS SALDO_AKHIR
 FROM T_MPCS_HIST a
-JOIN M_OUTLET b ON a.OUTLET_CODE = b.OUTLET_CODE 
-JOIN M_RECIPE_HEADER c ON a.RECIPE_CODE = c.RECIPE_CODE 
+JOIN M_OUTLET b ON a.OUTLET_CODE = b.OUTLET_CODE
+JOIN M_RECIPE_HEADER c ON a.RECIPE_CODE = c.RECIPE_CODE
 WHERE a.OUTLET_CODE = $P{outletCode}
     AND TO_DATE(a.TIME_UPD, 'HH24MISS') BETWEEN TO_DATE($P{time1}, 'HH24MISS') AND TO_DATE($P{time2}, 'HH24MISS')
     AND a.MPCS_DATE = $P{date}
@@ -155,7 +154,7 @@ ORDER BY a.RECIPE_CODE ASC, TO_DATE(a.TIME_UPD, 'HH24MISS') ASC]]>
 			</staticText>
 			<staticText>
 				<reportElement x="396" y="123" width="73" height="25" uuid="7bcec2c0-b4d3-4c2e-8567-2d83ef37d326"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Qty Recipe]]></text>
@@ -333,13 +332,13 @@ ORDER BY a.RECIPE_CODE ASC, TO_DATE(a.TIME_UPD, 'HH24MISS') ASC]]>
 			</textField>
 			<textField>
 				<reportElement x="396" y="1" width="73" height="18" uuid="69bb45e5-3741-4b63-b4e8-e5dca2c40720"/>
-				<textElement textAlignment="Center"/>
-				<textFieldExpression><![CDATA[$F{QUANTITY}]]></textFieldExpression>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.0000").format($F{QUANTITY})]]></textFieldExpression>
 			</textField>
 			<textField pattern="">
 				<reportElement x="472" y="1" width="79" height="18" uuid="91f00593-9ec0-44ab-b75c-346b215a0031"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression><![CDATA[$F{SALDO_AKHIR}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.0000").format($F{SALDO_AKHIR})]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight">
 				<reportElement x="71" y="1" width="196" height="18" uuid="670b203b-b06c-4985-a518-3dbc44bbebac"/>

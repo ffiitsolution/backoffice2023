@@ -118,12 +118,12 @@
 				</textElement>
 				<text><![CDATA[Sampai Bill#]]></text>
 			</staticText>
-			<image>
+			<image scaleImage="FillFrame">
 				<reportElement x="4" y="2" width="48" height="48" isPrintWhenDetailOverflows="true" uuid="f0f5fabf-f459-465e-8893-a277b84b7ff4">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
-				<imageExpression><![CDATA["logo/logoKfc.png"]]></imageExpression>
+				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
 			</image>
 			<staticText>
 				<reportElement x="2" y="49" width="552" height="19" uuid="5d69faee-18dc-438d-92db-d0b6246f78b1"/>
