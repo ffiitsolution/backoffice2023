@@ -737,10 +737,11 @@ public class ProcessDaoImpl implements ProcessDao {
                 from t_opname_detail o
                 JOIN m_item mi ON o.item_code = mi.item_code
                 where o.outlet_code = :outletCode and o.opname_no = :opnameNo and o.qty_purch = 0 and o.qty_stock = 0 and o.total_qty = 0
+                order by o.item_code
             """;
             list = jdbcTemplate.query(qry, param, new DynamicRowMapper());
             if (!list.isEmpty()) {
-                System.out.println("terdapat nilai semua 0 saat opname");
+                System.out.println("terdapat nilai semua 0 saat opname: " + list.size());
                 return list;
             }
         }
