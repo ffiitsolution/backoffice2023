@@ -3470,14 +3470,16 @@ public class ViewDoaImpl implements ViewDao {
                 + "                when G.DESCRIPTION is null and s.supplier_name  is null then m.outlet_name else "
                 + "               g.description end as NAMA_GUDANG "
                 + " FROM T_ORDER_HEADER H "
+                + " LEFT JOIN HIST_KIRIM K ON K.NO_ORDER = H.ORDER_NO "
                 + " LEFT JOIN M_GLOBAL G ON G.CODE = H.CD_SUPPLIER AND G.COND = 'X_" + getCity + "' AND G.STATUS = 'A' "
                 + " LEFT JOIN M_OUTLET M "
                 + "               on H.cd_supplier = m.outlet_code "
                 + " LEFT JOIN m_supplier S "
                 + "               on H.cd_supplier = S.cd_supplier "
                 + " WHERE H.STATUS = '0' "
+                + " AND K.STATUS_KIRIM = 'S' "
                 + " AND H.OUTLET_CODE = :outletCode  "
-                + " ORDER BY ORDER_NO ASC, H.ROWID ASC ";
+                + " ORDER BY H.STATUS ASC, H.DATE_UPD, H.TIME_UPD DESC";
 
         Map prm = new HashMap();
         prm.put("outletCode", balance.get("outletCode"));
