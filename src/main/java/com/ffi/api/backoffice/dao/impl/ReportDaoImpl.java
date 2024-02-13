@@ -2860,6 +2860,23 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("user", param.get("user"));
         hashMap.put("orderNo", param.get("orderNo"));
         hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("userKirim", " ");
+        hashMap.put("jamKirim", " ");
+        hashMap.put("IsoRptDesc", " ");
+
+
+        String histKirimQuery = "SELECT SUBSTR(JAM_KIRIM, 1,2) || ':' || SUBSTR(JAM_KIRIM, 3,2) || ':' || SUBSTR(JAM_KIRIM, 5, 2) as jam_kirim, user_kirim FROM hist_kirim  WHERE NO_ORDER = :orderNo AND OUTLET_CODE = :outletCode ";
+        jdbcTemplate.query(histKirimQuery, hashMap, (ResultSet rs, int i) -> {
+            hashMap.put("userKirim", rs.getString("user_kirim"));
+            hashMap.put("jamKirim", rs.getString("jam_kirim"));
+            return null;
+        });
+        
+        String IsoRptDesc = "SELECT DESCRIPTION FROM M_GLOBAL mg WHERE COND = 'ISO_RPT' AND CODE = 'RO'";
+        jdbcTemplate.query(IsoRptDesc, hashMap, (ResultSet rs, int i) -> {
+            hashMap.put("IsoRptDesc", rs.getString("DESCRIPTION"));
+            return null;
+        });
 
         ClassPathResource classPathResource = new ClassPathResource("report/orderEntryTransactions.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
