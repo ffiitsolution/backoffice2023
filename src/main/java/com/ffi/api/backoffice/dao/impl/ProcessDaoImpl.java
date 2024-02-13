@@ -2721,7 +2721,7 @@ public class ProcessDaoImpl implements ProcessDao {
         
         String updateQuantityAccQuery = "MERGE INTO T_SUMM_MPCS tsm "
                 + "USING ("
-                + "	SELECT SEQ_MPCS, QTY_PROJ, sum(QTY_PROJ) OVER (ORDER BY seq_mpcs) AS UPDATED_QTY_ACC_PROJ "
+                + "	SELECT SEQ_MPCS, QTY_PROJ, sum(QTY_PROJ) OVER (ORDER BY seq_mpcs) AS UPDATED_QTY_ACC_PROJ, sum(QTY_VARIANCE) OVER (ORDER BY seq_mpcs) AS UPDATED_QTY_ACC_VARIANCE "
                 + "		FROM T_SUMM_MPCS tsm "
                 + "		WHERE tsm.MPCS_GROUP =:mpcsGroup AND tsm.DATE_MPCS = :dateMpcs "
                 + "	) up "
@@ -2729,6 +2729,7 @@ public class ProcessDaoImpl implements ProcessDao {
                 + "WHEN MATCHED THEN "
                 + "	UPDATE SET "
                 + "		tsm.QTY_ACC_PROJ = up.UPDATED_QTY_ACC_PROJ, "
+                + "		tsm.QTY_ACC_VARIANCE = up.UPDATED_QTY_ACC_VARIANCE, "
                 + "		tsm.USER_UPD = :userUpd,"
                 + "		tsm.DATE_UPD = :dateUpd,"
                 + "		tsm.TIME_UPD = :timeUpd ";
@@ -4189,6 +4190,23 @@ public class ProcessDaoImpl implements ProcessDao {
                 System.err.println("Error while getting the list of backup files: " + e.getMessage());
                 rm.setMessage("Error while getting the list of backup files: " + e.getMessage());
             }
+        }
+        return rm;
+    }
+    
+    // =========== End Method Copy Data Server From Lukas 17-10-2023 ===========
+    @Override
+    public ResponseMessage updateRecipe(Map<String, Object> param) {
+        ResponseMessage rm = new ResponseMessage();
+        rm.setItem(new ArrayList());
+        rm.setSuccess(false);
+        rm.setMessage("Update status " + param.get("recipeCode") + ": " + param.get("status") + " success.");
+        String query = "UPDATE M_RECIPE_HEADER SET STATUS = :status, USER_UPD = :userUpd, DATE_UPD = TO_CHAR(SYSDATE, 'DD MON YYYY'), TIME_UPD = TO_CHAR(SYSDATE, 'HH24MISS')  WHERE RECIPE_CODE = :recipeCode";
+        try{
+            jdbcTemplate.update(query, param);
+            rm.setSuccess(true);
+        } catch (DataAccessException e){
+            rm.setMessage(e.getMessage());
         }
         return rm;
     }

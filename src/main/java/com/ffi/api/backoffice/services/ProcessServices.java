@@ -322,4 +322,9 @@ public class ProcessServices {
     public ResponseMessage processBackupDb(Map<String, Object> ref) {
         return dao.processBackupDb(ref);
     }
+    
+    //============== New Method From M Joko 13-2-2024 ================
+    public ResponseMessage updateRecipe(Map<String, Object> ref) {
+        return dao.updateRecipe(ref);
+    }
 }
