@@ -1599,6 +1599,7 @@ public class ViewDoaImpl implements ViewDao {
         String transDate = getTransDate(balance.get("outletCode")).toLowerCase();
         LocalDate localDate = LocalDate.parse(transDate, format);
         LocalDate beforeTransDate = localDate.minusDays(30);
+        String status = "";
         String where = "";
         if (!balance.get("orderDate").equals("")) {
             where = " AND ORDER_DATE =:orderDate ";
@@ -1606,6 +1607,11 @@ public class ViewDoaImpl implements ViewDao {
             // where = "and ORDER_DATE between TO_CHAR(CURRENT_DATE-7,'dd-MON-yy') and TO_CHAR(CURRENT_DATE,'dd-MON-yy')";
             // WHERE CLOUSE USING BETWEEN TRANS_DATE AND ONE MONTH BEFORE TRANSDATE by Dani
             where = " and ORDER_DATE >= TO_DATE('" + beforeTransDate.format(format) + "', 'YYYY-MM-DD') AND ORDER_DATE <= TO_DATE('" + localDate.format(format) + "', 'YYYY-MM-DD') ";
+        }
+        if (!balance.get("status").equals("1")) {
+            status = "H.STATUS LIKE :status AND H.STATUS != '1' ";
+        } else {
+            status = " H.STATUS LIKE :status ";
         }
         String qry = "SELECT H.*, case when G.DESCRIPTION is null and  m.outlet_name is null then s.supplier_name  "
                 + "                when G.DESCRIPTION is null and s.supplier_name  is null then m.outlet_name else "
@@ -1618,7 +1624,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "               left join m_supplier S "
                 + "               on h.cd_supplier=s.cd_supplier "
                 + " LEFT JOIN HIST_KIRIM K ON K.NO_ORDER = H.ORDER_NO "
-                + "WHERE H.STATUS LIKE :status "
+                + "WHERE " + status + " "
                 + "AND H.ORDER_TYPE LIKE :orderType "
                 + "AND H.OUTLET_CODE = :outletCode "
                 + "AND H.Order_to LIKE :orderTo " + where + " "
