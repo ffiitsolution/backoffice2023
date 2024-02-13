@@ -76,12 +76,14 @@
       {
         "icon": "fa fa-calculator",
         "name": "Item Cost",
-        "url": "/master/item-cost"
+        "url": "/master/item-cost",
+        "groupId": ["HIDE"]
       },
       {
         "icon": "fa fa-th-large",
         "name": "Sales Recipe",
-        "url": "/master/sales-recipe"
+        "url": "/master/sales-recipe",
+        "groupId": ["HIDE"]
       }
     ]
   },
