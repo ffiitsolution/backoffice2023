@@ -135,19 +135,14 @@
     "icon": "fa fa-file-pdf-o",
     "children": [
       {
-        "icon": "fa fa-archive",
-        "name": "Inventory",
-        "url": "/report/report"
+        "icon": "fa fa-file-pdf-o",
+        "name": "All Reports",
+        "url": "/report"
       },
       {
         "icon": "fa fa-industry",
         "name": "Mpcs Query",
         "url": "/report/mpcs-query"
-      },
-      {
-        "icon": "fa fa-desktop",
-        "name": "Pos Report",
-        "url": "/report/pos-report"
       },
       {
         "icon": "fa fa-list-ol",

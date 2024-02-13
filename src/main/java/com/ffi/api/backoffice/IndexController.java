@@ -3839,4 +3839,16 @@ public class IndexController {
     ResponseMessage processBackupDb(@RequestBody Map<String, Object> param) throws IOException, Exception {
         return processServices.processBackupDb(param);
     }
+    
+    //============== New Method From M Joko 13-2-2024 ================
+    @ApiOperation(value = "Update Status Master Recipe by M Joko", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    @RequestMapping(value = "/recipe-status-update", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody
+    ResponseMessage updateRecipe(@RequestBody Map<String, Object> param) throws IOException, Exception {
+        return processServices.updateRecipe(param);
+    }
 }

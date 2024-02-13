@@ -4192,4 +4192,21 @@ public class ProcessDaoImpl implements ProcessDao {
         }
         return rm;
     }
+    
+    // =========== End Method Copy Data Server From Lukas 17-10-2023 ===========
+    @Override
+    public ResponseMessage updateRecipe(Map<String, Object> param) {
+        ResponseMessage rm = new ResponseMessage();
+        rm.setItem(new ArrayList());
+        rm.setSuccess(false);
+        rm.setMessage("Update status " + param.get("recipeCode") + ": " + param.get("status") + " success.");
+        String query = "UPDATE M_RECIPE_HEADER SET STATUS = :status, USER_UPD = :userUpd, DATE_UPD = TO_CHAR(SYSDATE, 'DD MON YYYY'), TIME_UPD = TO_CHAR(SYSDATE, 'HH24MISS')  WHERE RECIPE_CODE = :recipeCode";
+        try{
+            jdbcTemplate.update(query, param);
+            rm.setSuccess(true);
+        } catch (DataAccessException e){
+            rm.setMessage(e.getMessage());
+        }
+        return rm;
+    }
 }

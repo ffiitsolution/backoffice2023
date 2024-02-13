@@ -1404,29 +1404,30 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listGlobal(Map<String, String> balance) {
-        String qry = "SELECT DESCRIPTION, TYPE_MENU AS CODE FROM m_menudtl WHERE TYPE_MENU = :cond AND STATUS = :status AND APLIKASI = :aplikasi ";
+        Map prm = new HashMap();
+        prm.put("cond", balance.get("cond"));
+        String qry = "SELECT DESCRIPTION, TYPE_MENU, APLIKASI, ID_NO FROM m_menudtl WHERE TYPE_MENU = :cond";
+        if(balance.getOrDefault("aplikasi", "").length() > 0){
+            qry += " AND APLIKASI = :aplikasi";
+            prm.put("aplikasi", balance.get("aplikasi"));
+        }
+        if(balance.getOrDefault("status", "").length() > 0){
+            qry += " AND STATUS = :status";
+            prm.put("status", balance.get("status"));
+        }
         // open limit report tacobell 7/2/24 by M Joko acc Dona
 //        if (balance.containsKey("outletBrand") && balance.get("outletBrand").equalsIgnoreCase("TACOBELL")) {
 //            qry += " AND DESCRIPTION IN ('Report Menu & Detail Modifier', 'Sales by Date', 'Sales by Item', 'Sales by Time', 'Summary Sales by Item Code', 'Report Stock Card')";
 //        }
-        Map prm = new HashMap();
-        prm.put("cond", balance.get("cond"));
-        prm.put("status", balance.get("status"));
-        prm.put("aplikasi", balance.get("aplikasi"));
         System.err.println("q :" + qry);
-        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
-            @Override
-            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
-                Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("code", rs.getString("CODE"));
-                rt.put("description", rs.getString("DESCRIPTION"));
-                return rt;
-            }
-        });
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new DynamicRowMapper());
         // jika kosong/belum ada, atau total bukan 15 (INV) bukan 22 (POS), hapus dan insert baru
         // set: total report valid
+        int TOTAL_INVENTORY = 15;
+        int TOTAL_POS = 22;
+        int TOTAL_REPORT = TOTAL_INVENTORY + TOTAL_POS;
         int size = list.size();
-        if (size == 15 || size == 22) {
+        if (size == TOTAL_INVENTORY || size == TOTAL_POS || size == TOTAL_REPORT) {
             return list;
         }
             String qryDelete = "DELETE FROM M_MENUDTL WHERE TYPE_MENU = 'REPORT'";

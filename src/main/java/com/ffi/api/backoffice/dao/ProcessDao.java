@@ -185,4 +185,7 @@ public interface ProcessDao {
     
     //============== New Method From M Joko 5-2-2024 ================
     ResponseMessage processBackupDb(Map<String, Object> ref);
+    
+    //============== New Method From M Joko 13-2-2024 ================
+    ResponseMessage updateRecipe(Map<String, Object> ref);
 }
