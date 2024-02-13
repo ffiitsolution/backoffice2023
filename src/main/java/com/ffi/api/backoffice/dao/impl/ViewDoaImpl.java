@@ -228,7 +228,7 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listMpcs(Map<String, String> balance) {
-        String qry = "SELECT A.OUTLET_CODE, B.OUTLET_NAME, A.FRYER_TYPE, A.FRYER_TYPE_SEQ, A.STATUS, A.FRYER_TYPE_RESET, A.FRYER_TYPE_SEQ_CNT, A.FRYER_TYPE_CNT, A.USER_UPD, A.DATE_UPD, A.TIME_UPD FROM M_MPCS_DETAIL A LEFT JOIN M_OUTLET B ON A.OUTLET_CODE = B.OUTLET_CODE WHERE A.OUTLET_CODE =:outletCode AND (A.FRYER_TYPE = :fryerType OR :fryerType IS NULL) ORDER BY A.OUTLET_CODE ASC, A.FRYER_TYPE ASC, A.FRYER_TYPE_SEQ ASC";
+        String qry = "SELECT a.OUTLET_CODE, a.FRYER_TYPE, INITCAP(b.DESCRIPTION) AS DESCRIPTION, a.FRYER_TYPE_SEQ, a.STATUS FROM M_MPCS_DETAIL a LEFT JOIN M_GLOBAL b ON a.FRYER_TYPE = b.CODE AND COND = 'FRYER' WHERE A.OUTLET_CODE = :outletCode AND (UPPER(A.FRYER_TYPE) = UPPER(:fryerType) OR :fryerType IS NULL) ORDER BY A.OUTLET_CODE ASC, A.FRYER_TYPE ASC, A.FRYER_TYPE_SEQ ASC";
         Map prm = new HashMap();
         prm.put("outletCode", balance.get("outletCode"));
         prm.put("fryerType", balance.get("fryerType"));
@@ -240,14 +240,9 @@ public class ViewDoaImpl implements ViewDao {
                 Map<String, Object> rt = new HashMap<String, Object>();
                 rt.put("outletCode", rs.getString("OUTLET_CODE"));
                 rt.put("fryerType", rs.getString("FRYER_TYPE"));
+                rt.put("fryerDescription", rs.getString("DESCRIPTION"));
                 rt.put("fryerTypeSeq", rs.getString("FRYER_TYPE_SEQ"));
                 rt.put("status", rs.getString("STATUS"));
-                rt.put("fryerTypeReset", rs.getString("FRYER_TYPE_RESET"));
-                rt.put("fryerTypeSeqCnt", rs.getString("FRYER_TYPE_SEQ_CNT"));
-                rt.put("fryerTypeCnt", rs.getString("FRYER_TYPE_CNT"));
-                rt.put("userUpd", rs.getString("USER_UPD"));
-                rt.put("dateUpd", rs.getString("DATE_UPD"));
-                rt.put("timeUpd", rs.getString("TIME_UPD"));
 
                 return rt;
             }
@@ -681,28 +676,29 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listMpcsHeader(Map<String, String> param) {
-        String qry = "select * from m_mpcs_header WHERE OUTLET_CODE= :outlet";
+        String qry = "SELECT b.OUTLET_CODE, a.MPCS_GROUP, b.DESCRIPTION, b.FRYER_TYPE, b.QTY_CONV, a.STATUS FROM M_RECIPE_HEADER a JOIN M_MPCS_HEADER b ON a.MPCS_GROUP = b.MPCS_GROUP WHERE b.OUTLET_CODE =:outlet ";
         Map prm = new HashMap();
         prm.put("outlet", param.get("outlet"));
         if (param.containsKey("date") && !param.get("date").isEmpty()) {
             prm.put("date", param.get("date"));
-            qry += " AND MPCS_GROUP IN ( SELECT DISTINCT(MPCS_GROUP) FROM T_SUMM_MPCS WHERE OUTLET_CODE = :outlet AND DATE_MPCS = :date)";
+            qry += " AND a.MPCS_GROUP IN ( SELECT DISTINCT(MPCS_GROUP) FROM T_SUMM_MPCS WHERE OUTLET_CODE = :outlet AND DATE_MPCS = :date)";
         }
         var statusParam = param.get("status");
         if ("A".equals(statusParam)) {
-            qry += " AND STATUS = 'A' ";
+            qry += " AND a.STATUS = 'A' ";
         }
         if ("I".equals(statusParam)) {
-            qry += " AND STATUS = 'I' ";
+            qry += " AND a.STATUS = 'I' ";
         } else {
-            qry += " AND STATUS IN ('A', 'I' )";
+            qry += " AND a.STATUS IN ('A', 'I' )";
         }
 
+        qry += " ORDER BY a.MPCS_GROUP ASC";
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("outletCode", rs.getString("Outlet_Code"));
+                rt.put("outletCode", rs.getString("OUTLET_CODE"));
                 rt.put("description", rs.getString("DESCRIPTION"));
                 rt.put("mpcsGroup", rs.getString("MPCS_GROUP"));
                 rt.put("fryerType", rs.getString("FRYER_TYPE"));
@@ -3148,7 +3144,9 @@ public class ViewDoaImpl implements ViewDao {
         if (param.get("typeReturn").equals("Gudang")) {
             query = "SELECT * FROM M_GLOBAL WHERE COND =:cond AND STATUS = 'A' ORDER BY CODE ASC";
             sqlParam.put("cond", param.get("cond"));
-
+        }
+        if (param.get("typeReturn").equals("FSD")) {
+            query = "SELECT * FROM M_GLOBAL WHERE COND = 'WAREHOUSE' AND  STATUS = 'A' ORDER BY CODE ASC";
         }
         if (param.get("typeReturn").equals("Supplier")) {
             query = "SELECT * FROM M_SUPPLIER WHERE STATUS = 'A' ORDER BY SUPPLIER_NAME ASC";
@@ -3159,6 +3157,11 @@ public class ViewDoaImpl implements ViewDao {
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
                 if (param.get("typeReturn").equals("Gudang")) {
+                    rt.put("code", rs.getString("CODE"));
+                    rt.put("description", rs.getString("DESCRIPTION"));
+                    rt.put("value", rs.getString("VALUE"));
+                    rt.put("status", rs.getString("STATUS"));
+                } else if (param.get("typeReturn").equals("FSD")) {
                     rt.put("code", rs.getString("CODE"));
                     rt.put("description", rs.getString("DESCRIPTION"));
                     rt.put("value", rs.getString("VALUE"));
@@ -4273,7 +4276,7 @@ public class ViewDoaImpl implements ViewDao {
     ///////////////new method from aditya 30-01-2024////////////////////////////
     @Override
 public List<Map<String, Object>> listMpcsManagementFryer(Map<String, String> balance) {
-    String qry = "SELECT OUTLET_CODE, FRYER_TYPE, FRYER_DESCRIPTION, FRYER_NO, FRYER_MAXIMUM, ROUND(OIL_USE * CASE WHEN FRYER_TYPE = 'O' THEN 7 WHEN FRYER_TYPE = 'P' THEN 9 ELSE 1 END ) AS OIL_USE, ROUND( ( (OIL_USE / CASE WHEN FRYER_TYPE = 'O' THEN 7 WHEN FRYER_TYPE = 'P' THEN 9 ELSE 1 END ) / FRYER_MAXIMUM) * 100 ) AS PROGRESS FROM ( SELECT a.OUTLET_CODE, a.FRYER_TYPE, b.DESCRIPTION AS FRYER_DESCRIPTION, a.FRYER_TYPE_SEQ AS FRYER_NO, a.FRYER_TYPE_CNT AS OIL_USE, b.VALUE AS FRYER_MAXIMUM FROM M_MPCS_DETAIL a JOIN M_GLOBAL b ON a.FRYER_TYPE = b.CODE AND b.COND = 'FRYER' WHERE a.STATUS = 'A' AND a.OUTLET_CODE = :outletCode ) z GROUP BY OUTLET_CODE, FRYER_TYPE, FRYER_DESCRIPTION, OIL_USE, FRYER_MAXIMUM, FRYER_NO ORDER BY FRYER_TYPE ASC, FRYER_NO ASC";
+    String qry = "SELECT OUTLET_CODE, FRYER_TYPE, FRYER_DESCRIPTION, FRYER_NO, FRYER_MAXIMUM, ROUND((OIL_USE / CASE WHEN FRYER_TYPE = 'O' THEN 850 WHEN FRYER_TYPE = 'P' THEN 700 ELSE 120 END),2 ) AS OIL_USE, ROUND((((OIL_USE / CASE WHEN FRYER_TYPE = 'O' THEN 850 WHEN FRYER_TYPE = 'P' THEN 700 ELSE 120 END ) / FRYER_MAXIMUM) * 100 ),2) AS PROGRESS FROM ( SELECT a.OUTLET_CODE, a.FRYER_TYPE, b.DESCRIPTION AS FRYER_DESCRIPTION, a.FRYER_TYPE_SEQ AS FRYER_NO, a.FRYER_TYPE_CNT AS OIL_USE, b.VALUE AS FRYER_MAXIMUM FROM M_MPCS_DETAIL a JOIN M_GLOBAL b ON a.FRYER_TYPE = b.CODE AND b.COND = 'FRYER' WHERE a.STATUS = 'A' AND a.OUTLET_CODE = :outletCode ) z GROUP BY OUTLET_CODE, FRYER_TYPE, FRYER_DESCRIPTION, OIL_USE, FRYER_MAXIMUM, FRYER_NO ORDER BY FRYER_TYPE ASC, FRYER_NO ASC";
     Map prm = new HashMap();
     prm.put("outletCode", balance.get("outletCode"));
 

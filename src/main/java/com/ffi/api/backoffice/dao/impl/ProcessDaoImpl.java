@@ -2721,7 +2721,7 @@ public class ProcessDaoImpl implements ProcessDao {
         
         String updateQuantityAccQuery = "MERGE INTO T_SUMM_MPCS tsm "
                 + "USING ("
-                + "	SELECT SEQ_MPCS, QTY_PROJ, sum(QTY_PROJ) OVER (ORDER BY seq_mpcs) AS UPDATED_QTY_ACC_PROJ "
+                + "	SELECT SEQ_MPCS, QTY_PROJ, sum(QTY_PROJ) OVER (ORDER BY seq_mpcs) AS UPDATED_QTY_ACC_PROJ, sum(QTY_VARIANCE) OVER (ORDER BY seq_mpcs) AS UPDATED_QTY_ACC_VARIANCE "
                 + "		FROM T_SUMM_MPCS tsm "
                 + "		WHERE tsm.MPCS_GROUP =:mpcsGroup AND tsm.DATE_MPCS = :dateMpcs "
                 + "	) up "
@@ -2729,6 +2729,7 @@ public class ProcessDaoImpl implements ProcessDao {
                 + "WHEN MATCHED THEN "
                 + "	UPDATE SET "
                 + "		tsm.QTY_ACC_PROJ = up.UPDATED_QTY_ACC_PROJ, "
+                + "		tsm.QTY_ACC_VARIANCE = up.UPDATED_QTY_ACC_VARIANCE, "
                 + "		tsm.USER_UPD = :userUpd,"
                 + "		tsm.DATE_UPD = :dateUpd,"
                 + "		tsm.TIME_UPD = :timeUpd ";
