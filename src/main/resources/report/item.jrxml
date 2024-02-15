@@ -134,7 +134,7 @@ ORDER BY ITEM_CODE ASC]]>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Statuan Besar]]></text>
+				<text><![CDATA[Satuan Besar]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="325" y="124" width="84" height="20" uuid="8140ead9-f474-4b35-9e1e-f1b67a701ea1"/>
