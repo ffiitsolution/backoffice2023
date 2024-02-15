@@ -706,10 +706,10 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        Integer cekDataReport = viewServices.cekDataReport(prm, "TransactionByPaymentType");
-        if (cekDataReport > 0) {
-            JasperPrint jasperPrint = reportServices.jasperReportTransactionByPaymentType(prm, conn);
-            conn.close();
+//        Integer cekDataReport = viewServices.cekDataReport(prm, "TransactionByPaymentType");
+        JasperPrint jasperPrint = reportServices.jasperReportTransactionByPaymentType(prm, conn);
+        conn.close();
+        if (!jasperPrint.getPages().isEmpty()) {
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=TransactionByPaymentType.pdf");
