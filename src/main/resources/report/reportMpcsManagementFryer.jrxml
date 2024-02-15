@@ -141,7 +141,7 @@ WHERE a.DATE_UPD between  $P{fromDate}  and $P{toDate} ORDER BY a.DATE_UPD DESC,
 				<text><![CDATA[Fryer Type]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="210" y="109" width="80" height="18" uuid="a1d7f151-0761-47c1-83da-1f9dff65c070">
+				<reportElement x="210" y="109" width="70" height="18" uuid="a1d7f151-0761-47c1-83da-1f9dff65c070">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
@@ -150,7 +150,7 @@ WHERE a.DATE_UPD between  $P{fromDate}  and $P{toDate} ORDER BY a.DATE_UPD DESC,
 				<text><![CDATA[Fryer No]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="290" y="109" width="50" height="18" uuid="10e8d854-2e49-4cb8-924a-6416547dc2bc">
+				<reportElement x="280" y="109" width="60" height="18" uuid="10e8d854-2e49-4cb8-924a-6416547dc2bc">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
@@ -420,7 +420,7 @@ $P{fryerType}.equals("S") ? "Split Fryer" :
 				<textFieldExpression><![CDATA[$F{FRYER_DESC}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,###.###;#,###.###-">
-				<reportElement x="210" y="0" width="80" height="14" uuid="bd751e55-be43-4bba-8119-cc1a3a9ad6f7">
+				<reportElement x="210" y="0" width="70" height="14" uuid="bd751e55-be43-4bba-8119-cc1a3a9ad6f7">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
@@ -429,11 +429,11 @@ $P{fryerType}.equals("S") ? "Split Fryer" :
 				<textFieldExpression><![CDATA[$F{FRYER_NO}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="290" y="0" width="50" height="14" uuid="caba4ab2-1ac8-485e-9864-104a3ffc5afc"/>
+				<reportElement x="280" y="0" width="60" height="14" uuid="caba4ab2-1ac8-485e-9864-104a3ffc5afc"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{OIL_USE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{OIL_USE} + " HEAD"]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,###.###;#,###.###-">
 				<reportElement x="340" y="0" width="80" height="14" uuid="469ba032-f8a6-4a5f-a8a0-3d519f0a3676"/>
