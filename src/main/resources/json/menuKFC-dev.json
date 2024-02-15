@@ -137,7 +137,7 @@
       {
         "icon": "fa fa-file-pdf-o",
         "name": "All Reports",
-        "url": "/report"
+        "url": "/report/all-report"
       },
       {
         "icon": "fa fa-industry",

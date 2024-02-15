@@ -3803,7 +3803,7 @@ public class IndexController {
     @RequestMapping(value = "/list-transfer-data", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
     ResponseMessage listTransferData(@RequestBody Map<String, Object> param) throws IOException, Exception {
-        String type = param.getOrDefault("type", "TERIMA DATA").toString();
+        String type = param.getOrDefault("type", "TERIMA DATA MASTER").toString();
         String typeTable = param.getOrDefault("type", "ALL").toString();
         List<String> listTable = listTableMaster(typeTable);
         param.put("listTable", listTable);
