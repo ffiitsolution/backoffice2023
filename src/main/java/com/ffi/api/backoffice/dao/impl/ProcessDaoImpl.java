@@ -449,7 +449,7 @@ public class ProcessDaoImpl implements ProcessDao {
     /////////////////////////////////DONE///////////////////////////////////////
     ///////////////NEW METHOD LIST ORDER HEADER BY DONA 14 APRIL 2023////
     @Override
-    public void insertOrderHeader(Map<String, String> balance) {
+    public Map<String,Object> insertOrderHeader(Map<String, String> balance) {
 
         DateFormat df = new SimpleDateFormat("MM");
         DateFormat dfYear = new SimpleDateFormat("yyyy");
@@ -457,13 +457,21 @@ public class ProcessDaoImpl implements ProcessDao {
         String month = df.format(tgl);
         String year = dfYear.format(tgl);
 
-        String qy = "INSERT INTO T_ORDER_HEADER (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ORDER_DATE,ORDER_TO,CD_SUPPLIER,DT_DUE,DT_EXPIRED,REMARK,NO_OF_PRINT,STATUS,USER_UPD,DATE_UPD,TIME_UPD)"
+        String insertOrderHeader = "INSERT INTO T_ORDER_HEADER (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ORDER_DATE,ORDER_TO,CD_SUPPLIER,DT_DUE,DT_EXPIRED,REMARK,NO_OF_PRINT,STATUS,USER_UPD,DATE_UPD,TIME_UPD)"
                 + " VALUES(:outletCode,:orderType,:orderId,:orderNo,:orderDate,:orderTo,:cdSupplier,:dtDue,:dtExpired,:remark,:noOfPrint,:status,:userUpd,:dateUpd,:timeUpd)";
-        Map param = new HashMap();
+        String insertOrderDetail = "INSERT INTO T_ORDER_DETAIL (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,TOTAL_QTY_STOCK,UNIT_PRICE,USER_UPD,DATE_UPD,TIME_UPD) "
+                + "SELECT :outletCode, :orderType, :orderId, :orderNo, item_code, 0, UOM_WAREHOUSE, 0, UOM_PURCHASE, 0, 0, :userUpd, :dateUpd, :timeUpd "
+                + "FROM m_item "
+                + "WHERE CD_WAREHOUSE like :valueSupplier AND STATUS = 'A' ";
+
+        String orderNo = checkOrderNo(balance.get("orderNo"));
+        String orderId = checkOrderId(balance.get("orderId"));
+        
+        Map<String, Object> param = new HashMap();
         param.put("outletCode", balance.get("outletCode"));
         param.put("orderType", balance.get("orderType"));
-        param.put("orderId", balance.get("orderId"));
-        param.put("orderNo", balance.get("orderNo"));
+        param.put("orderId", orderId);
+        param.put("orderNo", orderNo);
         param.put("orderDate", balance.get("orderDate"));
         param.put("orderTo", balance.get("orderTo"));
         param.put("cdSupplier", balance.get("cdSupplier"));
@@ -478,7 +486,45 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("year", year);
         param.put("month", month);
         param.put("transType", balance.get("transType"));
-        jdbcTemplate.update(qy, param);
+        param.put("valueSupplier", "%" + balance.get("valueSupplier") + "%");
+              
+        jdbcTemplate.update(insertOrderHeader, param);
+        jdbcTemplate.update(insertOrderDetail, param);
+        
+        String returnDetailItem = "SELECT * FROM T_ORDER_detail toh WHERE toh.ORDER_no = :orderNo AND OUTLET_CODE = :outletCode ";
+        List<Map<String, Object>> list = jdbcTemplate.query(returnDetailItem, param, new DynamicRowMapper());
+
+        Map<String, Object> returnedItem = new HashMap();
+        returnedItem.put("detail", list);
+        returnedItem.put("orderId", orderId);
+        returnedItem.put("orderNo", orderNo);
+        
+        return returnedItem;
+    }
+    
+    public String checkOrderNo(String orderNo) {
+        System.out.print("orderNo function: " + orderNo);
+        String orderNoCanUse = orderNo;
+        String checkOrderNoExist = "SELECT count(*) FROM T_ORDER_HEADER toh WHERE toh.ORDER_NO = '" + orderNo + "' ";
+        Integer count = jdbcTemplate.queryForObject(checkOrderNoExist, new HashMap(), Integer.class);
+        if (count > 0) {
+            Integer newCounter = Integer.parseInt(orderNo.substring(orderNo.length() - 5)) + 1;
+            orderNoCanUse = orderNo.substring(0, 9) + newCounter ;
+            checkOrderNo(orderNoCanUse);
+        } 
+        return orderNoCanUse;
+    }
+    
+    public String checkOrderId(String orderId) {
+        String orderIdCanUse = orderId;
+        String checkOrderNoExist = "SELECT count(*) FROM T_ORDER_HEADER toh WHERE toh.ORDER_ID = '" + orderIdCanUse + "' ";
+        Integer count = jdbcTemplate.queryForObject(checkOrderNoExist, new HashMap(), Integer.class);
+        if (count > 0) {
+            Integer counter = Integer.parseInt(orderIdCanUse) + 1;
+            orderIdCanUse = String.valueOf(counter);
+            checkOrderNo(String.valueOf(orderIdCanUse));
+        } 
+        return orderIdCanUse;
     }
 
     @Override
@@ -1081,12 +1127,23 @@ public class ProcessDaoImpl implements ProcessDao {
         }).toString();
     }
 
+    // Remove empty qty order entry by Fathur 15 Feb 2024 //
+    @Override
+    public void removeEmptyOrder(Map<String, String> balance) {
+        try {   
+            String removeEmptyQtyQuery = "delete T_ORDER_DETAIL tod WHERE tod.ORDER_NO = :orderNo AND qty_1 = 0 AND qty_2 = 0 ";
+            jdbcTemplate.update(removeEmptyQtyQuery, balance);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void sendDataToWarehouse(Map<String, String> balance) {
 
         String json = "";
         Gson gson = new Gson();
-        Map<String, Object> map1 = new HashMap<String, Object>();
+        Map<String, Object> map1 = new HashMap<>();
         try {
             String qry1 = "SELECT   OUTLET_CODE AS KODE_PEMESAN, "
                     + "         CD_SUPPLIER AS KODE_TUJUAN, "
@@ -1113,7 +1170,7 @@ public class ProcessDaoImpl implements ProcessDao {
             System.err.println("q1 :" + qry1);
             List<Map<String, Object>> list = jdbcTemplate.query(qry1, prm, new RowMapper<Map<String, Object>>() {
                 public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
-                    Map<String, Object> rh = new HashMap<String, Object>();
+                    Map<String, Object> rh = new HashMap<>();
                     String qry2 = "SELECT d.ITEM_CODE as KODE_BARANG, M.CONV_WAREHOUSE AS KONVERSI, CD_UOM_2 AS SATUAN_KECIL,"
                             + " CD_UOM_1 AS SATUAN_BESAR,QTY_1 AS QTY_PESAN_BESAR, QTY_2 AS QTY_PESAN_KECIL,"
                             + " (TOTAL_QTY_STOCK / m.CONV_STOCK) AS TOTAL_QTY_PESAN,'' AS TOTAL_QTY_KIRIM,UNIT_PRICE AS HARGA_UNIT,'000000' AS TIME_COUNTER,'N' AS SEND_FLAG"
@@ -1124,7 +1181,7 @@ public class ProcessDaoImpl implements ProcessDao {
                     List<Map<String, Object>> list2 = jdbcTemplate.query(qry2, prm, new RowMapper<Map<String, Object>>() {
                         @Override
                         public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
-                            Map<String, Object> rt = new HashMap<String, Object>();
+                            Map<String, Object> rt = new HashMap<>();
                             rt.put("kodeBarang", rs.getString("KODE_BARANG"));
                             rt.put("konversi", rs.getString("KONVERSI"));
                             rt.put("satuanKecil", rs.getString("SATUAN_KECIL"));
@@ -1212,12 +1269,12 @@ public class ProcessDaoImpl implements ProcessDao {
                 }.getType());
             }
             //Add Insert into Table T_HIST (28 Nov 2023)
-            Map<String, String> histSend = new HashMap<String, String>();
+            Map<String, String> histSend = new HashMap<>();
             histSend.put("orderNo", balance.get("orderNo").toString());
             insertHistSend(histSend);
             //End by Dona
             //Add Insert to HIST_KIRIM by KP (13-06-2023)
-            Map<String, String> histKirim = new HashMap<String, String>();
+            Map<String, String> histKirim = new HashMap<>();
             histKirim.put("orderNo", balance.get("orderNo").toString());
             histKirim.put("sendUser", balance.get("userUpd").toString());
             //End added by KP
@@ -2323,7 +2380,7 @@ public class ProcessDaoImpl implements ProcessDao {
     public void sendDataOutletToWarehouse(Map<String, String> balance) {
         String json = "";
         Gson gson = new Gson();
-        Map<String, Object> map1 = new HashMap<String, Object>();
+        Map<String, Object> map1 = new HashMap<>();
         try {
             String qry1 = "SELECT OUTLET_CODE, "
                     + "ORDER_TYPE,   "
@@ -2349,7 +2406,7 @@ public class ProcessDaoImpl implements ProcessDao {
             System.err.println("q1 :" + qry1);
             List<Map<String, Object>> list = jdbcTemplate.query(qry1, prm, new RowMapper<Map<String, Object>>() {
                 public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
-                    Map<String, Object> rh = new HashMap<String, Object>();
+                    Map<String, Object> rh = new HashMap<>();
                     String qry2 = "SELECT OUTLET_CODE, "
                             + "ORDER_TYPE, "
                             + "ORDER_ID, "
@@ -2370,7 +2427,7 @@ public class ProcessDaoImpl implements ProcessDao {
                     List<Map<String, Object>> list2 = jdbcTemplate.query(qry2, prm, new RowMapper<Map<String, Object>>() {
                         @Override
                         public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
-                            Map<String, Object> rt = new HashMap<String, Object>();
+                            Map<String, Object> rt = new HashMap<>();
                             rt.put("orderType", rs.getString("ORDER_TYPE"));
                             rt.put("itemCode", rs.getString("ITEM_CODE"));
                             rt.put("qty1", rs.getString("QTY_1"));
@@ -2413,7 +2470,7 @@ public class ProcessDaoImpl implements ProcessDao {
                 post.setHeader("Accept", "*/*");
                 post.setHeader("Content-Type", "application/json");
 
-                Map<String, Object> param = new HashMap<String, Object>();
+                Map<String, Object> param = new HashMap<>();
                 param.put("outletCode", dtl.get("outletCode"));
                 param.put("orderType", dtl.get("orderType"));
                 param.put("orderId", dtl.get("orderId"));
@@ -2452,11 +2509,11 @@ public class ProcessDaoImpl implements ProcessDao {
                 map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
                 }.getType());
             }
-            Map<String, String> histSend = new HashMap<String, String>();
+            Map<String, String> histSend = new HashMap<>();
             histSend.put("orderNo", balance.get("orderNo").toString());
             insertHistSend(histSend);
 
-            Map<String, String> histKirim = new HashMap<String, String>();
+            Map<String, String> histKirim = new HashMap<>();
             histKirim.put("orderNo", balance.get("orderNo").toString());
             histKirim.put("sendUser", balance.get("userUpd").toString());
 

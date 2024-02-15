@@ -99,8 +99,8 @@ public class ProcessServices {
     ///////////////////////done
     ///////////////NEW METHOD INSERT ORDER HEADER 14 APRIL 2023////
     @Transactional
-    public void insertOrderHeader(Map<String, String> balance) {
-        dao.insertOrderHeader(balance);
+    public Map<String,Object> insertOrderHeader(Map<String, String> balance) {
+        return dao.insertOrderHeader(balance);
     }
 
     ///////////////////////done
@@ -326,5 +326,10 @@ public class ProcessServices {
     //============== New Method From M Joko 13-2-2024 ================
     public ResponseMessage updateRecipe(Map<String, Object> ref) {
         return dao.updateRecipe(ref);
+    }
+    
+    // Remove empty qty order entry by Fathur 15 Feb 2024 //
+    public void removeEmptyOrder(Map<String, String> balance) {
+        dao.removeEmptyOrder(balance);
     }
 }

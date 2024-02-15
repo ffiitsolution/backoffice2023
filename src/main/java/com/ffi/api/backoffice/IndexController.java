@@ -167,8 +167,6 @@ public class IndexController {
         Map<String, Object> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-
         Response res = new Response();
         res.setData(viewServices.listSupplier(balance));
         return res;
@@ -1369,17 +1367,17 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> list = new ArrayList<>();
         ResponseMessage rm = new ResponseMessage();
         try {
-            processServices.insertOrderHeader(balance);
+            list.add(processServices.insertOrderHeader(balance));
             processServices.updateMCounter(balance);
             rm.setSuccess(true);
-            rm.setMessage("Insert Success Successfuly");
+            rm.setMessage("Insert Success");
 
         } catch (Exception e) {
             rm.setSuccess(false);
-            rm.setMessage("Insert Failed Successfuly: " + e.getMessage());
+            rm.setMessage("Insert Failed: " + e.getMessage());
         }
         rm.setItem(list);
         return rm;
@@ -1757,6 +1755,7 @@ public class IndexController {
         return rm;
     }
 
+    @Transactional
     @RequestMapping(value = "/send-data-to-warehouse", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk insert transaksi opname header", response = Object.class)
     @ApiResponses(value = {
@@ -1768,7 +1767,7 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> list = new ArrayList<>();
         String status = "";
         ResponseMessage rm = new ResponseMessage();
 
@@ -2567,16 +2566,17 @@ public class IndexController {
         @ApiResponse(code = 404, message = "The resource not found"),}
     )
 
+    @Transactional
     public @ResponseBody
     ResponseMessage sendDataOutletToWarehouse(@RequestBody String param) throws IOException, Exception {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        String status = "";
+        List<Map<String, Object>> list = new ArrayList<>();
         ResponseMessage rm = new ResponseMessage();
 
         try {
+            processServices.removeEmptyOrder(balance);
             processServices.sendDataOutletToWarehouse(balance);
 
             rm.setSuccess(true);
@@ -3850,5 +3850,22 @@ public class IndexController {
     public @ResponseBody
     ResponseMessage updateRecipe(@RequestBody Map<String, Object> param) throws IOException, Exception {
         return processServices.updateRecipe(param);
+    }
+
+    @RequestMapping(value = "/remove-empty-order", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk menghapus order entry yang memiliki qty besar 0 dan qty kecil 0 by Fathur 15 Feb 2024", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response removeEmptyOrder(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        Response res = new Response();
+        processServices.removeEmptyOrder(balance);
+        
+        return res;
     }
 }
