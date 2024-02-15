@@ -102,14 +102,20 @@ public class ViewDoaImpl implements ViewDao {
                 + "CP_PHONE_EXT, CP_EMAIL, USER_UPD, DATE_UPD, TIME_UPD FROM m_supplier"
                 + " where status like :status"
                 + " and city LIKE :city"
-                + " and FLAG_CANVASING Like :flagCanvasing"
-                + " and HOMEPAGE Like :homepage";
+                + " and FLAG_CANVASING Like :flagCanvasing";      
+        if (balance.containsKey("isFSD")) {
+            boolean isFSD = (boolean) balance.get("isFSD");
+            qry += " AND (HOMEPAGE " + (isFSD ? "LIKE '%FSD%'" : "NOT LIKE '%FSD%' OR HOMEPAGE IS NULL") + ")";
+        }
+        if (balance.containsKey("isSDD")) {
+            boolean isSDD = (boolean) balance.get("isSDD");
+            qry += " AND (HOMEPAGE " + (isSDD ? "LIKE '%SDD%'" : "NOT LIKE '%SDD%' OR HOMEPAGE IS NULL") + ")";
+        }
         qry += " order by cd_Supplier desc";
         Map prm = new HashMap();
         prm.put("status", "%" + balance.get("status") + "%");
         prm.put("city", "%" + balance.get("city") + "%");
         prm.put("flagCanvasing", "%" + balance.get("flagCanvasing") + "%");
-        prm.put("homepage", "%" + balance.get("homepage") + "%");
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
