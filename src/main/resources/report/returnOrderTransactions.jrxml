@@ -33,6 +33,7 @@
 	c.REMARK,
 	CASE
 		WHEN c.TYPE_RETURN = '0' THEN 'Supplier'
+		WHEN c.TYPE_RETURN = '2' THEN 'FSD'
 		ELSE 'Gudang'
 	END AS TYPE_RETURN,
 	c.RETURN_ID,

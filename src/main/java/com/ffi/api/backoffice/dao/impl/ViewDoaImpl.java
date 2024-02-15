@@ -102,20 +102,14 @@ public class ViewDoaImpl implements ViewDao {
                 + "CP_PHONE_EXT, CP_EMAIL, USER_UPD, DATE_UPD, TIME_UPD FROM m_supplier"
                 + " where status like :status"
                 + " and city LIKE :city"
-                + " and FLAG_CANVASING Like :flagCanvasing";
-        if (balance.containsKey("isFSD")) {
-            boolean isFSD = (boolean) balance.get("isFSD");
-            qry += " AND (HOMEPAGE " + (isFSD ? "LIKE '%FSD%'" : "NOT LIKE '%FSD%' OR HOMEPAGE IS NULL") + ")";
-        }
-        if (balance.containsKey("isSDD")) {
-            boolean isSDD = (boolean) balance.get("isSDD");
-            qry += " AND (HOMEPAGE " + (isSDD ? "LIKE '%SDD%'" : "NOT LIKE '%SDD%' OR HOMEPAGE IS NULL") + ")";
-        }
+                + " and FLAG_CANVASING Like :flagCanvasing"
+                + " and HOMEPAGE Like :homepage";
         qry += " order by cd_Supplier desc";
         Map prm = new HashMap();
         prm.put("status", "%" + balance.get("status") + "%");
         prm.put("city", "%" + balance.get("city") + "%");
         prm.put("flagCanvasing", "%" + balance.get("flagCanvasing") + "%");
+        prm.put("homepage", "%" + balance.get("homepage") + "%");
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
@@ -3075,7 +3069,7 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> listReturnOrderHeader(Map<String, String> param) {
         Map<String, Object> sqlParam = new HashMap<>();
-        String query = "SELECT a.RETURN_NO, a.RETURN_DATE, a.REMARK, CASE WHEN a.TYPE_RETURN = '0' THEN 'Supplier' ELSE 'Gudang' "
+        String query = "SELECT a.RETURN_NO, a.RETURN_DATE, a.REMARK, CASE WHEN a.TYPE_RETURN = '0' THEN 'Supplier' WHEN a.TYPE_RETURN = '2' THEN 'FSD' ELSE 'Gudang' "
                 + "END AS TYPE_RETURN, CONCAT(b.DESCRIPTION, CONCAT(c.OUTLET_NAME, d.SUPPLIER_NAME)) AS return_to,"
                 + " a.STATUS FROM T_RETURN_HEADER a LEFT JOIN M_GLOBAL b ON a.RETURN_TO = b.CODE AND b.COND = :city"
                 + " LEFT JOIN M_OUTLET c ON a.RETURN_TO  = c.OUTLET_CODE LEFT JOIN M_SUPPLIER d ON a.RETURN_TO = d.CD_SUPPLIER ";
@@ -3146,7 +3140,7 @@ public class ViewDoaImpl implements ViewDao {
             sqlParam.put("cond", param.get("cond"));
         }
         if (param.get("typeReturn").equals("FSD")) {
-            query = "SELECT * FROM M_GLOBAL WHERE COND = 'WAREHOUSE' AND  STATUS = 'A' ORDER BY CODE ASC";
+            query = "SELECT * FROM M_GLOBAL WHERE COND = 'WAREHOUSE' AND CODE = '00009' AND STATUS = 'A' ORDER BY CODE ASC";
         }
         if (param.get("typeReturn").equals("Supplier")) {
             query = "SELECT * FROM M_SUPPLIER WHERE STATUS = 'A' ORDER BY SUPPLIER_NAME ASC";
