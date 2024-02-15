@@ -332,4 +332,9 @@ public class ProcessServices {
     public void removeEmptyOrder(Map<String, String> balance) {
         dao.removeEmptyOrder(balance);
     }
+
+    //============== New Method From Sifa 15-02-2024 -> Update CD WAREHOUSE M_ITEM ================
+    public ResponseMessage updateCdWarehouseItem(Map<String, Object> ref) {
+        return dao.updateCdWarehouseItem(ref);
+    }
 }

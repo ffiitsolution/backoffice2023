@@ -633,6 +633,12 @@ public class IndexController {
         }.getType());
 
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        if (logan.get("paket").equalsIgnoreCase("E")) {
+            Map<String, Object> sddParam = new HashMap<>();
+            sddParam.put("cdWarehouse", "00010");
+            sddParam.put("homePage", "SDD");
+            processServices.updateCdWarehouseItem(sddParam);
+        }
         list = viewServices.listItem(logan);
         Response res = new Response();
         res.setData(list);

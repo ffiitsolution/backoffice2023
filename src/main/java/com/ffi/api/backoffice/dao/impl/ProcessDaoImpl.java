@@ -4267,4 +4267,28 @@ public class ProcessDaoImpl implements ProcessDao {
         }
         return rm;
     }
+
+    //============== New Method From Sifa 15-02-2024 -> Update CD WAREHOUSE M_ITEM ================
+    @Override
+    public ResponseMessage updateCdWarehouseItem(Map<String, Object> param) {
+        ResponseMessage rm = new ResponseMessage();
+        rm.setItem(new ArrayList());
+        rm.setSuccess(false);
+        rm.setMessage("Update Item " + param.get("cdWarehouse") + ": " + param.get("homePage") + " success.");
+        String query = "UPDATE M_ITEM " +
+                        "SET CD_WAREHOUSE  = :cdWarehouse " +
+                        "WHERE ITEM_CODE IN ( " +
+                        "    SELECT DISTINCT mis.ITEM_CODE " +
+                        "    FROM M_ITEM_SUPPLIER mis " +
+                        "    JOIN M_SUPPLIER ms ON mis.CD_SUPPLIER = ms.CD_SUPPLIER " +
+                        "    WHERE ms.HOMEPAGE = :homePage " +
+                        ")";
+        try{
+            jdbcTemplate.update(query, param);
+            rm.setSuccess(true);
+        } catch (DataAccessException e){
+            rm.setMessage(e.getMessage());
+        }
+        return rm;
+    }
 }

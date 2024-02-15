@@ -191,4 +191,8 @@ public interface ProcessDao {
     
     // Remove empty qty order entry by Fathur 15 Feb 2024 //
     public void removeEmptyOrder(Map<String, String> mapping);
+
+    //============== New Method From Sifa 15-02-2024 -> Update CD WAREHOUSE M_ITEM ================
+    ResponseMessage updateCdWarehouseItem(Map<String, Object> mapping);
+
 }
