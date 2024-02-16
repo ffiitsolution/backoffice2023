@@ -459,11 +459,8 @@ public class ProcessDaoImpl implements ProcessDao {
 
         String insertOrderHeader = "INSERT INTO T_ORDER_HEADER (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ORDER_DATE,ORDER_TO,CD_SUPPLIER,DT_DUE,DT_EXPIRED,REMARK,NO_OF_PRINT,STATUS,USER_UPD,DATE_UPD,TIME_UPD)"
                 + " VALUES(:outletCode,:orderType,:orderId,:orderNo,:orderDate,:orderTo,:cdSupplier,:dtDue,:dtExpired,:remark,:noOfPrint,:status,:userUpd,:dateUpd,:timeUpd)";
-        String insertOrderDetail = "INSERT INTO T_ORDER_DETAIL (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,TOTAL_QTY_STOCK,UNIT_PRICE,USER_UPD,DATE_UPD,TIME_UPD) "
-                + "SELECT :outletCode, :orderType, :orderId, :orderNo, item_code, 0, UOM_WAREHOUSE, 0, UOM_PURCHASE, 0, 0, :userUpd, :dateUpd, :timeUpd "
-                + "FROM m_item "
-                + "WHERE CD_WAREHOUSE like :valueSupplier AND STATUS = 'A' ";
 
+        String insertOrderDetailQuery = "";
         String orderNo = checkOrderNo(balance.get("orderNo"));
         String orderId = checkOrderId(balance.get("orderId"));
         
@@ -487,9 +484,47 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("month", month);
         param.put("transType", balance.get("transType"));
         param.put("valueSupplier", "%" + balance.get("valueSupplier") + "%");
-              
+               
+        if (balance.get("orderTo").equals("3")) { // order ke gudang
+            if(balance.get("orderType").equals("4")){ // order ke Gudang FSD
+                insertOrderDetailQuery = "INSERT INTO T_ORDER_DETAIL (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,TOTAL_QTY_STOCK,UNIT_PRICE,USER_UPD,DATE_UPD,TIME_UPD) "
+                    + "SELECT :outletCode, :orderType, :orderId, :orderNo, item_code, 0, UOM_WAREHOUSE, 0, UOM_PURCHASE, 0, 0, :userUpd, :dateUpd, :timeUpd "
+                    + "FROM m_item "
+                    + "WHERE CD_WAREHOUSE like :cdSupplier AND STATUS = 'A' "; 
+            } else { // order ke gudang
+                insertOrderDetailQuery = "INSERT INTO T_ORDER_DETAIL (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,TOTAL_QTY_STOCK,UNIT_PRICE,USER_UPD,DATE_UPD,TIME_UPD) "
+                    + "SELECT :outletCode, :orderType, :orderId, :orderNo, item_code, 0, UOM_WAREHOUSE, 0, UOM_PURCHASE, 0, 0, :userUpd, :dateUpd, :timeUpd "
+                    + "FROM m_item "
+                    + "WHERE CD_WAREHOUSE like :valueSupplier AND STATUS = 'A' "; 
+            }
+        } if (balance.get("orderTo").equals("2")) { // order ke outlet
+            insertOrderDetailQuery = "INSERT INTO T_ORDER_DETAIL (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,TOTAL_QTY_STOCK,UNIT_PRICE,USER_UPD,DATE_UPD,TIME_UPD) "
+                + "SELECT :outletCode, :orderType, :orderId, :orderNo, item_code, 0, UOM_WAREHOUSE, 0, UOM_PURCHASE, 0, 0, :userUpd, :dateUpd, :timeUpd "
+                + "FROM m_item "
+                + "WHERE SUBSTR(ITEM_CODE,1,1) != 'X' AND STATUS = 'A' AND FLAG_MATERIAL = 'Y' AND FLAG_STOCK = 'Y' ";
+        }
+        if (balance.get("orderTo").equals("0") || balance.get("orderTo").equals("1")) { // order ke supplier
+            insertOrderDetailQuery = switch (balance.get("orderType")) {
+                // Order Entry Vendor Supplier FSD
+                case "4" -> "INSERT INTO T_ORDER_DETAIL (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,TOTAL_QTY_STOCK,UNIT_PRICE,USER_UPD,DATE_UPD,TIME_UPD) "
+                    + "SELECT :outletCode, :orderType, :orderId, :orderNo, a.item_code, 0, UOM_WAREHOUSE, 0, UOM_PURCHASE, 0, 0, :userUpd, :dateUpd, :timeUpd "
+                    + "FROM M_ITEM a LEFT JOIN M_ITEM_SUPPLIER S "
+                    + "ON A.ITEM_CODE=S.ITEM_CODE WHERE a.STATUS = 'A' AND S.CD_SUPPLIER=:cdSupplier ";
+                // Order Entry SSD
+                case "5" -> "INSERT INTO T_ORDER_DETAIL (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,TOTAL_QTY_STOCK,UNIT_PRICE,USER_UPD,DATE_UPD,TIME_UPD) "
+                    + "SELECT :outletCode, :orderType, :orderId, :orderNo, a.item_code, 0, UOM_WAREHOUSE, 0, UOM_PURCHASE, 0, 0, :userUpd, :dateUpd, :timeUpd "
+                    + "FROM M_ITEM a LEFT JOIN M_ITEM_SUPPLIER S "
+                    + "ON A.ITEM_CODE=S.ITEM_CODE WHERE a.STATUS = 'A' AND S.CD_SUPPLIER=:cdSupplier ";
+                // order ke supplier
+                default -> "INSERT INTO T_ORDER_DETAIL (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,TOTAL_QTY_STOCK,UNIT_PRICE,USER_UPD,DATE_UPD,TIME_UPD) "
+                    + "SELECT :outletCode, :orderType, :orderId, :orderNo, a.item_code, 0, UOM_WAREHOUSE, 0, UOM_PURCHASE, 0, 0, :userUpd, :dateUpd, :timeUpd "
+                    + "FROM M_ITEM a LEFT JOIN M_ITEM_SUPPLIER S "
+                    + "ON A.ITEM_CODE=S.ITEM_CODE WHERE a.STATUS = 'A' AND S.CD_SUPPLIER=:cdSupplier ";
+            };
+        }
+        
         jdbcTemplate.update(insertOrderHeader, param);
-        jdbcTemplate.update(insertOrderDetail, param);
+        jdbcTemplate.update(insertOrderDetailQuery, param);
         
         String returnDetailItem = "SELECT * FROM T_ORDER_detail toh WHERE toh.ORDER_no = :orderNo AND OUTLET_CODE = :outletCode ";
         List<Map<String, Object>> list = jdbcTemplate.query(returnDetailItem, param, new DynamicRowMapper());
@@ -510,7 +545,7 @@ public class ProcessDaoImpl implements ProcessDao {
         if (count > 0) {
             Integer newCounter = Integer.parseInt(orderNo.substring(orderNo.length() - 5)) + 1;
             orderNoCanUse = orderNo.substring(0, 9) + newCounter ;
-            checkOrderNo(orderNoCanUse);
+            return checkOrderNo(orderNoCanUse);
         } 
         return orderNoCanUse;
     }
@@ -522,8 +557,9 @@ public class ProcessDaoImpl implements ProcessDao {
         if (count > 0) {
             Integer counter = Integer.parseInt(orderIdCanUse) + 1;
             orderIdCanUse = String.valueOf(counter);
-            checkOrderNo(String.valueOf(orderIdCanUse));
+            return checkOrderId(String.valueOf(orderIdCanUse));
         } 
+        
         return orderIdCanUse;
     }
 
