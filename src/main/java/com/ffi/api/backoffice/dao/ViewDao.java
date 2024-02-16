@@ -40,6 +40,10 @@ public interface ViewDao {
 
     List<Map<String, Object>> listMenuGroup(Map<String, String> ref);
 
+    List<Map<String, Object>> listMenuGroupTipeOrder(Map<String, String> ref);
+    
+    List<Map<String, Object>> listMenuGroupOutletLimit(Map<String, String> ref);
+
     List<Map<String, Object>> listItemPrice(Map<String, String> ref);
 
     List<Map<String, Object>> listItemDetail(Map<String, String> ref);
@@ -74,6 +78,14 @@ public interface ViewDao {
 
     List<Map<String, Object>> listItemMenus(Map<String, String> ref);
     ///////////////////////// done
+
+    ////// new method by Dani 15-Feb-2024
+    public List<Map<String, Object>> listItemMenusTipeOrder(Map<String, String> ref);
+    ////// new method by Dani 15-Feb-2024
+    public List<Map<String, Object>> listItemMenusLimit(Map<String, String> ref);
+    ////// new method by Dani 15-Feb-2024
+    public List<Map<String, Object>> listItemMenusSet(Map<String, String> ref);
+
 
     /////////////////new method from kevin 24-mar-2023 ////////////// 
     List<Map<String, Object>> listRecipeHeader(Map<String, String> ref);

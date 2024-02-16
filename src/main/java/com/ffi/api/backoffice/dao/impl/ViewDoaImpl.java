@@ -360,6 +360,18 @@ public class ViewDoaImpl implements ViewDao {
     }
 
     @Override
+    public List<Map<String, Object>> listMenuGroupTipeOrder(Map<String, String> ref) {
+        String query = "SELECT MMGL.ORDER_TYPE , MG.DESCRIPTION  FROM M_MENU_GROUP_LIMIT mmgl LEFT JOIN M_GLOBAL mg ON mg.cond = 'ORDER_TYPE' AND MMGL.ORDER_TYPE = MG.CODE WHERE MENU_GROUP_CODE = :menuGroupCode";
+        return jdbcTemplate.query(query, ref, new DynamicRowMapper());
+    };
+    
+    @Override
+    public List<Map<String, Object>> listMenuGroupOutletLimit(Map<String, String> ref) {
+        String query = "SELECT MMGL.OUTLET_CODE, MO.OUTLET_NAME  FROM M_MENU_GROUP_LIMIT mmgl LEFT JOIN M_OUTLET mo ON MMGL.OUTLET_CODE = MO.OUTLET_CODE WHERE MENU_GROUP_CODE  = :menuGroupCode AND ORDER_TYPE = :orderType";
+        return jdbcTemplate.query(query, ref, new DynamicRowMapper());
+    };
+
+    @Override
     public List<Map<String, Object>> listPrice(Map<String, String> ref) {
         String qry = "SELECT  "
                 + "    G1.CODE AS ITEM_CODE, "
@@ -887,7 +899,16 @@ public class ViewDoaImpl implements ViewDao {
     public List<Map<String, Object>> listItemMenus(Map<String, String> ref) {
         String qry = "select distinct mg.description, mmi.plu, "
                 + "mmi.seq, "
-                + "mmi.status "
+                + "mmi.status, "
+                + "mmi.ei_flag, "
+                + "mmi.ta_flag, "
+                + "mmi.cat_flag, "
+                + "mmi.manager_approval, "
+                + "mmi.discountable, "
+                + "mmi.taxable, "
+                + "mmi.menu_set, "
+                + "mmi.auto_show_modifier, "
+                + "mmi.brd_flag "
                 + "from m_menu_item mmi join m_global mg on mmi.menu_item_code = mg.code "
                 + "join m_color mc on mmi.color_code = mc.color_code "
                 + "join m_outlet_price mop on mmi.outlet_code = mop.outlet_code "
@@ -908,12 +929,41 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("menuName", rs.getString("description"));
                 rt.put("seq", rs.getInt("seq"));
                 rt.put("status", rs.getString("status"));
+                rt.put("eiFlag", rs.getString("ei_flag"));
+                rt.put("taFlag", rs.getString("ta_flag"));
+                rt.put("catFlag", rs.getString("cat_flag"));
+                rt.put("managerApproval", rs.getString("manager_approval"));
+                rt.put("discountable", rs.getString("discountable"));
+                rt.put("taxable", rs.getString("taxable"));
+                rt.put("menuSet", rs.getString("menu_set"));
+                rt.put("autoShowModifier", rs.getString("auto_show_modifier"));
+                rt.put("brdFlag", rs.getString("brd_flag"));
                 return rt;
             }
         });
         return list;
     }
 
+    
+    ////// new method by Dani 15-Feb-2024
+    @Override
+    public List<Map<String, Object>> listItemMenusTipeOrder(Map<String, String> ref) {
+        String query = "SELECT MMIL.ORDER_TYPE , MG.DESCRIPTION  FROM M_MENU_ITEM_LIMIT mmil LEFT JOIN M_GLOBAL mg ON mg.cond = 'ORDER_TYPE' AND mmil.ORDER_TYPE = MG.CODE WHERE MMIL.MENU_ITEM_CODE = :menuItemCode";
+        return jdbcTemplate.query(query, ref, new DynamicRowMapper());
+    }
+    ////// new method by Dani 15-Feb-2024
+    @Override
+    public List<Map<String, Object>> listItemMenusLimit(Map<String, String> ref) {
+        String query = "SELECT mmil.OUTLET_CODE,MO.OUTLET_NAME FROM M_MENU_ITEM_LIMIT mmil LEFT JOIN M_OUTLET mo ON mmil.OUTLET_CODE = MO.OUTLET_CODE WHERE MMIL.MENU_ITEM_CODE = :menuItemCode AND MMIL.ORDER_TYPE = :orderType";
+        return jdbcTemplate.query(query, ref, new DynamicRowMapper());
+    }
+
+    @Override
+    public List<Map<String, Object>> listItemMenusSet(Map<String, String> ref) {
+        String query = "SELECT * FROM M_MENU_SET mms WHERE MMS.MENU_SET_CODE = :menuSetCode ORDER BY SEQ ASC";
+        return jdbcTemplate.query(query, ref, new DynamicRowMapper());
+    }
+    
     @Override
     public List<Map<String, Object>> listMenuGroups(Map<String, String> ref) {
         String qry = "select distinct mmg.menu_group_code, mg.description, mmg.seq, mc.r_value, mc.g_value, mc.b_value, mmg.status "

@@ -403,6 +403,32 @@ public class IndexController {
         return res;
     }
 
+    /////////// new Method by Dani 15-Feb-2024
+    @RequestMapping(value= "/list-menu-group-tipe-order", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Menampilkan List Group Menu Tipe Order", response = Object.class)
+    public @ResponseBody Response listMenuGroupTipeOrder(@RequestBody String param) {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        Response response = new Response();
+        response.setData(viewServices.listMenuGroupTipeOrder(balance));
+        return response;
+    }
+
+    /////////// new Method by Dani 15-Feb-2024
+    @RequestMapping(value= "/list-menu-group-outlet-limit", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Menampilkan List Group Menu Outlet Limit", response = Object.class)
+    public @ResponseBody Response listMenuGroupOutletLimit(@RequestBody String param) {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        
+        Response response = new Response();
+        response.setData(viewServices.listMenuGroupOutletLimit(balance));
+        return response;
+    }
+
     @RequestMapping(value = "/list-item-price", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan Harga ITEM ", response = Object.class)
     @ApiResponses(value = {
@@ -751,6 +777,58 @@ public class IndexController {
         return rm;
     }
     ///////////////done
+
+    ////// new method by Dani 15-Feb-2024
+    @RequestMapping(value = "/item-menus-tipe-order", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk melihat menu tipe order", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")
+    }
+    )
+    public @ResponseBody Response listItemMenusTipeOrder(@RequestBody String param) {
+        Gson gsn = new Gson();
+        Response res = new Response();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        res.setData(viewServices.listItemMenusTipeOrder(balance));
+        return res;
+    }
+
+    
+    ////// new method by Dani 15-Feb-2024
+    @RequestMapping(value = "/item-menus-limit", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk melihat menu limit", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")
+    }
+    )
+    public @ResponseBody Response listItemMenusLimit(@RequestBody String param) {
+        Gson gsn = new Gson();
+        Response res = new Response();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        res.setData(viewServices.listItemMenusLimit(balance));
+        return res;
+    }
+
+    ////// new method by Dani 15-Feb-2024
+    @RequestMapping(value = "/item-menus-set", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk melihat menu set", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")
+    }
+    )
+    public @ResponseBody Response listItemMenusSet(@RequestBody String param) {
+        Gson gsn = new Gson();
+        Response res = new Response();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        res.setData(viewServices.listItemMenusSet(balance));
+        return res;
+    }
 
     ///////////////new method from kevin 24-mar-2023 ////////////// 
     //Ambil recipe (header)

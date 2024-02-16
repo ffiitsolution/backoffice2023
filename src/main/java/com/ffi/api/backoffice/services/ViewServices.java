@@ -68,6 +68,14 @@ public class ViewServices {
         return viewDao.listMenuGroup(ref);
     }
 
+    public List<Map<String, Object>> listMenuGroupTipeOrder(Map<String, String> ref) {
+        return viewDao.listMenuGroupTipeOrder(ref);
+    }
+
+    public List<Map<String, Object>> listMenuGroupOutletLimit(Map<String, String> ref) {
+        return viewDao.listMenuGroupOutletLimit(ref);
+    }
+
     public List<Map<String, Object>> listItemPrice(Map<String, String> ref) {
         return viewDao.listItemPrice(ref);
     }
@@ -132,6 +140,21 @@ public class ViewServices {
         return viewDao.listItemMenus(ref);
     }
     ////////////////done
+
+    /////// new method by Dani 15-Feb-2024
+    public List<Map<String, Object>> listItemMenusTipeOrder(Map<String, String> ref) {
+        return viewDao.listItemMenusTipeOrder(ref);
+    }
+
+    //// new method by Dani 15-Feb-2024
+    public List<Map<String, Object>> listItemMenusLimit(Map<String, String> ref) {
+        return viewDao.listItemMenusLimit(ref);
+    }
+
+    //// new method by Dani 15-Feb-2024
+    public List<Map<String, Object>> listItemMenusSet(Map<String, String> ref) {
+        return viewDao.listItemMenusSet(ref);
+    }
 
     //////////////////new method from kevin 24-03-2023////////////////////////////
     public List<Map<String, Object>> listRecipeHeader(Map<String, String> ref) {
