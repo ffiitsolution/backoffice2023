@@ -14,6 +14,7 @@
 	<parameter name="outletCode" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
+	<parameter name="outletBrand" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT
 	a.ITEM_CODE,
@@ -32,6 +33,7 @@
 	c.REMARK,
 	CASE
 		WHEN c.TYPE_RETURN = '0' THEN 'Supplier'
+		WHEN c.TYPE_RETURN = '2' THEN 'FSD'
 		ELSE 'Gudang'
 	END AS TYPE_RETURN,
 	c.RETURN_ID,
@@ -191,14 +193,14 @@ ORDER BY
 				<textFieldExpression><![CDATA[": " + $F{REMARK}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="423" y="72" width="59" height="11" uuid="ab87bbd9-99d9-456d-a63d-577147c150c4"/>
+				<reportElement x="422" y="72" width="59" height="11" uuid="ab87bbd9-99d9-456d-a63d-577147c150c4"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Tipe Retur]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="423" y="82" width="59" height="11" uuid="205b9939-34a5-4071-86d6-d2ba13729c83"/>
+				<reportElement x="422" y="83" width="59" height="11" uuid="205b9939-34a5-4071-86d6-d2ba13729c83"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -212,7 +214,7 @@ ORDER BY
 				<textFieldExpression><![CDATA[": " + $F{TYPE_RETURN}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="481" y="82" width="119" height="11" uuid="1d245da1-3f5a-4b0a-8f43-b03ebd8a50f3"/>
+				<reportElement x="481" y="83" width="119" height="11" uuid="1d245da1-3f5a-4b0a-8f43-b03ebd8a50f3"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>

@@ -176,22 +176,22 @@ ORDER BY a.TRANS_DATE ASC]]>
 		<band splitType="Stretch"/>
 	</background>
 	<pageHeader>
-		<band height="127" splitType="Stretch">
+		<band height="136" splitType="Stretch">
 			<line>
-				<reportElement x="0" y="104" width="800" height="1" uuid="646b9ea6-8fe0-4179-9481-1bd831cd8f04"/>
+				<reportElement x="0" y="117" width="800" height="1" uuid="646b9ea6-8fe0-4179-9481-1bd831cd8f04"/>
 			</line>
 			<line>
-				<reportElement x="0" y="122" width="800" height="1" uuid="9b4d6d14-cf2e-439c-b05a-8d96be9a55db"/>
+				<reportElement x="0" y="135" width="800" height="1" uuid="9b4d6d14-cf2e-439c-b05a-8d96be9a55db"/>
 			</line>
 			<staticText>
-				<reportElement x="0" y="105" width="30" height="18" uuid="2ca99acf-c14d-4fc0-a86f-93d01961953c"/>
+				<reportElement x="0" y="118" width="30" height="18" uuid="2ca99acf-c14d-4fc0-a86f-93d01961953c"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[No]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="30" y="105" width="50" height="18" uuid="9324eae0-eb3a-4cec-80fe-05b194865441">
+				<reportElement x="30" y="118" width="50" height="18" uuid="9324eae0-eb3a-4cec-80fe-05b194865441">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -200,7 +200,7 @@ ORDER BY a.TRANS_DATE ASC]]>
 				<text><![CDATA[Tanggal]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="80" y="105" width="100" height="18" uuid="a1d7f151-0761-47c1-83da-1f9dff65c070">
+				<reportElement x="80" y="118" width="100" height="18" uuid="a1d7f151-0761-47c1-83da-1f9dff65c070">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
@@ -209,7 +209,7 @@ ORDER BY a.TRANS_DATE ASC]]>
 				<text><![CDATA[Penjualan]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="182" y="105" width="70" height="18" uuid="10e8d854-2e49-4cb8-924a-6416547dc2bc">
+				<reportElement x="182" y="118" width="70" height="18" uuid="10e8d854-2e49-4cb8-924a-6416547dc2bc">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
@@ -218,7 +218,7 @@ ORDER BY a.TRANS_DATE ASC]]>
 				<text><![CDATA[Discount]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="254" y="105" width="116" height="18" uuid="e8126b50-83b9-4fd0-97a3-c108991637e2">
+				<reportElement x="254" y="118" width="116" height="18" uuid="e8126b50-83b9-4fd0-97a3-c108991637e2">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
@@ -227,7 +227,7 @@ ORDER BY a.TRANS_DATE ASC]]>
 				<text><![CDATA[Pendapatan Non Tax]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="376" y="105" width="80" height="18" uuid="2652d4b8-9ef8-4b2d-934d-eeaeafa5cb35">
+				<reportElement x="376" y="118" width="80" height="18" uuid="2652d4b8-9ef8-4b2d-934d-eeaeafa5cb35">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
@@ -236,7 +236,7 @@ ORDER BY a.TRANS_DATE ASC]]>
 				<text><![CDATA[Pendapatan]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="458" y="105" width="100" height="18" uuid="d6099b12-d73e-44e1-8f6b-975e37918901">
+				<reportElement x="458" y="118" width="100" height="18" uuid="d6099b12-d73e-44e1-8f6b-975e37918901">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
@@ -291,7 +291,7 @@ ORDER BY a.TRANS_DATE ASC]]>
 				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{fromDate})) + " - " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{toDate}))]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="560" y="105" width="70" height="18" uuid="b0e59991-218e-4dd2-a64c-33d4cb2da786">
+				<reportElement x="560" y="118" width="70" height="18" uuid="b0e59991-218e-4dd2-a64c-33d4cb2da786">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
@@ -300,7 +300,7 @@ ORDER BY a.TRANS_DATE ASC]]>
 				<text><![CDATA[Biaya Antar]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="632" y="105" width="65" height="18" uuid="e2abbc89-2ff9-4505-bbe4-5caffa387290">
+				<reportElement x="632" y="118" width="65" height="18" uuid="e2abbc89-2ff9-4505-bbe4-5caffa387290">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
@@ -309,7 +309,7 @@ ORDER BY a.TRANS_DATE ASC]]>
 				<text><![CDATA[Pajak Biaya]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="700" y="105" width="98" height="18" uuid="c970cc4e-8414-438a-aebf-19a4af96b83e">
+				<reportElement x="700" y="118" width="98" height="18" uuid="c970cc4e-8414-438a-aebf-19a4af96b83e">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -319,11 +319,11 @@ ORDER BY a.TRANS_DATE ASC]]>
 				<text><![CDATA[Total]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="630" y="87" width="170" height="13" uuid="a4ff79dc-6b22-440c-9ec3-0cde6c92a2e0"/>
-				<textElement textAlignment="Right">
+				<reportElement x="54" y="99" width="170" height="11" uuid="a4ff79dc-6b22-440c-9ec3-0cde6c92a2e0"/>
+				<textElement textAlignment="Left">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[" Pos Type : " + $F{DESCRIPTION}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{DESCRIPTION}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="64" y="33" width="165" height="11" uuid="3a019a7d-c81f-476f-8e27-88d902977627"/>
@@ -458,6 +458,24 @@ ORDER BY a.TRANS_DATE ASC]]>
 			</staticText>
 			<staticText>
 				<reportElement x="44" y="88" width="10" height="11" uuid="21ca1215-e16b-46a6-ac63-2b4b876589d4">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="99" width="44" height="11" uuid="10fa4992-939c-4ca0-a1d2-a1093a434158">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Pos Type]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="44" y="99" width="10" height="11" uuid="bb7ef8ac-bdae-4784-a465-1c3fdf46e0f6">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">

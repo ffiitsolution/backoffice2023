@@ -1,11 +1,219 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reportTransactionPayment" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="2199a4a4-d84c-439c-a7b3-ef917db9409d">
-	<property name="ireport.zoom" value="1.464100000000007"/>
-	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.zoom" value="2.85311670611001"/>
+	<property name="ireport.x" value="397"/>
+	<property name="ireport.y" value="295"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="localhost"/>
+	<subDataset name="dataset1" uuid="fa74d7b4-6630-4492-94d0-52d556ac0fca">
+		<parameter name="outletCode" class="java.lang.String">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="transDate1" class="java.lang.String">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="transDate2" class="java.lang.String">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="posCode1" class="java.lang.String">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="posCode2" class="java.lang.String">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="cashierCode1" class="java.lang.String">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="cashierCode2" class="java.lang.String">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="billTime1" class="java.lang.String">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="billTime2" class="java.lang.String">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="paymentType1" class="java.lang.String">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="paymentType2" class="java.lang.String">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="paymentMethod1" class="java.lang.String">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="paymentMethod2" class="java.lang.String">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="shiftCode1" class="java.lang.String">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="shiftCode2" class="java.lang.String">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<queryString>
+			<![CDATA[SELECT
+	PAYMENT_METHOD,
+	SUM(PAYMENT_USED_TOTAL)
+FROM
+	(
+	SELECT
+		A.OUTLET_CODE,
+		A.TRANS_DATE,
+		TO_DATE(A.BILL_TIME, 'hh24:mi:ss') AS BILL_TIME,
+		A.POS_CODE,
+		B.STAFF_NAME,
+		A.SHIFT_CODE,
+		A.BILL_NO,
+		A.PAYMENT_AMOUNT,
+		A.PAYMENT_USED,
+		C.OUTLET_NAME,
+		C.ADDRESS_1,
+		C.ADDRESS_2,
+		C.CITY,
+		C.TYPE,
+		C.PHONE,
+		D.DESCRIPTION AS PAYMENT_TYPE,
+		E.DESCRIPTION AS PAYMENT_METHOD,
+		F.PAYMENT_USED_TOTAL
+	FROM
+		(
+		SELECT
+			B.OUTLET_CODE,
+			B.TRANS_DATE,
+			A.PAYMENT_TYPE_CODE,
+			A.PAYMENT_METHOD_CODE,
+			B.POS_CODE,
+			B.SHIFT_CODE,
+			B.CASHIER_CODE,
+			B.BILL_NO,
+			B.BILL_TIME,
+			C.PAYMENT_AMOUNT,
+			C.PAYMENT_USED
+		FROM
+			M_PAYMENT_METHOD A,
+			T_POS_BILL B,
+			T_POS_BILL_PAYMENT C
+		WHERE
+			B.OUTLET_CODE = $P{outletCode}
+			AND B.TRANS_DATE BETWEEN $P{transDate1} AND $P{transDate2}
+			AND B.POS_CODE BETWEEN $P{posCode1} AND $P{posCode2}
+			AND B.CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+			AND B.BILL_TIME BETWEEN $P{billTime1} AND $P{billTime2}
+			AND A.PAYMENT_TYPE_CODE BETWEEN $P{paymentType1} AND $P{paymentType2}
+			AND A.PAYMENT_METHOD_CODE BETWEEN $P{paymentMethod1} AND $P{paymentMethod2}
+			AND B.SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
+			AND A.OUTLET_CODE = B.OUTLET_CODE
+			AND B.OUTLET_CODE = C.OUTLET_CODE
+			AND B.TRANS_DATE = C.TRANS_DATE
+			AND A.PAYMENT_METHOD_CODE = C.PAYMENT_METHOD_CODE
+			AND B.POS_CODE = C.POS_CODE
+			AND B.BILL_NO = C.BILL_NO
+) A
+	LEFT JOIN (
+		SELECT
+			OUTLET_CODE,
+			STAFF_POS_CODE,
+			STAFF_NAME
+		FROM
+			M_POS_STAFF
+		WHERE
+			STATUS = 'A'
+			AND ACCESS_LEVEL = 'KSR'
+) B ON
+		A.OUTLET_CODE = B.OUTLET_CODE
+		AND A.CASHIER_CODE = B.STAFF_POS_CODE
+	LEFT JOIN (
+		SELECT
+			OUTLET_CODE,
+			OUTLET_NAME,
+			ADDRESS_1,
+			ADDRESS_2,
+			PHONE,
+			CITY,
+			TYPE
+		FROM
+			M_OUTLET
+) C ON
+		A.OUTLET_CODE = C.OUTLET_CODE
+	LEFT JOIN (
+		SELECT
+			COND,
+			CODE,
+			DESCRIPTION
+		FROM
+			M_GLOBAL
+		WHERE
+			COND LIKE '%PAY_TYPE%'
+) D ON
+		A.PAYMENT_TYPE_CODE = D.CODE
+	LEFT JOIN (
+		SELECT
+			COND,
+			CODE,
+			DESCRIPTION
+		FROM
+			M_GLOBAL
+		WHERE
+			COND LIKE '%PAY_METHOD%'
+) E ON
+		A.PAYMENT_METHOD_CODE = E.CODE
+	LEFT JOIN (
+		SELECT
+			OUTLET_CODE,
+			PAYMENT_TYPE_CODE,
+			SUM(PAYMENT_USED) AS PAYMENT_USED_TOTAL
+		FROM
+			(
+			SELECT
+				B.OUTLET_CODE,
+				B.TRANS_DATE,
+				A.PAYMENT_TYPE_CODE,
+				C.PAYMENT_USED
+			FROM
+				M_PAYMENT_METHOD A,
+				T_POS_BILL B,
+				T_POS_BILL_PAYMENT C
+			WHERE
+				B.OUTLET_CODE = $P{outletCode}
+				AND B.TRANS_DATE BETWEEN $P{transDate1} AND $P{transDate2}
+				AND B.POS_CODE BETWEEN $P{posCode1} AND $P{posCode2}
+				AND B.CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+				AND B.BILL_TIME BETWEEN $P{billTime1} AND $P{billTime2}
+				AND A.PAYMENT_TYPE_CODE BETWEEN $P{paymentType1} AND $P{paymentType2}
+				AND A.PAYMENT_METHOD_CODE BETWEEN $P{paymentMethod1} AND $P{paymentMethod2}
+				AND B.SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
+				AND A.OUTLET_CODE = B.OUTLET_CODE
+				AND B.OUTLET_CODE = C.OUTLET_CODE
+				AND B.TRANS_DATE = C.TRANS_DATE
+				AND A.PAYMENT_METHOD_CODE = C.PAYMENT_METHOD_CODE
+				AND B.POS_CODE = C.POS_CODE
+				AND B.BILL_NO = C.BILL_NO
+    )
+		GROUP BY
+			OUTLET_CODE,
+			PAYMENT_TYPE_CODE
+) F ON
+		A.PAYMENT_TYPE_CODE = F.PAYMENT_TYPE_CODE
+	ORDER BY
+		A.TRANS_DATE,
+		A.PAYMENT_TYPE_CODE,
+		A.PAYMENT_METHOD_CODE,
+		A.POS_CODE,
+		A.SHIFT_CODE,
+		A.BILL_NO,
+		A.BILL_TIME
+) GROUP BY
+	PAYMENT_METHOD
+ORDER BY
+	PAYMENT_METHOD ASC ]]>
+		</queryString>
+		<field name="PAYMENT_METHOD" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="PAYMENT_METHOD"/>
+			<property name="com.jaspersoft.studio.field.label" value="PAYMENT_METHOD"/>
+		</field>
+		<field name="SUM(PAYMENT_USED_TOTAL)" class="java.math.BigDecimal"/>
+	</subDataset>
 	<parameter name="outletCode" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
@@ -59,7 +267,7 @@
 	<parameter name="outletBrand" class="java.lang.String"/>
 	<parameter name="user" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[SELECT 
+		<![CDATA[SELECT
 	G.*,
     COALESCE(ms.STAFF_NAME, ms.STAFF_FULL_NAME, $P{user}) AS PRINT_NAME
 FROM (
@@ -201,7 +409,7 @@ ORDER BY
     A.SHIFT_CODE,
     A.BILL_NO,
     A.BILL_TIME
-   ) G 
+   ) G
 LEFT JOIN M_STAFF ms ON $P{user} = ms.STAFF_CODE]]>
 	</queryString>
 	<field name="OUTLET_CODE" class="java.lang.String">
@@ -298,6 +506,96 @@ LEFT JOIN M_STAFF ms ON $P{user} = ms.STAFF_CODE]]>
 	<variable name="grandTotalPayment" class="java.math.BigDecimal" resetType="Group" resetGroup="Group By TransDate" calculation="Sum">
 		<variableExpression><![CDATA[$F{PAYMENT_USED}]]></variableExpression>
 	</variable>
+	<group name="summary">
+		<groupExpression><![CDATA[$F{OUTLET_CODE}]]></groupExpression>
+		<groupFooter>
+			<band height="25">
+				<componentElement>
+					<reportElement x="1" y="5" width="554" height="18" uuid="a9df41f3-f6eb-4ece-ac50-4aef4871cb0a"/>
+					<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+						<datasetRun subDataset="dataset1" uuid="c7c3ca13-fb73-485a-86c4-375c5b906c97">
+							<datasetParameter name="outletCode">
+								<datasetParameterExpression><![CDATA[$P{outletCode}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="transDate1">
+								<datasetParameterExpression><![CDATA[$P{transDate1}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="transDate2">
+								<datasetParameterExpression><![CDATA[$P{transDate2}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="posCode1">
+								<datasetParameterExpression><![CDATA[$P{posCode1}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="posCode2">
+								<datasetParameterExpression><![CDATA[$P{posCode2}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="cashierCode1">
+								<datasetParameterExpression><![CDATA[$P{cashierCode1}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="cashierCode2">
+								<datasetParameterExpression><![CDATA[$P{cashierCode2}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="billTime1">
+								<datasetParameterExpression><![CDATA[$P{billTime1}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="billTime2">
+								<datasetParameterExpression><![CDATA[$P{billTime2}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="paymentType1">
+								<datasetParameterExpression><![CDATA[$P{paymentType1}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="paymentType2">
+								<datasetParameterExpression><![CDATA[$P{paymentType2}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="paymentMethod1">
+								<datasetParameterExpression><![CDATA[$P{paymentMethod1}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="paymentMethod2">
+								<datasetParameterExpression><![CDATA[$P{paymentMethod2}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="shiftCode1">
+								<datasetParameterExpression><![CDATA[$P{shiftCode1}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="shiftCode2">
+								<datasetParameterExpression><![CDATA[$P{shiftCode2}]]></datasetParameterExpression>
+							</datasetParameter>
+							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						</datasetRun>
+						<jr:listContents height="18" width="554">
+							<textField>
+								<reportElement x="231" y="1" width="96" height="17" uuid="6eee8df2-932f-4019-bc16-5f6f4d88ebad"/>
+								<textElement>
+									<font size="8" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{PAYMENT_METHOD}]]></textFieldExpression>
+							</textField>
+							<textField pattern="#,##0.00">
+								<reportElement x="349" y="1" width="205" height="17" uuid="63aeee9e-2c5c-4f42-b9f4-30142493bb01"/>
+								<textElement>
+									<font size="8" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{SUM(PAYMENT_USED_TOTAL)}]]></textFieldExpression>
+							</textField>
+							<staticText>
+								<reportElement x="326" y="1" width="23" height="17" uuid="e8458748-9d2a-4e22-826f-c14e852f6c0b"/>
+								<textElement textAlignment="Center">
+									<font size="8" isBold="true"/>
+								</textElement>
+								<text><![CDATA[=]]></text>
+							</staticText>
+						</jr:listContents>
+					</jr:list>
+				</componentElement>
+				<staticText>
+					<reportElement x="97" y="6" width="135" height="15" isPrintInFirstWholeBand="true" uuid="27d759e5-1634-40fd-91e0-938fcd68a353"/>
+					<textElement>
+						<font size="10" isBold="true" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Summary Method Total :]]></text>
+				</staticText>
+			</band>
+		</groupFooter>
+	</group>
 	<group name="Group By TransDate">
 		<groupExpression><![CDATA[$F{TRANS_DATE}]]></groupExpression>
 		<groupHeader>

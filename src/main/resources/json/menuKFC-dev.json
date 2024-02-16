@@ -76,12 +76,14 @@
       {
         "icon": "fa fa-calculator",
         "name": "Item Cost",
-        "url": "/master/item-cost"
+        "url": "/master/item-cost",
+        "groupId": ["HIDE"]
       },
       {
         "icon": "fa fa-th-large",
         "name": "Sales Recipe",
-        "url": "/master/sales-recipe"
+        "url": "/master/sales-recipe",
+        "groupId": ["HIDE"]
       }
     ]
   },
@@ -133,19 +135,14 @@
     "icon": "fa fa-file-pdf-o",
     "children": [
       {
-        "icon": "fa fa-archive",
-        "name": "Inventory",
-        "url": "/report/report"
+        "icon": "fa fa-file-pdf-o",
+        "name": "All Reports",
+        "url": "/report/all-report"
       },
       {
         "icon": "fa fa-industry",
         "name": "Mpcs Query",
         "url": "/report/mpcs-query"
-      },
-      {
-        "icon": "fa fa-desktop",
-        "name": "Pos Report",
-        "url": "/report/pos-report"
       },
       {
         "icon": "fa fa-list-ol",

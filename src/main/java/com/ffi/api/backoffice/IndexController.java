@@ -167,8 +167,6 @@ public class IndexController {
         Map<String, Object> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-
         Response res = new Response();
         res.setData(viewServices.listSupplier(balance));
         return res;
@@ -661,6 +659,12 @@ public class IndexController {
         }.getType());
 
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        if (logan.get("paket").equalsIgnoreCase("E")) {
+            Map<String, Object> sddParam = new HashMap<>();
+            sddParam.put("cdWarehouse", "00010");
+            sddParam.put("homePage", "SDD");
+            processServices.updateCdWarehouseItem(sddParam);
+        }
         list = viewServices.listItem(logan);
         Response res = new Response();
         res.setData(list);
@@ -1447,17 +1451,17 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> list = new ArrayList<>();
         ResponseMessage rm = new ResponseMessage();
         try {
-            processServices.insertOrderHeader(balance);
+            list.add(processServices.insertOrderHeader(balance));
             processServices.updateMCounter(balance);
             rm.setSuccess(true);
-            rm.setMessage("Insert Success Successfuly");
+            rm.setMessage("Insert Success");
 
         } catch (Exception e) {
             rm.setSuccess(false);
-            rm.setMessage("Insert Failed Successfuly: " + e.getMessage());
+            rm.setMessage("Insert Failed: " + e.getMessage());
         }
         rm.setItem(list);
         return rm;
@@ -1835,6 +1839,7 @@ public class IndexController {
         return rm;
     }
 
+    @Transactional
     @RequestMapping(value = "/send-data-to-warehouse", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk insert transaksi opname header", response = Object.class)
     @ApiResponses(value = {
@@ -1846,7 +1851,7 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> list = new ArrayList<>();
         String status = "";
         ResponseMessage rm = new ResponseMessage();
 
@@ -2645,13 +2650,13 @@ public class IndexController {
         @ApiResponse(code = 404, message = "The resource not found"),}
     )
 
+    @Transactional
     public @ResponseBody
     ResponseMessage sendDataOutletToWarehouse(@RequestBody String param) throws IOException, Exception {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        String status = "";
+        List<Map<String, Object>> list = new ArrayList<>();
         ResponseMessage rm = new ResponseMessage();
 
         try {
@@ -3881,9 +3886,15 @@ public class IndexController {
     @RequestMapping(value = "/list-transfer-data", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
     ResponseMessage listTransferData(@RequestBody Map<String, Object> param) throws IOException, Exception {
-        String type = param.getOrDefault("type", "TERIMA DATA").toString();
         String typeTable = param.getOrDefault("type", "ALL").toString();
-        List<String> listTable = listTableMaster(typeTable);
+        Boolean isTerimaMaster = "TERIMA DATA MASTER".equals(param.get("type"));
+        Boolean isKirimTransaksi = "TRANSFER DATA TRANSAKSI".equals(param.get("type"));
+        List<String> listTable = new ArrayList();
+        if(isTerimaMaster){
+            listTable = listTableMaster(typeTable);
+        } else if(isKirimTransaksi){
+            listTable = listTableTransaction("All");
+        }
         param.put("listTable", listTable);
         return processServices.listTransferData(param);
     }
@@ -3916,5 +3927,41 @@ public class IndexController {
     public @ResponseBody
     ResponseMessage processBackupDb(@RequestBody Map<String, Object> param) throws IOException, Exception {
         return processServices.processBackupDb(param);
+    }
+    
+    //============== New Method From M Joko 13-2-2024 ================
+    @ApiOperation(value = "Update Status Master Recipe by M Joko", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    @RequestMapping(value = "/recipe-status-update", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody
+    ResponseMessage updateRecipe(@RequestBody Map<String, Object> param) throws IOException, Exception {
+        return processServices.updateRecipe(param);
+    }
+
+    @RequestMapping(value = "/remove-empty-order", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk menghapus order entry yang memiliki qty besar 0 dan qty kecil 0 by Fathur 15 Feb 2024", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage removeEmptyOrder(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        ResponseMessage rm = new ResponseMessage();
+        try {   
+            processServices.removeEmptyOrder(balance);
+            rm.setMessage("Success");
+            rm.setSuccess(true);
+            return rm;
+        } catch (Exception e) {
+            rm.setMessage("Failed with error: " + e.getMessage());
+            rm.setSuccess(false);
+        }
+        return rm;
     }
 }

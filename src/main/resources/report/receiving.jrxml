@@ -249,7 +249,7 @@ WHERE a.OUTLET_CODE =$P{outletCode} AND a.RECV_DATE BETWEEN $P{fromDate} AND $P{
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<text><![CDATA[Periode     : ]]></text>
+				<text><![CDATA[Periode]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="49" y="83" width="287" height="11" uuid="01b94f5a-f650-4db2-9d0a-b012f084fdbe"/>

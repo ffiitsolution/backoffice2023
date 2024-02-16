@@ -97,27 +97,56 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listSupplier(Map<String, Object> balance) {
-        String qry = "SELECT  CD_SUPPLIER, SUPPLIER_NAME, CP_NAME, FLAG_CANVASING, STATUS, ADDRESS_1, "
-                + "ADDRESS_2, CITY, ZIP_CODE, PHONE, FAX, HOMEPAGE, CP_TITLE, CP_MOBILE, CP_PHONE, "
-                + "CP_PHONE_EXT, CP_EMAIL, USER_UPD, DATE_UPD, TIME_UPD FROM m_supplier"
-                + " where status like :status"
-                + " and city LIKE :city"
-                + " and FLAG_CANVASING Like :flagCanvasing";
-        if (balance.containsKey("isFSD")) {
-            boolean isFSD = (boolean) balance.get("isFSD");
-            qry += " AND (HOMEPAGE " + (isFSD ? "LIKE '%FSD%'" : "NOT LIKE '%FSD%' OR HOMEPAGE IS NULL") + ")";
+        StringBuilder qry = new StringBuilder("SELECT ms.CD_SUPPLIER, ms.SUPPLIER_NAME, ms.CP_NAME, ms.FLAG_CANVASING, ms.STATUS, ms.ADDRESS_1, ")
+                .append("ms.ADDRESS_2, ms.CITY, ms.ZIP_CODE, ms.PHONE, ms.FAX, ms.HOMEPAGE, ms.CP_TITLE, ms.CP_MOBILE, ms.CP_PHONE, ")
+                .append("ms.CP_PHONE_EXT, ms.CP_EMAIL, ms.USER_UPD, ms.DATE_UPD, ms.TIME_UPD");
+
+        if (balance.containsKey("withItems") && ((boolean) balance.get("withItems"))) {
+            qry.append(", mi.ITEM_CODE, mi.ITEM_DESCRIPTION");
         }
-        if (balance.containsKey("isSDD")) {
-            boolean isSDD = (boolean) balance.get("isSDD");
-            qry += " AND (HOMEPAGE " + (isSDD ? "LIKE '%SDD%'" : "NOT LIKE '%SDD%' OR HOMEPAGE IS NULL") + ")";
+
+        qry.append(" FROM M_SUPPLIER ms");
+
+        if (balance.containsKey("withItems") && ((boolean) balance.get("withItems"))) {
+            qry.append(" JOIN M_ITEM_SUPPLIER mis ON mis.CD_SUPPLIER = ms.CD_SUPPLIER ")
+            .append("JOIN M_ITEM mi ON mi.ITEM_CODE = mis.ITEM_CODE");
         }
-        qry += " order by cd_Supplier desc";
+
+        qry.append(" WHERE ms.status LIKE :status ")
+            .append("AND ms.city LIKE :city ")
+            .append("AND ms.FLAG_CANVASING LIKE :flagCanvasing ");
+
+        if (balance.containsKey("isFSD") || balance.containsKey("isSDD")) {
+            qry.append("AND (");
+            if (balance.containsKey("isFSD")) {
+                boolean isFSD = (boolean) balance.get("isFSD");
+                qry.append(isFSD ? "ms.HOMEPAGE LIKE '%FSD%'" : "(ms.HOMEPAGE NOT LIKE '%FSD%' OR ms.HOMEPAGE IS NULL)");
+            }
+            if (balance.containsKey("isSDD")) {
+                boolean isSDD = (boolean) balance.get("isSDD");
+                if (balance.containsKey("isFSD"))
+                    qry.append(" AND ");
+                qry.append(isSDD ? "ms.HOMEPAGE LIKE '%SDD%'" : "(ms.HOMEPAGE NOT LIKE '%SDD%' OR ms.HOMEPAGE IS NULL)");
+            }
+            qry.append(")");
+        }
+
+        if (balance.containsKey("withItems") && ((boolean) balance.get("withItems"))) {
+            qry.append(" GROUP BY ms.CD_SUPPLIER, ms.SUPPLIER_NAME, ms.CP_NAME, ms.FLAG_CANVASING, ms.STATUS, ms.ADDRESS_1, ")
+            .append("ms.ADDRESS_2, ms.CITY, ms.ZIP_CODE, ms.PHONE, ms.FAX, ms.HOMEPAGE, ms.CP_TITLE, ms.CP_MOBILE, ms.CP_PHONE, ")
+            .append("ms.CP_PHONE_EXT, ms.CP_EMAIL, ms.USER_UPD, ms.DATE_UPD, ms.TIME_UPD, mi.ITEM_CODE, mi.ITEM_DESCRIPTION");
+        }
+
+        qry.append(" ORDER BY ms.CD_SUPPLIER DESC");
+
+        String queryString = qry.toString();
+
         Map prm = new HashMap();
         prm.put("status", "%" + balance.get("status") + "%");
         prm.put("city", "%" + balance.get("city") + "%");
         prm.put("flagCanvasing", "%" + balance.get("flagCanvasing") + "%");
-        System.err.println("q :" + qry);
-        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+        System.err.println("q :" + queryString);
+        List<Map<String, Object>> list = jdbcTemplate.query(queryString, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap< String, Object>();
@@ -141,11 +170,41 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("userUpd", rs.getString("USER_UPD"));
                 rt.put("dateUpd", rs.getString("DATE_UPD"));
                 rt.put("timeUpd", rs.getString("TIME_UPD"));
-
+                if (balance.containsKey("withItems") && ((boolean) balance.get("withItems"))) {
+                    rt.put("itemCode", rs.getString("ITEM_CODE"));
+                    rt.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
+                }
                 return rt;
             }
         });
-        return list;
+        if (balance.containsKey("withItems") && ((boolean) balance.get("withItems"))) {
+            return transformListSupplierWithItems(list);
+        } else {
+            return list;
+        }
+        
+    }
+
+    public static List<Map<String, Object>> transformListSupplierWithItems(List<Map<String, Object>> originalList) {
+        Map<String, Map<String, Object>> supplierMap = new HashMap<>();
+
+        for (Map<String, Object> map : originalList) {
+            String supplierKey = (String) map.get("cdSupplier");
+            if (!supplierMap.containsKey(supplierKey)) {
+                supplierMap.put(supplierKey, new HashMap<>());
+                supplierMap.get(supplierKey).putAll(map);
+                supplierMap.get(supplierKey).put("items", new ArrayList<>());
+            }
+
+            @SuppressWarnings("unchecked")
+            List<Map<String, String>> items = (List<Map<String, String>>) supplierMap.get(supplierKey).get("items");
+            Map<String, String> itemMap = new HashMap<>();
+            itemMap.put("itemCode", (String) map.get("itemCode"));
+            itemMap.put("itemDescription", (String) map.get("itemDescription"));
+            items.add(itemMap);
+        }
+
+        return new ArrayList<>(supplierMap.values());
     }
     ///////////////////done
     ///////////////new method from dona 28-02-2023////////////////////////////
@@ -228,7 +287,7 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listMpcs(Map<String, String> balance) {
-        String qry = "SELECT A.OUTLET_CODE, B.OUTLET_NAME, A.FRYER_TYPE, A.FRYER_TYPE_SEQ, A.STATUS, A.FRYER_TYPE_RESET, A.FRYER_TYPE_SEQ_CNT, A.FRYER_TYPE_CNT, A.USER_UPD, A.DATE_UPD, A.TIME_UPD FROM M_MPCS_DETAIL A LEFT JOIN M_OUTLET B ON A.OUTLET_CODE = B.OUTLET_CODE WHERE A.OUTLET_CODE =:outletCode AND (A.FRYER_TYPE = :fryerType OR :fryerType IS NULL) ORDER BY A.OUTLET_CODE ASC, A.FRYER_TYPE ASC, A.FRYER_TYPE_SEQ ASC";
+        String qry = "SELECT a.OUTLET_CODE, a.FRYER_TYPE, INITCAP(b.DESCRIPTION) AS DESCRIPTION, a.FRYER_TYPE_SEQ, a.STATUS FROM M_MPCS_DETAIL a LEFT JOIN M_GLOBAL b ON a.FRYER_TYPE = b.CODE AND COND = 'FRYER' WHERE A.OUTLET_CODE = :outletCode AND (UPPER(A.FRYER_TYPE) = UPPER(:fryerType) OR :fryerType IS NULL) ORDER BY A.OUTLET_CODE ASC, A.FRYER_TYPE ASC, A.FRYER_TYPE_SEQ ASC";
         Map prm = new HashMap();
         prm.put("outletCode", balance.get("outletCode"));
         prm.put("fryerType", balance.get("fryerType"));
@@ -240,14 +299,9 @@ public class ViewDoaImpl implements ViewDao {
                 Map<String, Object> rt = new HashMap<String, Object>();
                 rt.put("outletCode", rs.getString("OUTLET_CODE"));
                 rt.put("fryerType", rs.getString("FRYER_TYPE"));
+                rt.put("fryerDescription", rs.getString("DESCRIPTION"));
                 rt.put("fryerTypeSeq", rs.getString("FRYER_TYPE_SEQ"));
                 rt.put("status", rs.getString("STATUS"));
-                rt.put("fryerTypeReset", rs.getString("FRYER_TYPE_RESET"));
-                rt.put("fryerTypeSeqCnt", rs.getString("FRYER_TYPE_SEQ_CNT"));
-                rt.put("fryerTypeCnt", rs.getString("FRYER_TYPE_CNT"));
-                rt.put("userUpd", rs.getString("USER_UPD"));
-                rt.put("dateUpd", rs.getString("DATE_UPD"));
-                rt.put("timeUpd", rs.getString("TIME_UPD"));
 
                 return rt;
             }
@@ -693,28 +747,29 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listMpcsHeader(Map<String, String> param) {
-        String qry = "select * from m_mpcs_header WHERE OUTLET_CODE= :outlet";
+        String qry = "SELECT b.OUTLET_CODE, a.MPCS_GROUP, b.DESCRIPTION, b.FRYER_TYPE, b.QTY_CONV, a.STATUS FROM M_RECIPE_HEADER a JOIN M_MPCS_HEADER b ON a.MPCS_GROUP = b.MPCS_GROUP WHERE b.OUTLET_CODE =:outlet ";
         Map prm = new HashMap();
         prm.put("outlet", param.get("outlet"));
         if (param.containsKey("date") && !param.get("date").isEmpty()) {
             prm.put("date", param.get("date"));
-            qry += " AND MPCS_GROUP IN ( SELECT DISTINCT(MPCS_GROUP) FROM T_SUMM_MPCS WHERE OUTLET_CODE = :outlet AND DATE_MPCS = :date)";
+            qry += " AND a.MPCS_GROUP IN ( SELECT DISTINCT(MPCS_GROUP) FROM T_SUMM_MPCS WHERE OUTLET_CODE = :outlet AND DATE_MPCS = :date)";
         }
         var statusParam = param.get("status");
         if ("A".equals(statusParam)) {
-            qry += " AND STATUS = 'A' ";
+            qry += " AND a.STATUS = 'A' ";
         }
         if ("I".equals(statusParam)) {
-            qry += " AND STATUS = 'I' ";
+            qry += " AND a.STATUS = 'I' ";
         } else {
-            qry += " AND STATUS IN ('A', 'I' )";
+            qry += " AND a.STATUS IN ('A', 'I' )";
         }
 
+        qry += " ORDER BY a.MPCS_GROUP ASC";
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("outletCode", rs.getString("Outlet_Code"));
+                rt.put("outletCode", rs.getString("OUTLET_CODE"));
                 rt.put("description", rs.getString("DESCRIPTION"));
                 rt.put("mpcsGroup", rs.getString("MPCS_GROUP"));
                 rt.put("fryerType", rs.getString("FRYER_TYPE"));
@@ -746,46 +801,35 @@ public class ViewDoaImpl implements ViewDao {
     }
 
     //////////////done
-    ///////////////new method from asep 29-mar-2023 //////////////      
+    ///////////////new method from asep 29-mar-2023 ////////////// 
+    // Update list outlet sorting method based on area code by Fathur 25 feb 2024 //
     @Override
     public List<Map<String, Object>> listOutlet(Map<String, String> balance) {
-        if(balance.containsKey("outletCode") && balance.get("outletCode").length() > 0 && balance.get("detail").endsWith("1")){
-            String qry = """
-                    SELECT a.REGION_CODE, b.DESCRIPTION AS REGION_NAME, a.AREA_CODE, c.DESCRIPTION AS AREA_NAME, a.TYPE, d.DESCRIPTION AS TYPE_STORE, a.OUTLET_CODE, a.OUTLET_NAME, a.ADDRESS_1, a.ADDRESS_2, a.CITY, a.POST_CODE, a.PHONE, a.FAX, a.CASH_BALANCE, TO_CHAR(a.TRANS_DATE,'YYYY-MM-DD') AS TRANS_DATE, a.DEL_LIMIT, a.DEL_CHARGE, a.RND_PRINT, a.RND_FACT, a.RND_LIMIT, a.TAX, a.DP_MIN, a.CANCEL_FEE, a.CAT_ITEMS, a.MAX_BILLS, a.MIN_ITEMS, a.REF_TIME, a.TIME_OUT, a.MAX_SHIFT, a.SEND_DATA, a.MIN_PULL_TRX, a.MAX_PULL_VALUE, a.STATUS, TO_CHAR(a.START_DATE,'YYYY-MM-DD') AS START_DATE, TO_CHAR(a.FINISH_DATE,'YYYY-MM-DD') AS FINISH_DATE, a.MAX_DISC_PERCENT, a.MAX_DISC_AMOUNT, a.OPEN_TIME, a.CLOSE_TIME, a.REFUND_TIME_LIMIT, a.MONDAY, a.TUESDAY, a.WEDNESDAY, a.THURSDAY, a.FRIDAY, a.SATURDAY, a.SUNDAY, a.HOLIDAY, a.OUTLET_24_HOUR, a.IP_OUTLET, a.PORT_OUTLET, a.USER_UPD, TO_CHAR(a.DATE_UPD,'YYYY-MM-DD') AS DATE_UPD, a.TIME_UPD, a.FTP_ADDR, a.FTP_USER, a.INITIAL_OUTLET, a.RSC_CODE, a.TAX_CHARGE
-                    FROM M_OUTLET a
-                    LEFT JOIN M_GLOBAL b ON a.region_code = b.code AND b.cond = 'REG_OUTLET'
-                    LEFT JOIN M_GLOBAL c ON a.area_code = c.code AND c.cond = 'AREACODE'
-                    LEFT JOIN M_GLOBAL d ON a.type = d.code AND d.cond = 'OUTLET_TP'
-                    WHERE a.OUTLET_CODE = :outletCode
-                         """;
-            return jdbcTemplate.query(qry, balance, new DynamicRowMapper());
-        }
-        Map prm = new HashMap();
         String qry = "SELECT a.REGION_CODE, b.DESCRIPTION AS REGION_NAME, a.OUTLET_CODE, a.AREA_CODE, c.DESCRIPTION AS AREA_NAME, a.INITIAL_OUTLET, a.OUTLET_NAME, a.TYPE, d.DESCRIPTION AS TYPE_STORE, a.STATUS FROM M_OUTLET a JOIN M_GLOBAL b ON a.REGION_CODE = b.CODE AND b.COND = 'REG_OUTLET' JOIN M_GLOBAL c ON a.AREA_CODE = c.CODE AND c.COND = 'AREACODE' JOIN M_GLOBAL d ON a.TYPE = d.CODE AND d.COND = 'OUTLET_TP' WHERE a.TYPE <> 'HO' AND a.STATUS = 'A' AND a.REGION_CODE LIKE :region AND a.AREA_CODE LIKE :area AND a.TYPE LIKE :type ";
-        if(balance.containsKey("outletCode") && !balance.get("outletCode").isBlank()){
-            qry += " AND a.OUTLET_CODE = :outletCode UNION ALL SELECT a.REGION_CODE, b.DESCRIPTION AS REGION_NAME, a.OUTLET_CODE, a.AREA_CODE, c.DESCRIPTION AS AREA_NAME, a.INITIAL_OUTLET, a.OUTLET_NAME, a.TYPE, d.DESCRIPTION AS TYPE_STORE, a.STATUS FROM M_OUTLET a JOIN M_GLOBAL b ON a.REGION_CODE = b.CODE AND b.COND = 'REG_OUTLET' JOIN M_GLOBAL c ON a.AREA_CODE = c.CODE AND c.COND = 'AREACODE' JOIN M_GLOBAL d ON a.TYPE = d.CODE AND d.COND = 'OUTLET_TP' WHERE a.TYPE <> 'HO' AND a.STATUS = 'A' AND a.REGION_CODE LIKE :region AND a.AREA_CODE LIKE :area AND a.TYPE LIKE :type AND a.OUTLET_CODE <> :outletCode";
-            prm.put("outletCode", balance.get("outletCode"));
-        }
-        System.err.println("q :" + qry);
+
+        Map prm = new HashMap();
         prm.put("region", "%" + balance.get("region") + "%");
         prm.put("area", "%" + balance.get("area") + "%");
         prm.put("type", "%" + balance.get("type") + "%");
-        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
-            @Override
-            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
-                Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("region", rs.getString("region_code"));
-                rt.put("regionname", rs.getString("region_name"));
-                rt.put("area", rs.getString("area_code"));
-                rt.put("areaname", rs.getString("area_name"));
-                rt.put("outlet", rs.getString("outlet_code"));
-                rt.put("Initial", rs.getString("initial_outlet"));
-                rt.put("Name", rs.getString("outlet_name"));
-                rt.put("Type", rs.getString("type"));
-                rt.put("typename", rs.getString("type_store"));
-                rt.put("Status", rs.getString("status"));
-                return rt;
-            }
+        
+        if (balance.getOrDefault("outletCode", "").length() > 0){
+            String areaCode = jdbcTemplate.queryForObject("SELECT AREA_CODE FROM M_OUTLET WHERE OUTLET_CODE = :outletCode", balance, String.class);
+            qry += " ORDER BY CASE WHEN AREA_CODE = '" + areaCode + "' THEN 0 ELSE 1 END ASC ";
+            prm.put("status", balance.get("status"));
+        }
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, (ResultSet rs, int i) -> {
+            Map<String, Object> rt = new HashMap<>();
+            rt.put("region", rs.getString("region_code"));
+            rt.put("regionname", rs.getString("region_name"));
+            rt.put("area", rs.getString("area_code"));
+            rt.put("areaname", rs.getString("area_name"));
+            rt.put("outlet", rs.getString("outlet_code"));
+            rt.put("Initial", rs.getString("initial_outlet"));
+            rt.put("Name", rs.getString("outlet_name"));
+            rt.put("Type", rs.getString("type"));
+            rt.put("typename", rs.getString("type_store"));
+            rt.put("Status", rs.getString("status"));
+            return rt;
         });
         return list;
     }
@@ -821,14 +865,11 @@ public class ViewDoaImpl implements ViewDao {
         Map prm = new HashMap();
         prm.put("Status", Logan.get("status"));
         System.err.println("q :" + qry);
-        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
-            @Override
-            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
-                Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("code", rs.getString("code"));
-                rt.put("description", rs.getString("description"));
-                return rt;
-            }
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, (ResultSet rs, int i) -> {
+            Map<String, Object> rt = new HashMap<String, Object>();
+            rt.put("code", rs.getString("code"));
+            rt.put("description", rs.getString("description"));
+            return rt;
         });
         return list;
     }
@@ -841,6 +882,10 @@ public class ViewDoaImpl implements ViewDao {
         }
         if (Logan.get("paket").equalsIgnoreCase("D")) {
             qry = "select * from m_item where status='A' and item_code like'88-%' order by item_code asc";
+        }
+        //E for SDD
+        if (Logan.get("paket").equalsIgnoreCase("E")) {
+            qry = "select * from M_ITEM where STATUS = 'A' and CD_WAREHOUSE = '00010' order by item_code asc";
         }
         ///////////////////////// untuk report stock/////////////////////////
         if (Logan.get("paket").equalsIgnoreCase("A")) {
@@ -1454,150 +1499,117 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listGlobal(Map<String, String> balance) {
-        String qry = "SELECT DESCRIPTION, TYPE_MENU AS CODE FROM m_menudtl WHERE TYPE_MENU = :cond AND STATUS = :status AND APLIKASI = :aplikasi ";
+        Map prm = new HashMap();
+        prm.put("cond", balance.get("cond"));
+        String qry = "SELECT DESCRIPTION, TYPE_MENU, APLIKASI, ID_NO FROM m_menudtl WHERE TYPE_MENU = :cond";
+        if(balance.getOrDefault("aplikasi", "").length() > 0){
+            qry += " AND APLIKASI = :aplikasi";
+            prm.put("aplikasi", balance.get("aplikasi"));
+        }
+        if(balance.getOrDefault("status", "").length() > 0){
+            qry += " AND STATUS = :status";
+            prm.put("status", balance.get("status"));
+        }
         // open limit report tacobell 7/2/24 by M Joko acc Dona
 //        if (balance.containsKey("outletBrand") && balance.get("outletBrand").equalsIgnoreCase("TACOBELL")) {
 //            qry += " AND DESCRIPTION IN ('Report Menu & Detail Modifier', 'Sales by Date', 'Sales by Item', 'Sales by Time', 'Summary Sales by Item Code', 'Report Stock Card')";
 //        }
-        Map prm = new HashMap();
-        prm.put("cond", balance.get("cond"));
-        prm.put("status", balance.get("status"));
-        prm.put("aplikasi", balance.get("aplikasi"));
         System.err.println("q :" + qry);
-        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
-            @Override
-            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
-                Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("code", rs.getString("CODE"));
-                rt.put("description", rs.getString("DESCRIPTION"));
-                return rt;
-            }
-        });
-        // jika kosong/belum ada, insert baru
-        if(list.isEmpty()){
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new DynamicRowMapper());
+        // jika kosong/belum ada, atau total bukan 15 (INV) bukan 22 (POS), hapus dan insert baru
+        // set: total report valid
+        int TOTAL_INVENTORY = 15;
+        int TOTAL_POS = 22;
+        int TOTAL_REPORT = TOTAL_INVENTORY + TOTAL_POS;
+        int size = list.size();
+        if (size == TOTAL_INVENTORY || size == TOTAL_POS || size == TOTAL_REPORT) {
+            return list;
+        }
+            String qryDelete = "DELETE FROM M_MENUDTL WHERE TYPE_MENU = 'REPORT'";
             String qryInsert = """
-                INSERT INTO M_MENUDTL
-                (TYPE_ID, MENU_ID, DESCRIPTION, ID_NO, APLIKASI, DBASE, STATUS, TYPE_MENU)
-                SELECT 'PROGRAM', 'POS0001', 'Cashier By Date', 1, 'POS', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0001')
-                UNION ALL
-                SELECT 'PROGRAM', 'POS0002', 'Laporan Pemakaian by Sales', 2, 'POS', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0002')
-                UNION ALL
-                SELECT 'PROGRAM', 'POS0003', 'Report Menu & Detail Modifier', 3, 'POS', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0003')
-                UNION ALL
-                SELECT 'PROGRAM', 'POS0004', 'Item Sales Analisis', 4, 'POS', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0004')
-                UNION ALL
-                SELECT 'PROGRAM', 'POS0005', 'Sales by Date', 5, 'POS', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0005')
-                UNION ALL
-                SELECT 'PROGRAM', 'POS0006', 'Sales by Item', 6, 'POS', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0006')
-                UNION ALL
-                SELECT 'PROGRAM', 'POS0007', 'Sales by Time', 7, 'POS', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0007')
-                UNION ALL
-                SELECT 'PROGRAM', 'POS0008', 'Sales Mix by Department', 8, 'POS', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0008')
-                UNION ALL
-                SELECT 'PROGRAM', 'POS0009', 'Receipt Maintenance', 9, 'POS', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0009')
-                UNION ALL
-                SELECT 'PROGRAM', 'POS0010', 'Summary Sales by Item Code', 10, 'POS', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0010')
-                UNION ALL
-                SELECT 'PROGRAM', 'POS0011', 'Transaction by Payment Type', 11, 'POS', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0011')
-                UNION ALL
-                SELECT 'PROGRAM', 'POS0012', 'Sales Void', 12, 'POS', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0012')
-                UNION ALL
-                SELECT 'PROGRAM', 'POS0013', 'Laporan Item Selected By Time', 13, 'POS', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0013')
-                UNION ALL
-                SELECT 'PROGRAM', 'POS0014', 'Refund Report', 14, 'POS', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0014')
-                UNION ALL
-                SELECT 'PROGRAM', 'POS0015', 'Laporan Down Payment (DP)', 15, 'POS', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0015')
-                UNION ALL
-                SELECT 'PROGRAM', 'POS0016', 'Actual Stock Opname', 16, 'POS', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0016')
-                UNION ALL
-                SELECT 'PROGRAM', 'POS0017', 'End of Day', 17, 'POS', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0017')
-                UNION ALL
-                SELECT 'PROGRAM', 'POS0018', 'Laporan Selected by Item Detail', 18, 'POS', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0018')
-                UNION ALL
-                SELECT 'PROGRAM', 'POS0019', 'Laporan Product Efficiency', 19, 'POS', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0019')
-                UNION ALL
-                SELECT 'PROGRAM', 'POS0020', 'Laporan Item Selected By Product', 20, 'POS', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0020')
-                UNION ALL
-                SELECT 'PROGRAM', 'POS0021', 'Report Pajak', 21, 'POS', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0021')
-                UNION ALL
-                SELECT 'PROGRAM','POS0022','Report Sales Item By Time', 22, 'POS', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'POS0022')
-                UNION ALL
-                SELECT 'PROGRAM', 'INV0001', 'Report Stock Card', 1, 'INV', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV0001')
-                UNION ALL
-                SELECT 'PROGRAM', 'INV0002', 'Report Stock', 2, 'INV', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV0002')
-                UNION ALL
-                SELECT 'PROGRAM', 'INV0003', 'Free Meal Dept', 3, 'INV', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV0003')
-                UNION ALL
-                SELECT 'PROGRAM', 'INV0004', 'Listing Recipe', 4, 'INV', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV0004')
-                UNION ALL
-                SELECT 'PROGRAM', 'INV0005', 'Item Barang', 5, 'INV', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV0005')
-                UNION ALL
-                SELECT 'PROGRAM', 'INV0006', 'Delivery Order', 6, 'INV', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV0006')
-                UNION ALL
-                SELECT 'PROGRAM', 'INV0007', 'Wastage', 7, 'INV', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV0007')
-                UNION ALL
-                SELECT 'PROGRAM', 'INV0008', 'Return Order', 8, 'INV', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV0008')
-                UNION ALL
-                SELECT 'PROGRAM', 'INV0009', 'Receiving', 9, 'INV', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV0009')
-                UNION ALL
-                SELECT 'PROGRAM', 'INV00010', 'Order Entry', 10, 'INV', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV00010')
-                UNION ALL
-                SELECT 'PROGRAM', 'INV00011', 'Inventory Movement', 11, 'INV', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV00011')
-                UNION ALL
-                SELECT 'PROGRAM', 'INV00012', 'Laporan Produksi Aktual', 12, 'INV', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV00012')
-                UNION ALL
-                SELECT 'PROGRAM', 'INV00013', 'Laporan Delete MPCS Produksi', 13, 'INV', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV00013')
-                UNION ALL
-                SELECT 'PROGRAM', 'INV00014', 'Daftar Menu', 14, 'INV', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV00014')
-                UNION ALL
-                SELECT 'PROGRAM', 'INV00015', 'Laporan Produksi', 15, 'INV', 'R', 'A', 'REPORT' FROM DUAL
-                WHERE NOT EXISTS (SELECT 1 FROM M_MENUDTL WHERE MENU_ID = 'INV00015')
+            INSERT INTO M_MENUDTL (TYPE_ID, MENU_ID, DESCRIPTION, ID_NO, APLIKASI, DBASE, STATUS, TYPE_MENU)
+            SELECT 'PROGRAM', 'INV0001', 'Order Entry', 1, 'INV', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'INV0002', 'Receiving', 2, 'INV', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'INV0003', 'Delivery Order', 3, 'INV', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'INV0004', 'Wastage', 4, 'INV', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'INV0005', 'Return Order', 5, 'INV', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'INV0006', 'Laporan Produksi', 6, 'INV', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'INV0007', 'Laporan Produksi Aktual', 7, 'INV', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'INV0008', 'Laporan Delete MPCS Produksi', 8, 'INV', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'INV0009', 'Inventory Movement', 9, 'INV', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'INV0010', 'Report Stock', 10, 'INV', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'INV0011', 'Report Stock Card', 11, 'INV', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'INV0012', 'Item Barang', 12, 'INV', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'INV0013', 'Daftar Menu', 13, 'INV', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'INV0014', 'Listing Recipe', 14, 'INV', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'INV0015', 'Free Meal Dept', 15, 'INV', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'POS0001', 'Sales by Date', 1, 'POS', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'POS0002', 'Sales by Item', 2, 'POS', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'POS0003', 'Sales by Time', 3, 'POS', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'POS0004', 'Cashier By Date', 4, 'POS', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'POS0005', 'Receipt Maintenance', 5, 'POS', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'POS0006', 'Sales Mix by Department', 6, 'POS', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'POS0007', 'Item Sales Analisis', 7, 'POS', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'POS0008', 'Sales Void', 8, 'POS', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'POS0009', 'End of Day', 9, 'POS', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'POS0010', 'Laporan Pemakaian by Sales', 10, 'POS', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'POS0011', 'Transaction by Payment Type', 11, 'POS', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'POS0012', 'Refund Report', 12, 'POS', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'POS0013', 'Report Sales Item By Time', 13, 'POS', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'POS0014', 'Report Pajak', 14, 'POS', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'POS0015', 'Laporan Down Payment (DP)', 15, 'POS', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'POS0016', 'Laporan Selected by Item Detail', 16, 'POS', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'POS0017', 'Laporan Item Selected By Time', 17, 'POS', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'POS0018', 'Actual Stock Opname', 18, 'POS', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'POS0019', 'Laporan Product Efficiency', 19, 'POS', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'POS0020', 'Summary Sales by Item Code', 20, 'POS', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'POS0021', 'Laporan Item Selected By Product', 21, 'POS', 'R', 'A', 'REPORT' FROM dual
+            UNION ALL
+            SELECT 'PROGRAM', 'POS0022', 'Report Menu & Detail Modifier', 22, 'POS', 'R', 'A', 'REPORT' FROM dual
                 """;
             System.err.println("insert New Menu report");
             try{
+                jdbcTemplate.update(qryDelete, new HashMap());
                 jdbcTemplate.update(qryInsert, new HashMap());
-                return listGlobal(balance);
             } catch (DataAccessException e) {
                 System.err.println("Error insert New Menu report: " + e.getMessage());
             }
-        }
-        return list;
+            return listGlobal(balance);
     }
     ///////////////////done
     
@@ -1683,6 +1695,7 @@ public class ViewDoaImpl implements ViewDao {
         String transDate = getTransDate(balance.get("outletCode")).toLowerCase();
         LocalDate localDate = LocalDate.parse(transDate, format);
         LocalDate beforeTransDate = localDate.minusDays(30);
+        String status = "";
         String where = "";
         if (!balance.get("orderDate").equals("")) {
             where = " AND ORDER_DATE =:orderDate ";
@@ -1690,6 +1703,11 @@ public class ViewDoaImpl implements ViewDao {
             // where = "and ORDER_DATE between TO_CHAR(CURRENT_DATE-7,'dd-MON-yy') and TO_CHAR(CURRENT_DATE,'dd-MON-yy')";
             // WHERE CLOUSE USING BETWEEN TRANS_DATE AND ONE MONTH BEFORE TRANSDATE by Dani
             where = " and ORDER_DATE >= TO_DATE('" + beforeTransDate.format(format) + "', 'YYYY-MM-DD') AND ORDER_DATE <= TO_DATE('" + localDate.format(format) + "', 'YYYY-MM-DD') ";
+        }
+        if (!balance.get("status").equals("1")) {
+            status = "H.STATUS LIKE :status AND H.STATUS != '1' ";
+        } else {
+            status = " H.STATUS LIKE :status ";
         }
         String qry = "SELECT H.*, case when G.DESCRIPTION is null and  m.outlet_name is null then s.supplier_name  "
                 + "                when G.DESCRIPTION is null and s.supplier_name  is null then m.outlet_name else "
@@ -1702,7 +1720,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "               left join m_supplier S "
                 + "               on h.cd_supplier=s.cd_supplier "
                 + " LEFT JOIN HIST_KIRIM K ON K.NO_ORDER = H.ORDER_NO "
-                + "WHERE H.STATUS LIKE :status "
+                + "WHERE " + status + " "
                 + "AND H.ORDER_TYPE LIKE :orderType "
                 + "AND H.OUTLET_CODE = :outletCode "
                 + "AND H.Order_to LIKE :orderTo " + where + " "
@@ -3156,7 +3174,7 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> listReturnOrderHeader(Map<String, String> param) {
         Map<String, Object> sqlParam = new HashMap<>();
-        String query = "SELECT a.RETURN_NO, a.RETURN_DATE, a.REMARK, CASE WHEN a.TYPE_RETURN = '0' THEN 'Supplier' ELSE 'Gudang' "
+        String query = "SELECT a.RETURN_NO, a.RETURN_DATE, a.REMARK, CASE WHEN a.TYPE_RETURN = '0' THEN 'Supplier' WHEN a.TYPE_RETURN = '2' THEN 'FSD' ELSE 'Gudang' "
                 + "END AS TYPE_RETURN, CONCAT(b.DESCRIPTION, CONCAT(c.OUTLET_NAME, d.SUPPLIER_NAME)) AS return_to,"
                 + " a.STATUS FROM T_RETURN_HEADER a LEFT JOIN M_GLOBAL b ON a.RETURN_TO = b.CODE AND b.COND = :city"
                 + " LEFT JOIN M_OUTLET c ON a.RETURN_TO  = c.OUTLET_CODE LEFT JOIN M_SUPPLIER d ON a.RETURN_TO = d.CD_SUPPLIER ";
@@ -3225,7 +3243,9 @@ public class ViewDoaImpl implements ViewDao {
         if (param.get("typeReturn").equals("Gudang")) {
             query = "SELECT * FROM M_GLOBAL WHERE COND =:cond AND STATUS = 'A' ORDER BY CODE ASC";
             sqlParam.put("cond", param.get("cond"));
-
+        }
+        if (param.get("typeReturn").equals("FSD")) {
+            query = "SELECT * FROM M_GLOBAL WHERE COND = 'WAREHOUSE' AND CODE = '00009' AND STATUS = 'A' ORDER BY CODE ASC";
         }
         if (param.get("typeReturn").equals("Supplier")) {
             query = "SELECT * FROM M_SUPPLIER WHERE STATUS = 'A' ORDER BY SUPPLIER_NAME ASC";
@@ -3236,6 +3256,11 @@ public class ViewDoaImpl implements ViewDao {
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<String, Object>();
                 if (param.get("typeReturn").equals("Gudang")) {
+                    rt.put("code", rs.getString("CODE"));
+                    rt.put("description", rs.getString("DESCRIPTION"));
+                    rt.put("value", rs.getString("VALUE"));
+                    rt.put("status", rs.getString("STATUS"));
+                } else if (param.get("typeReturn").equals("FSD")) {
                     rt.put("code", rs.getString("CODE"));
                     rt.put("description", rs.getString("DESCRIPTION"));
                     rt.put("value", rs.getString("VALUE"));
@@ -3639,7 +3664,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "FROM T_MPCS_HIST WHERE MPCS_GROUP = :mpcsGroup AND MPCS_DATE = :dateMpcs "
                 + "AND TIME_UPD <= replace(:maxTime, '.' , '')||'00' "
                 + "AND TIME_UPD >= replace(:minTime, '.' , '')||'00' "
-                + "AND FRYER_TYPE != 'D'";
+                + "AND (FRYER_TYPE <> 'D' or FRYER_TYPE IS NULL)";
 
         Map prm = new HashMap();
         prm.put("mpcsGroup", balance.get("mpcsGroup"));
@@ -4350,7 +4375,7 @@ public class ViewDoaImpl implements ViewDao {
     ///////////////new method from aditya 30-01-2024////////////////////////////
     @Override
 public List<Map<String, Object>> listMpcsManagementFryer(Map<String, String> balance) {
-    String qry = "SELECT OUTLET_CODE, FRYER_TYPE, FRYER_DESCRIPTION, FRYER_NO, FRYER_MAXIMUM, ROUND(OIL_USE * CASE WHEN FRYER_TYPE = 'O' THEN 7 WHEN FRYER_TYPE = 'P' THEN 9 ELSE 1 END ) AS OIL_USE, ROUND( ( (OIL_USE / CASE WHEN FRYER_TYPE = 'O' THEN 7 WHEN FRYER_TYPE = 'P' THEN 9 ELSE 1 END ) / FRYER_MAXIMUM) * 100 ) AS PROGRESS FROM ( SELECT a.OUTLET_CODE, a.FRYER_TYPE, b.DESCRIPTION AS FRYER_DESCRIPTION, a.FRYER_TYPE_SEQ AS FRYER_NO, a.FRYER_TYPE_CNT AS OIL_USE, b.VALUE AS FRYER_MAXIMUM FROM M_MPCS_DETAIL a JOIN M_GLOBAL b ON a.FRYER_TYPE = b.CODE AND b.COND = 'FRYER' WHERE a.STATUS = 'A' AND a.OUTLET_CODE = :outletCode ) z GROUP BY OUTLET_CODE, FRYER_TYPE, FRYER_DESCRIPTION, OIL_USE, FRYER_MAXIMUM, FRYER_NO ORDER BY FRYER_TYPE ASC, FRYER_NO ASC";
+    String qry = "SELECT OUTLET_CODE, FRYER_TYPE, FRYER_DESCRIPTION, FRYER_NO, FRYER_MAXIMUM, ROUND((OIL_USE / CASE WHEN FRYER_TYPE = 'O' THEN 9 WHEN FRYER_TYPE = 'P' THEN 7 ELSE 1 END) ) AS OIL_USE, TO_CHAR(ROUND((((OIL_USE / CASE WHEN FRYER_TYPE = 'O' THEN 9 WHEN FRYER_TYPE = 'P' THEN 7 ELSE 1 END ) / FRYER_MAXIMUM) * 100 ),2), 'FM9999') AS PROGRESS FROM ( SELECT a.OUTLET_CODE, a.FRYER_TYPE, b.DESCRIPTION AS FRYER_DESCRIPTION, a.FRYER_TYPE_SEQ AS FRYER_NO, a.FRYER_TYPE_CNT AS OIL_USE, b.VALUE AS FRYER_MAXIMUM FROM M_MPCS_DETAIL a JOIN M_GLOBAL b ON a.FRYER_TYPE = b.CODE AND b.COND = 'FRYER' WHERE a.STATUS = 'A' AND a.OUTLET_CODE = :outletCode ) z GROUP BY OUTLET_CODE, FRYER_TYPE, FRYER_DESCRIPTION, OIL_USE, FRYER_MAXIMUM, FRYER_NO ORDER BY FRYER_TYPE ASC, FRYER_NO ASC";
     Map prm = new HashMap();
     prm.put("outletCode", balance.get("outletCode"));
 

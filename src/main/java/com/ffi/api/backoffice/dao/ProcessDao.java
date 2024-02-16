@@ -61,7 +61,7 @@ public interface ProcessDao {
 
     /////////////////////////////DONE///////////////////////////////////////////
     ///////////////NEW METHOD INSERT ORDER HEADER BY DONA 14 APRIL 2023////
-    public void insertOrderHeader(Map<String, String> mapping);
+    public Map<String,Object> insertOrderHeader(Map<String, String> mapping);
 
     /////////////////////////////DONE///////////////////////////////////////////
     ///////////////NEW METHOD INSERT ORDER DETAIL BY DONA 27 APRIL 2023////
@@ -185,4 +185,14 @@ public interface ProcessDao {
     
     //============== New Method From M Joko 5-2-2024 ================
     ResponseMessage processBackupDb(Map<String, Object> ref);
+    
+    //============== New Method From M Joko 13-2-2024 ================
+    ResponseMessage updateRecipe(Map<String, Object> ref);
+    
+    // Remove empty qty order entry by Fathur 15 Feb 2024 //
+    public void removeEmptyOrder(Map<String, String> mapping);
+
+    //============== New Method From Sifa 15-02-2024 -> Update CD WAREHOUSE M_ITEM ================
+    ResponseMessage updateCdWarehouseItem(Map<String, Object> mapping);
+
 }

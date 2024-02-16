@@ -39,16 +39,16 @@
       {
         "icon": "fa fa-cutlery",
         "name": "Menu",
-        "url": "/master/menu",
-        "badge": {
-          "color": "warning",
-          "text": "On Progress"
-        }
+        "url": "/master/menu"
       },
       {
         "icon": "fa fa-tags",
         "name": "Price",
-        "url": "/master/price"
+        "url": "/master/price",
+        "badge": {
+          "color": "warning",
+          "text": "On Progress"
+        }
       },
       {
         "icon": "fa fa-fire",
@@ -77,11 +77,7 @@
       {
         "icon": "fa fa-list",
         "name": "Item",
-        "url": "/master/item",
-        "badge": {
-          "color": "warning",
-          "text": "On Progress"
-        }
+        "url": "/master/item"
       },
       {
         "icon": "fa fa-list-alt",
@@ -96,12 +92,14 @@
       {
         "icon": "fa fa-calculator",
         "name": "Item Cost",
-        "url": "/master/item-cost"
+        "url": "/master/item-cost",
+        "groupId": ["HIDE"]
       },
       {
         "icon": "fa fa-th-large",
         "name": "Sales Recipe",
-        "url": "/master/sales-recipe"
+        "url": "/master/sales-recipe",
+        "groupId": ["HIDE"]
       }
     ]
   },
@@ -161,23 +159,14 @@
     "icon": "fa fa-file-pdf-o",
     "children": [
       {
-        "icon": "fa fa-archive",
-        "name": "Inventory",
-        "url": "/report/report"
+        "icon": "fa fa-file-pdf-o",
+        "name": "All Reports",
+        "url": "/report/all-report"
       },
       {
         "icon": "fa fa-industry",
         "name": "Mpcs Query",
-        "url": "/report/mpcs-query",
-        "badge": {
-          "color": "warning",
-          "text": "On Progress"
-        }
-      },
-      {
-        "icon": "fa fa-desktop",
-        "name": "Pos Report",
-        "url": "/report/pos-report"
+        "url": "/report/mpcs-query"
       },
       {
         "icon": "fa fa-list-ol",
