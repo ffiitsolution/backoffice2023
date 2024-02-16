@@ -2582,7 +2582,6 @@ public class IndexController {
         ResponseMessage rm = new ResponseMessage();
 
         try {
-            processServices.removeEmptyOrder(balance);
             processServices.sendDataOutletToWarehouse(balance);
 
             rm.setSuccess(true);
@@ -3865,13 +3864,20 @@ public class IndexController {
         @ApiResponse(code = 404, message = "The resource not found"),}
     )
     public @ResponseBody
-    Response removeEmptyOrder(@RequestBody String param) throws IOException, Exception {
+    ResponseMessage removeEmptyOrder(@RequestBody String param) throws IOException, Exception {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        Response res = new Response();
-        processServices.removeEmptyOrder(balance);
-        
-        return res;
+        ResponseMessage rm = new ResponseMessage();
+        try {   
+            processServices.removeEmptyOrder(balance);
+            rm.setMessage("Success");
+            rm.setSuccess(true);
+            return rm;
+        } catch (Exception e) {
+            rm.setMessage("Failed with error: " + e.getMessage());
+            rm.setSuccess(false);
+        }
+        return rm;
     }
 }
