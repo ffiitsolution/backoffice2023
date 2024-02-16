@@ -3614,7 +3614,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "FROM T_MPCS_HIST WHERE MPCS_GROUP = :mpcsGroup AND MPCS_DATE = :dateMpcs "
                 + "AND TIME_UPD <= replace(:maxTime, '.' , '')||'00' "
                 + "AND TIME_UPD >= replace(:minTime, '.' , '')||'00' "
-                + "AND FRYER_TYPE != 'D'";
+                + "AND (FRYER_TYPE <> 'D' or FRYER_TYPE IS NULL)";
 
         Map prm = new HashMap();
         prm.put("mpcsGroup", balance.get("mpcsGroup"));
