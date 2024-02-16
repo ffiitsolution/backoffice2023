@@ -8,10 +8,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ffi.api.backoffice.dao.ProcessDao;
 import com.ffi.api.backoffice.model.DetailOpname;
 import com.ffi.api.backoffice.model.HeaderOpname;
+import com.ffi.api.backoffice.model.TableAlias;
 import com.ffi.api.backoffice.utils.AppUtil;
 import com.ffi.api.backoffice.utils.DynamicRowMapper;
 import com.ffi.api.backoffice.utils.FileLoggerUtil;
 import com.ffi.api.backoffice.utils.RestApiUtil;
+import com.ffi.api.backoffice.utils.TableAliasUtil;
 import com.ffi.paging.ResponseMessage;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -67,6 +69,7 @@ import org.springframework.stereotype.Repository;
 public class ProcessDaoImpl implements ProcessDao {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final TableAliasUtil tableAliasUtil;
     DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HHmmss");
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy");
     // String LocalDateTime.now().format(timeFormatter) = new SimpleDateFormat("HHmmss").format(Calendar.getInstance().getTime());
@@ -76,8 +79,9 @@ public class ProcessDaoImpl implements ProcessDao {
     DateFormat dfYear = new SimpleDateFormat("yyyy");
 
     @Autowired
-    public ProcessDaoImpl(NamedParameterJdbcTemplate jdbcTemplate) {
+    public ProcessDaoImpl(NamedParameterJdbcTemplate jdbcTemplate, TableAliasUtil tableAliasUtil) {
         this.jdbcTemplate = jdbcTemplate;
+        this.tableAliasUtil = tableAliasUtil;
     }
 
     @Autowired
@@ -3514,47 +3518,82 @@ public class ProcessDaoImpl implements ProcessDao {
         ResponseMessage rm = new ResponseMessage();
         rm.setSuccess(false);
         List<Map<String, Object>> list = new ArrayList();
+        String date = mapping.get("date").toString();
+        Boolean isTerimaMaster = "TERIMA DATA MASTER".equals(mapping.get("type"));
+        Boolean isKirimTransaksi = "TRANSFER DATA TRANSAKSI".equals(mapping.get("type"));
         List<String> tables = (List<String>) mapping.getOrDefault("listTable", new ArrayList<String>());
-
-        try {
-            // todo
+        
+        if(isTerimaMaster){
+            try {
+                // todo: handle terima/kirim
+                for (String tableName : tables) {
+                    Gson gson = new Gson();
+                    Map<String, Object> map1;
+                    CloseableHttpClient client = HttpClients.createDefault();
+                    String url = urlMaster + "/get-data";
+                    HttpGet getData = new HttpGet(url);
+                    String outletId = mapping.get("outletCode").toString();
+                    URI uri = new URIBuilder(getData.getURI()).addParameter("param", tableName).addParameter("date", date).addParameter("outletId", outletId).build();
+                    getData.setURI(uri);
+                    System.err.println("listTransferData :" + uri);
+                    CloseableHttpResponse response = client.execute(getData);
+                    BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
+                    StringBuilder content = new StringBuilder();
+                    String line;
+                    while (null != (line = br.readLine())) {
+                        content.append(line);
+                    }
+                    String result = content.toString();
+                    map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
+                    }.getType());
+                    List<Map<String, Object>> listItem = (List<Map<String, Object>>) map1.get("item");
+                    if (listItem != null && !listItem.isEmpty()) {
+                        Map<String, Object> mapq = new HashMap();
+                        // Rubah nama tabel ke alias nya
+                        Optional<TableAlias> tbl = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M,"table",tableName);
+                        String aliasedTableName = tableName;
+                        if(tbl.isPresent()){
+                            aliasedTableName = tbl.get().getAlias();
+                        }
+                        mapq.put(aliasedTableName, listItem);
+                        list.add(mapq);
+                    }
+                }
+                rm.setItem(list);
+                rm.setSuccess(true);
+                rm.setMessage("Success get list.");
+            } catch (IOException | URISyntaxException ex) {
+                if(ex.getMessage().contains("Connection refused:")){
+                    rm.setMessage("Failed get list: Connection to HQ refused.");
+                } else {
+                    rm.setMessage("Failed get list: " + ex.getMessage());
+                }
+                
+                Logger.getLogger(ProcessDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else if(isKirimTransaksi){
             for (String tableName : tables) {
-                Gson gson = new Gson();
-                Map<String, Object> map1;
-                CloseableHttpClient client = HttpClients.createDefault();
-                String url = urlMaster + "/get-data";
-                HttpGet getData = new HttpGet(url);
-                String date = mapping.get("date").toString();
-                URI uri = new URIBuilder(getData.getURI()).addParameter("param", tableName).addParameter("date", date).build();
-                getData.setURI(uri);
-                CloseableHttpResponse response = client.execute(getData);
-                BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
-                StringBuilder content = new StringBuilder();
-                String line;
-                while (null != (line = br.readLine())) {
-                    content.append(line);
+                String conditionText = conditionTextTransfer(tableName, date);
+                String query = "SELECT * FROM " + tableName + conditionText;
+                Map prm = new HashMap();
+                List<Map<String, Object>> listItem = jdbcTemplate.query(query, prm, (ResultSet rs, int index) -> convertObject(rs));
+            if (listItem != null && !listItem.isEmpty()) {
+                Map<String, Object> mapq = new HashMap();
+                // Rubah nama tabel ke alias nya
+                Optional<TableAlias> tbl = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M,"table",tableName);
+                String aliasedTableName = tableName;
+                if(tbl.isPresent()){
+                    aliasedTableName = tbl.get().getAlias();
                 }
-                String result = content.toString();
-                map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
-                }.getType());
-                List<Map<String, Object>> listItem = (List<Map<String, Object>>) map1.get("item");
-                if (listItem != null && !listItem.isEmpty()) {
-                    Map<String, Object> mapq = new HashMap();
-                    mapq.put(tableName, listItem);
-                    list.add(mapq);
-                }
+                mapq.put(aliasedTableName, listItem);
+                list.add(mapq);
+            }
             }
             rm.setItem(list);
             rm.setSuccess(true);
             rm.setMessage("Success get list.");
-        } catch (IOException | URISyntaxException ex) {
-            if(ex.getMessage().contains("Connection refused:")){
-                rm.setMessage("Failed get list: Connection to HQ refused.");
-            } else {
-                rm.setMessage("Failed get list: " + ex.getMessage());
-            }
-            
-            Logger.getLogger(ProcessDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+        } else {
+            rm.setMessage("Type cannot be null.");
         }
         return rm;
     }
@@ -4287,7 +4326,7 @@ public class ProcessDaoImpl implements ProcessDao {
         return rm;
     }
     
-    // =========== End Method Copy Data Server From Lukas 17-10-2023 ===========
+    // =========== End Method Copy Data Server From M Joko 16-02-2024 ===========
     @Override
     public ResponseMessage updateRecipe(Map<String, Object> param) {
         ResponseMessage rm = new ResponseMessage();

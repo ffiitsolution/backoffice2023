@@ -3808,9 +3808,15 @@ public class IndexController {
     @RequestMapping(value = "/list-transfer-data", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
     ResponseMessage listTransferData(@RequestBody Map<String, Object> param) throws IOException, Exception {
-        String type = param.getOrDefault("type", "TERIMA DATA MASTER").toString();
         String typeTable = param.getOrDefault("type", "ALL").toString();
-        List<String> listTable = listTableMaster(typeTable);
+        Boolean isTerimaMaster = "TERIMA DATA MASTER".equals(param.get("type"));
+        Boolean isKirimTransaksi = "TRANSFER DATA TRANSAKSI".equals(param.get("type"));
+        List<String> listTable = new ArrayList();
+        if(isTerimaMaster){
+            listTable = listTableMaster(typeTable);
+        } else if(isKirimTransaksi){
+            listTable = listTableTransaction("All");
+        }
         param.put("listTable", listTable);
         return processServices.listTransferData(param);
     }
