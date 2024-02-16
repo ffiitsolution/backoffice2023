@@ -97,27 +97,56 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listSupplier(Map<String, Object> balance) {
-        String qry = "SELECT  CD_SUPPLIER, SUPPLIER_NAME, CP_NAME, FLAG_CANVASING, STATUS, ADDRESS_1, "
-                + "ADDRESS_2, CITY, ZIP_CODE, PHONE, FAX, HOMEPAGE, CP_TITLE, CP_MOBILE, CP_PHONE, "
-                + "CP_PHONE_EXT, CP_EMAIL, USER_UPD, DATE_UPD, TIME_UPD FROM m_supplier"
-                + " where status like :status"
-                + " and city LIKE :city"
-                + " and FLAG_CANVASING Like :flagCanvasing";      
-        if (balance.containsKey("isFSD")) {
-            boolean isFSD = (boolean) balance.get("isFSD");
-            qry += " AND (HOMEPAGE " + (isFSD ? "LIKE '%FSD%'" : "NOT LIKE '%FSD%' OR HOMEPAGE IS NULL") + ")";
+        StringBuilder qry = new StringBuilder("SELECT ms.CD_SUPPLIER, ms.SUPPLIER_NAME, ms.CP_NAME, ms.FLAG_CANVASING, ms.STATUS, ms.ADDRESS_1, ")
+                .append("ms.ADDRESS_2, ms.CITY, ms.ZIP_CODE, ms.PHONE, ms.FAX, ms.HOMEPAGE, ms.CP_TITLE, ms.CP_MOBILE, ms.CP_PHONE, ")
+                .append("ms.CP_PHONE_EXT, ms.CP_EMAIL, ms.USER_UPD, ms.DATE_UPD, ms.TIME_UPD");
+
+        if (balance.containsKey("withItems") && ((boolean) balance.get("withItems"))) {
+            qry.append(", mi.ITEM_CODE, mi.ITEM_DESCRIPTION");
         }
-        if (balance.containsKey("isSDD")) {
-            boolean isSDD = (boolean) balance.get("isSDD");
-            qry += " AND (HOMEPAGE " + (isSDD ? "LIKE '%SDD%'" : "NOT LIKE '%SDD%' OR HOMEPAGE IS NULL") + ")";
+
+        qry.append(" FROM M_SUPPLIER ms");
+
+        if (balance.containsKey("withItems") && ((boolean) balance.get("withItems"))) {
+            qry.append(" JOIN M_ITEM_SUPPLIER mis ON mis.CD_SUPPLIER = ms.CD_SUPPLIER ")
+            .append("JOIN M_ITEM mi ON mi.ITEM_CODE = mis.ITEM_CODE");
         }
-        qry += " order by cd_Supplier desc";
+
+        qry.append(" WHERE ms.status LIKE :status ")
+            .append("AND ms.city LIKE :city ")
+            .append("AND ms.FLAG_CANVASING LIKE :flagCanvasing ");
+
+        if (balance.containsKey("isFSD") || balance.containsKey("isSDD")) {
+            qry.append("AND (");
+            if (balance.containsKey("isFSD")) {
+                boolean isFSD = (boolean) balance.get("isFSD");
+                qry.append(isFSD ? "ms.HOMEPAGE LIKE '%FSD%'" : "(ms.HOMEPAGE NOT LIKE '%FSD%' OR ms.HOMEPAGE IS NULL)");
+            }
+            if (balance.containsKey("isSDD")) {
+                boolean isSDD = (boolean) balance.get("isSDD");
+                if (balance.containsKey("isFSD"))
+                    qry.append(" AND ");
+                qry.append(isSDD ? "ms.HOMEPAGE LIKE '%SDD%'" : "(ms.HOMEPAGE NOT LIKE '%SDD%' OR ms.HOMEPAGE IS NULL)");
+            }
+            qry.append(")");
+        }
+
+        if (balance.containsKey("withItems") && ((boolean) balance.get("withItems"))) {
+            qry.append(" GROUP BY ms.CD_SUPPLIER, ms.SUPPLIER_NAME, ms.CP_NAME, ms.FLAG_CANVASING, ms.STATUS, ms.ADDRESS_1, ")
+            .append("ms.ADDRESS_2, ms.CITY, ms.ZIP_CODE, ms.PHONE, ms.FAX, ms.HOMEPAGE, ms.CP_TITLE, ms.CP_MOBILE, ms.CP_PHONE, ")
+            .append("ms.CP_PHONE_EXT, ms.CP_EMAIL, ms.USER_UPD, ms.DATE_UPD, ms.TIME_UPD, mi.ITEM_CODE, mi.ITEM_DESCRIPTION");
+        }
+
+        qry.append(" ORDER BY ms.CD_SUPPLIER DESC");
+
+        String queryString = qry.toString();
+
         Map prm = new HashMap();
         prm.put("status", "%" + balance.get("status") + "%");
         prm.put("city", "%" + balance.get("city") + "%");
         prm.put("flagCanvasing", "%" + balance.get("flagCanvasing") + "%");
-        System.err.println("q :" + qry);
-        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+        System.err.println("q :" + queryString);
+        List<Map<String, Object>> list = jdbcTemplate.query(queryString, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap< String, Object>();
@@ -141,11 +170,41 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("userUpd", rs.getString("USER_UPD"));
                 rt.put("dateUpd", rs.getString("DATE_UPD"));
                 rt.put("timeUpd", rs.getString("TIME_UPD"));
-
+                if (balance.containsKey("withItems") && ((boolean) balance.get("withItems"))) {
+                    rt.put("itemCode", rs.getString("ITEM_CODE"));
+                    rt.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
+                }
                 return rt;
             }
         });
-        return list;
+        if (balance.containsKey("withItems") && ((boolean) balance.get("withItems"))) {
+            return transformListSupplierWithItems(list);
+        } else {
+            return list;
+        }
+        
+    }
+
+    public static List<Map<String, Object>> transformListSupplierWithItems(List<Map<String, Object>> originalList) {
+        Map<String, Map<String, Object>> supplierMap = new HashMap<>();
+
+        for (Map<String, Object> map : originalList) {
+            String supplierKey = (String) map.get("cdSupplier");
+            if (!supplierMap.containsKey(supplierKey)) {
+                supplierMap.put(supplierKey, new HashMap<>());
+                supplierMap.get(supplierKey).putAll(map);
+                supplierMap.get(supplierKey).put("items", new ArrayList<>());
+            }
+
+            @SuppressWarnings("unchecked")
+            List<Map<String, String>> items = (List<Map<String, String>>) supplierMap.get(supplierKey).get("items");
+            Map<String, String> itemMap = new HashMap<>();
+            itemMap.put("itemCode", (String) map.get("itemCode"));
+            itemMap.put("itemDescription", (String) map.get("itemDescription"));
+            items.add(itemMap);
+        }
+
+        return new ArrayList<>(supplierMap.values());
     }
     ///////////////////done
     ///////////////new method from dona 28-02-2023////////////////////////////
