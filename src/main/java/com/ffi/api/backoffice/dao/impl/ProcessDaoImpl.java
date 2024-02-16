@@ -503,7 +503,7 @@ public class ProcessDaoImpl implements ProcessDao {
             }
         } if (balance.get("orderTo").equals("2")) { // order ke outlet
             insertOrderDetailQuery = "INSERT INTO T_ORDER_DETAIL (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,TOTAL_QTY_STOCK,UNIT_PRICE,USER_UPD,DATE_UPD,TIME_UPD) "
-                + "SELECT :outletCode, :orderType, :orderId, :orderNo, item_code, 0, UOM_WAREHOUSE, 0, UOM_PURCHASE, 0, 0, :userUpd, :dateUpd, :timeUpd "
+                + "SELECT :outletCode, :orderType, :orderId, :orderNo, item_code, 0, UOM_PURCHASE, 0, UOM_STOCK, 0, 0, :userUpd, :dateUpd, :timeUpd "
                 + "FROM m_item "
                 + "WHERE SUBSTR(ITEM_CODE,1,1) != 'X' AND STATUS = 'A' AND FLAG_MATERIAL = 'Y' AND FLAG_STOCK = 'Y' ";
         }
