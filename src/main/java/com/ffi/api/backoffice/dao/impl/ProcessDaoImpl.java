@@ -3241,9 +3241,11 @@ public class ProcessDaoImpl implements ProcessDao {
 
     // Delete MPCS Production by Fathur 11 Jan 2024 //
     // Update for integration to stock card 17 Jan 2024 //
+    // Update for Delete Validation 16 Feb 20024 //
     @Transactional
     @Override
-    public boolean deleteMpcsProduction(Map<String, String> params) {
+    public ResponseMessage deleteMpcsProduction(Map<String, String> params) {
+        ResponseMessage rm = new ResponseMessage();
 
         Map prm = new HashMap();
         prm.put("userUpd", params.get("userUpd"));
@@ -3257,7 +3259,18 @@ public class ProcessDaoImpl implements ProcessDao {
         prm.put("outletCode", params.get("outletCode"));
         prm.put("seqMpcs", params.get("seqMpcs"));
         prm.put("histSeq", params.get("histSeq"));
+        String maxMinutesvalidation = "60";
 
+        String timeValidationQuery = "SELECT CASE WHEN TO_TIMESTAMP(TO_CHAR(SYSDATE, 'YYYYMMDD') || :timeUpd, 'YYYYMMDDHH24MISS') + INTERVAL '"+maxMinutesvalidation+"' MINUTE >= SYSDATE THEN 'Y' ELSE 'N' END AS ALLOW_DELETE FROM dual ";
+        String allowDelete = jdbcTemplate.queryForObject(timeValidationQuery, prm, String.class);
+
+        if (allowDelete.equals("N")) {
+            rm.setSuccess(false);
+            rm.setMessage("Tidak dapat menghapus data produksi lebih dari "+maxMinutesvalidation+" menit yang lalu");
+            rm.setItem(null);
+            return rm;
+        }
+        
         String updateQtyQuery = "UPDATE T_SUMM_MPCS "
                 + "SET QTY_PROD = (QTY_PROD - (SELECT (sum(QTY_STOCK) * :qtyMpcs) FROM m_recipe_product WHERE RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup))), "
                 + "PROD_BY = :userUpd, "
@@ -3326,8 +3339,10 @@ public class ProcessDaoImpl implements ProcessDao {
                 updateInsertStockCard_out_delete(newParam);
             }
         }
-
-        return true;
+        rm.setSuccess(true);
+        rm.setMessage("Succesfully delete mpcs production");
+        rm.setItem(null);
+        return rm;
     }
 
     // Update stock card detail from mpcs production

@@ -3350,15 +3350,7 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> data = gsn.fromJson(params, new TypeToken<Map<String, String>>() {
         }.getType());
-        ResponseMessage rm = new ResponseMessage();
-        if (processServices.deleteMpcsProduction(data)) {
-            rm.setSuccess(true);
-            rm.setMessage("Delete Successfuly");
-        } else {
-            rm.setSuccess(false);
-            rm.setMessage("Delete  Failed");
-        }
-        return rm;
+        return processServices.deleteMpcsProduction(data);
     }
 
     @RequestMapping(value = "/get-id-absensi", produces = MediaType.APPLICATION_JSON_VALUE)
