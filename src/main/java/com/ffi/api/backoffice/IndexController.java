@@ -1854,6 +1854,15 @@ public class IndexController {
         List<Map<String, Object>> list = new ArrayList<>();
         String status = "";
         ResponseMessage rm = new ResponseMessage();
+        
+        // Check connection to warehouse before sent data by Fathur 19 Feb 2024 //
+        String warehouseStatus = processServices.checkWarehouseConnection();
+        if (!warehouseStatus.equals("OK")){
+            rm.setSuccess(false);
+            rm.setMessage(warehouseStatus);
+            rm.setItem(null);
+            return rm;
+        }
 
         try {
             processServices.sendDataToWarehouse(balance);
@@ -2658,6 +2667,15 @@ public class IndexController {
         }.getType());
         List<Map<String, Object>> list = new ArrayList<>();
         ResponseMessage rm = new ResponseMessage();
+        
+        // Check connection to warehouse before sent data by Fathur 19 Feb 2024 //
+        String warehouseStatus = processServices.checkWarehouseConnection();
+        if (!warehouseStatus.equals("OK")){
+            rm.setSuccess(false);
+            rm.setMessage(warehouseStatus);
+            rm.setItem(null);
+            return rm;
+        }
 
         try {
             processServices.sendDataOutletToWarehouse(balance);

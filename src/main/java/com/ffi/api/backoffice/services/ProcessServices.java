@@ -337,4 +337,9 @@ public class ProcessServices {
     public ResponseMessage updateCdWarehouseItem(Map<String, Object> ref) {
         return dao.updateCdWarehouseItem(ref);
     }
+    
+    // Check connection to warehouse before sent data by Fathur 19 Feb 2024 //
+    public String checkWarehouseConnection() {
+        return dao.checkWarehouseConnection();
+    }
 }

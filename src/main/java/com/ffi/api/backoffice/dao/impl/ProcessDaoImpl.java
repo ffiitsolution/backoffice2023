@@ -25,8 +25,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -1177,6 +1179,22 @@ public class ProcessDaoImpl implements ProcessDao {
             e.printStackTrace();
         }
     }
+    
+    // Check connection to warehouse before sent data by Fathur 19 Feb 2024 //
+    @Override
+    public String checkWarehouseConnection() {
+        try {
+            HttpURLConnection connection = (HttpURLConnection) new URL(urlWarehouse).openConnection(); 
+            connection.setRequestMethod("GET");
+            connection.connect();             
+            connection.disconnect();
+            return ("OK");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ("Tidak dapat menghubungkan ke database Inventory. " +e.getMessage());
+        }
+    }
+    
 
     @Override
     public void sendDataToWarehouse(Map<String, String> balance) {

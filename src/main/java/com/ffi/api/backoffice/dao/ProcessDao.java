@@ -194,5 +194,7 @@ public interface ProcessDao {
 
     //============== New Method From Sifa 15-02-2024 -> Update CD WAREHOUSE M_ITEM ================
     ResponseMessage updateCdWarehouseItem(Map<String, Object> mapping);
-
+    
+    // Check connection to warehouse before sent data by Fathur 19 Feb 2024 //
+    public String checkWarehouseConnection();
 }
