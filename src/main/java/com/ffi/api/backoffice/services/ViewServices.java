@@ -484,6 +484,10 @@ public class ViewServices {
         return viewDao.listOutletHo(ref);
     }
 
+    public Boolean deliveryOrderCheckExistNoRequest(Map<String, String> ref) {
+        return viewDao.deliveryOrderCheckExistNoRequest(ref);
+    }
+
     //////// NEW METHOD get Delivery Order By Dani 27 Des 2023
     public Map<String, Object> getDeliveryOrder(Map<String, String> mapping) {
         return viewDao.getDeliveryOrder(mapping);

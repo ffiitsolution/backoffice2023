@@ -272,6 +272,9 @@ public interface ViewDao {
     ///////// NEW METHOD get HO Outlet List - Dani 22 Des 2023
     public List<Map<String, Object>> listOutletHo(Map<String, String> mapping);
 
+    ///////// NEW METHOD  check exists no request DO - Dani 19 Feb 2023
+    public Boolean deliveryOrderCheckExistNoRequest(Map<String, String> ref);
+
     //////// NEW METHOD get Delivery Order By Dani 27 Des 2023
     public Map<String, Object> getDeliveryOrder(Map<String, String> mapping);
 

@@ -3010,6 +3010,34 @@ public class IndexController {
         return rm;
     }
 
+    @RequestMapping(value = "/delivery-order-check-exist-no-request", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk insert delivery order", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage deliveryOrderCheckExistNoRequest(@RequestBody String param) throws JRException, IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> data = gsn.fromJson(param, new TypeToken<Map<String, String>>() {
+        }.getType());
+
+        var rm = new ResponseMessage();
+        try {
+            List<Boolean> list = new ArrayList<>();
+            list.add(viewServices.deliveryOrderCheckExistNoRequest(data));
+            rm.setSuccess(true);
+            rm.setMessage("Success Successfuly");
+            rm.setItem(list);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            rm.setSuccess(false);
+            rm.setMessage("Failed: " + e.getMessage());
+        }
+        return rm;
+    }
+
     // query to get Delivery order By Dani 27 Des 2023
     @RequestMapping(value = "/get-delivery-order", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk insert delivery order", response = Object.class)

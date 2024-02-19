@@ -3782,6 +3782,18 @@ public class ViewDoaImpl implements ViewDao {
         return list;
     }
 
+    ///////// NEW METHOD  check exists no request DO - Dani 19 Feb 2023
+    @Override
+    public Boolean deliveryOrderCheckExistNoRequest(Map<String, String> ref) {
+        String query = "SELECT CASE  "
+                +"        WHEN EXISTS (SELECT * FROM T_DEV_HEADER WHERE LOWER(request_no) = LOWER(:requestNo))  "
+                +"        THEN 'TRUE' "
+                +"        ELSE 'FALSE'  "
+                +"      END AS data_exists "
+                +"FROM dual";
+        return jdbcTemplate.queryForObject(query, ref, Boolean.class);
+    }
+
     ///////// NEW METHOD get Delivery Order outlet to outlet - Dani 22 Dec 2023
     public Map<String, Object> getDeliveryOrderOutletToOutlet(Map<String, String> mapping) {
         String json = "";
