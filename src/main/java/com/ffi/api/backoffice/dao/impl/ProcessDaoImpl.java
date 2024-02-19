@@ -1783,9 +1783,12 @@ public class ProcessDaoImpl implements ProcessDao {
     public void insertReturnOrderHeaderDetail(JsonObject param) {
         DateFormat df = new SimpleDateFormat("MM");
         DateFormat dfYear = new SimpleDateFormat("yyyy");
-        Date tgl = new Date();
-        String month = df.format(tgl);
-        String year = dfYear.format(tgl);
+        
+        Map balance = new HashMap();
+        balance.put("outletCode", param.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
+        LocalDate transDate = this.jdbcTemplate.queryForObject("SELECT TRANS_DATE FROM M_OUTLET WHERE OUTLET_CODE = :outletCode", balance, LocalDate.class);
+        String month = String.valueOf(transDate.getMonthValue());
+        String year = String.valueOf(transDate.getYear());
 
         String typeReturn = param.getAsJsonPrimitive("typeReturn").getAsString();
 
@@ -3509,9 +3512,12 @@ public class ProcessDaoImpl implements ProcessDao {
     public void insertMpcsManagementFryer(JsonObject param) {
         DateFormat df = new SimpleDateFormat("MM");
         DateFormat dfYear = new SimpleDateFormat("yyyy");
-        Date tgl = new Date();
-        String month = df.format(tgl);
-        String year = dfYear.format(tgl);
+        
+        Map balance = new HashMap();
+        balance.put("outletCode", param.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
+        LocalDate transDate = this.jdbcTemplate.queryForObject("SELECT TRANS_DATE FROM M_OUTLET WHERE OUTLET_CODE = :outletCode", balance, LocalDate.class);
+        String month = String.valueOf(transDate.getMonthValue());
+        String year = String.valueOf(transDate.getYear());
 
         String noProcess = returnOrderCounter(year, month, "FRY", param.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
 
