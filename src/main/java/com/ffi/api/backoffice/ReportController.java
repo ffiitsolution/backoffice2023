@@ -28,8 +28,11 @@ import java.util.Map;
 
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.export.HtmlExporter;
+import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
@@ -286,6 +289,37 @@ public class ReportController {
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
         } else
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/report-delivery-order-ex-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Mepampilkan report delivery order", response = Object.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    public ResponseEntity<?> jesperReportDeliveryOrderTest(@RequestBody String param, HttpServletResponse response) throws SQLException, JRException, IOException {
+        Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
+        Gson gsn = new Gson();
+        Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        Integer cekDataReport = viewServices.cekDataReport(prm, "deliveryOrder");
+        if (cekDataReport > 0) {
+            JasperPrint jasperPrint = reportServices.jesperReportDeliveryOrder(prm, conn);
+            conn.close();
+            JRXlsxExporter exporter = new JRXlsxExporter();
+            SimpleXlsxReportConfiguration reportConfigXLS = new SimpleXlsxReportConfiguration();
+            reportConfigXLS.setSheetNames(new String[]{"test"});
+            reportConfigXLS.setDetectCellType(true);
+            reportConfigXLS.setCollapseRowSpan(false);
+            exporter.setConfiguration(reportConfigXLS);
+            exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(response.getOutputStream()));
+            response.setHeader(
+                    HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=ex.xlsx;");
+            response.setContentType("application/octet-stream");
+            exporter.exportReport();
+            return ResponseEntity.ok().build();
+        } else
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data");
     }
 
     @CrossOrigin
@@ -1335,4 +1369,29 @@ public class ReportController {
 
     }
     ///////////////////////////////// done adit 30-01-2024 ///////////////////////////////////////
+
+    ////////////////// new Report MPCS Management Fryer by Pasca 16 Feb 2024
+    @CrossOrigin
+    @RequestMapping(value = "/report-transaksi-hd-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Menampilkan report transaksi hd", response = Object.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    public ResponseEntity<byte[]> jesperReportTransaksiHd(@RequestBody String param) throws SQLException, JRException, IOException {
+        Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
+        Gson gsn = new Gson();
+        Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+
+        JasperPrint jasperPrint = reportServices.jesperReportTransaksiHd(prm, conn);
+        conn.close();
+        if (!jasperPrint.getPages().isEmpty()) {
+            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "inline; filename=transaksiHd.pdf");
+            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        } else
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+
+    }
+    ///////////////////////////////// done Pasca 16-02-2024 ///////////////////////////////////////
 }

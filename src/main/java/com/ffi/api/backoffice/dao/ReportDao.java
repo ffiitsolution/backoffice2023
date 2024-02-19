@@ -113,4 +113,5 @@ public interface ReportDao {
     /////////// MPCS Management Fryer adit 30-01-2024
     JasperPrint jesperReportMpcsManagementFryer (Map<String, Object> param, Connection connection) throws JRException, IOException;
     /////////// done adit 30-01-2024
+    JasperPrint jesperReportTransaksiHd (Map<String, Object> param, Connection connection) throws JRException, IOException;
 }

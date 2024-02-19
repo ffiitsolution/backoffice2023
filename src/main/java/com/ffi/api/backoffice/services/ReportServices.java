@@ -273,4 +273,8 @@ public class ReportServices {
         return dao.jesperReportMpcsManagementFryer(param, connection);
     }
     ////////////// done adit 30-01-2024
+    public JasperPrint jesperReportTransaksiHd(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        return dao.jesperReportTransaksiHd(param, connection);
+    }
+
 }
