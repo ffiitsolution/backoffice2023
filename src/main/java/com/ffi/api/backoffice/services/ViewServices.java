@@ -572,4 +572,9 @@ public class ViewServices {
     public List<Map<String, Object>> listWarehouseFSD(Map<String, String> ref) {
         return viewDao.listWarehouseFSD(ref);
     }
+
+    // =============== New Method From M Joko 19-02-2024 ===============
+    public List<Map<String, Object>> listTransferDataHistory(Map<String, String> ref) {
+        return viewDao.listTransferDataHistory(ref);
+    }
 }

@@ -3974,4 +3974,22 @@ public class IndexController {
         }
         return rm;
     }
+
+    // =============== New Method From M Joko 19-02-2024 ===============
+    @RequestMapping(value = "/list-transfer-data-history", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk list gudang FSD", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listTransferDataHistory(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        Response res = new Response();
+        res.setData(viewServices.listTransferDataHistory(balance));
+        return res;
+    }
 }
