@@ -24,6 +24,9 @@
 	<parameter name="outletBrand" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
+	<parameter name="phone" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[SELECT
 	mmg.MENU_GROUP_CODE,
@@ -240,6 +243,13 @@
 				<textFieldExpression><![CDATA[$P{address2}]]></textFieldExpression>
 			</textField>
 			<textField>
+				<reportElement x="76" y="40" width="200" height="12" uuid="3368a974-d135-4499-83ed-ce012f516758"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Phone : " + $P{phone}]]></textFieldExpression>
+			</textField>
+			<textField>
 				<reportElement x="433" y="0" width="114" height="12" isPrintWhenDetailOverflows="true" uuid="7413e6fb-6c32-414b-91bb-c1c62e1a5ad4"/>
 				<textElement>
 					<font size="8"/>
@@ -363,6 +373,17 @@
 		<band height="6" splitType="Stretch"/>
 	</pageFooter>
 	<summary>
-		<band height="7" splitType="Stretch"/>
+		<band height="18" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="1" width="575" height="1" uuid="109c113c-fc85-484b-8e15-e5958fbbfafb"/>
+			</line>
+			<staticText>
+				<reportElement x="495" y="2" width="100" height="15" uuid="182d87b3-5e39-445a-81f6-8e4c1063a815"/>
+				<textElement>
+					<font size="8" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[--End of Report--]]></text>
+			</staticText>
+		</band>
 	</summary>
 </jasperReport>

@@ -273,7 +273,7 @@ public class ProcessServices {
     // Done Insert MPCS Production //   
 
     // Insert MPCS Production - Fathur 11 Jan 2024 //   
-    public boolean deleteMpcsProduction(Map<String, String> params) throws Exception {
+    public ResponseMessage deleteMpcsProduction(Map<String, String> params) throws Exception {
         return dao.deleteMpcsProduction(params);
     }
     // Done Insert MPCS Production //   
@@ -336,5 +336,10 @@ public class ProcessServices {
     //============== New Method From Sifa 15-02-2024 -> Update CD WAREHOUSE M_ITEM ================
     public ResponseMessage updateCdWarehouseItem(Map<String, Object> ref) {
         return dao.updateCdWarehouseItem(ref);
+    }
+    
+    // Check connection to warehouse before sent data by Fathur 19 Feb 2024 //
+    public String checkWarehouseConnection() {
+        return dao.checkWarehouseConnection();
     }
 }

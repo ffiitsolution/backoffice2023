@@ -157,7 +157,7 @@ public interface ProcessDao {
     public boolean insertMpcsProduction(Map<String, String> params) throws Exception;
     
     // Delete MPCS Production - Fathur 11 Jan 2024 // 
-    public boolean deleteMpcsProduction(Map<String, String> params) throws Exception;
+    ResponseMessage deleteMpcsProduction(Map<String, String> params) throws Exception;
 
     // Add Counter Print Receiving Dani 11 Jan 2024
     public void addCounterPrintReceiving(Map<String, Object> params);
@@ -194,5 +194,7 @@ public interface ProcessDao {
 
     //============== New Method From Sifa 15-02-2024 -> Update CD WAREHOUSE M_ITEM ================
     ResponseMessage updateCdWarehouseItem(Map<String, Object> mapping);
-
+    
+    // Check connection to warehouse before sent data by Fathur 19 Feb 2024 //
+    public String checkWarehouseConnection();
 }

@@ -8,10 +8,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ffi.api.backoffice.dao.ProcessDao;
 import com.ffi.api.backoffice.model.DetailOpname;
 import com.ffi.api.backoffice.model.HeaderOpname;
+import com.ffi.api.backoffice.model.TableAlias;
 import com.ffi.api.backoffice.utils.AppUtil;
 import com.ffi.api.backoffice.utils.DynamicRowMapper;
 import com.ffi.api.backoffice.utils.FileLoggerUtil;
 import com.ffi.api.backoffice.utils.RestApiUtil;
+import com.ffi.api.backoffice.utils.TableAliasUtil;
 import com.ffi.paging.ResponseMessage;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -23,8 +25,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -67,6 +71,7 @@ import org.springframework.stereotype.Repository;
 public class ProcessDaoImpl implements ProcessDao {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final TableAliasUtil tableAliasUtil;
     DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HHmmss");
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy");
     // String LocalDateTime.now().format(timeFormatter) = new SimpleDateFormat("HHmmss").format(Calendar.getInstance().getTime());
@@ -76,8 +81,9 @@ public class ProcessDaoImpl implements ProcessDao {
     DateFormat dfYear = new SimpleDateFormat("yyyy");
 
     @Autowired
-    public ProcessDaoImpl(NamedParameterJdbcTemplate jdbcTemplate) {
+    public ProcessDaoImpl(NamedParameterJdbcTemplate jdbcTemplate, TableAliasUtil tableAliasUtil) {
         this.jdbcTemplate = jdbcTemplate;
+        this.tableAliasUtil = tableAliasUtil;
     }
 
     @Autowired
@@ -499,7 +505,7 @@ public class ProcessDaoImpl implements ProcessDao {
             }
         } if (balance.get("orderTo").equals("2")) { // order ke outlet
             insertOrderDetailQuery = "INSERT INTO T_ORDER_DETAIL (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,TOTAL_QTY_STOCK,UNIT_PRICE,USER_UPD,DATE_UPD,TIME_UPD) "
-                + "SELECT :outletCode, :orderType, :orderId, :orderNo, item_code, 0, UOM_WAREHOUSE, 0, UOM_PURCHASE, 0, 0, :userUpd, :dateUpd, :timeUpd "
+                + "SELECT :outletCode, :orderType, :orderId, :orderNo, item_code, 0, UOM_PURCHASE, 0, UOM_STOCK, 0, 0, :userUpd, :dateUpd, :timeUpd "
                 + "FROM m_item "
                 + "WHERE SUBSTR(ITEM_CODE,1,1) != 'X' AND STATUS = 'A' AND FLAG_MATERIAL = 'Y' AND FLAG_STOCK = 'Y' ";
         }
@@ -1173,6 +1179,22 @@ public class ProcessDaoImpl implements ProcessDao {
             e.printStackTrace();
         }
     }
+    
+    // Check connection to warehouse before sent data by Fathur 19 Feb 2024 //
+    @Override
+    public String checkWarehouseConnection() {
+        try {
+            HttpURLConnection connection = (HttpURLConnection) new URL(urlWarehouse).openConnection(); 
+            connection.setRequestMethod("GET");
+            connection.connect();             
+            connection.disconnect();
+            return ("OK");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ("Tidak dapat menghubungkan ke database Inventory. " +e.getMessage());
+        }
+    }
+    
 
     @Override
     public void sendDataToWarehouse(Map<String, String> balance) {
@@ -3237,9 +3259,11 @@ public class ProcessDaoImpl implements ProcessDao {
 
     // Delete MPCS Production by Fathur 11 Jan 2024 //
     // Update for integration to stock card 17 Jan 2024 //
+    // Update for Delete Validation 16 Feb 20024 //
     @Transactional
     @Override
-    public boolean deleteMpcsProduction(Map<String, String> params) {
+    public ResponseMessage deleteMpcsProduction(Map<String, String> params) {
+        ResponseMessage rm = new ResponseMessage();
 
         Map prm = new HashMap();
         prm.put("userUpd", params.get("userUpd"));
@@ -3253,7 +3277,18 @@ public class ProcessDaoImpl implements ProcessDao {
         prm.put("outletCode", params.get("outletCode"));
         prm.put("seqMpcs", params.get("seqMpcs"));
         prm.put("histSeq", params.get("histSeq"));
+        String maxMinutesvalidation = "60";
 
+        String timeValidationQuery = "SELECT CASE WHEN TO_TIMESTAMP(TO_CHAR(SYSDATE, 'YYYYMMDD') || :timeUpd, 'YYYYMMDDHH24MISS') + INTERVAL '"+maxMinutesvalidation+"' MINUTE >= SYSDATE THEN 'Y' ELSE 'N' END AS ALLOW_DELETE FROM dual ";
+        String allowDelete = jdbcTemplate.queryForObject(timeValidationQuery, prm, String.class);
+
+        if (allowDelete.equals("N")) {
+            rm.setSuccess(false);
+            rm.setMessage("Tidak dapat menghapus data produksi lebih dari "+maxMinutesvalidation+" menit yang lalu");
+            rm.setItem(null);
+            return rm;
+        }
+        
         String updateQtyQuery = "UPDATE T_SUMM_MPCS "
                 + "SET QTY_PROD = (QTY_PROD - (SELECT (sum(QTY_STOCK) * :qtyMpcs) FROM m_recipe_product WHERE RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup))), "
                 + "PROD_BY = :userUpd, "
@@ -3322,8 +3357,10 @@ public class ProcessDaoImpl implements ProcessDao {
                 updateInsertStockCard_out_delete(newParam);
             }
         }
-
-        return true;
+        rm.setSuccess(true);
+        rm.setMessage("Succesfully delete mpcs production");
+        rm.setItem(null);
+        return rm;
     }
 
     // Update stock card detail from mpcs production
@@ -3514,47 +3551,82 @@ public class ProcessDaoImpl implements ProcessDao {
         ResponseMessage rm = new ResponseMessage();
         rm.setSuccess(false);
         List<Map<String, Object>> list = new ArrayList();
+        String date = mapping.get("date").toString();
+        Boolean isTerimaMaster = "TERIMA DATA MASTER".equals(mapping.get("type"));
+        Boolean isKirimTransaksi = "TRANSFER DATA TRANSAKSI".equals(mapping.get("type"));
         List<String> tables = (List<String>) mapping.getOrDefault("listTable", new ArrayList<String>());
-
-        try {
-            // todo
+        
+        if(isTerimaMaster){
+            try {
+                // todo: handle terima/kirim
+                for (String tableName : tables) {
+                    Gson gson = new Gson();
+                    Map<String, Object> map1;
+                    CloseableHttpClient client = HttpClients.createDefault();
+                    String url = urlMaster + "/get-data";
+                    HttpGet getData = new HttpGet(url);
+                    String outletId = mapping.get("outletCode").toString();
+                    URI uri = new URIBuilder(getData.getURI()).addParameter("param", tableName).addParameter("date", date).addParameter("outletId", outletId).build();
+                    getData.setURI(uri);
+                    System.err.println("listTransferData :" + uri);
+                    CloseableHttpResponse response = client.execute(getData);
+                    BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
+                    StringBuilder content = new StringBuilder();
+                    String line;
+                    while (null != (line = br.readLine())) {
+                        content.append(line);
+                    }
+                    String result = content.toString();
+                    map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
+                    }.getType());
+                    List<Map<String, Object>> listItem = (List<Map<String, Object>>) map1.get("item");
+                    if (listItem != null && !listItem.isEmpty()) {
+                        Map<String, Object> mapq = new HashMap();
+                        // Rubah nama tabel ke alias nya
+                        Optional<TableAlias> tbl = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M,"table",tableName);
+                        String aliasedTableName = tableName;
+                        if(tbl.isPresent()){
+                            aliasedTableName = tbl.get().getAlias();
+                        }
+                        mapq.put(aliasedTableName, listItem);
+                        list.add(mapq);
+                    }
+                }
+                rm.setItem(list);
+                rm.setSuccess(true);
+                rm.setMessage("Success get list.");
+            } catch (IOException | URISyntaxException ex) {
+                if(ex.getMessage().contains("Connection refused:")){
+                    rm.setMessage("Failed get list: Connection to HQ refused.");
+                } else {
+                    rm.setMessage("Failed get list: " + ex.getMessage());
+                }
+                
+                Logger.getLogger(ProcessDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else if(isKirimTransaksi){
             for (String tableName : tables) {
-                Gson gson = new Gson();
-                Map<String, Object> map1;
-                CloseableHttpClient client = HttpClients.createDefault();
-                String url = urlMaster + "/get-data";
-                HttpGet getData = new HttpGet(url);
-                String date = mapping.get("date").toString();
-                URI uri = new URIBuilder(getData.getURI()).addParameter("param", tableName).addParameter("date", date).build();
-                getData.setURI(uri);
-                CloseableHttpResponse response = client.execute(getData);
-                BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
-                StringBuilder content = new StringBuilder();
-                String line;
-                while (null != (line = br.readLine())) {
-                    content.append(line);
+                String conditionText = conditionTextTransfer(tableName, date);
+                String query = "SELECT * FROM " + tableName + conditionText;
+                Map prm = new HashMap();
+                List<Map<String, Object>> listItem = jdbcTemplate.query(query, prm, (ResultSet rs, int index) -> convertObject(rs));
+            if (listItem != null && !listItem.isEmpty()) {
+                Map<String, Object> mapq = new HashMap();
+                // Rubah nama tabel ke alias nya
+                Optional<TableAlias> tbl = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M,"table",tableName);
+                String aliasedTableName = tableName;
+                if(tbl.isPresent()){
+                    aliasedTableName = tbl.get().getAlias();
                 }
-                String result = content.toString();
-                map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
-                }.getType());
-                List<Map<String, Object>> listItem = (List<Map<String, Object>>) map1.get("item");
-                if (listItem != null && !listItem.isEmpty()) {
-                    Map<String, Object> mapq = new HashMap();
-                    mapq.put(tableName, listItem);
-                    list.add(mapq);
-                }
+                mapq.put(aliasedTableName, listItem);
+                list.add(mapq);
+            }
             }
             rm.setItem(list);
             rm.setSuccess(true);
             rm.setMessage("Success get list.");
-        } catch (IOException | URISyntaxException ex) {
-            if(ex.getMessage().contains("Connection refused:")){
-                rm.setMessage("Failed get list: Connection to HQ refused.");
-            } else {
-                rm.setMessage("Failed get list: " + ex.getMessage());
-            }
-            
-            Logger.getLogger(ProcessDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+        } else {
+            rm.setMessage("Type cannot be null.");
         }
         return rm;
     }
@@ -4287,7 +4359,7 @@ public class ProcessDaoImpl implements ProcessDao {
         return rm;
     }
     
-    // =========== End Method Copy Data Server From Lukas 17-10-2023 ===========
+    // =========== End Method Copy Data Server From M Joko 16-02-2024 ===========
     @Override
     public ResponseMessage updateRecipe(Map<String, Object> param) {
         ResponseMessage rm = new ResponseMessage();
