@@ -3557,5 +3557,118 @@ public class ReportDaoImpl implements ReportDao {
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }
+
+    @Override
+    public JasperPrint jesperReportTransaksiHd(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        Map<String, Object> hashMap = new HashMap<String, Object>();
+        hashMap.put("outletBrand", param.get("outletBrand"));
+        hashMap.put("fromDate", param.get("fromDate"));
+        hashMap.put("toDate", param.get("toDate"));
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("outletName", param.get("outletName"));
+        hashMap.put("address1", param.get("address1"));
+        hashMap.put("address2", param.get("address2"));
+        hashMap.put("phone", param.get("phone"));
+        hashMap.put("user", param.get("user"));
+        if (param.get("pilihanReport").toString().equalsIgnoreCase("Sales by Item")){
+            if (param.get("tipeTrans").toString().equalsIgnoreCase("All")){
+                hashMap.put("tipeTrans", "ZZZZZ");
+                hashMap.put("tipeTrans1", "A");
+                hashMap.put("tipeTrans2", "ZZZZZ");
+            } else if (param.get("tipeTrans").toString().equalsIgnoreCase("Cell Center")) {
+                hashMap.put("tipeTrans", param.get("tipeTrans"));
+                hashMap.put("tipeTrans1", "C");
+                hashMap.put("tipeTrans2", "C");
+            } else if (param.get("tipeTrans").toString().equalsIgnoreCase("Direct Call")) {
+                hashMap.put("tipeTrans", param.get("tipeTrans"));
+                hashMap.put("tipeTrans1", "D");
+                hashMap.put("tipeTrans2", "D");
+            } else if (param.get("tipeTrans").toString().equalsIgnoreCase("Mobile")) {
+                hashMap.put("tipeTrans", param.get("tipeTrans"));
+                hashMap.put("tipeTrans1", "M");
+                hashMap.put("tipeTrans2", "M");
+            } else if (param.get("tipeTrans").toString().equalsIgnoreCase("Web")) {
+                hashMap.put("tipeTrans", param.get("tipeTrans"));
+                hashMap.put("tipeTrans1", "W");
+                hashMap.put("tipeTrans2", "W");
+            }
+
+            if (param.get("sortBy").toString().equalsIgnoreCase("Sort By QTY")) {
+                hashMap.put("sortBy", " ITEM_QTY ");
+                hashMap.put("sortByName", "Quantity");
+            } else if (param.get("sortBy").toString().equalsIgnoreCase("Sort By AMOUNT")) {
+                hashMap.put("sortBy", " AMT ");
+                hashMap.put("sortByName", "Amount");
+            }
+
+            ClassPathResource classPathResource = new ClassPathResource("report/reportSalesByItemTransaksiHd.jrxml");
+            JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+            return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+
+        } else if (param.get("pilihanReport").toString().equalsIgnoreCase("Rekap Sales by Date")
+        || param.get("pilihanReport").toString().equalsIgnoreCase("Rekap Sales by Transaksi")) {
+            if (param.get("tipeTrans").toString().equalsIgnoreCase("All")){
+                hashMap.put("tipeTrans", param.get("tipeTrans"));
+                hashMap.put("tipeTrans1", "A");
+                hashMap.put("tipeTrans2", "ZZZZZ");
+            } else if (param.get("tipeTrans").toString().equalsIgnoreCase("Cell Center")) {
+                hashMap.put("tipeTrans", param.get("tipeTrans"));
+                hashMap.put("tipeTrans1", "C");
+                hashMap.put("tipeTrans2", "C");
+            } else if (param.get("tipeTrans").toString().equalsIgnoreCase("Direct Call")) {
+                hashMap.put("tipeTrans", param.get("tipeTrans"));
+                hashMap.put("tipeTrans1", "D");
+                hashMap.put("tipeTrans2", "D");
+            } else if (param.get("tipeTrans").toString().equalsIgnoreCase("Mobile")) {
+                hashMap.put("tipeTrans", param.get("tipeTrans"));
+                hashMap.put("tipeTrans1", "M");
+                hashMap.put("tipeTrans2", "M");
+            } else if (param.get("tipeTrans").toString().equalsIgnoreCase("Web")) {
+                hashMap.put("tipeTrans", param.get("tipeTrans"));
+                hashMap.put("tipeTrans1", "W");
+                hashMap.put("tipeTrans2", "W");
+            }
+
+            if (param.get("statusTrans").toString().equalsIgnoreCase("CLOSE")) {
+                hashMap.put("statusTrans1", "CLS");
+                hashMap.put("statusTrans2", "CLS");
+            } else if (param.get("statusTrans").toString().equalsIgnoreCase("CANCEL")) {
+                hashMap.put("statusTrans1", "CAN");
+                hashMap.put("statusTrans2", "CAN");
+            } else if (param.get("statusTrans").toString().equalsIgnoreCase("BAD")) {
+                hashMap.put("statusTrans1", "BAD");
+                hashMap.put("statusTrans2", "BAD");
+            }
+            ClassPathResource classPathResource = new ClassPathResource(param.get("pilihanReport").toString().equalsIgnoreCase("Rekap Sales by Date") ? "report/reportRekapSalesbyDateTransaksiHd.jrxml" : "report/reportRekapSalesByTransaksiHd.jrxml");
+            JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+            return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+        } else if (param.get("pilihanReport").toString().equalsIgnoreCase("Cancel/Bad Order")) {
+            if (param.get("tipeTrans").toString().equalsIgnoreCase("All")){
+                hashMap.put("tipeTrans", param.get("tipeTrans"));
+                hashMap.put("tipeTrans1", "A");
+                hashMap.put("tipeTrans2", "ZZZZZ");
+            } else if (param.get("tipeTrans").toString().equalsIgnoreCase("Cell Center")) {
+                hashMap.put("tipeTrans", param.get("tipeTrans"));
+                hashMap.put("tipeTrans1", "C");
+                hashMap.put("tipeTrans2", "C");
+            } else if (param.get("tipeTrans").toString().equalsIgnoreCase("Direct Call")) {
+                hashMap.put("tipeTrans", param.get("tipeTrans"));
+                hashMap.put("tipeTrans1", "D");
+                hashMap.put("tipeTrans2", "D");
+            } else if (param.get("tipeTrans").toString().equalsIgnoreCase("Mobile")) {
+                hashMap.put("tipeTrans", param.get("tipeTrans"));
+                hashMap.put("tipeTrans1", "M");
+                hashMap.put("tipeTrans2", "M");
+            } else if (param.get("tipeTrans").toString().equalsIgnoreCase("Web")) {
+                hashMap.put("tipeTrans", param.get("tipeTrans"));
+                hashMap.put("tipeTrans1", "W");
+                hashMap.put("tipeTrans2", "W");
+            }
+            ClassPathResource classPathResource = new ClassPathResource("report/reportCancelorBadOrderTransaksiHd.jrxml");
+            JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+            return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+        }
+        return null;
+    }
     /////////////////////// done adit 30-01-2024
 }

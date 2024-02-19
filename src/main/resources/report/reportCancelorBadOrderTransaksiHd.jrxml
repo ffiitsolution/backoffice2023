@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reportCancelorBadOrderTransaksiHd" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="088d5730-1a08-4f0e-917a-428523a7682d">
+    <property name="ireport.zoom" value="1.610510000000002"/>
+    <property name="ireport.x" value="0"/>
+    <property name="ireport.y" value="0"/>
+    <parameter name="user" class="java.lang.String"/>
+    <parameter name="outletName" class="java.lang.String"/>
+    <parameter name="address1" class="java.lang.String"/>
+    <parameter name="address2" class="java.lang.String"/>
+    <parameter name="phone" class="java.lang.String"/>
+    <parameter name="fromDate" class="java.lang.String"/>
+    <parameter name="toDate" class="java.lang.String"/>
+    <parameter name="tipeTrans" class="java.lang.String"/>
+    <parameter name="tipeTrans1" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="tipeTrans2" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="outletBrand" class="java.lang.String"/>
+    <queryString>
+        <![CDATA[SELECT
+	TRANS_DATE,
+	STATUSES,
+	BILL_NO,
+	ALASAN,
+	TIPE
+FROM
+	(
+	SELECT
+		TRANS_DATE,
+		CASE
+			WHEN DELIVERY_STATUS = 'BAD' THEN 'BAD ORDER'
+			WHEN DELIVERY_STATUS = 'CAN' THEN 'CANCEL'
+			ELSE 'CANCEL'
+		END AS STATUSES,
+		BILL_NO,
+		TOTAL_SALES,
+		NVL(B.DESCRIPTION, ' ') AS ALASAN,
+		CASE
+			WHEN A.BILL_NO LIKE '%W%' THEN 'W'
+			WHEN A.BILL_NO LIKE '%M%' THEN 'M'
+			WHEN A.BILL_NO NOT LIKE '%W%'
+			AND A.BILL_NO NOT LIKE '%W%'
+			AND A.FLAG_ONLINE =
+'Y' THEN 'C'
+			ELSE 'D'
+		END AS TIPE
+	FROM
+		T_POS_BILL A
+	LEFT JOIN M_GLOBAL B ON
+		A.REFUND_REASON_CODE = B.CODE
+		AND B.COND = 'CREASON'
+	WHERE
+		OUTLET_CODE = '0401'
+		AND DELIVERY_STATUS IN ('CAN', 'BAD')
+		AND TRANS_DATE
+BETWEEN $P{fromDate} AND $P{toDate}
+		AND ORDER_TYPE = 'HMD')
+WHERE
+	TIPE BETWEEN $P{tipeTrans1} AND $P{tipeTrans2}
+ORDER BY
+	trans_date,
+	statuses]]>
+    </queryString>
+    <field name="TRANS_DATE" class="java.sql.Timestamp"/>
+    <field name="STATUSES" class="java.lang.String"/>
+    <field name="BILL_NO" class="java.lang.String"/>
+    <field name="ALASAN" class="java.lang.String"/>
+    <field name="TIPE" class="java.lang.String"/>
+    <background>
+        <band splitType="Stretch"/>
+    </background>
+    <columnHeader>
+        <band height="115" splitType="Stretch">
+            <textField>
+                <reportElement x="56" y="30" width="203" height="11" uuid="1a90bdba-fdc2-445c-9a2d-570a69fd983f"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{address2}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="56" y="10" width="203" height="11" uuid="c9ab8d89-0677-49ff-994c-b2f45ad3cdf8"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{outletName}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="56" y="0" width="112" height="11" uuid="7488e48a-9f6a-4c53-b645-be132fbed64a"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="56" y="40" width="203" height="11" uuid="dba6aa55-fb9e-4342-951b-8d7faca77d23"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Phone :" + $P{phone}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="56" y="20" width="203" height="11" uuid="8d965fe7-83fe-4ccd-abb2-c1578f04b7cf"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{address1}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="421" y="10" width="66" height="11" uuid="617039da-c89c-4c7b-a900-3480ab421dfe"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[User Cetak]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="486" y="30" width="114" height="11" uuid="17d93d89-7616-458b-90cb-07be345f4b04"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[": " + new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="421" y="0" width="66" height="11" uuid="a8f9eacf-2752-4016-94bf-fb041df4bf32"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Halaman]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="486" y="10" width="114" height="11" uuid="426e3480-317c-4a89-a74f-5eb2c746e4e0"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[": " + $P{user}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="421" y="30" width="66" height="11" uuid="82f849f2-a936-425b-b91c-5def55a84b61"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Jam Cetak]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="421" y="20" width="66" height="11" uuid="238a8cb6-2ba8-40c5-b5f1-c8970b22e141"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Tanggal Cetak]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="486" y="20" width="114" height="11" uuid="3a6ff5de-72ef-47a0-be08-9e917282d8f4"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[": " + new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="486" y="0" width="114" height="11" uuid="e7ac4b08-bbd9-44cd-98a8-5de1ec96f8a3"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[": " + $V{PAGE_NUMBER}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="0" y="51" width="555" height="19" uuid="5b95eec4-6aa7-47f2-a88e-74c8f4b88567"/>
+                <textElement textAlignment="Center">
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[LAPORAN BAD/CANCEL ORDER (HD)]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="0" y="80" width="55" height="11" uuid="f845829d-341b-497a-b658-c513a032c83e"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Trans. Type]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="0" y="70" width="55" height="11" uuid="69a5a459-17af-47da-9e82-2eb267436b30"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Periode       ]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="54" y="80" width="283" height="11" uuid="d42be27a-cfe3-448e-83af-bac04bbe3459"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[": " + $P{tipeTrans}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="54" y="70" width="283" height="11" uuid="de621428-d45f-4495-8a4b-044dc8527cca"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd-MMM-yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{fromDate})) + " - " + new SimpleDateFormat("dd-MMM-yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{toDate}))]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="0" y="96" width="50" height="15" uuid="d3fb3339-c7d4-4a91-8bc8-225a50c9b600"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Date]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="49" y="96" width="79" height="15" uuid="1a32ab9f-7be9-4967-bc5f-26fd6fa01c31"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Status]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="127" y="96" width="90" height="15" uuid="8f433992-f419-45c1-a736-ef21f177f3fc"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Bill. No]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="216" y="96" width="229" height="15" uuid="bc3451d0-2bff-4c53-a42e-62687fd4fa06"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Reason]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="444" y="96" width="90" height="15" uuid="87ded53e-68e0-4549-8a59-ff37cff62f9b"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Type]]></text>
+            </staticText>
+            <line>
+                <reportElement x="0" y="94" width="555" height="1" uuid="6bee10d4-2cc8-457a-9770-71a5fa569b21"/>
+            </line>
+            <line>
+                <reportElement x="0" y="112" width="555" height="1" uuid="cb245a13-c111-4b86-ac0a-75e3853a5ddc"/>
+            </line>
+            <image scaleImage="FillFrame" isUsingCache="false">
+                <reportElement x="0" y="0" width="48" height="48" isPrintWhenDetailOverflows="true" uuid="e4a0d850-ebd0-4550-ae25-8008f9b8cef7"/>
+                <imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
+            </image>
+        </band>
+    </columnHeader>
+    <detail>
+        <band height="17" splitType="Stretch">
+            <textField>
+                <reportElement x="0" y="0" width="50" height="15" uuid="59131f41-9d94-43b4-93c0-b260194dd2ef"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($F{TRANS_DATE})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="49" y="0" width="79" height="15" uuid="1e1d4901-d859-4d34-8fa0-a8878e7a3276"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{STATUSES}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="127" y="0" width="90" height="15" uuid="92242347-e2be-4f19-b05f-2215ce522bfd"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{BILL_NO}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="216" y="0" width="229" height="15" uuid="adba09c0-cd46-490f-aff5-302d4fb67570"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{ALASAN}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="444" y="0" width="90" height="15" uuid="8fc650bb-accf-4e63-8051-ea7eb6740e88">
+                    <printWhenExpression><![CDATA[$F{TIPE}.equals( "M" )]]></printWhenExpression>
+                </reportElement>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Mobl]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="444" y="0" width="90" height="15" uuid="8ab80487-0665-4885-975a-abf97071d580">
+                    <printWhenExpression><![CDATA[$F{TIPE}.equals( "C" )]]></printWhenExpression>
+                </reportElement>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[CalC]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="444" y="0" width="90" height="15" uuid="31c36ef6-f162-4119-99fa-cabcc39188c5">
+                    <printWhenExpression><![CDATA[$F{TIPE}.equals( "D" )]]></printWhenExpression>
+                </reportElement>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[DirC]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="444" y="0" width="90" height="15" uuid="56bf0e49-6d82-4076-af67-0d0a5de08603">
+                    <printWhenExpression><![CDATA[$F{TIPE}.equals( "W" )]]></printWhenExpression>
+                </reportElement>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Web]]></text>
+            </staticText>
+        </band>
+    </detail>
+    <summary>
+        <band height="25" splitType="Stretch">
+            <line>
+                <reportElement x="0" y="0" width="555" height="1" uuid="9e78bcec-26a8-4a5c-bdb9-02b1a320f635"/>
+            </line>
+            <staticText>
+                <reportElement x="463" y="2" width="100" height="15" uuid="20d040fa-3049-4f8e-94de-b85a0868f136"/>
+                <textElement>
+                    <font size="8" isItalic="true"/>
+                </textElement>
+                <text><![CDATA[--End of Report--]]></text>
+            </staticText>
+        </band>
+    </summary>
+</jasperReport>

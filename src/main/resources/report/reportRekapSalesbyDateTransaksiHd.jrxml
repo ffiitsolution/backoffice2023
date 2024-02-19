@@ -1,0 +1,814 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reportRekapSalesbyDateTransaksiHd" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="cc2a0e6f-5f6c-41e7-b7de-9ddd015676c3">
+    <property name="ireport.zoom" value="1.1000000000000045"/>
+    <property name="ireport.x" value="0"/>
+    <property name="ireport.y" value="0"/>
+    <parameter name="outletName" class="java.lang.String"/>
+    <parameter name="address1" class="java.lang.String"/>
+    <parameter name="address2" class="java.lang.String"/>
+    <parameter name="phone" class="java.lang.String"/>
+    <parameter name="fromDate" class="java.lang.String"/>
+    <parameter name="toDate" class="java.lang.String"/>
+    <parameter name="tipeTrans" class="java.lang.String"/>
+    <parameter name="statusTrans1" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="statusTrans2" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="outletCode" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="tipeTrans1" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="tipeTrans2" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <parameter name="user" class="java.lang.String"/>
+    <parameter name="outletBrand" class="java.lang.String"/>
+    <queryString>
+        <![CDATA[SELECT
+	TRANS_DATE,
+	STATUSES,
+	SUM(TOTAL_TRX) AS TRX,
+	SUM(AMT) AS AMT,
+	CASE
+		WHEN
+		statuses = 'CLOSED' THEN SUM(TAX)
+		ELSE 0
+	END AS TAX,
+	CASE
+		WHEN STATUSES = 'CLOSED'
+THEN SUM(BIAYA_KIRIM)
+		ELSE 0
+	END AS BIAYA_KIRIM,
+	CASE
+		WHEN statuses = 'CLOSED'
+THEN SUM(TOTAL_SALES)
+		ELSE 0
+	END AS SALES,
+	SUM(TUNAI) AS TUNAI,
+	SUM(VOUCHER) AS VOUCHER,
+	SUM(KARTU) AS KARTU,
+	TIPE
+FROM
+	(
+	SELECT
+		TRANS_DATE,
+		STATUSES,
+		TOTAL_TRX,
+		AMT,
+		TAX,
+		BIAYA_KIRIM,
+		TOTAL_SALES,
+		TUNAI,
+		VOUCHER,
+		KARTU,
+		TIPE
+	FROM
+		(
+		SELECT
+			A.TRANS_DATE,
+			CASE
+				WHEN DELIVERY_STATUS = 'BAD' THEN 'BAD ORDER'
+				WHEN DELIVERY_STATUS = 'CAN' THEN 'CANCEL'
+				WHEN DELIVERY_STATUS = 'ORD' THEN 'ORDER'
+				WHEN DELIVERY_STATUS = 'PCK' THEN 'PACK'
+				WHEN DELIVERY_STATUS = 'DLV' THEN 'DELIVERED'
+				WHEN DELIVERY_STATUS = 'CLS' THEN 'CLOSED'
+				ELSE 'ANEH'
+			END AS STATUSES,
+			CASE
+				WHEN A.BILL_NO LIKE '%W%' THEN 'W'
+				WHEN A.BILL_NO LIKE '%M%' THEN 'M'
+				WHEN A.BILL_NO NOT LIKE '%W%'
+				AND A.BILL_NO NOT LIKE '%M%'
+				AND A.FLAG_ONLINE =
+'Y' THEN 'C'
+				ELSE 'D'
+			END AS TIPE,
+			COUNT(A.BILL_NO) AS TOTAL_TRX,
+			SUM(TOTAL_AMOUNT) AS AMT,
+			SUM(TOTAL_TAX) AS TAX,
+			SUM(TOTAL_CHARGE + TOTAL_TAX_CHARGE) AS BIAYA_KIRIM,
+			SUM(TOTAL_SALES) AS
+TOTAL_SALES,
+			0 AS TUNAI,
+			0 AS VOUCHER,
+			0 AS KARTU,
+			' ' AS PAYMENT_METHOD_CODE
+		FROM
+			T_POS_BILL A
+		WHERE
+			A.DELIVERY_STATUS BETWEEN $P{statusTrans1} AND $P{statusTrans2}
+			AND A.OUTLET_CODE = $P{outletCode}
+			AND
+A.ORDER_TYPE = 'HMD'
+			AND A.TRANS_dATE BETWEEN $P{fromDate} AND $P{toDate}
+		GROUP BY
+			A.TRANS_DATE,
+			CASE
+				WHEN DELIVERY_STATUS = 'BAD' THEN 'BAD ORDER'
+				WHEN DELIVERY_STATUS = 'CAN' THEN 'CANCEL'
+				WHEN DELIVERY_STATUS = 'ORD' THEN 'ORDER'
+				WHEN DELIVERY_STATUS = 'PCK' THEN 'PACK'
+				WHEN DELIVERY_STATUS = 'DLV' THEN 'DELIVERED'
+				WHEN DELIVERY_STATUS = 'CLS' THEN 'CLOSED'
+				ELSE 'ANEH'
+			END,
+			CASE
+				WHEN A.BILL_NO LIKE '%W%' THEN 'W'
+				WHEN A.BILL_NO LIKE '%M%' THEN 'M'
+				WHEN A.BILL_NO NOT LIKE '%W%'
+				AND A.BILL_NO NOT LIKE '%M%'
+				AND A.FLAG_ONLINE =
+'Y' THEN 'C'
+				ELSE 'D'
+			END
+)
+UNION ALL
+	SELECT
+		TRANS_DATE,
+		STATUSES,
+		TOTAL_TRX,
+		AMT,
+		TAX,
+		BIAYA_KIRIM,
+		TOTAL_SALES,
+		TUNAI,
+		VOUCHER,
+		KARTU,
+		TIPE
+	FROM
+		(
+		SELECT
+			A.TRANS_DATE,
+			CASE
+				WHEN DELIVERY_STATUS = 'BAD' THEN 'BAD ORDER'
+				WHEN DELIVERY_STATUS = 'CAN' THEN 'CANCEL'
+				WHEN DELIVERY_STATUS = 'ORD' THEN 'ORDER'
+				WHEN DELIVERY_STATUS = 'PCK' THEN 'PACK'
+				WHEN DELIVERY_STATUS = 'DLV' THEN 'DELIVERED'
+				WHEN DELIVERY_STATUS = 'CLS' THEN 'CLOSED'
+				ELSE 'ANEH'
+			END AS STATUSES,
+			CASE
+				WHEN A.BILL_NO LIKE '%W%' THEN 'W'
+				WHEN A.BILL_NO LIKE '%M%' THEN 'M'
+				WHEN A.BILL_NO NOT LIKE '%W%'
+					AND A.BILL_NO NOT LIKE '%M%'
+					AND A.FLAG_ONLINE =
+'Y' THEN 'C'
+					ELSE 'D'
+				END AS TIPE,
+				0 AS TOTAL_TRX,
+				0 AS AMT,
+				0 AS TAX,
+				0 AS BIAYA_KIRIM,
+				0 AS TOTAL_SALES,
+				SUM(PAYMENT_USED) AS TUNAI,
+				0 AS VOUCHER,
+				0
+AS KARTU,
+				B.PAYMENT_METHOD_CODE
+			FROM
+				T_POS_BILL A
+			JOIN T_POS_BILL_PAYMENT B ON
+				A.OUTLET_CODE = B.OUTLET_CODE
+				AND A.POS_CODE =
+B.POS_CODE
+				AND
+A.TRANS_dATE = B.TRANS_DATE
+				AND A.BILL_NO = B.BILL_NO
+				AND B.PAYMENT_METHOD_CODE
+= 'CSH'
+				AND A.ORDER_TYPE = 'HMD'
+				WHERE A.DELIVERY_STATUS BETWEEN $P{statusTrans1} AND $P{statusTrans2}
+				AND A.OUTLET_CODE = $P{outletCode}
+				AND A.TRANS_dATE BETWEEN $P{fromDate} AND $P{toDate}
+			GROUP BY
+				A.TRANS_DATE,
+				B.PAYMENT_METHOD_CODE,
+				CASE
+					WHEN DELIVERY_STATUS = 'BAD' THEN 'BAD ORDER'
+					WHEN DELIVERY_STATUS = 'CAN' THEN 'CANCEL'
+					WHEN DELIVERY_STATUS = 'ORD' THEN 'ORDER'
+					WHEN DELIVERY_STATUS = 'PCK' THEN 'PACK'
+					WHEN DELIVERY_STATUS = 'DLV' THEN 'DELIVERED'
+					WHEN DELIVERY_STATUS = 'CLS' THEN 'CLOSED'
+					ELSE 'ANEH'
+				END,
+				CASE
+					WHEN A.BILL_NO LIKE '%W%' THEN 'W'
+					WHEN A.BILL_NO LIKE '%M%' THEN 'M'
+					WHEN A.BILL_NO NOT LIKE '%W%'
+					AND A.BILL_NO NOT LIKE '%M%'
+					AND A.FLAG_ONLINE =
+'Y' THEN 'C'
+					ELSE 'D'
+				END
+)
+	WHERE
+		PAYMENT_METHOD_CODE = 'CSH'
+UNION ALL
+	SELECT
+		TRANS_DATE,
+		STATUSES,
+		TOTAL_TRX,
+		AMT,
+		TAX,
+		BIAYA_KIRIM,
+		TOTAL_SALES,
+		TUNAI,
+		VOUCHER,
+		KARTU,
+		TIPE
+	FROM
+		(
+		SELECT
+			A.TRANS_DATE,
+			CASE
+				WHEN DELIVERY_STATUS = 'BAD' THEN 'BAD ORDER'
+				WHEN DELIVERY_STATUS = 'CAN' THEN 'CANCEL'
+				WHEN DELIVERY_STATUS = 'ORD' THEN 'ORDER'
+				WHEN DELIVERY_STATUS = 'PCK' THEN 'PACK'
+				WHEN DELIVERY_STATUS = 'DLV' THEN 'DELIVERED'
+				WHEN DELIVERY_STATUS = 'CLS' THEN 'CLOSED'
+				ELSE 'ANEH'
+			END AS STATUSES,
+			CASE
+				WHEN A.BILL_NO LIKE '%W%' THEN 'W'
+				WHEN A.BILL_NO LIKE '%M%' THEN 'M'
+				WHEN A.BILL_NO NOT LIKE '%W%'
+					AND A.BILL_NO NOT LIKE '%M%'
+					AND A.FLAG_ONLINE =
+'Y' THEN 'C'
+					ELSE 'D'
+				END AS TIPE,
+				0 AS TOTAL_TRX,
+				0 AS AMT,
+				0 AS TAX,
+				0 AS BIAYA_KIRIM,
+				0 AS TOTAL_SALES,
+				0 AS TUNAI,
+				0 AS VOUCHER,
+				SUM(PAYMENT_USED)
+AS KARTU,
+				'CARD' AS PAYMENT_METHOD_CODE
+			FROM
+				T_POS_BILL A
+			JOIN T_POS_BILL_PAYMENT B ON
+				A.OUTLET_CODE = B.OUTLET_CODE
+				AND A.POS_CODE =
+B.POS_CODE
+				AND
+A.TRANS_dATE = B.TRANS_DATE
+				AND A.BILL_NO = B.BILL_NO
+				AND B.PAYMENT_METHOD_CODE
+IN ('PNT', 'FLZ', 'MND', 'CRC')
+					AND A.ORDER_TYPE = 'HMD'
+					WHERE A.DELIVERY_STATUS BETWEEN $P{statusTrans1} AND $P{statusTrans2}
+					AND A.OUTLET_CODE = $P{outletCode}
+					AND A.TRANS_dATE BETWEEN $P{fromDate} AND $P{toDate}
+				GROUP BY
+					A.TRANS_DATE,
+					CASE
+						WHEN DELIVERY_STATUS = 'BAD' THEN 'BAD ORDER'
+						WHEN DELIVERY_STATUS = 'CAN' THEN 'CANCEL'
+						WHEN DELIVERY_STATUS = 'ORD' THEN 'ORDER'
+						WHEN DELIVERY_STATUS = 'PCK' THEN 'PACK'
+						WHEN DELIVERY_STATUS = 'DLV' THEN 'DELIVERED'
+						WHEN DELIVERY_STATUS = 'CLS' THEN 'CLOSED'
+						ELSE 'ANEH'
+					END,
+					CASE
+						WHEN A.BILL_NO LIKE '%W%' THEN 'W'
+						WHEN A.BILL_NO LIKE '%M%' THEN 'M'
+						WHEN A.BILL_NO NOT LIKE '%W%'
+						AND A.BILL_NO NOT LIKE '%M%'
+						AND A.FLAG_ONLINE =
+'Y' THEN 'C'
+						ELSE 'D'
+					END
+)
+	WHERE
+		PAYMENT_METHOD_CODE = 'CARD'
+UNION ALL
+	SELECT
+		TRANS_DATE,
+		STATUSES,
+		TOTAL_TRX,
+		AMT,
+		TAX,
+		BIAYA_KIRIM,
+		TOTAL_SALES,
+		TUNAI,
+		VOUCHER,
+		KARTU,
+		TIPE
+	FROM
+		(
+		SELECT
+			A.TRANS_DATE,
+			CASE
+				WHEN DELIVERY_STATUS = 'BAD' THEN 'BAD ORDER'
+				WHEN DELIVERY_STATUS = 'CAN' THEN 'CANCEL'
+				WHEN DELIVERY_STATUS = 'ORD' THEN 'ORDER'
+				WHEN DELIVERY_STATUS = 'PCK' THEN 'PACK'
+				WHEN DELIVERY_STATUS = 'DLV' THEN 'DELIVERED'
+				WHEN DELIVERY_STATUS = 'CLS' THEN 'CLOSED'
+				ELSE 'ANEH'
+			END AS STATUSES,
+			CASE
+				WHEN A.BILL_NO LIKE '%W%' THEN 'W'
+				WHEN A.BILL_NO LIKE '%M%' THEN 'M'
+				WHEN A.BILL_NO NOT LIKE '%W%'
+					AND A.BILL_NO NOT LIKE '%M%'
+					AND A.FLAG_ONLINE =
+'Y' THEN 'C'
+					ELSE 'D'
+				END AS TIPE,
+				0 AS TOTAL_TRX,
+				0 AS AMT,
+				0 AS TAX,
+				0 AS BIAYA_KIRIM,
+				0 AS TOTAL_SALES,
+				0 AS TUNAI,
+				SUM(PAYMENT_USED) AS VOUCHER,
+				0
+AS KARTU,
+				B.PAYMENT_METHOD_CODE
+			FROM
+				T_POS_BILL A
+			JOIN T_POS_BILL_PAYMENT B ON
+				A.OUTLET_CODE = B.OUTLET_CODE
+				AND A.POS_CODE =
+B.POS_CODE
+				AND
+A.TRANS_dATE = B.TRANS_DATE
+				AND A.BILL_NO = B.BILL_NO
+				AND B.PAYMENT_METHOD_CODE
+= 'VCR'
+				AND A.ORDER_TYPE = 'HMD'
+				WHERE A.DELIVERY_STATUS BETWEEN $P{statusTrans1} AND $P{statusTrans2}
+				AND A.OUTLET_CODE = $P{outletCode}
+				AND A.TRANS_dATE BETWEEN $P{fromDate} AND $P{toDate}
+			GROUP BY
+				A.TRANS_DATE,
+				B.PAYMENT_METHOD_CODE,
+				CASE
+					WHEN DELIVERY_STATUS = 'BAD' THEN 'BAD ORDER'
+					WHEN DELIVERY_STATUS = 'CAN' THEN 'CANCEL'
+					WHEN DELIVERY_STATUS = 'ORD' THEN 'ORDER'
+					WHEN DELIVERY_STATUS = 'PCK' THEN 'PACK'
+					WHEN DELIVERY_STATUS = 'DLV' THEN 'DELIVERED'
+					WHEN DELIVERY_STATUS = 'CLS' THEN 'CLOSED'
+					ELSE 'ANEH'
+				END,
+				CASE
+					WHEN A.BILL_NO LIKE '%W%' THEN 'W'
+					WHEN A.BILL_NO LIKE '%M%' THEN 'M'
+					WHEN A.BILL_NO NOT LIKE '%W%'
+					AND A.BILL_NO NOT LIKE '%M%'
+					AND A.FLAG_ONLINE =
+'Y' THEN 'C'
+					ELSE 'D'
+				END
+)
+	WHERE
+		PAYMENT_METHOD_CODE = 'VCR'
+)
+WHERE
+	TIPE BETWEEN $P{tipeTrans1} AND $P{tipeTrans2}
+GROUP BY
+	TRANS_DATE,
+	STATUSES,
+	TIPE
+ORDER BY
+	TRANS_DATE,
+	TIPE,
+	STATUSES]]>
+    </queryString>
+    <field name="TRANS_DATE" class="java.sql.Timestamp"/>
+    <field name="STATUSES" class="java.lang.String"/>
+    <field name="TRX" class="java.math.BigDecimal"/>
+    <field name="AMT" class="java.math.BigDecimal"/>
+    <field name="TAX" class="java.math.BigDecimal"/>
+    <field name="BIAYA_KIRIM" class="java.math.BigDecimal"/>
+    <field name="SALES" class="java.math.BigDecimal"/>
+    <field name="TUNAI" class="java.math.BigDecimal"/>
+    <field name="VOUCHER" class="java.math.BigDecimal"/>
+    <field name="KARTU" class="java.math.BigDecimal"/>
+    <field name="TIPE" class="java.lang.String"/>
+    <variable name="sumTrx" class="java.math.BigDecimal" calculation="Sum">
+        <variableExpression><![CDATA[$F{TRX}]]></variableExpression>
+    </variable>
+    <variable name="SumAmount" class="java.math.BigDecimal" calculation="Sum">
+        <variableExpression><![CDATA[$F{AMT}]]></variableExpression>
+    </variable>
+    <variable name="sumTax" class="java.math.BigDecimal" calculation="Sum">
+        <variableExpression><![CDATA[$F{TAX}]]></variableExpression>
+    </variable>
+    <variable name="sumSales" class="java.math.BigDecimal" calculation="Sum">
+        <variableExpression><![CDATA[$F{SALES}]]></variableExpression>
+    </variable>
+    <variable name="sumCash" class="java.math.BigDecimal" calculation="Sum">
+        <variableExpression><![CDATA[$F{TUNAI}]]></variableExpression>
+    </variable>
+    <variable name="sumVoucher" class="java.math.BigDecimal" calculation="Sum">
+        <variableExpression><![CDATA[$F{VOUCHER}]]></variableExpression>
+    </variable>
+    <variable name="sumCard" class="java.math.BigDecimal" calculation="Sum">
+        <variableExpression><![CDATA[$F{KARTU}]]></variableExpression>
+    </variable>
+    <background>
+        <band splitType="Stretch"/>
+    </background>
+    <columnHeader>
+        <band height="115" splitType="Stretch">
+            <textField>
+                <reportElement x="56" y="10" width="203" height="11" uuid="9068c1d8-3eec-4aa4-9fb6-58d5370d5cf5"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{outletName}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="56" y="20" width="203" height="11" uuid="d90e573e-f1f3-44ae-bfec-a8c9ea3cdc43"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{address1}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="56" y="40" width="203" height="11" uuid="7488b7a4-f746-48ed-8e2f-2840cff22d37"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Phone :" + $P{phone}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="56" y="30" width="203" height="11" uuid="007ba0a3-073c-41bd-9ad5-70d2f525a1b2"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{address2}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="56" y="0" width="112" height="11" uuid="6162539b-f0cd-4865-88b3-080d68f31b2a"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="486" y="0" width="114" height="11" uuid="df87367a-c339-434d-be6f-838bfad6b7b7"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[": " + $V{PAGE_NUMBER}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="486" y="20" width="114" height="11" uuid="9fd7a4c0-4b62-49e5-a14b-f21e54a5ec5d"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[": " + new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="486" y="30" width="114" height="11" uuid="ef779d85-1db6-4415-a3ea-aa450b682722"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[": " + new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="421" y="0" width="66" height="11" uuid="afc98c0b-f4cd-4a7a-81fa-b294ac66189a"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Halaman]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="421" y="10" width="66" height="11" uuid="b7c9d050-213a-4c4c-83d5-843595af1a49"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[User Cetak]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="421" y="30" width="66" height="11" uuid="c68ee87f-36fa-4b84-92ab-3ae214580615"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Jam Cetak]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="486" y="10" width="114" height="11" uuid="562693a7-a506-454a-866e-e0c380855e32"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[": " + $P{user}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="421" y="20" width="66" height="11" uuid="61a0abfa-8345-47ff-abfe-ea78b0777369"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Tanggal Cetak]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="0" y="51" width="555" height="19" uuid="ce8585ef-ae2e-4237-9fd3-d1b423077112"/>
+                <textElement textAlignment="Center">
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[REKAP SALES BY DATE (HD)]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="0" y="70" width="55" height="11" uuid="6cef3f0e-8c85-4d57-a75c-cbd5494e1269"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Periode       ]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="54" y="70" width="283" height="11" uuid="3018a595-a354-44c3-9c0a-f693ea116539"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd-MMM-yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{fromDate})) + " - " + new SimpleDateFormat("dd-MMM-yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{toDate}))]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="54" y="80" width="283" height="11" uuid="b038c92a-14a5-4fbc-8c58-961dabde0988"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[": " + $P{tipeTrans}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="0" y="80" width="55" height="11" uuid="2f92e7dd-e8ac-4be6-b478-a36a78d11fac"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Trans. Type]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="421" y="70" width="66" height="11" uuid="d61d7ac5-a4e3-4034-9749-1987f88731a4"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Status]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="486" y="70" width="100" height="11" uuid="7ae1a7a1-d330-4937-9c44-2c6a826dc21d"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[": " + $F{STATUSES}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="0" y="96" width="50" height="15" uuid="c0749232-4c1c-4511-a3e7-8b74fbc9a126"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Date]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="55" y="96" width="39" height="15" uuid="20e7edc2-b572-4f93-8127-b8c91fc69141"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Type]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="69" y="96" width="45" height="15" uuid="21ff8a21-5220-44ab-b13d-d927f600a1da"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Trx]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="92" y="96" width="110" height="15" uuid="7e564e05-7e9e-4322-a737-7869322e8203"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Tot. Amount]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="163" y="96" width="110" height="15" uuid="b17f2a81-818f-46e2-93a0-c66e01f7c001"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Tax]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="237" y="96" width="110" height="15" uuid="8faae10b-837a-4d78-b6b0-07dc84045964"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Sales]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="305" y="96" width="110" height="15" uuid="ff013d6e-9fd4-4a5a-a53c-775e9f0981bc"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Cash]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="370" y="96" width="110" height="15" uuid="d0c94021-3c9a-4bcf-9ad9-6ef96a59bd2a"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Voucher]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="436" y="96" width="110" height="15" uuid="1a3d4765-14f7-4439-9d50-6d4a43b1a54a"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Card]]></text>
+            </staticText>
+            <line>
+                <reportElement x="0" y="94" width="555" height="1" uuid="cf0da45c-90eb-457d-9974-cfb2b9b58643"/>
+            </line>
+            <line>
+                <reportElement x="0" y="112" width="555" height="1" uuid="5dc12819-1324-4d56-a8b2-a1d6ac9ba3b6"/>
+            </line>
+            <image scaleImage="FillFrame" isUsingCache="false">
+                <reportElement x="0" y="0" width="48" height="48" isPrintWhenDetailOverflows="true" uuid="f45eea4e-dcf3-4de8-be78-bf5ea53b6955"/>
+                <imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
+            </image>
+        </band>
+    </columnHeader>
+    <detail>
+        <band height="17" splitType="Stretch">
+            <textField>
+                <reportElement x="0" y="0" width="50" height="15" uuid="3962fa81-d54e-46ef-aefb-961d65fd8fb3"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($F{TRANS_DATE})]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="55" y="0" width="40" height="15" uuid="e29aa6dc-5c2d-466e-b9d0-e369c99920cc">
+                    <printWhenExpression><![CDATA[$F{TIPE}.equals( "M" )]]></printWhenExpression>
+                </reportElement>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Mobl]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="55" y="0" width="40" height="15" uuid="2bce3a18-b71d-4688-8e4e-83481b440243">
+                    <printWhenExpression><![CDATA[$F{TIPE}.equals( "C" )]]></printWhenExpression>
+                </reportElement>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[CalC]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="55" y="0" width="40" height="15" uuid="0cd057f6-40c1-4929-ae63-583afd92b85c">
+                    <printWhenExpression><![CDATA[$F{TIPE}.equals( "D" )]]></printWhenExpression>
+                </reportElement>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[DirC]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="55" y="0" width="40" height="15" uuid="1076cd68-1db5-4350-96dc-f98007632963">
+                    <printWhenExpression><![CDATA[$F{TIPE}.equals( "W" )]]></printWhenExpression>
+                </reportElement>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Web]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="69" y="0" width="45" height="15" uuid="961aa7de-983b-42ad-b8d4-3f2ea048a955"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0").format($F{TRX})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="92" y="0" width="110" height="15" uuid="1651fa4b-3bc0-4024-8304-62371361ccf8"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{AMT})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="163" y="0" width="110" height="15" uuid="0b602ed7-1094-4397-89fa-4102eae136a6"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{TAX})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="237" y="0" width="110" height="15" uuid="51b0f8e3-21a1-486a-a0e8-96e4ea9c4b68"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{SALES})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="305" y="0" width="110" height="15" uuid="d01f35b1-4b44-4107-b57e-0d9268a09e76"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{TUNAI})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="370" y="0" width="110" height="15" uuid="5160dc64-bdce-49de-bcf2-146c2226163f"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0").format($F{VOUCHER})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="436" y="0" width="110" height="15" uuid="0acf428e-91ba-4048-b77b-8317183632a3"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{KARTU})]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+    <summary>
+        <band height="42" splitType="Stretch">
+            <line>
+                <reportElement x="0" y="0" width="555" height="1" uuid="e94fd225-a360-4df0-b90e-ee0310b550c7"/>
+            </line>
+            <staticText>
+                <reportElement x="20" y="2" width="50" height="15" uuid="c53f9388-2764-44ab-aaa7-8513ff025494"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Total :]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="69" y="2" width="45" height="15" uuid="4f80d72a-3908-4fe4-809e-160103b00ea9"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0").format($V{sumTrx})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="92" y="2" width="110" height="15" uuid="4cdba5b6-6092-432a-8168-4d9eb9e0bcf8"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{SumAmount})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="163" y="2" width="110" height="15" uuid="14107823-030a-4136-8fef-a1e8d1ccc0e9"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{sumTax})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="237" y="2" width="110" height="15" uuid="b1faf4bb-4e25-4923-9b2f-0a37a53e0d53"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{sumSales})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="305" y="2" width="110" height="15" uuid="03a474a8-ca36-41e9-93f3-2904304d6f0b"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{sumCash})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="370" y="2" width="110" height="15" uuid="10e72fa0-bb23-44c7-a711-f424420290d8"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0").format($V{sumVoucher})]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="436" y="2" width="110" height="15" uuid="d709cc03-79a5-4d81-bd22-71b22a692f7b"/>
+                <textElement textAlignment="Right">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{sumCard})]]></textFieldExpression>
+            </textField>
+            <line>
+                <reportElement x="0" y="18" width="555" height="1" uuid="c3d20ea7-50a8-4e57-921f-5cff1d54733f"/>
+            </line>
+            <staticText>
+                <reportElement x="463" y="19" width="100" height="15" uuid="6ace4846-fe62-4d9f-b58c-8ab782d15fec"/>
+                <textElement>
+                    <font size="8" isItalic="true"/>
+                </textElement>
+                <text><![CDATA[--End of Report--]]></text>
+            </staticText>
+        </band>
+    </summary>
+</jasperReport>

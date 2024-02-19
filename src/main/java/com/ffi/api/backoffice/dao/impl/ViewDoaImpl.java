@@ -4508,4 +4508,17 @@ return finalResultList;
         });
         return list;
     }
+
+    // =============== New Method From M Joko 19-02-2024 ===============
+    // =============== Ambil list riwayat Master - Kirim Terima Data
+    @Override
+    public List<Map<String, Object>> listTransferDataHistory(Map<String, String> balance) {
+        String qry = "SELECT * FROM ( SELECT NVL(ms.STAFF_FULL_NAME, ofh.USER_UPD) AS USER_NAME, TO_CHAR(ofh.TRANS_DATE, 'DD MON YYYY') AS F_TRANS_DATE, CASE WHEN ofh.TRX_CODE = '1' THEN 'KIRIM DATA TRANSAKSI' ELSE 'TERIMA DATA MASTER' END AS TYPE, ofh.* FROM M_OUTLET_FTP_HIST ofh LEFT JOIN M_STAFF ms ON ms.STAFF_CODE = ofh.USER_UPD ORDER BY ofh.TRANS_DATE DESC, ofh.TIME_UPD DESC ) WHERE ROWNUM <= 50";
+        if(isValidParamKey(balance.get("transDate")) && isValidParamKey(balance.get("timeUpd"))){
+            qry = "SELECT * FROM M_OUTLET_FTP_HIST_DTL ofd WHERE ofd.TRANS_DATE = :transDate AND ofd.TIME_UPD = :timeUpd";
+        }
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, balance, new DynamicRowMapper());
+        return list;
+    }
 }

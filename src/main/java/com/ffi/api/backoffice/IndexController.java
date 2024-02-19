@@ -1854,6 +1854,15 @@ public class IndexController {
         List<Map<String, Object>> list = new ArrayList<>();
         String status = "";
         ResponseMessage rm = new ResponseMessage();
+        
+        // Check connection to warehouse before sent data by Fathur 19 Feb 2024 //
+        String warehouseStatus = processServices.checkWarehouseConnection();
+        if (!warehouseStatus.equals("OK")){
+            rm.setSuccess(false);
+            rm.setMessage(warehouseStatus);
+            rm.setItem(null);
+            return rm;
+        }
 
         try {
             processServices.sendDataToWarehouse(balance);
@@ -2658,6 +2667,15 @@ public class IndexController {
         }.getType());
         List<Map<String, Object>> list = new ArrayList<>();
         ResponseMessage rm = new ResponseMessage();
+        
+        // Check connection to warehouse before sent data by Fathur 19 Feb 2024 //
+        String warehouseStatus = processServices.checkWarehouseConnection();
+        if (!warehouseStatus.equals("OK")){
+            rm.setSuccess(false);
+            rm.setMessage(warehouseStatus);
+            rm.setItem(null);
+            return rm;
+        }
 
         try {
             processServices.sendDataOutletToWarehouse(balance);
@@ -3378,15 +3396,7 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> data = gsn.fromJson(params, new TypeToken<Map<String, String>>() {
         }.getType());
-        ResponseMessage rm = new ResponseMessage();
-        if (processServices.deleteMpcsProduction(data)) {
-            rm.setSuccess(true);
-            rm.setMessage("Delete Successfuly");
-        } else {
-            rm.setSuccess(false);
-            rm.setMessage("Delete  Failed");
-        }
-        return rm;
+        return processServices.deleteMpcsProduction(data);
     }
 
     @RequestMapping(value = "/get-id-absensi", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -3991,5 +4001,23 @@ public class IndexController {
             rm.setSuccess(false);
         }
         return rm;
+    }
+
+    // =============== New Method From M Joko 19-02-2024 ===============
+    @RequestMapping(value = "/list-transfer-data-history", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk list gudang FSD", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listTransferDataHistory(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        Response res = new Response();
+        res.setData(viewServices.listTransferDataHistory(balance));
+        return res;
     }
 }

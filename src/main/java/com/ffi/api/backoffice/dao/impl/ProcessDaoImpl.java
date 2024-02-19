@@ -25,8 +25,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -1177,6 +1179,22 @@ public class ProcessDaoImpl implements ProcessDao {
             e.printStackTrace();
         }
     }
+    
+    // Check connection to warehouse before sent data by Fathur 19 Feb 2024 //
+    @Override
+    public String checkWarehouseConnection() {
+        try {
+            HttpURLConnection connection = (HttpURLConnection) new URL(urlWarehouse).openConnection(); 
+            connection.setRequestMethod("GET");
+            connection.connect();             
+            connection.disconnect();
+            return ("OK");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ("Tidak dapat menghubungkan ke database Inventory. " +e.getMessage());
+        }
+    }
+    
 
     @Override
     public void sendDataToWarehouse(Map<String, String> balance) {
@@ -1765,9 +1783,12 @@ public class ProcessDaoImpl implements ProcessDao {
     public void insertReturnOrderHeaderDetail(JsonObject param) {
         DateFormat df = new SimpleDateFormat("MM");
         DateFormat dfYear = new SimpleDateFormat("yyyy");
-        Date tgl = new Date();
-        String month = df.format(tgl);
-        String year = dfYear.format(tgl);
+        
+        Map balance = new HashMap();
+        balance.put("outletCode", param.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
+        LocalDate transDate = this.jdbcTemplate.queryForObject("SELECT TRANS_DATE FROM M_OUTLET WHERE OUTLET_CODE = :outletCode", balance, LocalDate.class);
+        String month = String.valueOf(transDate.getMonthValue());
+        String year = String.valueOf(transDate.getYear());
 
         String typeReturn = param.getAsJsonPrimitive("typeReturn").getAsString();
 
@@ -3098,7 +3119,7 @@ public class ProcessDaoImpl implements ProcessDao {
         jdbcTemplate.update(updateQuantityAccQuery, prm);
 
         String insertHistoryQuery = "INSERT INTO T_MPCS_HIST (HIST_SEQ,HIST_TYPE,OUTLET_CODE,MPCS_DATE,MPCS_GROUP,RECIPE_CODE,FRYER_TYPE,FRYER_TYPE_SEQ,SEQ_MPCS,QUANTITY,USER_UPD,DATE_UPD,TIME_UPD) "
-                + "VALUES ((SELECT (max(tmh.HIST_SEQ) + 1)  FROM T_MPCS_HIST tmh),'C',:outletCode, :mpcsDate,:mpcsGroup,:recipeCode, :fryerType, :fryerTypeSeq, (SELECT tsm.SEQ_MPCS FROM T_SUMM_MPCS tsm WHERE DATE_MPCS = :mpcsDate AND MPCS_GROUP = :mpcsGroup "
+                + "VALUES ((SELECT (NVL(MAX(tmh.HIST_SEQ), 0) + 1)  FROM T_MPCS_HIST tmh),'C',:outletCode, :mpcsDate,:mpcsGroup,:recipeCode, :fryerType, :fryerTypeSeq, (SELECT tsm.SEQ_MPCS FROM T_SUMM_MPCS tsm WHERE DATE_MPCS = :mpcsDate AND MPCS_GROUP = :mpcsGroup "
                 + "AND TIME_MPCS > :timeUpd "
                 + "AND ROWNUM = 1),:qtyMpcs,:userUpd, :dateUpd, :timeUpd) ";
         jdbcTemplate.update(insertHistoryQuery, prm);
@@ -3241,9 +3262,11 @@ public class ProcessDaoImpl implements ProcessDao {
 
     // Delete MPCS Production by Fathur 11 Jan 2024 //
     // Update for integration to stock card 17 Jan 2024 //
+    // Update for Delete Validation 16 Feb 20024 //
     @Transactional
     @Override
-    public boolean deleteMpcsProduction(Map<String, String> params) {
+    public ResponseMessage deleteMpcsProduction(Map<String, String> params) {
+        ResponseMessage rm = new ResponseMessage();
 
         Map prm = new HashMap();
         prm.put("userUpd", params.get("userUpd"));
@@ -3257,7 +3280,18 @@ public class ProcessDaoImpl implements ProcessDao {
         prm.put("outletCode", params.get("outletCode"));
         prm.put("seqMpcs", params.get("seqMpcs"));
         prm.put("histSeq", params.get("histSeq"));
+        String maxMinutesvalidation = "60";
 
+        String timeValidationQuery = "SELECT CASE WHEN TO_TIMESTAMP(TO_CHAR(SYSDATE, 'YYYYMMDD') || :timeUpd, 'YYYYMMDDHH24MISS') + INTERVAL '"+maxMinutesvalidation+"' MINUTE >= SYSDATE THEN 'Y' ELSE 'N' END AS ALLOW_DELETE FROM dual ";
+        String allowDelete = jdbcTemplate.queryForObject(timeValidationQuery, prm, String.class);
+
+        if (allowDelete.equals("N")) {
+            rm.setSuccess(false);
+            rm.setMessage("Tidak dapat menghapus data produksi lebih dari "+maxMinutesvalidation+" menit yang lalu");
+            rm.setItem(null);
+            return rm;
+        }
+        
         String updateQtyQuery = "UPDATE T_SUMM_MPCS "
                 + "SET QTY_PROD = (QTY_PROD - (SELECT (sum(QTY_STOCK) * :qtyMpcs) FROM m_recipe_product WHERE RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup))), "
                 + "PROD_BY = :userUpd, "
@@ -3326,8 +3360,10 @@ public class ProcessDaoImpl implements ProcessDao {
                 updateInsertStockCard_out_delete(newParam);
             }
         }
-
-        return true;
+        rm.setSuccess(true);
+        rm.setMessage("Succesfully delete mpcs production");
+        rm.setItem(null);
+        return rm;
     }
 
     // Update stock card detail from mpcs production
@@ -3476,9 +3512,12 @@ public class ProcessDaoImpl implements ProcessDao {
     public void insertMpcsManagementFryer(JsonObject param) {
         DateFormat df = new SimpleDateFormat("MM");
         DateFormat dfYear = new SimpleDateFormat("yyyy");
-        Date tgl = new Date();
-        String month = df.format(tgl);
-        String year = dfYear.format(tgl);
+        
+        Map balance = new HashMap();
+        balance.put("outletCode", param.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
+        LocalDate transDate = this.jdbcTemplate.queryForObject("SELECT TRANS_DATE FROM M_OUTLET WHERE OUTLET_CODE = :outletCode", balance, LocalDate.class);
+        String month = String.valueOf(transDate.getMonthValue());
+        String year = String.valueOf(transDate.getYear());
 
         String noProcess = returnOrderCounter(year, month, "FRY", param.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
 
