@@ -1765,11 +1765,9 @@ public class ProcessDaoImpl implements ProcessDao {
 
     @Override
     public void insertReturnOrderHeaderDetail(JsonObject param) {
-        DateFormat df = new SimpleDateFormat("MM");
-        DateFormat dfYear = new SimpleDateFormat("yyyy");
-        
+        String outletCode = param.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString();
         Map balance = new HashMap();
-        balance.put("outletCode", param.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
+        balance.put("outletCode", outletCode);
         LocalDate transDate = this.jdbcTemplate.queryForObject("SELECT TRANS_DATE FROM M_OUTLET WHERE OUTLET_CODE = :outletCode", balance, LocalDate.class);
         String month = String.valueOf(transDate.getMonthValue());
         String year = String.valueOf(transDate.getYear());
@@ -1786,7 +1784,7 @@ public class ProcessDaoImpl implements ProcessDao {
                 + " :returnNo, :returnDate, :returnTo, :remark, :status, :userUpd, :dateUpd, :timeUpd)";
 
         Map<String, Object> prm = new HashMap<>();
-        prm.put("outletCode", param.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
+        prm.put("outletCode", outletCode);
         prm.put("typeReturn", param.getAsJsonObject().getAsJsonPrimitive("typeReturn").getAsString());
         prm.put("returnId", noID);
         prm.put("returnNo", noReturn);
@@ -1803,7 +1801,6 @@ public class ProcessDaoImpl implements ProcessDao {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonArray emp = param.getAsJsonObject().getAsJsonArray("itemList");
         StringBuilder query = new StringBuilder();
-        String outletCode = param.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString();
         String userUpd = param.getAsJsonObject().getAsJsonPrimitive("userUpd").getAsString();
         query.append("INSERT ALL");
 
@@ -1823,30 +1820,19 @@ public class ProcessDaoImpl implements ProcessDao {
         query.append(" SELECT * FROM dual");
         String queryDetail = query.toString();
         jdbcTemplate.update(queryDetail, new HashMap<>());
+        
+        if(!typeReturn.equalsIgnoreCase("gudang")){
+            updateStockCardRO(noReturn, outletCode);
+        }
+    }
 
-        // insert t_stock_card_detail
+    // kirim return order ke api warehouse by M Joko - 22-12-23
+    public void updateStockCardRO(String noReturn, String outletCode) {
         String qryRO = "SELECT h.type_return, h.return_to, h.remark, TO_CHAR(h.return_date, 'DD-MON-YY') AS return_date, d.outlet_code, d.return_id, d.return_no, d.item_code, d.qty_warehouse, d.uom_warehouse, d.qty_purchase, d.uom_purchase, d.total_qty, d.user_upd, TO_CHAR(d.date_upd, 'DD-MON-YY') AS date_upd, d.time_upd FROM t_return_detail d JOIN t_return_header h ON d.return_no = h.return_no AND d.outlet_code = h.outlet_code WHERE d.return_no = :returnNo AND d.outlet_code = :outletCode";
         Map<String, Object> prmRO = new HashMap<>();
         prmRO.put("returnNo", noReturn);
         prmRO.put("outletCode", outletCode);
         List<Map<String, Object>> listDetailRO = jdbcTemplate.query(qryRO, prmRO, new DynamicRowMapper());
-        System.err.println("listDetailRO to wh : " + listDetailRO);
-
-        // update stock card by M Joko - 22-12-23
-        updateStockCardRO(listDetailRO, noReturn, outletCode);
-
-        // kirim return order ke gudang by M Joko - 22-12-23
-        if (typeReturn.equalsIgnoreCase("1")) {
-            System.err.println("send return order to wh : " + noReturn);
-            if (sendReturnOrderDetailToWH(listDetailRO)) {
-                String qryUpdStatus = "update t_return_header set status = 1 where return_no = :returNo and outlet_code = :outletCode";
-                jdbcTemplate.update(qryUpdStatus, prmRO);
-            }
-        }
-    }
-
-    // kirim return order ke api warehouse by M Joko - 22-12-23
-    public void updateStockCardRO(List<Map<String, Object>> listDetailRO, String noReturn, String outletCode) {
         for (int i = 0; i < listDetailRO.size(); i++) {
             //insert t_stock_card_detail by M Joko - 22-12-23
             Map<String, Object> detailRO = listDetailRO.get(i);
@@ -1861,7 +1847,7 @@ public class ProcessDaoImpl implements ProcessDao {
             jdbcTemplate.update(qryInsert, prm);
 
             //update t_stock_card by M Joko - 22-12-23
-            String qryUpdateStockCard = "UPDATE t_stock_card SET QTY_OUT = QTY_OUT + NVL(:qtyOut, 0) WHERE trans_date = (SELECT trans_date FROM m_outlet WHERE outlet_code = :outletCode) and item_code = :itemCode";
+            String qryUpdateStockCard = "MERGE INTO t_stock_card tgt USING ( SELECT :outletCode AS OUTLET_CODE, (SELECT trans_date FROM m_outlet WHERE outlet_code = :outletCode) AS TRANS_DATE, :itemCode AS ITEM_CODE, NVL(:qtyOut, 0) AS QTY_OUT FROM dual ) src ON (tgt.OUTLET_CODE = src.OUTLET_CODE AND tgt.TRANS_DATE = src.TRANS_DATE AND tgt.ITEM_CODE = src.ITEM_CODE) WHEN MATCHED THEN UPDATE SET tgt.QTY_OUT = tgt.QTY_OUT + src.QTY_OUT WHEN NOT MATCHED THEN INSERT ( OUTLET_CODE, TRANS_DATE, ITEM_CODE, QTY_OUT, ITEM_COST, QTY_BEGINNING, QTY_IN, REMARK, USER_UPD, DATE_UPD, TIME_UPD ) VALUES ( src.OUTLET_CODE, src.TRANS_DATE, src.ITEM_CODE, src.QTY_OUT, 0, 0, 0, 'RTR', :userUpd, SYSDATE , TO_CHAR(SYSDATE, 'HH24MISS') )";
             System.err.println("qryUpdateStockCard: " + qryInsert);
             jdbcTemplate.update(qryUpdateStockCard, prm);
         }
@@ -1874,7 +1860,7 @@ public class ProcessDaoImpl implements ProcessDao {
         String returnNo = balance.getAsJsonPrimitive("returnNo").getAsString();
         String userUpd = balance.getAsJsonPrimitive("userUpd").getAsString();
 
-        // insert t_stock_card_detail
+        // ambil detail return no
         String qryRO = "SELECT h.type_return, h.return_to, h.remark, TO_CHAR(h.return_date, 'DD-MON-YY') AS return_date, d.outlet_code, d.return_id, d.return_no, d.item_code, d.qty_warehouse, d.uom_warehouse, d.qty_purchase, d.uom_purchase, d.total_qty, d.user_upd, TO_CHAR(d.date_upd, 'DD-MON-YY') AS date_upd, d.time_upd FROM t_return_detail d JOIN t_return_header h ON d.return_no = h.return_no AND d.outlet_code = h.outlet_code WHERE d.return_no = :returnNo AND d.outlet_code = :outletCode";
         Map<String, Object> prmRO = new HashMap<>();
         prmRO.put("returnNo", returnNo);
@@ -1883,7 +1869,7 @@ public class ProcessDaoImpl implements ProcessDao {
         List<Map<String, Object>> listDetailRO = jdbcTemplate.query(qryRO, prmRO, new DynamicRowMapper());
         System.err.println("listDetailRO to wh : " + listDetailRO);
 
-        if (sendReturnOrderDetailToWH(listDetailRO)) {
+        if (sendReturnOrderDetailToWH(listDetailRO, returnNo, outletCode)) {
             String qryUpdStatus = "update t_return_header set status = 1 where return_no = :returnNo and outlet_code = :outletCode";
             try {
                 jdbcTemplate.update(qryUpdStatus, prmRO);
@@ -1897,7 +1883,7 @@ public class ProcessDaoImpl implements ProcessDao {
     }
 
     // kirim return order ke api warehouse by M Joko - 22-12-23
-    public boolean sendReturnOrderDetailToWH(List<Map<String, Object>> listDetailRO) {
+    public boolean sendReturnOrderDetailToWH(List<Map<String, Object>> listDetailRO, String returnNo, String outletCode) {
         try {
             String url = urlWarehouse + "/insert-return-order-wh";
             RestApiUtil restApiUtil = new RestApiUtil();
@@ -1908,6 +1894,8 @@ public class ProcessDaoImpl implements ProcessDao {
             ResponseEntity<String> responseEntity = restApiUtil.post(url, listDetailRO, null);
             String responseBody = responseEntity.getBody();
             System.out.println("sendReturnOrderDetailToWH Response: " + responseBody);
+            // update stock card by M Joko - 22-12-23
+            updateStockCardRO(returnNo, outletCode);
             return true;
         } catch (Exception e) {
             System.out.println("sendReturnOrderDetailToWH error: " + e.getMessage());
@@ -3503,7 +3491,7 @@ public class ProcessDaoImpl implements ProcessDao {
         String month = String.valueOf(transDate.getMonthValue());
         String year = String.valueOf(transDate.getYear());
 
-        String noProcess = returnOrderCounter(year, month, "FRY", param.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
+        String noProcess = MpcsManagementFryerCounter(year, month, "FRY", param.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
 
         String queryHeader = "INSERT INTO T_MPCS_MANAGEMENT (OUTLET_CODE, PROCESS_NO, NOTES, FRYER_NO, FRYER_TYPE,"
                 + " OIL_USE, PRECENTAGE, USER_UPD, DATE_UPD, TIME_UPD) VALUES (:outletCode, :processNo, :notes,"
@@ -3533,6 +3521,51 @@ public class ProcessDaoImpl implements ProcessDao {
         prm.put("fryerType", param.getAsJsonObject().getAsJsonPrimitive("fryerType").getAsString());
         prm.put("userUpd", param.getAsJsonObject().getAsJsonPrimitive("userUpd").getAsString());
         jdbcTemplate.update(queryHeader, prm);
+    }
+    //////// new Method Updated M Counter Management Fryer aditya 20 Feb 2024
+     public String MpcsManagementFryerCounter(String year, String month, String transType, String outletCode) {
+        String sql = "select to_char(counter, 'fm0000') as no_urut from ( "
+                + "select max(counter_no) + 1 as counter from m_counter "
+                + "where outlet_code = :outletCode and trans_type = :transType and year = :year and month = :month "
+                + ") tbl";
+        System.err.println("Query for No Urut :" + sql);
+        Map param = new HashMap();
+        param.put("year", year);
+        param.put("month", month);
+        param.put("transType", transType);
+        param.put("outletCode", outletCode);
+        String noUrut = jdbcTemplate.queryForObject(sql, param, new RowMapper() {
+            @Override
+            public Object mapRow(ResultSet rs, int i) throws SQLException {
+                return rs.getString("no_urut") == null ? "0" : rs.getString("no_urut");
+
+            }
+        }).toString();
+        if (noUrut.equalsIgnoreCase("0")) {
+            sql = "insert into m_counter(outlet_code, trans_type, year, month, counter_no) "
+                    + "values (:outletCode, :transType, :year, :month, 1)";
+            System.err.println("Query for NEW No Urut :" + sql);
+            Map paramIns = new HashMap();
+            paramIns.put("year", year);
+            paramIns.put("month", month);
+            paramIns.put("transType", transType);
+            paramIns.put("outletCode", outletCode);
+            jdbcTemplate.update(sql, paramIns);
+            noUrut = transType.concat(outletCode).concat(year.substring(2)).concat(month).concat("0001");
+        } else {
+            sql = "update m_counter set counter_no = counter_no + 1 "
+                    + "where outlet_code = :outletCode and trans_type = :transType and year = :year and month = :month";
+            System.err.println("Query for Update Counter :" + sql);
+            Map paramIns = new HashMap();
+            paramIns.put("year", year);
+            paramIns.put("month", month);
+            paramIns.put("transType", transType);
+            paramIns.put("outletCode", outletCode);
+            jdbcTemplate.update(sql, paramIns);
+            noUrut = transType.concat(outletCode).concat(year.substring(2)).concat(month).concat(noUrut);
+        }
+        System.err.println("No Urut :" + noUrut);
+        return noUrut;
     }
 
     // =========== New Method List Transfer Data From M Joko 6 Feb 2024 ===========

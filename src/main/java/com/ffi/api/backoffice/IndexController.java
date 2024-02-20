@@ -2346,7 +2346,6 @@ public class IndexController {
         ResponseMessage rm = new ResponseMessage();
         if (balance.has("kirim") && balance.has("returnNo")) {
             // kirim 
-            // todo:
             if (processServices.sendReturnOrderToWH(balance)) {
                 rm.setSuccess(true);
                 rm.setMessage("Send Return Order Successfuly");
