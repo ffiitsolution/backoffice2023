@@ -1719,7 +1719,7 @@ public class ViewDoaImpl implements ViewDao {
         String qry = "SELECT H.*, case when G.DESCRIPTION is null and  m.outlet_name is null then s.supplier_name  "
                 + "                when G.DESCRIPTION is null and s.supplier_name  is null then m.outlet_name else "
                 + "               g.description end as NAMA_GUDANG, "
-                + "               case when K.status_kirim = 'S' then 'Sudah' else 'Belum' end as STATUS_KIRIM"
+                + "               case when K.status_kirim = 'S' then 'Sudah' else 'Belum' end as STATUS_KIRIM, (select cp_email from m_supplier where cd_supplier = h.cd_supplier) as CP_EMAIL_SUPPLIER"
                 + " FROM T_ORDER_HEADER H "
                 + " LEFT JOIN M_GLOBAL G ON G.CODE = H.CD_SUPPLIER AND G.COND = 'X_" + getCity + "' AND G.STATUS = 'A' "
                 + " left join m_outlet M "
@@ -1763,6 +1763,7 @@ public class ViewDoaImpl implements ViewDao {
             rt.put("timeUpd", rs.getString("TIME_UPD"));
             rt.put("gudangName", rs.getString("NAMA_GUDANG"));
             rt.put("statusKirim", rs.getString("STATUS_KIRIM"));
+            rt.put("emailSupplier", rs.getString("CP_EMAIL_SUPPLIER"));
             
             return rt;
         });
@@ -4481,9 +4482,10 @@ return finalResultList;
     // MPCS Production List Fryer 2 Feb 2024 //
     @Override
     public List<Map<String, Object>> mpcsProductionListFryer(Map<String, String> balance) {
-        String qry = "SELECT G.DESCRIPTION, D.FRYER_TYPE, d.FRYER_TYPE_SEQ, d.FRYER_TYPE_CNT, d.FRYER_TYPE_SEQ_CNT FROM M_MPCS_DETAIL d LEFT JOIN M_GLOBAL g ON d.FRYER_TYPE = g.CODE AND g.COND = 'FRYER' WHERE d.STATUS = 'A' AND d.OUTLET_CODE = :outletCode ORDER BY d.FRYER_TYPE ASC ";
+        String qry = "SELECT G.DESCRIPTION, D.FRYER_TYPE, d.FRYER_TYPE_SEQ, d.FRYER_TYPE_CNT, d.FRYER_TYPE_SEQ_CNT FROM M_MPCS_DETAIL d LEFT JOIN M_GLOBAL g ON d.FRYER_TYPE = g.CODE AND g.COND = 'FRYER' WHERE d.STATUS = 'A' AND d.OUTLET_CODE = :outletCode AND d.FRYER_TYPE = (SELECT FRYER_TYPE FROM M_MPCS_HEADER mmh WHERE MPCS_GROUP = :mpcsGroup) ";
         Map prm = new HashMap();
         prm.put("outletCode", balance.get("outletCode"));
+        prm.put("mpcsGroup", balance.get("mpcsGroup"));
 
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, (ResultSet rs, int i) -> {
             Map<String, Object> rt = new HashMap<>();
