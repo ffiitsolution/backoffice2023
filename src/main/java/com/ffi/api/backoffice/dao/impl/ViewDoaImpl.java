@@ -3570,7 +3570,7 @@ public class ViewDoaImpl implements ViewDao {
                 + " WHERE H.STATUS = '0' "
                 + " AND K.STATUS_KIRIM = 'S' "
                 + " AND H.OUTLET_CODE = :outletCode  "
-                + " ORDER BY H.STATUS ASC, H.DATE_UPD, H.TIME_UPD DESC";
+                + " ORDER BY H.STATUS ASC, H.DATE_UPD DESC, H.TIME_UPD DESC";
 
         Map prm = new HashMap();
         prm.put("outletCode", balance.get("outletCode"));
