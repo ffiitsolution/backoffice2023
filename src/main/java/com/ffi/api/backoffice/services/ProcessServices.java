@@ -342,11 +342,6 @@ public class ProcessServices {
         return dao.updateCdWarehouseItem(ref);
     }
     
-    // Check connection to warehouse before sent data by Fathur 19 Feb 2024 //
-    public String checkWarehouseConnection() {
-        return dao.checkWarehouseConnection();
-    }
-
     public void checkInventoryAvailability() throws ClientProtocolException, IOException {
         dao.checkInventoryAvailability();
     }

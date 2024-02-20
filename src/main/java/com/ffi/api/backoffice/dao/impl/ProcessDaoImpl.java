@@ -1180,22 +1180,6 @@ public class ProcessDaoImpl implements ProcessDao {
         }
     }
     
-    // Check connection to warehouse before sent data by Fathur 19 Feb 2024 //
-    @Override
-    public String checkWarehouseConnection() {
-        try {
-            HttpURLConnection connection = (HttpURLConnection) new URL(urlWarehouse).openConnection(); 
-            connection.setRequestMethod("GET");
-            connection.connect();             
-            connection.disconnect();
-            return ("OK");
-        } catch (IOException e) {
-            e.printStackTrace();
-            return ("Tidak dapat menghubungkan ke database Inventory. " +e.getMessage());
-        }
-    }
-    
-
     @Override
     public void sendDataToWarehouse(Map<String, String> balance) {
 
