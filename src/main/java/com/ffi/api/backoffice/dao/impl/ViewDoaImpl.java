@@ -4481,9 +4481,10 @@ return finalResultList;
     // MPCS Production List Fryer 2 Feb 2024 //
     @Override
     public List<Map<String, Object>> mpcsProductionListFryer(Map<String, String> balance) {
-        String qry = "SELECT G.DESCRIPTION, D.FRYER_TYPE, d.FRYER_TYPE_SEQ, d.FRYER_TYPE_CNT, d.FRYER_TYPE_SEQ_CNT FROM M_MPCS_DETAIL d LEFT JOIN M_GLOBAL g ON d.FRYER_TYPE = g.CODE AND g.COND = 'FRYER' WHERE d.STATUS = 'A' AND d.OUTLET_CODE = :outletCode ORDER BY d.FRYER_TYPE ASC ";
+        String qry = "SELECT G.DESCRIPTION, D.FRYER_TYPE, d.FRYER_TYPE_SEQ, d.FRYER_TYPE_CNT, d.FRYER_TYPE_SEQ_CNT FROM M_MPCS_DETAIL d LEFT JOIN M_GLOBAL g ON d.FRYER_TYPE = g.CODE AND g.COND = 'FRYER' WHERE d.STATUS = 'A' AND d.OUTLET_CODE = :outletCode AND d.FRYER_TYPE = (SELECT FRYER_TYPE FROM M_MPCS_HEADER mmh WHERE MPCS_GROUP = :mpcsGroup) ";
         Map prm = new HashMap();
         prm.put("outletCode", balance.get("outletCode"));
+        prm.put("mpcsGroup", balance.get("mpcsGroup"));
 
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, (ResultSet rs, int i) -> {
             Map<String, Object> rt = new HashMap<>();
