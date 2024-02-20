@@ -1719,7 +1719,7 @@ public class ViewDoaImpl implements ViewDao {
         String qry = "SELECT H.*, case when G.DESCRIPTION is null and  m.outlet_name is null then s.supplier_name  "
                 + "                when G.DESCRIPTION is null and s.supplier_name  is null then m.outlet_name else "
                 + "               g.description end as NAMA_GUDANG, "
-                + "               case when K.status_kirim = 'S' then 'Sudah' else 'Belum' end as STATUS_KIRIM"
+                + "               case when K.status_kirim = 'S' then 'Sudah' else 'Belum' end as STATUS_KIRIM, (select cp_email from m_supplier where cd_supplier = h.cd_supplier) as CP_EMAIL_SUPPLIER"
                 + " FROM T_ORDER_HEADER H "
                 + " LEFT JOIN M_GLOBAL G ON G.CODE = H.CD_SUPPLIER AND G.COND = 'X_" + getCity + "' AND G.STATUS = 'A' "
                 + " left join m_outlet M "
@@ -1763,6 +1763,7 @@ public class ViewDoaImpl implements ViewDao {
             rt.put("timeUpd", rs.getString("TIME_UPD"));
             rt.put("gudangName", rs.getString("NAMA_GUDANG"));
             rt.put("statusKirim", rs.getString("STATUS_KIRIM"));
+            rt.put("emailSupplier", rs.getString("CP_EMAIL_SUPPLIER"));
             
             return rt;
         });
