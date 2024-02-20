@@ -4560,6 +4560,7 @@ return finalResultList;
                 rt.put("icon", rs.getString("ICON"));
                 rt.put("url", rs.getString("URL"));
                 rt.put("parent", rs.getString("PARENT"));
+                rt.put("sequence", Integer.valueOf(rs.getString("ID_NO")));
                 
                 // Check if badge is not null
                 if (rs.getString("BADGE") != null) {
