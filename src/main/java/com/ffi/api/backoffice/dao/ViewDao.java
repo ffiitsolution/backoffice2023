@@ -338,5 +338,8 @@ public interface ViewDao {
 
     // =============== New Method From M Joko 19-02-2024 ===============
     List<Map<String, Object>> listTransferDataHistory(Map<String, String> ref);
+
+    // =============== New Method From Sifa 20-02-2024 ===============
+    List<Map<String, Object>> listmenuApplicationAccess(Map<String, String> ref);
     
 }

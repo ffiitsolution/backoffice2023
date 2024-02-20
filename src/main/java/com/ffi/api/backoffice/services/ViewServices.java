@@ -581,4 +581,9 @@ public class ViewServices {
     public List<Map<String, Object>> listTransferDataHistory(Map<String, String> ref) {
         return viewDao.listTransferDataHistory(ref);
     }
+
+    // =============== New Method From Sifa 20-02-2024 ===============
+    public List<Map<String, Object>> listmenuApplicationAccess(Map<String, String> ref) {
+        return viewDao.listmenuApplicationAccess(ref);
+    }
 }

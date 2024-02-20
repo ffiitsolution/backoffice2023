@@ -4005,4 +4005,22 @@ public class IndexController {
         res.setData(viewServices.listTransferDataHistory(balance));
         return res;
     }
+
+    // =============== New Method From Sifa 20-02-2024 ===============
+    @RequestMapping(value = "/list-menu-application-access", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk list menu akses grup", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listmenuApplicationAccess(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        Response res = new Response();
+        res.setData(viewServices.listmenuApplicationAccess(balance));
+        return res;
+    }
 }
