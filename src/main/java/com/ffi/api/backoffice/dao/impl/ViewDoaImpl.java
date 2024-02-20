@@ -747,14 +747,12 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listMpcsHeader(Map<String, String> param) {
-        String qry = "SELECT b.OUTLET_CODE, a.MPCS_GROUP, b.DESCRIPTION, b.FRYER_TYPE ||' - '|| c.DESCRIPTION as FRYER_TYPE, b.QTY_CONV, a.STATUS "
+        String qry = "SELECT b.OUTLET_CODE, a.MPCS_GROUP, b.DESCRIPTION, CASE WHEN b.FRYER_TYPE = ' ' THEN ' ' ELSE b.FRYER_TYPE || ' - '  || c.DESCRIPTION END AS FRYER_TYPE, b.QTY_CONV, a.STATUS "  
             + "FROM M_RECIPE_HEADER a "
-            + "JOIN M_MPCS_HEADER b "
-            + "ON a.MPCS_GROUP = b.MPCS_GROUP "
-            + "JOIN M_GLOBAL c "
-            + "ON b.fryer_type = c.CODE "
-            + "WHERE b.OUTLET_CODE =:outlet "
-            + "AND c.COND = 'FRYER' ";
+            + "LEFT JOIN M_MPCS_HEADER b ON a.MPCS_GROUP = b.MPCS_GROUP "
+            + "LEFT JOIN M_GLOBAL c "
+            + "ON b.fryer_type = c.CODE AND c.COND = 'FRYER' "
+            + "WHERE b.OUTLET_CODE =:outlet ";
         Map prm = new HashMap();
         prm.put("outlet", param.get("outlet"));
         if (param.containsKey("date") && !param.get("date").isEmpty()) {
