@@ -2173,6 +2173,10 @@ public class ViewDoaImpl implements ViewDao {
             qry += "and length(ord.cd_supplier) = 5 ";
         } else if (filter.equalsIgnoreCase("3")) { //Supplier
             qry += "and length(ord.cd_supplier) = 10 ";
+        } else if (filter.equalsIgnoreCase("4")) {
+            qry += "and ord.order_type = '4' ";
+        } else if (filter.equalsIgnoreCase("5")) {
+            qry += "and ord.order_type = '5' ";
         }
         qry += "order by rc.ORDER_NO ";
         System.err.println("q :" + qry);
