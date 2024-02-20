@@ -3100,6 +3100,7 @@ public class IndexController {
 
         var rm = new ResponseMessage();
         try {
+            processServices.checkInventoryAvailability();
             processServices.kirimDeliveryOrder(data);
             rm.setSuccess(true);
             rm.setMessage("Success Successfuly");
