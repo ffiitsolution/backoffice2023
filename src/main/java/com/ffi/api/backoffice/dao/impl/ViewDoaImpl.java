@@ -415,13 +415,13 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listMenuGroupTipeOrder(Map<String, String> ref) {
-        String query = "SELECT MMGL.ORDER_TYPE , MG.DESCRIPTION  FROM M_MENU_GROUP_LIMIT mmgl LEFT JOIN M_GLOBAL mg ON mg.cond = 'ORDER_TYPE' AND MMGL.ORDER_TYPE = MG.CODE WHERE MENU_GROUP_CODE = :menuGroupCode";
+        String query = "SELECT DISTINCT MMGL.ORDER_TYPE , MG.DESCRIPTION  FROM M_MENU_GROUP_LIMIT mmgl LEFT JOIN M_GLOBAL mg ON mg.cond = 'ORDER_TYPE' AND MMGL.ORDER_TYPE = MG.CODE WHERE MENU_GROUP_CODE = :menuGroupCode";
         return jdbcTemplate.query(query, ref, new DynamicRowMapper());
     };
     
     @Override
     public List<Map<String, Object>> listMenuGroupOutletLimit(Map<String, String> ref) {
-        String query = "SELECT MMGL.OUTLET_CODE, MO.OUTLET_NAME  FROM M_MENU_GROUP_LIMIT mmgl LEFT JOIN M_OUTLET mo ON MMGL.OUTLET_CODE = MO.OUTLET_CODE WHERE MENU_GROUP_CODE  = :menuGroupCode AND ORDER_TYPE = :orderType";
+        String query = "SELECT DISTINCT MMGL.OUTLET_CODE, MO.OUTLET_NAME  FROM M_MENU_GROUP_LIMIT mmgl LEFT JOIN M_OUTLET mo ON MMGL.OUTLET_CODE = MO.OUTLET_CODE WHERE MENU_GROUP_CODE  = :menuGroupCode AND ORDER_TYPE = :orderType";
         return jdbcTemplate.query(query, ref, new DynamicRowMapper());
     };
 
@@ -1000,13 +1000,13 @@ public class ViewDoaImpl implements ViewDao {
     ////// new method by Dani 15-Feb-2024
     @Override
     public List<Map<String, Object>> listItemMenusTipeOrder(Map<String, String> ref) {
-        String query = "SELECT MMIL.ORDER_TYPE , MG.DESCRIPTION  FROM M_MENU_ITEM_LIMIT mmil LEFT JOIN M_GLOBAL mg ON mg.cond = 'ORDER_TYPE' AND mmil.ORDER_TYPE = MG.CODE WHERE MMIL.MENU_ITEM_CODE = :menuItemCode";
+        String query = "SELECT DISTINCT MMIL.ORDER_TYPE , MG.DESCRIPTION  FROM M_MENU_ITEM_LIMIT mmil LEFT JOIN M_GLOBAL mg ON mg.cond = 'ORDER_TYPE' AND mmil.ORDER_TYPE = MG.CODE WHERE MMIL.MENU_ITEM_CODE = :menuItemCode";
         return jdbcTemplate.query(query, ref, new DynamicRowMapper());
     }
     ////// new method by Dani 15-Feb-2024
     @Override
     public List<Map<String, Object>> listItemMenusLimit(Map<String, String> ref) {
-        String query = "SELECT mmil.OUTLET_CODE,MO.OUTLET_NAME FROM M_MENU_ITEM_LIMIT mmil LEFT JOIN M_OUTLET mo ON mmil.OUTLET_CODE = MO.OUTLET_CODE WHERE MMIL.MENU_ITEM_CODE = :menuItemCode AND MMIL.ORDER_TYPE = :orderType";
+        String query = "SELECT DISTINCT mmil.OUTLET_CODE,MO.OUTLET_NAME FROM M_MENU_ITEM_LIMIT mmil LEFT JOIN M_OUTLET mo ON mmil.OUTLET_CODE = MO.OUTLET_CODE WHERE MMIL.MENU_ITEM_CODE = :menuItemCode AND MMIL.ORDER_TYPE = :orderType";
         return jdbcTemplate.query(query, ref, new DynamicRowMapper());
     }
 
@@ -2181,6 +2181,10 @@ public class ViewDoaImpl implements ViewDao {
             qry += "and length(ord.cd_supplier) = 5 ";
         } else if (filter.equalsIgnoreCase("3")) { //Supplier
             qry += "and length(ord.cd_supplier) = 10 ";
+        } else if (filter.equalsIgnoreCase("4")) {
+            qry += "and ord.order_type = '4' ";
+        } else if (filter.equalsIgnoreCase("5")) {
+            qry += "and ord.order_type = '5' ";
         }
         qry += "order by rc.ORDER_NO ";
         System.err.println("q :" + qry);
@@ -3567,7 +3571,7 @@ public class ViewDoaImpl implements ViewDao {
                 + " WHERE H.STATUS = '0' "
                 + " AND K.STATUS_KIRIM = 'S' "
                 + " AND H.OUTLET_CODE = :outletCode  "
-                + " ORDER BY H.STATUS ASC, H.DATE_UPD, H.TIME_UPD DESC";
+                + " ORDER BY H.STATUS ASC, H.DATE_UPD DESC, H.TIME_UPD DESC";
 
         Map prm = new HashMap();
         prm.put("outletCode", balance.get("outletCode"));
@@ -4478,9 +4482,10 @@ return finalResultList;
     // MPCS Production List Fryer 2 Feb 2024 //
     @Override
     public List<Map<String, Object>> mpcsProductionListFryer(Map<String, String> balance) {
-        String qry = "SELECT G.DESCRIPTION, D.FRYER_TYPE, d.FRYER_TYPE_SEQ, d.FRYER_TYPE_CNT, d.FRYER_TYPE_SEQ_CNT FROM M_MPCS_DETAIL d LEFT JOIN M_GLOBAL g ON d.FRYER_TYPE = g.CODE AND g.COND = 'FRYER' WHERE d.STATUS = 'A' AND d.OUTLET_CODE = :outletCode ORDER BY d.FRYER_TYPE ASC ";
+        String qry = "SELECT G.DESCRIPTION, D.FRYER_TYPE, d.FRYER_TYPE_SEQ, d.FRYER_TYPE_CNT, d.FRYER_TYPE_SEQ_CNT FROM M_MPCS_DETAIL d LEFT JOIN M_GLOBAL g ON d.FRYER_TYPE = g.CODE AND g.COND = 'FRYER' WHERE d.STATUS = 'A' AND d.OUTLET_CODE = :outletCode AND d.FRYER_TYPE = (SELECT FRYER_TYPE FROM M_MPCS_HEADER mmh WHERE MPCS_GROUP = :mpcsGroup) ";
         Map prm = new HashMap();
         prm.put("outletCode", balance.get("outletCode"));
+        prm.put("mpcsGroup", balance.get("mpcsGroup"));
 
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, (ResultSet rs, int i) -> {
             Map<String, Object> rt = new HashMap<>();
