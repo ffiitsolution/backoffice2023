@@ -8,8 +8,12 @@ import com.ffi.api.backoffice.model.DetailOpname;
 import com.ffi.api.backoffice.model.HeaderOpname;
 import com.ffi.paging.ResponseMessage;
 import com.google.gson.JsonObject;
+
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.http.client.ClientProtocolException;
 
 /**
  *
@@ -197,4 +201,6 @@ public interface ProcessDao {
     
     // Check connection to warehouse before sent data by Fathur 19 Feb 2024 //
     public String checkWarehouseConnection();
+
+    public void checkInventoryAvailability() throws ClientProtocolException, IOException;
 }

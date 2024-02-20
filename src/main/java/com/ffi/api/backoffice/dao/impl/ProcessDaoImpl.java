@@ -4405,4 +4405,25 @@ public class ProcessDaoImpl implements ProcessDao {
         }
         return rm;
     }
+
+    @Override
+    public void checkInventoryAvailability() throws ClientProtocolException, IOException {
+        Gson gson = new Gson();
+        CloseableHttpClient client = HttpClients.createDefault();
+        String url = this.urlWarehouse + "/halo";
+        HttpPost post = new HttpPost(url);
+        post.setHeader("Accept", "*/*");
+        post.setHeader("Content-Type", "application/json");
+        String json = new Gson().toJson(new HashMap<>());
+        StringEntity entity = new StringEntity(json);
+        post.setEntity(entity);
+        CloseableHttpResponse response = client.execute(post);
+        BufferedReader br = new BufferedReader(
+                new InputStreamReader(
+                        (response.getEntity().getContent())));
+        System.out.println(response.getStatusLine().getStatusCode());
+        if (response.getStatusLine().getStatusCode() != 200) {
+            throw new RuntimeException("Gagal menghubungkan ke warehouse.");
+        }
+    }
 }

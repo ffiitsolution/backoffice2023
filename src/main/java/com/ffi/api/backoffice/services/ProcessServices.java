@@ -9,9 +9,13 @@ import com.ffi.api.backoffice.model.DetailOpname;
 import com.ffi.api.backoffice.model.HeaderOpname;
 import com.ffi.paging.ResponseMessage;
 import com.google.gson.JsonObject;
+
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import javax.transaction.Transactional;
+
+import org.apache.http.client.ClientProtocolException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -341,5 +345,9 @@ public class ProcessServices {
     // Check connection to warehouse before sent data by Fathur 19 Feb 2024 //
     public String checkWarehouseConnection() {
         return dao.checkWarehouseConnection();
+    }
+
+    public void checkInventoryAvailability() throws ClientProtocolException, IOException {
+        dao.checkInventoryAvailability();
     }
 }
