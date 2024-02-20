@@ -415,13 +415,13 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listMenuGroupTipeOrder(Map<String, String> ref) {
-        String query = "SELECT MMGL.ORDER_TYPE , MG.DESCRIPTION  FROM M_MENU_GROUP_LIMIT mmgl LEFT JOIN M_GLOBAL mg ON mg.cond = 'ORDER_TYPE' AND MMGL.ORDER_TYPE = MG.CODE WHERE MENU_GROUP_CODE = :menuGroupCode";
+        String query = "SELECT DISTINCT MMGL.ORDER_TYPE , MG.DESCRIPTION  FROM M_MENU_GROUP_LIMIT mmgl LEFT JOIN M_GLOBAL mg ON mg.cond = 'ORDER_TYPE' AND MMGL.ORDER_TYPE = MG.CODE WHERE MENU_GROUP_CODE = :menuGroupCode";
         return jdbcTemplate.query(query, ref, new DynamicRowMapper());
     };
     
     @Override
     public List<Map<String, Object>> listMenuGroupOutletLimit(Map<String, String> ref) {
-        String query = "SELECT MMGL.OUTLET_CODE, MO.OUTLET_NAME  FROM M_MENU_GROUP_LIMIT mmgl LEFT JOIN M_OUTLET mo ON MMGL.OUTLET_CODE = MO.OUTLET_CODE WHERE MENU_GROUP_CODE  = :menuGroupCode AND ORDER_TYPE = :orderType";
+        String query = "SELECT DISTINCT MMGL.OUTLET_CODE, MO.OUTLET_NAME  FROM M_MENU_GROUP_LIMIT mmgl LEFT JOIN M_OUTLET mo ON MMGL.OUTLET_CODE = MO.OUTLET_CODE WHERE MENU_GROUP_CODE  = :menuGroupCode AND ORDER_TYPE = :orderType";
         return jdbcTemplate.query(query, ref, new DynamicRowMapper());
     };
 
@@ -1000,13 +1000,13 @@ public class ViewDoaImpl implements ViewDao {
     ////// new method by Dani 15-Feb-2024
     @Override
     public List<Map<String, Object>> listItemMenusTipeOrder(Map<String, String> ref) {
-        String query = "SELECT MMIL.ORDER_TYPE , MG.DESCRIPTION  FROM M_MENU_ITEM_LIMIT mmil LEFT JOIN M_GLOBAL mg ON mg.cond = 'ORDER_TYPE' AND mmil.ORDER_TYPE = MG.CODE WHERE MMIL.MENU_ITEM_CODE = :menuItemCode";
+        String query = "SELECT DISTINCT MMIL.ORDER_TYPE , MG.DESCRIPTION  FROM M_MENU_ITEM_LIMIT mmil LEFT JOIN M_GLOBAL mg ON mg.cond = 'ORDER_TYPE' AND mmil.ORDER_TYPE = MG.CODE WHERE MMIL.MENU_ITEM_CODE = :menuItemCode";
         return jdbcTemplate.query(query, ref, new DynamicRowMapper());
     }
     ////// new method by Dani 15-Feb-2024
     @Override
     public List<Map<String, Object>> listItemMenusLimit(Map<String, String> ref) {
-        String query = "SELECT mmil.OUTLET_CODE,MO.OUTLET_NAME FROM M_MENU_ITEM_LIMIT mmil LEFT JOIN M_OUTLET mo ON mmil.OUTLET_CODE = MO.OUTLET_CODE WHERE MMIL.MENU_ITEM_CODE = :menuItemCode AND MMIL.ORDER_TYPE = :orderType";
+        String query = "SELECT DISTINCT mmil.OUTLET_CODE,MO.OUTLET_NAME FROM M_MENU_ITEM_LIMIT mmil LEFT JOIN M_OUTLET mo ON mmil.OUTLET_CODE = MO.OUTLET_CODE WHERE MMIL.MENU_ITEM_CODE = :menuItemCode AND MMIL.ORDER_TYPE = :orderType";
         return jdbcTemplate.query(query, ref, new DynamicRowMapper());
     }
 
