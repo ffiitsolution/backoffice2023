@@ -844,7 +844,6 @@ public class ViewDoaImpl implements ViewDao {
         String qry = "SELECT region_code,outlet_code,pos_code,pos_description,ref_no,a.status,pos_type,description FROM M_pos a join m_global b on b.code=a.pos_type  where outlet_code= :outletcode and cond='POS_TYPE'";
         Map prm = new HashMap();
         prm.put("outletcode", Logan.get("OutletCode"));
-        System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
@@ -3482,7 +3481,6 @@ public class ViewDoaImpl implements ViewDao {
         Map param = new HashMap();
         String qry = "select * from (select e.*, o.outlet_name from t_eod_hist e join m_outlet o on o.outlet_code=:outletCode where o.outlet_code = :outletCode order by e.trans_date desc) where rownum = 1";
         param.put("outletCode", ref.get("outletCode"));
-        System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, param, (ResultSet rs, int i) -> {
             Map<String, Object> rt = new HashMap<>();
             rt.put("regionCode", rs.getString("REGION_CODE"));
@@ -3536,7 +3534,6 @@ public class ViewDoaImpl implements ViewDao {
         String qry = "select region_code,outlet_code,pos_code,pos_description,ref_no,a.status,pos_type,description FROM M_pos a join m_global b on b.code=a.pos_type  where a.outlet_code= :outletCode and a.status='A' and b.cond='POS_TYPE'";
         Map param = new HashMap();
         param.put("outletCode", ref.get("outletCode"));
-        System.err.println("q :" + qry);
         return jdbcTemplate.query(qry, param, (ResultSet rs, int i) -> {
             Map<String, Object> rt = new HashMap<>();
             rt.put("ref", rs.getString("REF_NO"));
@@ -4528,7 +4525,7 @@ return finalResultList;
     public List<Map<String, Object>> listTransferDataHistory(Map<String, String> balance) {
         String qry = "SELECT * FROM ( SELECT NVL(ms.STAFF_FULL_NAME, ofh.USER_UPD) AS USER_NAME, TO_CHAR(ofh.TRANS_DATE, 'DD MON YYYY') AS F_TRANS_DATE, CASE WHEN ofh.TRX_CODE = '1' THEN 'KIRIM DATA TRANSAKSI' ELSE 'TERIMA DATA MASTER' END AS TYPE, ofh.* FROM M_OUTLET_FTP_HIST ofh LEFT JOIN M_STAFF ms ON ms.STAFF_CODE = ofh.USER_UPD ORDER BY ofh.TRANS_DATE DESC, ofh.TIME_UPD DESC ) WHERE ROWNUM <= 50";
         if(isValidParamKey(balance.get("transDate")) && isValidParamKey(balance.get("timeUpd"))){
-            qry = "SELECT * FROM M_OUTLET_FTP_HIST_DTL ofd WHERE ofd.TRANS_DATE = :transDate AND ofd.TIME_UPD = :timeUpd";
+            qry = "SELECT TO_CHAR(ofd.TRANS_DATE, 'DD MON YYYY') AS F_TRANS_DATE, ofd.* FROM M_OUTLET_FTP_HIST_DTL ofd WHERE ofd.TRANS_DATE = :transDate AND ofd.TIME_UPD = :timeUpd";
         }
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, balance, new DynamicRowMapper());
