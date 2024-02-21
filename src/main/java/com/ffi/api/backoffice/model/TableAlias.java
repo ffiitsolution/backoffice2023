@@ -94,7 +94,7 @@ public class TableAlias {
         this.active = active;
     }
 
-    public boolean isProcess() {
+    public boolean getProcess() {
         return process;
     }
 
@@ -116,5 +116,12 @@ public class TableAlias {
 
     public void setTimeUpd(String timeUpd) {
         this.timeUpd = timeUpd;
+    }
+
+    @Override
+    public String toString() {
+        return "TableAlias [data=" + data + ", table=" + table + ", alias=" + alias + ", dateColumn=" + dateColumn
+                + ", hasOutletCode=" + hasOutletCode + ", emptyFirst=" + emptyFirst + ", active=" + active
+                + ", process=" + process + ", dateUpd=" + dateUpd + ", timeUpd=" + timeUpd + "]\n";
     }
 }

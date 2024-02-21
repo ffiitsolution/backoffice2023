@@ -8,10 +8,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ffi.api.backoffice.model.DetailOpname;
 import com.ffi.api.backoffice.model.HeaderOpname;
 import com.ffi.api.backoffice.model.ParameterLogin;
+import com.ffi.api.backoffice.model.TableAlias;
 import com.ffi.api.backoffice.services.ProcessServices;
 import com.ffi.api.backoffice.services.ViewServices;
 import com.ffi.api.backoffice.services.ReportServices;
 import com.ffi.api.backoffice.utils.AppUtil;
+import com.ffi.api.backoffice.utils.TableAliasUtil;
 import com.ffi.paging.Response;
 import com.ffi.paging.ResponseMessage;
 import com.google.gson.Gson;
@@ -64,6 +66,10 @@ public class IndexController {
     ProcessServices processServices;
     @Autowired
     ReportServices reportServices;
+
+    @Autowired
+    TableAliasUtil tableAliasUtil;
+    
     @Autowired
     AppUtil appUtil;
 
@@ -3529,131 +3535,14 @@ public class IndexController {
     }
     ///////////////done
     
-    public List listTableMaster(String typeTable){
-        List<String> listTable = new ArrayList<>();
-        listTable.add("M_COLOR");
-        listTable.add("M_DISCOUNT_METHOD");
-        listTable.add("M_DISCOUNT_METHOD_LIMIT");
-        listTable.add("M_DONATE_METHOD");
-        listTable.add("M_DONATE_METHOD_LIMIT");
-        listTable.add("M_GLOBAL");
-        listTable.add("M_GROUP_ITEM");
-        listTable.add("M_ITEM");
-        listTable.add("M_ITEM_COST");
-//        listTable.add("M_LEVEL_1");
-//        listTable.add("M_LEVEL_2");
-//        listTable.add("M_LEVEL_3");
-//        listTable.add("M_LEVEL_4");
-        listTable.add("M_MENU_GROUP");
-        listTable.add("M_MENU_GROUP_LIMIT");
-        listTable.add("M_MENU_ITEM");
-        listTable.add("M_MENU_ITEM_LIMIT");
-        listTable.add("M_MENU_ITEM_SCHEDULE");
-        listTable.add("M_MENU_SET");
-        listTable.add("M_MODIFIER_ITEM");
-        listTable.add("M_MODIFIER_PRICE");
-        listTable.add("M_MPCS_HEADER");
-        listTable.add("M_MPCS_DETAIL");
-//        listTable.add("M_OPNAME_TEMPL_HEADER");
-//        listTable.add("M_OPNAME_TEMPL_DETAIL");
-        listTable.add("M_OUTLET");
-        listTable.add("M_PAYMENT_METHOD");
-        listTable.add("M_PAYMENT_METHOD_LIMIT");
-        listTable.add("M_OUTLET_PRICE");
-        listTable.add("M_PRICE");
-        listTable.add("M_RECIPE_HEADER");
-        listTable.add("M_RECIPE_DETAIL");
-        listTable.add("M_RECIPE_PRODUCT");
-        listTable.add("M_SALES_RECIPE");
-        listTable.add("M_UOM_CONV");
-        listTable.add("M_ITEM_SUPPLIER");
-//        listTable.add("M_DELETED");
-//        listTable.add("M_NPWP");
-//        listTable.add("M_MENUGRP");
-//        listTable.add("M_MENUDTL");
-        return listTable;
+    public List<String> listTableMaster(String typeTable) {
+        List<TableAlias> sourcesAliases = tableAliasUtil.searchByColumn(TableAliasUtil.TABLE_ALIAS_M, "process", true);
+        return sourcesAliases.stream().map(TableAlias::getTable).toList();
     }
     
-    public List listTableTransaction(String typeTable){
-        List<String> listTable = new ArrayList<>();
-        listTable.add("T_ABSENSI");
-        listTable.add("T_AGENT_LOG");
-        listTable.add("T_COPNAME_DETAIL");
-        listTable.add("T_COPNAME_HEADER");
-        listTable.add("T_COST_SCHEDULE");
-        listTable.add("T_DEV_DETAIL");
-        listTable.add("T_DEV_HEADER");
-        listTable.add("T_EOD_HIST");
-        listTable.add("T_EOD_HIST_DTL");
-        listTable.add("T_HIST_DEL_PRD");
-        listTable.add("T_ITEM_PRICE_SCH");
-        listTable.add("T_KDS_HEADER");
-        listTable.add("T_KDS_ITEM");
-        listTable.add("T_KDS_ITEM_DETAIL");
-        listTable.add("T_KDS_KRUSHER");
-        listTable.add("T_KDS_NAME");
-        listTable.add("T_LOC_DETAIL");
-        listTable.add("T_LOC_HEADER");
-        listTable.add("T_MPCS_DETAIL");
-        listTable.add("T_MPCS_HIST");
-        listTable.add("T_MPCS_LOG");
-        listTable.add("T_OPNAME_DETAIL");
-        listTable.add("T_OPNAME_HEADER");
-        listTable.add("T_ORDER_DETAIL");
-        listTable.add("T_ORDER_HEADER");
-        listTable.add("T_PC_BALANCE");
-        listTable.add("T_PC_CLAIM_DTL");
-        listTable.add("T_PC_CLAIM_HDR");
-        listTable.add("T_PC_DTL");
-        listTable.add("T_PC_HDR");
-        listTable.add("T_POS_BILL");
-        listTable.add("T_POS_BILL_DONATE");
-        listTable.add("T_POS_BILL_ITEM");
-        listTable.add("T_POS_BILL_ITEM_DETAIL");
-        listTable.add("T_POS_BILL_PAYMENT");
-        listTable.add("T_POS_BILL_PAYMENT_DETAIL");
-        listTable.add("T_POS_BOOK");
-        listTable.add("T_POS_BOOK_DP_DETAIL");
-        listTable.add("T_POS_BOOK_ITEM");
-        listTable.add("T_POS_BOOK_ITEM_DETAIL");
-        listTable.add("T_POS_BOOK_PAYMENT");
-        listTable.add("T_POS_BOOK_PAYMENT_DETAIL");
-        listTable.add("T_POS_CAT");
-        listTable.add("T_POS_CATERING");
-        listTable.add("T_POS_CAT_ITEM");
-        listTable.add("T_POS_CAT_ITEM_DETAIL");
-        listTable.add("T_POS_CC");
-        listTable.add("T_POS_CC_ITEM");
-        listTable.add("T_POS_CC_ITEM_DETAIL");
-        listTable.add("T_POS_DAY");
-        listTable.add("T_POS_DAY_LOG");
-        listTable.add("T_POS_DAY_TRANS");
-        listTable.add("T_POS_FORM");
-        listTable.add("T_POS_FORM_ITEM");
-        listTable.add("T_POS_FORM_ITEM_DETAIL");
-        listTable.add("T_POS_ITEM_VOID");
-        listTable.add("T_PROJECTION_HEADER");
-        listTable.add("T_PROJECTION_TARGET");
-        listTable.add("T_RECIPE_HIST");
-        listTable.add("T_RECV_DETAIL");
-        listTable.add("T_RECV_HEADER");
-        listTable.add("T_RETURN_DETAIL");
-        listTable.add("T_RETURN_HEADER");
-        listTable.add("T_SCHEDULE_DETAIL");
-        listTable.add("T_SCHEDULE_HEADER");
-        listTable.add("T_SCHEDULE_SUBHEADER");
-        listTable.add("T_SEND_RECV_D");
-        listTable.add("T_SEND_RECV_H");
-        listTable.add("T_STOCK_CARD");
-        listTable.add("T_STOCK_CARD_DETAIL");
-        listTable.add("T_STOCK_CARD_HIST");
-        listTable.add("T_STOCK_CARD_HIST_TRIGGER");
-        listTable.add("T_STOCK_CARD_RECAP");
-        listTable.add("T_SUMM_MPCS");
-        listTable.add("T_SUM_ABSENSI");
-        listTable.add("T_WASTAGE_DETAIL");
-        listTable.add("T_WASTAGE_HEADER");
-        return listTable;
+    public List<String> listTableTransaction(String typeTable){
+        List<TableAlias> sourcesAliases = tableAliasUtil.searchByColumn(TableAliasUtil.TABLE_ALIAS_T, "process", true);
+        return sourcesAliases.stream().map(TableAlias::getTable).toList();
     }
     
     // =============== New Method From Lukas 17-10-2023 ===============
