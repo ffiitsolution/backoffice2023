@@ -3277,8 +3277,11 @@ public class ProcessDaoImpl implements ProcessDao {
         prm.put("histSeq", params.get("histSeq"));
         String maxMinutesvalidation = "60";
 
-        String timeValidationQuery = "SELECT CASE WHEN TO_TIMESTAMP(TO_CHAR(SYSDATE, 'YYYYMMDD') || :timeUpd, 'YYYYMMDDHH24MISS') + INTERVAL '"+maxMinutesvalidation+"' MINUTE >= SYSDATE THEN 'Y' ELSE 'N' END AS ALLOW_DELETE FROM dual ";
+        String selectedProductionTime = jdbcTemplate.queryForObject("SELECT time_upd FROM T_MPCS_HIST WHERE HIST_SEQ = :histSeq", prm, String.class);
+
+        String timeValidationQuery = "SELECT CASE WHEN TO_TIMESTAMP(TO_CHAR(SYSDATE, 'YYYYMMDD') || '"+selectedProductionTime+"', 'YYYYMMDDHH24MISS') + INTERVAL '"+maxMinutesvalidation+"' MINUTE >= SYSDATE THEN 'Y' ELSE 'N' END AS ALLOW_DELETE FROM dual ";
         String allowDelete = jdbcTemplate.queryForObject(timeValidationQuery, prm, String.class);
+        System.out.println("allowDelete: " +allowDelete);
 
         if (allowDelete.equals("N")) {
             rm.setSuccess(false);
@@ -3330,6 +3333,13 @@ public class ProcessDaoImpl implements ProcessDao {
 
         String itemNeedToUpdateInStockCard = "SELECT 'Y' AS IS_RECIPE, 'N' AS IS_PRODUCT, ITEM_CODE AS PRODUCT_CODE, QTY_STOCK FROM M_RECIPE_DETAIL WHERE RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup) UNION all SELECT 'N' AS IS_RECIPE, 'Y' AS IS_PRODUCT, product_code AS PRODUCT_CODE, QTY_STOCK FROM m_recipe_product WHERE RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup)";
         List<Map<String, Object>> rowsNeedToUpdateToStockCardDetail = jdbcTemplate.query(itemNeedToUpdateInStockCard, prm, new DynamicRowMapper());
+
+        Integer checkTableCount =jdbcTemplate.queryForObject("SELECT count(*) FROM all_tables WHERE table_name = 'T_HIST_DEL_PRD'", prm, Integer.class);
+        if (checkTableCount > 0) {
+            String insertIntoMpcsDelHistoryQuery = "INSERT INTO T_HIST_DEL_PRD (MPCS_GROUP,DATE_MPCS,QTY,UOM,TIME_MPCS,ITEM_CODE) "
+                + "SELECT :mpcsGroup AS mpcs_group, :mpcsDate AS mpcs_date, -(QTY_STOCK * :qtyMpcs) AS QTY, UOM_STOCK AS UOM, :timeUpd AS TIME_MPCS, PRODUCT_CODE AS ITEM_CODE FROM M_RECIPE_PRODUCT mrp WHERE mrp.RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup) ";
+            jdbcTemplate.update(insertIntoMpcsDelHistoryQuery, prm);
+        }
 
         for (Map<String, Object> row : rowsNeedToUpdateToStockCardDetail) {
             Map<String, Object> newParam = new HashMap<>();
