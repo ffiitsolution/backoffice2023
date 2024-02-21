@@ -4627,7 +4627,8 @@ return finalResultList;
                         "ml3.DESC_LEVEL_3, " +
                         "ml4.DESC_LEVEL_4, " +
                         "mi2.ITEM_DESCRIPTION AS ITEM_JUAL, " +
-	                    "mi3.ITEM_DESCRIPTION AS ITEM_LEFTOVER " +
+	                    "mi3.ITEM_DESCRIPTION AS ITEM_LEFTOVER, " +
+                        "mi.STATUS " +
                         "FROM M_ITEM mi " +
                         "LEFT JOIN M_SUPPLIER ms ON (ms.CD_SUPPLIER = mi.CD_SUPPLIER_DEFAULT) " +
                         "LEFT JOIN M_GLOBAL mg ON (mi.CD_WAREHOUSE = mg.CODE AND mg.COND = 'WAREHOUSE') " +
@@ -4676,6 +4677,7 @@ return finalResultList;
                 rt.put("desclevel4", rs.getString("DESC_LEVEL_4"));
                 rt.put("itemJual", rs.getString("ITEM_JUAL"));
                 rt.put("itemleftover", rs.getString("ITEM_LEFTOVER"));
+                rt.put("status", rs.getString("STATUS"));
                 return rt;
             }
         });
