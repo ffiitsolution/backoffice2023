@@ -4591,4 +4591,91 @@ return finalResultList;
 
         return list;
     }
+
+    // =============== New Method From Sifa 21-02-2024 ===============
+    @Override
+    public List<Map<String, Object>> itemDetail(Map<String, String> balance) {
+        String qry = "SELECT " +
+                        "mi.ITEM_CODE, " +
+                        "mi.ITEM_DESCRIPTION, " +
+                        "mi.UOM_WAREHOUSE, " +
+                        "mi.UOM_STOCK, " +
+                        "mi.FLAG_OTHERS, " +
+                        "mi.FLAG_MATERIAL, " +
+                        "mi.FLAG_HALF_FINISH , " +
+                        "mi.FLAG_FINISHED_GOOD, " +
+                        "mi.FLAG_OPEN_MARKET, " +
+                        "mi.FLAG_TRANSFER_LOC, " +
+                        "mi.FLAG_CANVASING, " +
+                        "mi.FLAG_STOCK, " +
+                        "mi.FLAG_PAKET, " +
+                        "mi.MIN_STOCK, " +
+                        "mi.MAX_STOCK, " +
+                        "mi.CD_SUPPLIER_DEFAULT, " +
+                        "ms.SUPPLIER_NAME AS SUPPLIER_DEFAULT_NAME, " +
+                        "mi.CD_WAREHOUSE, " +
+                        "mg.DESCRIPTION AS WAREHOUSE_NAME, " +
+                        "mi.PLU, " +
+                        "mi.CD_MENU_ITEM, " +
+                        "mi.CD_ITEM_LEFTOVER, " +
+                        "mic.ITEM_COST AS COGS, " +
+                        "ml.DESC_LEVEL_1, " +
+                        "ml2.DESC_LEVEL_2, " +
+                        "ml3.DESC_LEVEL_3, " +
+                        "ml4.DESC_LEVEL_4, " +
+                        "mi2.ITEM_DESCRIPTION AS ITEM_JUAL, " +
+	                    "mi3.ITEM_DESCRIPTION AS ITEM_LEFTOVER " +
+                        "FROM M_ITEM mi " +
+                        "LEFT JOIN M_SUPPLIER ms ON (ms.CD_SUPPLIER = mi.CD_SUPPLIER_DEFAULT) " +
+                        "LEFT JOIN M_GLOBAL mg ON (mi.CD_WAREHOUSE = mg.CODE AND mg.COND = 'WAREHOUSE') " +
+                        "LEFT JOIN M_ITEM_COST mic ON (mi.ITEM_CODE = mic.ITEM_CODE AND mic.OUTLET_CODE = :outletCode) " +
+                        "LEFT JOIN M_LEVEL_1 ml ON (mi.CD_LEVEL_1 = ml.CD_LEVEL_1) " +
+                        "LEFT JOIN M_LEVEL_2 ml2 ON (mi.CD_LEVEL_2 = ml2.CD_LEVEL_2) " +
+                        "LEFT JOIN M_LEVEL_3 ml3 ON (mi.CD_LEVEL_3 = ml3.CD_LEVEL_3) " +
+                        "LEFT JOIN M_LEVEL_4 ml4 ON (mi.CD_LEVEL_4 = ml4.CD_LEVEL_4) " +
+                        "LEFT JOIN M_ITEM mi2 ON (mi.CD_MENU_ITEM = mi2.ITEM_CODE) " +
+                        "LEFT JOIN M_ITEM mi3 ON (mi.CD_ITEM_LEFTOVER = mi3.ITEM_CODE) " +
+                        "WHERE mi.ITEM_CODE LIKE :itemCode";
+        Map prm = new HashMap();
+        prm.put("itemCode", balance.get("itemCode"));
+        prm.put("outletCode", balance.get("outletCode"));
+        System.err.println("q :" + qry);
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("code", rs.getString("ITEM_CODE"));
+                rt.put("description", rs.getString("ITEM_DESCRIPTION"));
+                rt.put("satuanBesar", rs.getString("UOM_WAREHOUSE"));
+                rt.put("satuanKecil", rs.getString("UOM_STOCK"));
+                rt.put("flagOthers", rs.getString("FLAG_OTHERS"));
+                rt.put("flagMaterial", rs.getString("FLAG_MATERIAL"));
+                rt.put("flagHalfFinish", rs.getString("FLAG_HALF_FINISH"));
+                rt.put("flagFinishedGood", rs.getString("FLAG_FINISHED_GOOD"));
+                rt.put("flagOpenMarket", rs.getString("FLAG_OPEN_MARKET"));
+                rt.put("flagTransferLoc", rs.getString("FLAG_TRANSFER_LOC"));
+                rt.put("flagCanvasing", rs.getString("FLAG_CANVASING"));
+                rt.put("flagStock", rs.getString("FLAG_STOCK"));
+                rt.put("flagPaket", rs.getString("FLAG_PAKET"));
+                rt.put("minStock", rs.getString("MIN_STOCK"));
+                rt.put("maxStock", rs.getString("MAX_STOCK"));
+                rt.put("cdSupplierDefault", rs.getString("CD_SUPPLIER_DEFAULT"));
+                rt.put("supplierDefaultName", rs.getString("SUPPLIER_DEFAULT_NAME"));
+                rt.put("cdWarehouse", rs.getString("CD_WAREHOUSE"));
+                rt.put("warehouseName", rs.getString("WAREHOUSE_NAME"));
+                rt.put("plu", rs.getString("PLU"));
+                rt.put("cdMenuItem", rs.getString("CD_MENU_ITEM"));
+                rt.put("cdItemLeftOver", rs.getString("CD_ITEM_LEFTOVER"));
+                rt.put("cogs", rs.getString("COGS"));
+                rt.put("descLevel1", rs.getString("DESC_LEVEL_1"));
+                rt.put("descLevel2", rs.getString("DESC_LEVEL_2"));
+                rt.put("descLevel3", rs.getString("DESC_LEVEL_3"));
+                rt.put("desclevel4", rs.getString("DESC_LEVEL_4"));
+                rt.put("itemJual", rs.getString("ITEM_JUAL"));
+                rt.put("itemleftover", rs.getString("ITEM_LEFTOVER"));
+                return rt;
+            }
+        });
+        return list;
+    }
 }

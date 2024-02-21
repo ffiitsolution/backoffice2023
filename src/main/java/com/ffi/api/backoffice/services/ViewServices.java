@@ -586,4 +586,9 @@ public class ViewServices {
     public List<Map<String, Object>> listmenuApplicationAccess(Map<String, String> ref) {
         return viewDao.listmenuApplicationAccess(ref);
     }
+    
+    // =============== New Method From Sifa 21-02-2024 ===============
+    public List<Map<String, Object>> itemDetail(Map<String, String> ref) {
+        return viewDao.itemDetail(ref);
+    }
 }
