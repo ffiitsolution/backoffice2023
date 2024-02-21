@@ -4022,4 +4022,26 @@ public class IndexController {
         res.setData(viewServices.listmenuApplicationAccess(balance));
         return res;
     }
+
+    // =============== New Method From Sifa 21-02-2024 ===============
+    @RequestMapping(value = "/item-detail", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view item detail", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response itemDetail(@RequestBody String param) throws JRException, IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> logan = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        list = viewServices.itemDetail(logan);
+        Response res = new Response();
+        res.setData(list);
+        res.setRecordsTotal(list.size());
+        return res;
+
+    }
 }

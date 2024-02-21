@@ -341,5 +341,8 @@ public interface ViewDao {
 
     // =============== New Method From Sifa 20-02-2024 ===============
     List<Map<String, Object>> listmenuApplicationAccess(Map<String, String> ref);
+
+    // =============== New Method From Sifa 21-02-2024 ===============
+    List<Map<String, Object>> itemDetail(Map<String, String> ref);
     
 }
