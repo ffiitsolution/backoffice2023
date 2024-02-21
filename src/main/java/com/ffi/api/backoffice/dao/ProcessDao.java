@@ -200,4 +200,7 @@ public interface ProcessDao {
     ResponseMessage updateCdWarehouseItem(Map<String, Object> mapping);
 
     public void checkInventoryAvailability() throws ClientProtocolException, IOException;
+
+    ///////////////NEW METHOD insert jika belum ada m_counter di bulan berikutnya, setelah End of Day - M Joko 20/2/2024
+    public void checkMCounterNextMonth(Map<String, String> mapping);
 }

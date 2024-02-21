@@ -41,6 +41,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -74,6 +76,17 @@ public class IndexController {
         map.put("output", "welcome");
         return map;
     }
+    
+    @MessageMapping("/hello")
+    @SendTo("/topic/greetings")
+    public ResponseMessage greeting(String message) throws Exception {
+        Thread.sleep(1000); // simulated delay
+        ResponseMessage rm = new ResponseMessage();
+        rm.setMessage("Test WS");
+        rm.setSuccess(true);
+        return rm;
+    }
+    
 ////////////UPDATE 27 MAR 23 BY LANI 
 
     @RequestMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -2686,7 +2699,7 @@ public class IndexController {
     public @ResponseBody
     Response processEod(@RequestBody String param) throws IOException, Exception {
         long startTime = System.currentTimeMillis();
-        System.err.println("Start End of Day Process: " + startTime);
+        System.err.println("Start End of Day Process");
         Gson gsn = new Gson();
         Response res = new Response();
         List errors = new ArrayList();
@@ -2758,6 +2771,7 @@ public class IndexController {
             processServices.insertTEodHist(balance);
             processServices.insertTSummMpcs(balance);
             processServices.updateOrderEntryExpired(balance);
+            processServices.checkMCounterNextMonth(balance);
             processServices.increaseTransDateMOutlet(balance);
             d.put("success", true);
         } catch (Exception e) {
@@ -2773,7 +2787,7 @@ public class IndexController {
         data.add(d);
         res.setData(data);
         double elapsedTimeSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
-        System.err.println("Finished End of Day Process after: " + elapsedTimeSeconds + " seconds");
+        System.err.println("Finished End of Day Process after total: " + elapsedTimeSeconds + " seconds");
         res.setDraw((int) elapsedTimeSeconds);
         return res;
     }
@@ -3989,7 +4003,7 @@ public class IndexController {
 
     // =============== New Method From M Joko 19-02-2024 ===============
     @RequestMapping(value = "/list-transfer-data-history", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Digunakan untuk list gudang FSD", response = Object.class)
+    @ApiOperation(value = "Digunakan untuk list view kirim terima data", response = Object.class)
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 404, message = "The resource not found"),}
@@ -3999,7 +4013,7 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-
+        System.err.println("listTransferDataHistory :" + balance);
         Response res = new Response();
         res.setData(viewServices.listTransferDataHistory(balance));
         return res;

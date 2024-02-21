@@ -25,10 +25,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
-import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -42,6 +40,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.transaction.Transactional;
 
@@ -61,6 +61,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -77,14 +78,14 @@ public class ProcessDaoImpl implements ProcessDao {
     // String LocalDateTime.now().format(timeFormatter) = new SimpleDateFormat("HHmmss").format(Calendar.getInstance().getTime());
     // String LocalDateTime.now().format(dateFormatter) = new SimpleDateFormat("dd-MMM-yyyy").format(Calendar.getInstance().getTime());
 
-    DateFormat dfDate = new SimpleDateFormat("dd-MMM-yyyy");
-    DateFormat dfYear = new SimpleDateFormat("yyyy");
-
     @Autowired
     public ProcessDaoImpl(NamedParameterJdbcTemplate jdbcTemplate, TableAliasUtil tableAliasUtil) {
         this.jdbcTemplate = jdbcTemplate;
         this.tableAliasUtil = tableAliasUtil;
     }
+    
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     @Autowired
     AppUtil appUtil;
@@ -1821,7 +1822,7 @@ public class ProcessDaoImpl implements ProcessDao {
         String queryDetail = query.toString();
         jdbcTemplate.update(queryDetail, new HashMap<>());
         
-        if(!typeReturn.equalsIgnoreCase("gudang")){
+        if(!typeReturn.equals("1")){
             updateStockCardRO(noReturn, outletCode);
         }
     }
@@ -2558,6 +2559,7 @@ public class ProcessDaoImpl implements ProcessDao {
     ////////////New method for insert Eod Hist POS 'N' ke eod - M Joko M 11-Dec-2023////////////
     @Override
     public void insertEodPosN(Map<String, String> balance) {
+        long startTime = System.currentTimeMillis();
         String query = "insert into t_eod_hist_dtl (REGION_CODE, OUTLET_CODE, TRANS_DATE, POS_CODE, PROCESS_EOD, NOTES, USER_UPD, DATE_UPD, TIME_UPD) values(:regionCode, :outletCode, (select trans_date from m_outlet where outlet_code=:outletCode), :posCode, :processEod, :notes, :userUpd, :dateUpd, :timeUpd)";
         Map param = new HashMap();
         param.put("regionCode", balance.get("regionCode"));
@@ -2568,14 +2570,16 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("userUpd", balance.get("userUpd"));
         param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
         param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
-        System.err.println("q_process: " + query);
         jdbcTemplate.update(query, param);
+        double elapsedTimeSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
+        System.err.println("insertEodPosN process in: " + elapsedTimeSeconds + " seconds");
     }
 
     ////////////New method for insert T Stock Card EOD - M Joko M 11-Dec-2023////////////
     // 27/12/23 update ambil item dari m_item, bukan prev Stock Card
     @Override
     public void insertTStockCard(Map<String, String> balance) {
+        long startTime = System.currentTimeMillis();
         String query = """
                 INSERT INTO t_stock_card (
                 SELECT
@@ -2609,13 +2613,15 @@ public class ProcessDaoImpl implements ProcessDao {
         Map param = new HashMap();
         param.put("outletCode", balance.get("outletCode"));
         param.put("userUpd", balance.getOrDefault("userUpd", "SYSTEM"));
-        System.err.println("q_process: " + query);
         jdbcTemplate.update(query, param);
+        double elapsedTimeSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
+        System.err.println("insertTStockCard process in: " + elapsedTimeSeconds + " seconds");
     }
 
     ////////////New method for insert T EOD Hist - M Joko M 12-Dec-2023////////////
     @Override
     public void insertTEodHist(Map<String, String> balance) {
+        long startTime = System.currentTimeMillis();
         String query = "insert into t_eod_hist (REGION_CODE, OUTLET_CODE, TRANS_DATE, USER_EOD, DATE_EOD, TIME_EOD, SEND_FLAG, USER_SEND, DATE_SEND, TIME_SEND) values ((select region_code from m_outlet where outlet_code=:outletCode), :outletCode, (select trans_date from m_outlet where outlet_code=:outletCode), :userEod, :dateEod, :timeEod, :sendFlag, :userSend, :dateSend, :timeSend)";
         Map param = new HashMap();
         param.put("outletCode", balance.get("outletCode"));
@@ -2626,26 +2632,30 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("userSend", balance.get("userUpd"));
         param.put("dateSend", LocalDateTime.now().format(dateFormatter));
         param.put("timeSend", LocalDateTime.now().format(timeFormatter));
-        System.err.println("q_process: " + query);
         jdbcTemplate.update(query, param);
+        double elapsedTimeSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
+        System.err.println("insertTEodHist process in: " + elapsedTimeSeconds + " seconds");
     }
 
     ////////////New method for increase trans_date M Outlet selesai EOD - M Joko M 11-Dec-2023////////////
     @Override
     public void increaseTransDateMOutlet(Map<String, String> balance) {
+        long startTime = System.currentTimeMillis();
         String query = "update m_outlet set trans_date = (select trans_date from m_outlet where outlet_code=:outletCode) + 1, user_upd = :userUpd, time_upd = :timeUpd, date_upd = :dateUpd where outlet_code = :outletCode";
         Map param = new HashMap();
         param.put("outletCode", balance.get("outletCode"));
         param.put("userUpd", balance.get("userUpd"));
         param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
         param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
-        System.err.println("q_process: " + query);
         jdbcTemplate.update(query, param);
+        double elapsedTimeSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
+        System.err.println("increaseTransDateMOutlet process in: " + elapsedTimeSeconds + " seconds");
     }
 
     ///////////////NEW METHOD insert T SUMM MPCS - M Joko 14/12/2023//// 
     @Override
     public void insertTSummMpcs(Map<String, String> balance) {
+        long startTime = System.currentTimeMillis();
         // query insert from Dona
         String query = """
                 INSERT INTO T_SUMM_MPCS (
@@ -2780,8 +2790,9 @@ public class ProcessDaoImpl implements ProcessDao {
                        """;
         Map param = new HashMap();
         param.put("outletCode", balance.get("outletCode"));
-        System.err.println("q insertTSummMpcs: " + query);
         jdbcTemplate.update(query, param);
+        double elapsedTimeSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
+        System.err.println("insertTSummMpcs process in: " + elapsedTimeSeconds + " seconds");
     }
 
     ///////////////NEW METHOD update MPCS plan by Dona 14/12/2023//// 
@@ -2840,6 +2851,7 @@ public class ProcessDaoImpl implements ProcessDao {
     ////////////New method for update t_order_header jika expired setelah End of Day - M Joko M 27-Dec-2023////////////
     @Override
     public void updateOrderEntryExpired(Map<String, String> balance) {
+        long startTime = System.currentTimeMillis();
         String qryList = "SELECT * FROM t_order_header WHERE outlet_code = :outletCode AND status = 0 AND dt_expired <= (select trans_date from m_outlet where outlet_code=:outletCode)";
         Map<String, Object> prmOE = new HashMap<>();
         prmOE.put("outletCode", balance.get("outletCode"));
@@ -2856,6 +2868,8 @@ public class ProcessDaoImpl implements ProcessDao {
                 jdbcTemplate.update(qryUpd, prmUpd);
             }
         }
+        double elapsedTimeSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
+        System.err.println("updateOrderEntryExpired process in: " + elapsedTimeSeconds + " seconds");
     }
 
     // New Method for insert or update to t_dev_header and t_dev_detail by Dani 27 Dec 2023
@@ -4293,6 +4307,7 @@ public class ProcessDaoImpl implements ProcessDao {
         String backupDirectoryName = "BOFFI_BACKUP_DIRECTORY";
         if (param.containsKey("process") && param.get("process").equals(true)) {
             // proses backup
+            long startTime = System.currentTimeMillis();
             try {
                 String currentWorkingDirectory = new File(".").getCanonicalPath();
                 String backupFolderPath = currentWorkingDirectory + File.separator + "backup";
@@ -4326,8 +4341,23 @@ public class ProcessDaoImpl implements ProcessDao {
                         "dumpfile=" + fileName + ".dmp", "directory=" + backupDirectoryName,
                         "schemas=kfc", "LOGFILE=" + fileName + ".log"
                 );
-                processBuilder.inheritIO();
+                processBuilder.redirectErrorStream(true);
                 Process process = processBuilder.start();
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        // todo: hubungkan output ke websocket untuk update progress
+                        System.out.println("backupDb: " + line);
+//                        Map m = parseOutputBackupDb(line);
+//                        if(!m.isEmpty()){
+//                            System.out.println(m);
+//                            TableAlias t = this.tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M, "table", m.getOrDefault("table", "").toString()).get();
+//                            String msg = t.getAlias() + ": " + m.getOrDefault("row", "0");
+                            messagingTemplate.convertAndSend("/topic/backup-db", line);
+                            messagingTemplate.convertAndSend("/topic", line);
+//                        }
+                    }
+                }
                 int exitCode = process.waitFor();
                 if (exitCode == 0) {
                     System.out.println("Backup completed successfully.");
@@ -4341,6 +4371,8 @@ public class ProcessDaoImpl implements ProcessDao {
                 System.err.println("Error processBackupDb : " + e.getMessage());
                 rm.setMessage("Error processBackupDb : " + e.getMessage());
             }
+            double elapsedTimeSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
+            System.err.println("processBackupDb process in: " + elapsedTimeSeconds + " seconds");
         } else if (param.containsKey("delete") && param.get("delete").toString().length() > 0) {
             // fungsi hapus backup dan log di parameter delete
             String fileName = param.get("delete").toString();
@@ -4420,6 +4452,21 @@ public class ProcessDaoImpl implements ProcessDao {
         return rm;
     }
     
+    Map parseOutputBackupDb(String line){
+        Pattern pattern = Pattern.compile("exported\\s+\".+?\"\\.\"(.+?)\"\\s+(\\d+\\.\\d+\\s+(?:GB|MB|KB))\\s+(\\d+)\\s+rows");
+        Matcher matcher = pattern.matcher(line);
+        Map<String, Object> infoMap = new HashMap<>();
+        if (matcher.find()) {
+            String tableName = matcher.group(1);
+            String size = matcher.group(2);
+            int numRows = Integer.parseInt(matcher.group(3));
+            infoMap.put("table", tableName);
+            infoMap.put("size", size);
+            infoMap.put("row", numRows);
+        }
+        return infoMap;
+    }
+    
     // =========== End Method Copy Data Server From M Joko 16-02-2024 ===========
     @Override
     public ResponseMessage updateRecipe(Map<String, Object> param) {
@@ -4480,5 +4527,48 @@ public class ProcessDaoImpl implements ProcessDao {
         if (response.getStatusLine().getStatusCode() != 200) {
             throw new RuntimeException("Gagal menghubungkan ke warehouse.");
         }
+    }
+    
+    ///////////////NEW METHOD insert jika belum ada m_counter di bulan berikutnya, setelah End of Day - M Joko 20/2/2024
+    @Override
+    public void checkMCounterNextMonth(Map<String, String> balance) {
+        long startTime = System.currentTimeMillis();
+        String qry = """
+            INSERT INTO M_COUNTER (OUTLET_CODE, TRANS_TYPE, YEAR, MONTH, COUNTER_NO)
+            SELECT 
+                A.*,
+                CASE 
+                    WHEN EXTRACT(MONTH FROM mo.TRANS_DATE) = 12 THEN EXTRACT(YEAR FROM mo.TRANS_DATE) + 1 
+                    ELSE EXTRACT(YEAR FROM mo.TRANS_DATE) 
+                END AS YEAR, 
+                CASE 
+                    WHEN EXTRACT(MONTH FROM mo.TRANS_DATE) = 12 THEN 1 
+                    ELSE EXTRACT(MONTH FROM mo.TRANS_DATE) + 1 
+                END AS MONTH, 
+                0 AS COUNTER_NO 
+            FROM (
+                SELECT DISTINCT mcc.OUTLET_CODE, mcc.TRANS_TYPE 
+                FROM M_COUNTER mcc
+                WHERE mcc.OUTLET_CODE = :outletCode
+            ) A 
+            JOIN M_OUTLET mo ON mo.OUTLET_CODE = A.OUTLET_CODE
+            LEFT JOIN M_COUNTER mc ON mc.OUTLET_CODE = A.OUTLET_CODE
+                                  AND mc.TRANS_TYPE = A.TRANS_TYPE
+                                  AND mc.YEAR = CASE 
+                                                    WHEN EXTRACT(MONTH FROM mo.TRANS_DATE) = 12 
+                                                    THEN EXTRACT(YEAR FROM mo.TRANS_DATE) + 1 
+                                                    ELSE EXTRACT(YEAR FROM mo.TRANS_DATE) 
+                                                END
+                                  AND mc.MONTH = CASE 
+                                                    WHEN EXTRACT(MONTH FROM mo.TRANS_DATE) = 12 
+                                                    THEN 1 
+                                                    ELSE EXTRACT(MONTH FROM mo.TRANS_DATE) + 1 
+                                                END
+            WHERE mc.OUTLET_CODE IS NULL
+                     """;
+        int rowsAffected = jdbcTemplate.update(qry, balance);
+        System.out.println("checkMCounterNextMonth rows affected: " + rowsAffected);
+        double elapsedTimeSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
+        System.err.println("checkMCounterNextMonth process in: " + elapsedTimeSeconds + " seconds");
     }
 }
