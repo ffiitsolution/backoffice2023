@@ -490,19 +490,19 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("year", year);
         param.put("month", month);
         param.put("transType", balance.get("transType"));
-        param.put("valueSupplier", "%" + balance.get("valueSupplier") + "%");
+        param.put("valueSupplier", balance.get("valueSupplier"));
                
         if (balance.get("orderTo").equals("3")) { // order ke gudang
             if(balance.get("orderType").equals("4")){ // order ke Gudang FSD
                 insertOrderDetailQuery = "INSERT INTO T_ORDER_DETAIL (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,TOTAL_QTY_STOCK,UNIT_PRICE,USER_UPD,DATE_UPD,TIME_UPD) "
                     + "SELECT :outletCode, :orderType, :orderId, :orderNo, item_code, 0, UOM_WAREHOUSE, 0, UOM_PURCHASE, 0, 0, :userUpd, :dateUpd, :timeUpd "
                     + "FROM m_item "
-                    + "WHERE CD_WAREHOUSE like :cdSupplier AND STATUS = 'A' "; 
+                    + "WHERE CD_WAREHOUSE = :cdSupplier AND STATUS = 'A' "; 
             } else { // order ke gudang
                 insertOrderDetailQuery = "INSERT INTO T_ORDER_DETAIL (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,TOTAL_QTY_STOCK,UNIT_PRICE,USER_UPD,DATE_UPD,TIME_UPD) "
                     + "SELECT :outletCode, :orderType, :orderId, :orderNo, item_code, 0, UOM_WAREHOUSE, 0, UOM_PURCHASE, 0, 0, :userUpd, :dateUpd, :timeUpd "
                     + "FROM m_item "
-                    + "WHERE CD_WAREHOUSE like :valueSupplier AND STATUS = 'A' "; 
+                    + "WHERE CD_WAREHOUSE = LPAD(:valueSupplier,5,0) AND STATUS = 'A' ";
             }
         } if (balance.get("orderTo").equals("2")) { // order ke outlet
             insertOrderDetailQuery = "INSERT INTO T_ORDER_DETAIL (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,TOTAL_QTY_STOCK,UNIT_PRICE,USER_UPD,DATE_UPD,TIME_UPD) "
@@ -529,7 +529,8 @@ public class ProcessDaoImpl implements ProcessDao {
                     + "ON A.ITEM_CODE=S.ITEM_CODE WHERE a.STATUS = 'A' AND S.CD_SUPPLIER=:cdSupplier ";
             };
         }
-        
+        System.out.println("insertOrderDetailQuery");
+        System.out.println(insertOrderDetailQuery);
         jdbcTemplate.update(insertOrderHeader, param);
         jdbcTemplate.update(insertOrderDetailQuery, param);
         
@@ -1822,7 +1823,7 @@ public class ProcessDaoImpl implements ProcessDao {
         String queryDetail = query.toString();
         jdbcTemplate.update(queryDetail, new HashMap<>());
         
-        if(!typeReturn.equalsIgnoreCase("gudang")){
+        if(!typeReturn.equals("1")){
             updateStockCardRO(noReturn, outletCode);
         }
     }
@@ -3277,8 +3278,11 @@ public class ProcessDaoImpl implements ProcessDao {
         prm.put("histSeq", params.get("histSeq"));
         String maxMinutesvalidation = "60";
 
-        String timeValidationQuery = "SELECT CASE WHEN TO_TIMESTAMP(TO_CHAR(SYSDATE, 'YYYYMMDD') || :timeUpd, 'YYYYMMDDHH24MISS') + INTERVAL '"+maxMinutesvalidation+"' MINUTE >= SYSDATE THEN 'Y' ELSE 'N' END AS ALLOW_DELETE FROM dual ";
+        String selectedProductionTime = jdbcTemplate.queryForObject("SELECT time_upd FROM T_MPCS_HIST WHERE HIST_SEQ = :histSeq", prm, String.class);
+
+        String timeValidationQuery = "SELECT CASE WHEN TO_TIMESTAMP(TO_CHAR(SYSDATE, 'YYYYMMDD') || '"+selectedProductionTime+"', 'YYYYMMDDHH24MISS') + INTERVAL '"+maxMinutesvalidation+"' MINUTE >= SYSDATE THEN 'Y' ELSE 'N' END AS ALLOW_DELETE FROM dual ";
         String allowDelete = jdbcTemplate.queryForObject(timeValidationQuery, prm, String.class);
+        System.out.println("allowDelete: " +allowDelete);
 
         if (allowDelete.equals("N")) {
             rm.setSuccess(false);
@@ -3330,6 +3334,13 @@ public class ProcessDaoImpl implements ProcessDao {
 
         String itemNeedToUpdateInStockCard = "SELECT 'Y' AS IS_RECIPE, 'N' AS IS_PRODUCT, ITEM_CODE AS PRODUCT_CODE, QTY_STOCK FROM M_RECIPE_DETAIL WHERE RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup) UNION all SELECT 'N' AS IS_RECIPE, 'Y' AS IS_PRODUCT, product_code AS PRODUCT_CODE, QTY_STOCK FROM m_recipe_product WHERE RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup)";
         List<Map<String, Object>> rowsNeedToUpdateToStockCardDetail = jdbcTemplate.query(itemNeedToUpdateInStockCard, prm, new DynamicRowMapper());
+
+        Integer checkTableCount =jdbcTemplate.queryForObject("SELECT count(*) FROM all_tables WHERE table_name = 'T_HIST_DEL_PRD'", prm, Integer.class);
+        if (checkTableCount > 0) {
+            String insertIntoMpcsDelHistoryQuery = "INSERT INTO T_HIST_DEL_PRD (MPCS_GROUP,DATE_MPCS,QTY,UOM,TIME_MPCS,ITEM_CODE) "
+                + "SELECT :mpcsGroup AS mpcs_group, :mpcsDate AS mpcs_date, -(QTY_STOCK * :qtyMpcs) AS QTY, UOM_STOCK AS UOM, :timeUpd AS TIME_MPCS, PRODUCT_CODE AS ITEM_CODE FROM M_RECIPE_PRODUCT mrp WHERE mrp.RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup) ";
+            jdbcTemplate.update(insertIntoMpcsDelHistoryQuery, prm);
+        }
 
         for (Map<String, Object> row : rowsNeedToUpdateToStockCardDetail) {
             Map<String, Object> newParam = new HashMap<>();

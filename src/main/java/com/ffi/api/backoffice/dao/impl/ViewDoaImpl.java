@@ -880,16 +880,16 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listItem(Map<String, String> Logan) {
-        String qry = "select * from m_item where status='A' and flag_paket= :FlagPaket  and item_code not like'88-%' order by item_code asc";
+        String qry = "select * from m_item WHERE (:status IS NULL OR :status = '' OR STATUS = :status) and flag_paket= :FlagPaket  and item_code not like'88-%' order by item_code asc";
         if (Logan.get("paket").equalsIgnoreCase("C")) {
-            qry = "select * from m_item where status='A' and flag_material= 'Y'  and item_code not like'88-%' order by item_code asc";
+            qry = "select * from m_item WHERE (:status IS NULL OR :status = '' OR STATUS = :status) and flag_material= 'Y'  and item_code not like'88-%' order by item_code asc";
         }
         if (Logan.get("paket").equalsIgnoreCase("D")) {
-            qry = "select * from m_item where status='A' and item_code like'88-%' order by item_code asc";
+            qry = "select * from m_item WHERE (:status IS NULL OR :status = '' OR STATUS = :status) and item_code like'88-%' order by item_code asc";
         }
         //E for SDD
         if (Logan.get("paket").equalsIgnoreCase("E")) {
-            qry = "select * from M_ITEM where STATUS = 'A' and CD_WAREHOUSE = '00010' order by item_code asc";
+            qry = "select * from M_ITEM where CD_WAREHOUSE = '00010' AND (:status IS NULL OR :status = '' OR STATUS = :status) order by item_code asc";
         }
         ///////////////////////// untuk report stock/////////////////////////
         if (Logan.get("paket").equalsIgnoreCase("A")) {
@@ -920,11 +920,12 @@ public class ViewDoaImpl implements ViewDao {
         /////////////// End revised query for Leftover//////////////
         //Condition when Non-Paket
         if (Logan.get("paket").equalsIgnoreCase("N")) {
-            qry = "select * from m_item where status='A' and flag_paket='N' and flag_finished_good = 'Y' order by item_code asc";
+            qry = "select * from m_item WHERE (:status IS NULL OR :status = '' OR STATUS = :status) and flag_paket='N' and flag_finished_good = 'Y' order by item_code asc";
         } 
         Map prm = new HashMap();
         prm.put("FlagPaket", Logan.get("paket"));
         prm.put("transDate", Logan.get("transDate"));
+        prm.put("status", Logan.get("status"));
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
