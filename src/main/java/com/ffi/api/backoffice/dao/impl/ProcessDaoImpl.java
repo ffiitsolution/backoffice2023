@@ -1822,7 +1822,7 @@ public class ProcessDaoImpl implements ProcessDao {
         String queryDetail = query.toString();
         jdbcTemplate.update(queryDetail, new HashMap<>());
         
-        if(!typeReturn.equalsIgnoreCase("gudang")){
+        if(!typeReturn.equals("1")){
             updateStockCardRO(noReturn, outletCode);
         }
     }
