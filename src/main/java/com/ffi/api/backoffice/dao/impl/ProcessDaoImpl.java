@@ -1769,7 +1769,9 @@ public class ProcessDaoImpl implements ProcessDao {
         Map balance = new HashMap();
         balance.put("outletCode", outletCode);
         LocalDate transDate = this.jdbcTemplate.queryForObject("SELECT TRANS_DATE FROM M_OUTLET WHERE OUTLET_CODE = :outletCode", balance, LocalDate.class);
-        String month = String.valueOf(transDate.getMonthValue());
+//        String month = String.valueOf(transDate.getMonthValue());
+        String month = String.format("%02d", transDate.getMonthValue());
+        System.out.println(month);
         String year = String.valueOf(transDate.getYear());
 
         String typeReturn = param.getAsJsonPrimitive("typeReturn").getAsString();
@@ -1927,7 +1929,7 @@ public class ProcessDaoImpl implements ProcessDao {
         }
         String sql = "select to_char(counter, 'fm0000') as no_urut from ( "
                 + "select max(counter_no) + 1 as counter from m_counter "
-                + "where outlet_code = :outletCode and trans_type = :transType and year = :year and month = :month "
+                + "where outlet_code = :outletCode and trans_type = :transType and year = :year and month = to_number(:month) "
                 + ") tbl";
         System.err.println("Query for No Urut :" + sql);
         Map param = new HashMap();
@@ -3482,13 +3484,11 @@ public class ProcessDaoImpl implements ProcessDao {
     //////// new Method Insert MPCS Management Fryer aditya 29 Jan 2024
     @Override
     public void insertMpcsManagementFryer(JsonObject param) {
-        DateFormat df = new SimpleDateFormat("MM");
-        DateFormat dfYear = new SimpleDateFormat("yyyy");
         
         Map balance = new HashMap();
         balance.put("outletCode", param.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
         LocalDate transDate = this.jdbcTemplate.queryForObject("SELECT TRANS_DATE FROM M_OUTLET WHERE OUTLET_CODE = :outletCode", balance, LocalDate.class);
-        String month = String.valueOf(transDate.getMonthValue());
+        String month = String.format("%02d", transDate.getMonthValue());
         String year = String.valueOf(transDate.getYear());
 
         String noProcess = MpcsManagementFryerCounter(year, month, "FRY", param.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
@@ -3526,7 +3526,7 @@ public class ProcessDaoImpl implements ProcessDao {
      public String MpcsManagementFryerCounter(String year, String month, String transType, String outletCode) {
         String sql = "select to_char(counter, 'fm0000') as no_urut from ( "
                 + "select max(counter_no) + 1 as counter from m_counter "
-                + "where outlet_code = :outletCode and trans_type = :transType and year = :year and month = :month "
+                + "where outlet_code = :outletCode and trans_type = :transType and year = :year and month = to_number(:month) "
                 + ") tbl";
         System.err.println("Query for No Urut :" + sql);
         Map param = new HashMap();
