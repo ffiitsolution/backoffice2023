@@ -3038,6 +3038,7 @@ public class ProcessDaoImpl implements ProcessDao {
 
     // Insert MPCS Production - Fathur 8 Jan 2024 //
     // Update for integration to stock card 17 Jan 2024 //
+    // Update for fryer type S calculation based on oil usage 20 Feb 2024 //
     @Transactional
     @Override
     public boolean insertMpcsProduction(Map<String, String> params) {
@@ -3057,11 +3058,19 @@ public class ProcessDaoImpl implements ProcessDao {
         prm.put("fryerType", params.getOrDefault("fryerType", " "));
         prm.put("fryerTypeSeq", params.getOrDefault("fryerTypeSeq"," "));
 
-        if (!prm.get("fryerType").equals(" ") || !prm.get("fryerTypeSeq").equals(" ")) {
-            String updateFryer = "Update M_MPCS_DETAIL "
-            + " SET FRYER_TYPE_CNT = (FRYER_TYPE_CNT + (SELECT (sum(QTY_STOCK) * :qtyMpcs) FROM m_recipe_product WHERE RECIPE_CODE = :recipeCode)) " 
-            + " WHERE OUTLET_CODE = :outletCode AND FRYER_TYPE = :fryerType and FRYER_TYPE_SEQ = :fryerTypeSeq ";
-            jdbcTemplate.update(updateFryer, prm);
+        if (!prm.get("fryerType").equals(" ") || !prm.get("fryerTypeSeq").equals(" ") || !prm.get("fryerType").equals(null) || !prm.get("fryerTypeSeq").equals(null)) {
+            if (prm.get("fryerType").equals("S")) {
+                String oilItemCode = "06-1002";
+                String updateFryer = "Update M_MPCS_DETAIL "
+                    + " SET FRYER_TYPE_CNT = (FRYER_TYPE_CNT + (SELECT (QTY_STOCK * :qtyMpcs) as total FROM M_RECIPE_DETAIL where RECIPE_CODE = :recipeCode AND ITEM_CODE = '"+oilItemCode+"' )) " 
+                    + " WHERE OUTLET_CODE = :outletCode AND FRYER_TYPE = :fryerType and FRYER_TYPE_SEQ = :fryerTypeSeq ";
+                jdbcTemplate.update(updateFryer, prm);
+            } else {
+                String updateFryer = "Update M_MPCS_DETAIL "
+                    + " SET FRYER_TYPE_CNT = (FRYER_TYPE_CNT + (SELECT (sum(QTY_STOCK) * :qtyMpcs) FROM m_recipe_product WHERE RECIPE_CODE = :recipeCode)) " 
+                    + " WHERE OUTLET_CODE = :outletCode AND FRYER_TYPE = :fryerType and FRYER_TYPE_SEQ = :fryerTypeSeq ";
+                jdbcTemplate.update(updateFryer, prm);
+            }
         } 
 
         String insertProductionQuery = "UPDATE T_SUMM_MPCS SET "
@@ -3329,9 +3338,9 @@ public class ProcessDaoImpl implements ProcessDao {
             newParam.put("totalQty", totalQty);
 
             if (newParam.get("isProduct").equals("Y")) {
-                updateInsertStockCard_in_delete(newParam);
-            } else {
                 updateInsertStockCard_out_delete(newParam);
+            } else {
+                updateInsertStockCard_in_delete(newParam);
             }
         }
         rm.setSuccess(true);
@@ -3341,21 +3350,36 @@ public class ProcessDaoImpl implements ProcessDao {
     }
 
     // Update stock card detail from mpcs production
-    public void updateInsertStockCard_in_delete(Map<String, Object> param) {
-        String updateStockCardDetail = "UPDATE T_STOCK_CARD_DETAIL t "
-                + "SET t.QUANTITY_IN = (t.QUANTITY_IN - :totalQty), "
+    public void updateInsertStockCard_out_delete(Map<String, Object> param) {
+        String deleteTransType = "DEL";
+        String checkIsExist = "SELECT COUNT(*) FROM  T_STOCK_CARD_DETAIL t "
+                + "WHERE t.OUTLET_CODE = :outletCode "
+                + "AND t.TRANS_DATE = :mpcsDate "
+                + "AND t.ITEM_CODE = :itemCode "
+                + "AND t.CD_TRANS = '"+deleteTransType+"' ";
+
+        Integer rowCount = jdbcTemplate.queryForObject(checkIsExist, param, Integer.class);
+        if (rowCount > 0) {
+            String updateStockCardDetail = "UPDATE T_STOCK_CARD_DETAIL t "
+                + "SET t.QUANTITY = (t.QUANTITY + :totalQty), "
                 + "TIME_UPD = :timeUpd, "
                 + "DATE_UPD = :dateUpd, "
                 + "USER_UPD = :userUpd "
                 + "WHERE t.OUTLET_CODE = :outletCode "
                 + "AND t.TRANS_DATE = :mpcsDate "
                 + "AND t.ITEM_CODE = :itemCode "
-                + "AND t.CD_TRANS = 'PRD' ";
-        jdbcTemplate.update(updateStockCardDetail, param);
+                + "AND t.CD_TRANS = '"+deleteTransType+"' ";
+            jdbcTemplate.update(updateStockCardDetail, param);
+        } else {
+            String insertStockCardDetail = "INSERT INTO T_STOCK_CARD_DETAIL "
+                + "(OUTLET_CODE,TRANS_DATE,ITEM_CODE,CD_TRANS,QUANTITY_IN,QUANTITY,USER_UPD,DATE_UPD,TIME_UPD) "
+                + "VALUES (:outletCode, :mpcsDate, :itemCode, '"+deleteTransType+"', 0, :totalQty, :userUpd, :dateUpd, :timeUpd) ";
+            jdbcTemplate.update(insertStockCardDetail, param);
+        }
 
         // Insert Update stock card header from mpcs production
         String updateStockCardHeader = "UPDATE T_STOCK_CARD SET "
-                + "QTY_IN = (QTY_IN  - :totalQty), "
+                + "QTY_OUT = (QTY_OUT  + :totalQty), "
                 + "USER_UPD = :userUpd, "
                 + "DATE_UPD = :dateUpd, "
                 + "TIME_UPD = :timeUpd "
@@ -3363,22 +3387,38 @@ public class ProcessDaoImpl implements ProcessDao {
         jdbcTemplate.update(updateStockCardHeader, param);
     }
 
-    public void updateInsertStockCard_out_delete(Map<String, Object> param) {
-        // Update stock card detail from mpcs production
-        String updateStockCardDetail = "UPDATE T_STOCK_CARD_DETAIL t "
-                + "SET t.QUANTITY = (t.QUANTITY - :totalQty), "
+    public void updateInsertStockCard_in_delete(Map<String, Object> param) {
+        String deleteTransType = "DEL";
+        String checkIsExist = "SELECT COUNT(*) FROM  T_STOCK_CARD_DETAIL t "
+                + "WHERE t.OUTLET_CODE = :outletCode "
+                + "AND t.TRANS_DATE = :mpcsDate "
+                + "AND t.ITEM_CODE = :itemCode "
+                + "AND t.CD_TRANS = '"+deleteTransType+"' ";
+
+        Integer rowCount = jdbcTemplate.queryForObject(checkIsExist, param, Integer.class);
+
+        if (rowCount > 0) {
+            // Update stock card detail from mpcs production
+            String updateStockCardDetail = "UPDATE T_STOCK_CARD_DETAIL t "
+                + "SET t.QUANTITY_IN = (t.QUANTITY_IN - :totalQty), "
                 + "TIME_UPD = :timeUpd, "
                 + "DATE_UPD = :dateUpd, "
                 + "USER_UPD = :userUpd "
                 + "WHERE t.OUTLET_CODE = :outletCode "
                 + "AND t.TRANS_DATE = :mpcsDate "
                 + "AND t.ITEM_CODE = :itemCode "
-                + "AND t.CD_TRANS = 'PRD' ";
-        jdbcTemplate.update(updateStockCardDetail, param);
+                + "AND t.CD_TRANS = '"+deleteTransType+"' ";
+            jdbcTemplate.update(updateStockCardDetail, param);
+        } else {
+            String insertStockCardDetail = "INSERT INTO T_STOCK_CARD_DETAIL "
+                + "(OUTLET_CODE,TRANS_DATE,ITEM_CODE,CD_TRANS,QUANTITY_IN,QUANTITY,USER_UPD,DATE_UPD,TIME_UPD) "
+                + "VALUES (:outletCode, :mpcsDate, :itemCode, '"+deleteTransType+"', :totalQty, 0, :userUpd, :dateUpd, :timeUpd) ";
+            jdbcTemplate.update(insertStockCardDetail, param);
+        }
 
         // Update stock card header from mpcs production
         String updateStockCardHeader = "UPDATE T_STOCK_CARD SET "
-                + "QTY_OUT = (QTY_OUT - :totalQty), "
+                + "QTY_IN = (QTY_IN + :totalQty), "
                 + "USER_UPD = :userUpd, "
                 + "DATE_UPD = :dateUpd, "
                 + "TIME_UPD = :timeUpd "
