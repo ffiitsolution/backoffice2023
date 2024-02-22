@@ -49,7 +49,7 @@ public class TableAliasUtil {
         return dataMap.getOrDefault(fileName, Collections.emptyList());
     }
 
-    public List<TableAlias> searchByColumn(String fileName, String columnName, String columnValue) {
+    public List<TableAlias> searchByColumn(String fileName, String columnName, Object columnValue) {
         return dataMap.getOrDefault(fileName, Collections.emptyList()).stream()
                 .filter(tableAlias -> matches(tableAlias, columnName, columnValue))
                 .collect(Collectors.toList());
@@ -61,11 +61,12 @@ public class TableAliasUtil {
                 .findFirst();
     }
 
-    private boolean matches(TableAlias tableAlias, String columnName, String columnValue) {
+    private boolean matches(TableAlias tableAlias, String columnName, Object columnValue) {
         return switch (columnName) {
             case "data" -> tableAlias.getData().equals(columnValue);
             case "table" -> tableAlias.getTable().equals(columnValue);
             case "alias" -> tableAlias.getAlias().equals(columnValue);
+            case "process" -> tableAlias.getProcess() == (boolean) columnValue;
             case "dateColumn" -> tableAlias.getDateColumn().equals(columnValue);
             case "dateUpd" -> tableAlias.getDateUpd().equals(columnValue);
             case "timeUpd" -> tableAlias.getTimeUpd().equals(columnValue);

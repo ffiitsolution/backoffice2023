@@ -490,19 +490,19 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("year", year);
         param.put("month", month);
         param.put("transType", balance.get("transType"));
-        param.put("valueSupplier", "%" + balance.get("valueSupplier") + "%");
+        param.put("valueSupplier", balance.get("valueSupplier"));
                
         if (balance.get("orderTo").equals("3")) { // order ke gudang
             if(balance.get("orderType").equals("4")){ // order ke Gudang FSD
                 insertOrderDetailQuery = "INSERT INTO T_ORDER_DETAIL (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,TOTAL_QTY_STOCK,UNIT_PRICE,USER_UPD,DATE_UPD,TIME_UPD) "
                     + "SELECT :outletCode, :orderType, :orderId, :orderNo, item_code, 0, UOM_WAREHOUSE, 0, UOM_PURCHASE, 0, 0, :userUpd, :dateUpd, :timeUpd "
                     + "FROM m_item "
-                    + "WHERE CD_WAREHOUSE like :cdSupplier AND STATUS = 'A' "; 
+                    + "WHERE CD_WAREHOUSE = :cdSupplier AND STATUS = 'A' "; 
             } else { // order ke gudang
                 insertOrderDetailQuery = "INSERT INTO T_ORDER_DETAIL (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,TOTAL_QTY_STOCK,UNIT_PRICE,USER_UPD,DATE_UPD,TIME_UPD) "
                     + "SELECT :outletCode, :orderType, :orderId, :orderNo, item_code, 0, UOM_WAREHOUSE, 0, UOM_PURCHASE, 0, 0, :userUpd, :dateUpd, :timeUpd "
                     + "FROM m_item "
-                    + "WHERE CD_WAREHOUSE like :valueSupplier AND STATUS = 'A' "; 
+                    + "WHERE CD_WAREHOUSE = LPAD(:valueSupplier,5,0) AND STATUS = 'A' ";
             }
         } if (balance.get("orderTo").equals("2")) { // order ke outlet
             insertOrderDetailQuery = "INSERT INTO T_ORDER_DETAIL (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,TOTAL_QTY_STOCK,UNIT_PRICE,USER_UPD,DATE_UPD,TIME_UPD) "
@@ -529,7 +529,8 @@ public class ProcessDaoImpl implements ProcessDao {
                     + "ON A.ITEM_CODE=S.ITEM_CODE WHERE a.STATUS = 'A' AND S.CD_SUPPLIER=:cdSupplier ";
             };
         }
-        
+        System.out.println("insertOrderDetailQuery");
+        System.out.println(insertOrderDetailQuery);
         jdbcTemplate.update(insertOrderHeader, param);
         jdbcTemplate.update(insertOrderDetailQuery, param);
         
