@@ -4542,20 +4542,49 @@ return finalResultList;
     // =============== New Method From Sifa 20-02-2024 ===============
     @Override
     public List<Map<String, Object>> listmenuApplicationAccess(Map<String, String> balance) {
-        String qry = "SELECT mlad.* " +
-                    "FROM M_LEVEL_AKSES_HEADER mlah " +
-                    "JOIN M_LEVEL_AKSES_DETAIL mlad ON (mlah.MENU_ID = mlad.MENU_ID AND mlad.STATUS = 'A' AND mlad.BRAND = :outletBrand AND mlad.ENV = :env) " +
-                    "WHERE mlah.GROUP_ID = :groupId AND mlah.STATUS = 'A'";
+        String qry = "SELECT " + 
+            "mlad.TYPE_MENU, " + 
+            "mlad.BRAND, " + 
+            "mlad.ENV, " + 
+            "mlad.TYPE_ID, " + 
+            "mlad.MENU_ID, " + 
+            "mlad.PARENT, " + 
+            "mlad.DESCRIPTION, " + 
+            "mlad.URL, " + 
+            "mlad.ICON, " + 
+            "mlad.BADGE, " + 
+            "mlad.BADGE_COLOR, " + 
+            "mlad.ID_NO, " + 
+            "LISTAGG(mlah2.MENU_ID, ', ') WITHIN GROUP (ORDER BY mlad.MENU_ID) AS PERMISSION " + 
+            "FROM " + 
+            "M_LEVEL_AKSES_DETAIL mlad " + 
+            "JOIN " + 
+            "M_LEVEL_AKSES_HEADER mlah ON (mlah.MENU_ID = mlad.MENU_ID AND mlad.STATUS = 'A' AND mlad.BRAND = :outletBrand AND mlad.ENV = :env) " + 
+            "FULL OUTER JOIN " + 
+            "M_LEVEL_AKSES_HEADER mlah2 ON mlah2.MENU_ID LIKE '%' || mlad.MENU_ID || '.%' " + 
+            "WHERE " + 
+            "mlah.GROUP_ID = :groupId " + 
+            "AND mlah.STATUS = 'A' " + 
+            "GROUP BY " + 
+            "mlad.TYPE_MENU, " + 
+            "mlad.BRAND, " + 
+            "mlad.ENV, " + 
+            "mlad.TYPE_ID, " + 
+            "mlad.MENU_ID, " + 
+            "mlad.PARENT, " + 
+            "mlad.DESCRIPTION, " + 
+            "mlad.URL, " + 
+            "mlad.ICON, " + 
+            "mlad.BADGE, " + 
+            "mlad.BADGE_COLOR, " + 
+            "mlad.ID_NO";
         Map prm = new HashMap();
         prm.put("outletBrand", balance.get("outletBrand"));
         prm.put("env", balance.get("env"));
         prm.put("groupId", balance.get("groupId"));
         System.err.println("q :" + qry);
 
-        // Initialize the list variable as an empty list
-        List<Map<String, Object>> list = new ArrayList<>();
-
-        jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<>();
@@ -4565,38 +4594,50 @@ return finalResultList;
                 rt.put("url", rs.getString("URL"));
                 rt.put("parent", rs.getString("PARENT"));
                 rt.put("sequence", Integer.valueOf(rs.getString("ID_NO")));
-                
-                // Check if badge is not null
+                rt.put("permission", rs.getString("PERMISSION"));
                 if (rs.getString("BADGE") != null) {
                     Map<String, Object> badge = new HashMap<>();
                     badge.put("text", rs.getString("BADGE"));
                     badge.put("color", rs.getString("BADGE_COLOR"));
                     rt.put("badge", badge);
                 }
-
-                // Check if the menu has a parent
-                if (rs.getString("PARENT") == null || rs.getString("PARENT") == "") {
-                    // Root menu, return it directly
-                    list.add(rt);
-                } else {
-                    // Find the parent menu and add this menu as a child
-                    for (Map<String, Object> parentMenu : list) {
-                        if (parentMenu.get("menuId").equals(rs.getString("PARENT"))) {
-                            // Create a 'children' list if it doesn't exist
-                            if (parentMenu.get("children") == null) {
-                                parentMenu.put("children", new ArrayList<>());
-                            }
-                            // Add this menu as a child of the parent
-                            ((List<Map<String, Object>>) parentMenu.get("children")).add(rt);
-                            break;
-                        }
-                    }
-                }
-                return null; // Return null since we're adding children to existing menus
+                return rt;
             }
         });
 
-        return list;
+        return transformMenuAccess(list);
+    }
+
+    public static List<Map<String, Object>> transformMenuAccess(List<Map<String, Object>> menuList) {
+        Map<String, List<Map<String, Object>>> parentToChildrenMap = new HashMap<>();
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        // Group menu items by their parent
+        for (Map<String, Object> menu : menuList) {
+            String parent = (String) menu.get("parent");
+            parentToChildrenMap.computeIfAbsent(parent, k -> new ArrayList<>()).add(menu);
+        }
+
+        // Populate the result list with root-level menu items
+        for (Map<String, Object> menu : menuList) {
+            if (menu.get("parent") == null) {
+                result.add(menu);
+                addChildrenMenuAccess(menu, parentToChildrenMap);
+            }
+        }
+
+        return result;
+    }
+
+    private static void addChildrenMenuAccess(Map<String, Object> parent, Map<String, List<Map<String, Object>>> parentToChildrenMap) {
+        String menuId = (String) parent.get("menuId");
+        List<Map<String, Object>> children = parentToChildrenMap.get(menuId);
+        if (children != null) {
+            parent.put("children", children);
+            for (Map<String, Object> child : children) {
+                addChildrenMenuAccess(child, parentToChildrenMap);
+            }
+        }
     }
 
     // =============== New Method From Sifa 21-02-2024 ===============
