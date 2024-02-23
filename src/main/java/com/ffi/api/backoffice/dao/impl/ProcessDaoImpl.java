@@ -208,10 +208,9 @@ public class ProcessDaoImpl implements ProcessDao {
     /////////////////////////////////done
 
     ///////////////new method from dona 06-03-2023////////////////////////////
+    @Override
     public void updateFrayer(Map<String, String> balance) {
-        String qy = "UPDATE M_MPCS_DETAIL SET "
-                + "STATUS= :status,USER_UPD= :userUpd,DATE_UPD= :dateUpd,TIME_UPD= :timeUpd "
-                + "where fryer_type=:fryerType and OUTLET_CODE=:outletCode and FRYER_TYPE_SEQ=:fryerTypeSeq ";
+        String qy = "UPDATE M_MPCS_DETAIL SET STATUS= :status, USER_UPD= :userUpd, DATE_UPD = :dateUpd, TIME_UPD = :timeUpd where FRYER_TYPE = :fryerType and OUTLET_CODE = :outletCode and FRYER_TYPE_SEQ = :fryerTypeSeq";
         Map param = new HashMap();
         param.put("outletCode", balance.get("outletCode"));
         param.put("fryerTypeSeq", balance.get("fryerTypeSeq"));
@@ -817,15 +816,9 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("opnameNo", balance.get("opnameNo"));
         param.put("status", status);
 
-        // cek jika ada nilai nol dan belum di confirmZero, kembalikan list
+        // cek jika ada nilai nol dan belum di confirmZero, kembalikan list item yg ada freeze namun total 0
         if (confirmZero < 1 && (status == 1 || status == '1')) {
-            String qry = """
-                select o.opname_no, o.item_code, mi.item_description, o.qty_purch, o.uom_purch, o.qty_stock, o.uom_stock, o.total_qty 
-                from t_opname_detail o
-                JOIN m_item mi ON o.item_code = mi.item_code
-                where o.outlet_code = :outletCode and o.opname_no = :opnameNo and o.qty_purch = 0 and o.qty_stock = 0 and o.total_qty = 0
-                order by o.item_code
-            """;
+            String qry = "SELECT O.OPNAME_NO, O.ITEM_CODE, MI.ITEM_DESCRIPTION, O.QTY_FREEZE, O.QTY_PURCH, O.UOM_PURCH, O.QTY_STOCK, O.UOM_STOCK, O.TOTAL_QTY FROM T_OPNAME_DETAIL O LEFT JOIN M_ITEM MI ON O.ITEM_CODE = MI.ITEM_CODE WHERE O.OUTLET_CODE = :outletCode AND O.OPNAME_NO = :opnameNo AND O.QTY_FREEZE != 0 AND (O.QTY_STOCK + O.QTY_PURCH) = 0 ORDER BY O.ITEM_CODE";
             list = jdbcTemplate.query(qry, param, new DynamicRowMapper());
             if (!list.isEmpty()) {
                 System.out.println("terdapat nilai semua 0 saat opname: " + list.size());
@@ -3635,11 +3628,10 @@ public class ProcessDaoImpl implements ProcessDao {
         rm.setSuccess(false);
         List<Map<String, Object>> list = new ArrayList();
         String date = mapping.get("date").toString();
-        Boolean isTerimaMaster = "TERIMA DATA MASTER".equals(mapping.get("type"));
-        Boolean isKirimTransaksi = "TRANSFER DATA TRANSAKSI".equals(mapping.get("type"));
         List<String> tables = (List<String>) mapping.getOrDefault("listTable", new ArrayList<String>());
-        
-        if(isTerimaMaster){
+        System.out.println("listTransferData type: " + mapping.get("type"));
+        System.out.println("listTransferData tables: " + tables.size());
+        if("TERIMA DATA MASTER".equals(mapping.get("type"))){
             try {
                 // todo: handle terima/kirim
                 for (String tableName : tables) {
@@ -3651,7 +3643,6 @@ public class ProcessDaoImpl implements ProcessDao {
                     String outletId = mapping.get("outletCode").toString();
                     URI uri = new URIBuilder(getData.getURI()).addParameter("param", tableName).addParameter("date", date).addParameter("outletId", outletId).build();
                     getData.setURI(uri);
-                    System.err.println("listTransferData :" + uri);
                     CloseableHttpResponse response = client.execute(getData);
                     BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
                     StringBuilder content = new StringBuilder();
@@ -3673,6 +3664,7 @@ public class ProcessDaoImpl implements ProcessDao {
                         }
                         mapq.put(aliasedTableName, listItem);
                         list.add(mapq);
+                        System.err.println("listTransferData "+aliasedTableName+":" + listItem.size());
                     }
                 }
                 rm.setItem(list);
@@ -3687,23 +3679,21 @@ public class ProcessDaoImpl implements ProcessDao {
                 
                 Logger.getLogger(ProcessDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } else if(isKirimTransaksi){
-            for (String tableName : tables) {
-                String conditionText = conditionTextTransfer(tableName, date);
-                String query = "SELECT * FROM " + tableName + conditionText;
+        } else if("KIRIM DATA TRANSAKSI".equals(mapping.get("type"))){
+//            List<TableAlias> tablesT = tableAliasUtil.searchByColumn(TableAliasUtil.TABLE_ALIAS_T, "process", true);
+            List<TableAlias> tablesT = tableAliasUtil.getDataList(TableAliasUtil.TABLE_ALIAS_T);
+            System.out.println("isKirimTransaksi: " + tablesT.size());
+            for (TableAlias table : tablesT) {
+                String conditionText = conditionTextTransfer(table.getTable(), date);
+                String query = "SELECT * FROM " + table.getTable() + conditionText;
                 Map prm = new HashMap();
                 List<Map<String, Object>> listItem = jdbcTemplate.query(query, prm, (ResultSet rs, int index) -> convertObject(rs));
-            if (listItem != null && !listItem.isEmpty()) {
-                Map<String, Object> mapq = new HashMap();
-                // Rubah nama tabel ke alias nya
-                Optional<TableAlias> tbl = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M,"table",tableName);
-                String aliasedTableName = tableName;
-                if(tbl.isPresent()){
-                    aliasedTableName = tbl.get().getAlias();
+                if (listItem != null && !listItem.isEmpty()) {
+                    Map<String, Object> mapq = new HashMap();
+                    // Rubah nama tabel ke alias nya
+                    mapq.put(table.getAlias(), listItem);
+                    list.add(mapq);
                 }
-                mapq.put(aliasedTableName, listItem);
-                list.add(mapq);
-            }
             }
             rm.setItem(list);
             rm.setSuccess(true);
