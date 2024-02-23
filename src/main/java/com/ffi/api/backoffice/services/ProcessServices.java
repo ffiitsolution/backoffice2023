@@ -65,6 +65,11 @@ public class ProcessServices {
     public void updatePos(Map<String, String> balance) {
         dao.updatePos(balance);
     }
+    
+    ///// new method update outlet detail adit 21 Feb 2024
+    public void updateOutlet(Map<String, String> balance) {
+        dao.updateOutlet(balance);
+    }
     ///////////////////////done
     ///////////////Updated By Pandu 14-03-2023////////////////////////////
 // ========================================================== MODULE MASTER STAFF (M_STAFF) =============================================================================================//    

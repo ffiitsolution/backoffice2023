@@ -65,7 +65,16 @@ public interface ViewDao {
     /////////////////////////////done 
     ///////////////new method from asep 16-mar-2023 //////////////   
     List<Map<String, Object>> listOutlet(Map<String, String> ref);
+    
+    ///////////////new method for List Detail from adit 21-02-2024////////////////////////////
+    List<Map<String, Object>> listOutletDetail(Map<String, String> ref);
+    
+    List<Map<String, Object>> listOutletDetailGroup(Map<String, String> ref);
+    
+    List<Map<String, Object>> listOutletDetailTypeOrder(Map<String, String> ref);
 
+    //////// done adit 21-02-2024
+    
     List<Map<String, Object>> listPos(Map<String, String> ref);
 
     List<Map<String, Object>> listTypePos(Map<String, String> ref);
