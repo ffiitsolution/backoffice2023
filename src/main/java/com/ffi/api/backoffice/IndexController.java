@@ -2544,7 +2544,7 @@ public class IndexController {
                 rm.setMessage("Update Success");
             } else {
                 rm.setSuccess(false);
-                rm.setMessage(list.size() + " item berikut terdeteksi memiliki nilai input total 0");
+                rm.setMessage(list.size() + " item berikut terdeteksi memiliki nilai awal namun di input 0");
             }
         } catch (Exception e) {
             rm.setSuccess(false);
@@ -3298,44 +3298,6 @@ public class IndexController {
             rm.setMessage("Insert  Failed");
         }
         return rm;
-    }
-
-    /////// NEW METHOD to get list Menu Aplikasi by M Joko 8 Januari 2024
-    @RequestMapping(value = "/list-menu-application", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Digunakan untuk list Menu Aplikasi", response = Object.class)
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "OK"),
-        @ApiResponse(code = 404, message = "The resource not found"),}
-    )
-    public @ResponseBody
-    Response listMenuApplication(@RequestBody String param) throws IOException, Exception {
-        Gson gsn = new Gson();
-        Map<String, Object> data = gsn.fromJson(param, new TypeToken<Map<String, String>>() {
-        }.getType());
-        // List<Map<String, Object>> list = viewServices.listMenuApplication(data);
-        String env = data.containsKey("env") ? data.getOrDefault("env", "prod").toString() : appUtil.getOrDefault("app.env", "development");
-        Response res = new Response();
-        String filepath = env.toLowerCase().contains("dev") ? "json/menuKFC-dev.json" : "json/menuKFC.json";
-        System.err.println("menu filepath: " + filepath);
-        if (data.containsKey("outletBrand") && data.get("outletBrand").toString().equalsIgnoreCase("TACOBELL")) {
-            filepath = "json/menuTACOBELL.json";
-        }
-        try {
-            ClassPathResource resource = new ClassPathResource(filepath);
-            byte[] bytes = FileCopyUtils.copyToByteArray(resource.getInputStream());
-            String jsonString = new String(bytes, StandardCharsets.UTF_8);
-            ObjectMapper objectMapper = new ObjectMapper();
-            List<Map<String, Object>> menuList = objectMapper.readValue(jsonString, new ArrayList<LinkedHashMap<String, Object>>().getClass());
-            res.setData(menuList);
-        } catch (IOException e) {
-            System.err.println("e: " + e.getMessage());
-            List<Map<String, Object>> menuList = new ArrayList();
-            data.put("success", false);
-            data.put("message", e.getMessage());
-            menuList.add(data);
-            res.setData(menuList);
-        }
-        return res;
     }
 
     // Get List Daftar Menu Report  By Rafi 9 Jan 2024
