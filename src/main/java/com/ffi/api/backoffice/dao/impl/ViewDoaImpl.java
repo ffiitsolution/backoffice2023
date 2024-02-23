@@ -4728,4 +4728,117 @@ return finalResultList;
         });
         return list;
     }
+    
+    @Override
+    public List<Map<String, Object>> listOutletDetail(Map<String, String> balance) {
+        String qry = "SELECT a.REGION_CODE, b.DESCRIPTION AS REGION_NAME, a.OUTLET_CODE, a.OUTLET_NAME, a.TYPE, d.DESCRIPTION AS TYPE_STORE, a.ADDRESS_1, a.ADDRESS_2, a.CITY, e.DESCRIPTION AS CITY_NAME, a.POST_CODE, a.PHONE, a.FAX, a.CASH_BALANCE, a.TRANS_DATE, a.DEL_LIMIT, a.DEL_CHARGE, a.RND_PRINT, a.RND_FACT, a.RND_LIMIT, a.TAX, a.DP_MIN, a.CANCEL_FEE, a.CAT_ITEMS, a.MAX_BILLS, a.MIN_ITEMS, a.REF_TIME, a.TIME_OUT, a.MAX_SHIFT, a.SEND_DATA, a.MIN_PULL_TRX, a.MAX_PULL_VALUE, a.STATUS, a.START_DATE, a.FINISH_DATE, a.MAX_DISC_PERCENT, a.MAX_DISC_AMOUNT, a.OPEN_TIME, a.CLOSE_TIME, a.REFUND_TIME_LIMIT, a.MONDAY, a.TUESDAY, a.WEDNESDAY, a.THURSDAY, a.FRIDAY, a.SATURDAY, a.SUNDAY, a.HOLIDAY, a.OUTLET_24_HOUR, a.IP_OUTLET, a.PORT_OUTLET, a.USER_UPD, a.DATE_UPD, a.TIME_UPD, a.FTP_ADDR, a.FTP_USER, a.FTP_PASSWORD, a.INITIAL_OUTLET, a.AREA_CODE, c.DESCRIPTION AS AREA_NAME, a.RSC_CODE, f.DESCRIPTION AS RSC_NAME, a.TAX_CHARGE FROM M_OUTLET a JOIN M_GLOBAL b ON a.REGION_CODE = b.CODE AND b.COND = 'REG_OUTLET' JOIN M_GLOBAL c ON a.AREA_CODE = c.CODE AND c.COND = 'AREACODE' JOIN M_GLOBAL d ON a.TYPE = d.CODE AND d.COND = 'OUTLET_TP' JOIN M_GLOBAL e ON a.CITY = e.CODE AND e.COND = 'CITY' JOIN M_GLOBAL f ON a.RSC_CODE = f.CODE AND f.COND = 'RSC_OUTLET' WHERE OUTLET_CODE =:outletCode";
+
+        Map prm = new HashMap();
+        prm.put("outletCode", balance.get("outletCode"));
+        
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, (ResultSet rs, int i) -> {
+            Map<String, Object> rt = new HashMap<>();
+            rt.put("regionCode", rs.getString("REGION_CODE"));
+            rt.put("regionname", rs.getString("REGION_NAME"));
+            rt.put("outletCode", rs.getString("OUTLET_CODE"));
+            rt.put("outletName", rs.getString("OUTLET_NAME"));
+            rt.put("type", rs.getString("TYPE"));
+            rt.put("typeStore", rs.getString("TYPE_STORE"));
+            rt.put("address1", rs.getString("ADDRESS_1"));
+            rt.put("address2", rs.getString("ADDRESS_2"));
+            rt.put("city", rs.getString("CITY"));
+            rt.put("cityName", rs.getString("CITY_NAME"));
+            rt.put("posCode", rs.getString("POST_CODE"));
+            rt.put("phone", rs.getString("PHONE"));
+            rt.put("fax", rs.getString("FAX"));
+            rt.put("cashBalance", rs.getString("CASH_BALANCE"));
+            rt.put("transDate", rs.getString("TRANS_DATE"));
+            rt.put("delLimit", rs.getString("DEL_LIMIT"));
+            rt.put("delCharge", rs.getString("DEL_CHARGE"));
+            rt.put("rndPrint", rs.getString("RND_PRINT"));
+            rt.put("rndFact", rs.getString("RND_FACT"));
+            rt.put("rndLimit", rs.getString("RND_LIMIT"));
+            rt.put("tax", rs.getString("TAX"));
+            rt.put("dpMin", rs.getString("DP_MIN"));
+            rt.put("cancelFee", rs.getString("CANCEL_FEE"));
+            rt.put("catItems", rs.getString("CAT_ITEMS"));
+            rt.put("maxBills", rs.getString("MAX_BILLS"));
+            rt.put("minItems", rs.getString("MIN_ITEMS"));
+            rt.put("refTime", rs.getString("REF_TIME"));
+            rt.put("timeOut", rs.getString("TIME_OUT"));
+            rt.put("maxShift", rs.getString("MAX_SHIFT"));
+            rt.put("sendData", rs.getString("SEND_DATA"));
+            rt.put("minPullTrx", rs.getString("MIN_PULL_TRX"));
+            rt.put("maxPullValue", rs.getString("MAX_PULL_VALUE"));
+            rt.put("Status", rs.getString("STATUS"));
+            rt.put("startDate", rs.getString("START_DATE"));
+            rt.put("finishDate", rs.getString("FINISH_DATE"));
+            rt.put("maxDiscPercent", rs.getString("MAX_DISC_PERCENT"));
+            rt.put("maxDiscAmount", rs.getString("MAX_DISC_AMOUNT"));
+            rt.put("openTime", rs.getString("OPEN_TIME"));
+            rt.put("closeTime", rs.getString("CLOSE_TIME"));
+            rt.put("refundTimeLimit", rs.getString("REFUND_TIME_LIMIT"));
+            rt.put("monday", rs.getString("MONDAY"));
+            rt.put("tuesday", rs.getString("TUESDAY"));
+            rt.put("wednesday", rs.getString("WEDNESDAY"));
+            rt.put("thursday", rs.getString("THURSDAY"));
+            rt.put("friday", rs.getString("FRIDAY"));
+            rt.put("saturday", rs.getString("SATURDAY"));
+            rt.put("sunday", rs.getString("SUNDAY"));
+            rt.put("holiday", rs.getString("HOLIDAY"));
+            rt.put("outlet24Hour", rs.getString("OUTLET_24_HOUR"));
+            rt.put("ipOutlet", rs.getString("IP_OUTLET"));
+            rt.put("portOutlet", rs.getString("PORT_OUTLET"));
+            rt.put("userUpd", rs.getString("USER_UPD"));
+            rt.put("dateUpd", rs.getString("DATE_UPD"));
+            rt.put("timeUpd", rs.getString("TIME_UPD"));
+            rt.put("ftpAddr", rs.getString("FTP_ADDR"));
+            rt.put("ftpUser", rs.getString("FTP_USER"));
+            rt.put("ftpPassword", rs.getString("FTP_PASSWORD"));
+            rt.put("initialOutlet", rs.getString("INITIAL_OUTLET"));
+            rt.put("areaCode", rs.getString("AREA_CODE"));
+            rt.put("areaName", rs.getString("AREA_NAME"));
+            rt.put("rscCode", rs.getString("RSC_CODE"));
+            rt.put("rscName", rs.getString("RSC_NAME"));
+            rt.put("taxCharge", rs.getString("TAX_CHARGE"));            
+            return rt;
+        });
+        return list;
+    }
+    
+    @Override
+    public List<Map<String, Object>> listOutletDetailGroup(Map<String, String> balance) {
+        String qry = "SELECT a.*, b.OUTLET_NAME AS PARENT_NAME, c.OUTLET_NAME AS CHILD_NAME FROM M_OUTLET_DETAIL a JOIN M_OUTLET b ON a.PARENT_OUTLET = b.OUTLET_CODE JOIN M_OUTLET c ON a.CHILD_OUTLET = c.OUTLET_CODE WHERE b.OUTLET_CODE =:OUTLET_CODE";
+
+        Map prm = new HashMap();
+        prm.put("outletCode", balance.get("parentOutlet"));
+        
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, (ResultSet rs, int i) -> {
+            Map<String, Object> rt = new HashMap<>();
+            rt.put("parentOutlet", rs.getString("PARENT_OUTLET"));
+            rt.put("parentName", rs.getString("PARENT_NAME"));
+            rt.put("childOutlet", rs.getString("CHILD_OUTLET"));
+            rt.put("childName", rs.getString("CHILD_NAME"));           
+            return rt;
+        });
+        return list;
+    }
+    
+    @Override
+    public List<Map<String, Object>> listOutletDetailTypeOrder(Map<String, String> balance) {
+        String qry = "SELECT a.*, b.DESCRIPTION AS ORDER_NAME FROM M_OUTLET_PRICE a JOIN M_GLOBAL b ON a.ORDER_TYPE = b.CODE AND COND = 'ORDER_TYPE' WHERE a.OUTLET_CODE =:outletCode AND a.ORDER_TYPE IN ('AGG', 'BFG', 'BOX', 'BRD')";
+
+        Map prm = new HashMap();
+        prm.put("outletCode", balance.get("outletCode"));
+        
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, (ResultSet rs, int i) -> {
+            Map<String, Object> rt = new HashMap<>();
+            rt.put("outletCode", rs.getString("OUTLET_CODE"));
+            rt.put("orderType", rs.getString("ORDER_TYPE"));
+            rt.put("orderName", rs.getString("ORDER_NAME")); 
+            rt.put("priceTypeOrder", rs.getString("PRICE_TYPE_ORDER"));          
+            return rt;
+        });
+        return list;
+    }
 }
