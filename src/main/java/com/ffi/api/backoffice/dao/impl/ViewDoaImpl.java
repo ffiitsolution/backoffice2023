@@ -4561,7 +4561,7 @@ return finalResultList;
             "JOIN " + 
             "M_LEVEL_AKSES_HEADER mlah ON (mlah.MENU_ID = mlad.MENU_ID AND mlad.STATUS = 'A' AND mlad.BRAND = :outletBrand AND mlad.ENV = :env) " + 
             "FULL OUTER JOIN " + 
-            "M_LEVEL_AKSES_HEADER mlah2 ON mlah2.MENU_ID LIKE '%' || mlad.MENU_ID || '.%' " + 
+            "M_LEVEL_AKSES_HEADER mlah2 ON mlah2.MENU_ID LIKE '%' || mlad.MENU_ID || '.%' AND mlah2.STATUS = 'A' " + 
             "WHERE " + 
             "mlah.GROUP_ID = :groupId " + 
             "AND mlah.STATUS = 'A' " + 
