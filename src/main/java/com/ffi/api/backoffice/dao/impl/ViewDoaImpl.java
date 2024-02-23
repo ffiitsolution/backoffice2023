@@ -4838,4 +4838,64 @@ return finalResultList;
         });
         return list;
     }
+
+        
+    // Get order detail temporary list by Fathur 23 Feb 24
+    @Override
+    public List<Map<String, Object>> orderDetailTemporaryList (Map<String, String> balance) {
+        Map<String, Object> param = new HashMap();
+        param.put("orderNo", balance.get("orderNo"));
+        param.put("outletCode", balance.get("outletCode"));
+        param.put("cdSupplier", balance.get("cdSupplier"));
+        param.put("valueSupplier", balance.get("valueSupplier"));
+        param.put("orderTo", balance.get("orderTo"));
+        param.put("orderType", balance.get("orderType"));
+        String viewQuery = "";
+        if (balance.get("orderTo").equals("3")) { // order ke gudang
+            if (balance.get("orderType").equals("4")){ // order ke Gudang FSD
+                viewQuery = "SELECT :outletCode as OUTLET_CODE, :orderNo as ORDER_NO, ITEM_CODE, ITEM_DESCRIPTION, 0 as JUMLAH_BESAR, UOM_WAREHOUSE AS SATUAN_BESAR, 0 AS JUMLAH_KECIL, UOM_PURCHASE AS SATUAN_KECIL, 0 AS TOTAL_QTY, UOM_STOCK, CONV_STOCK, (CONV_WAREHOUSE * CONV_STOCK) AS UOM_WAREHOUSE "
+                    + "FROM m_item WHERE CD_WAREHOUSE = :cdSupplier AND STATUS = 'A' "; 
+            } else { // order ke gudang
+                viewQuery = "SELECT :outletCode as OUTLET_CODE, :orderNo as ORDER_NO, ITEM_CODE, ITEM_DESCRIPTION, 0 as JUMLAH_BESAR, UOM_WAREHOUSE AS SATUAN_BESAR, 0 AS JUMLAH_KECIL, UOM_PURCHASE AS SATUAN_KECIL, 0 AS TOTAL_QTY, UOM_STOCK, CONV_STOCK, (CONV_WAREHOUSE * CONV_STOCK) AS UOM_WAREHOUSE "
+                    + "FROM m_item WHERE CD_WAREHOUSE = LPAD(:valueSupplier,5,0) AND STATUS = 'A' ";
+            }
+        } if (balance.get("orderTo").equals("2")) { // order ke outlet
+            viewQuery = "SELECT :outletCode as OUTLET_CODE, :orderNo as ORDER_NO, ITEM_CODE, ITEM_DESCRIPTION, 0 as JUMLAH_BESAR, UOM_PURCHASE AS SATUAN_BESAR, 0 AS JUMLAH_KECIL, UOM_STOCK AS SATUAN_KECIL, 0 AS TOTAL_QTY, UOM_STOCK, CONV_STOCK, CONV_STOCK AS UOM_WAREHOUSE "
+                + "FROM m_item WHERE SUBSTR(ITEM_CODE,1,1) != 'X' AND STATUS = 'A' AND FLAG_MATERIAL = 'Y' AND FLAG_STOCK = 'Y' ";
+        }
+        if (balance.get("orderTo").equals("0") || balance.get("orderTo").equals("1")) { // order ke supplier
+            viewQuery = switch (balance.get("orderType")) {
+                // Order Entry Vendor Supplier FSD
+                case "4" -> "SELECT :outletCode as OUTLET_CODE, :orderNo as ORDER_NO, ITEM_CODE, ITEM_DESCRIPTION, 0 as JUMLAH_BESAR, UOM_WAREHOUSE AS SATUAN_BESAR, 0 AS JUMLAH_KECIL, UOM_PURCHASE AS SATUAN_KECIL, 0 AS TOTAL_QTY, UOM_STOCK, CONV_STOCK, (CONV_WAREHOUSE * CONV_STOCK) AS UOM_WAREHOUSE "
+                    + "FROM M_ITEM a WHERE a.STATUS = 'A' AND S.CD_SUPPLIER = :cdSupplier ";
+                // Order Entry SSD
+                case "5" -> "SELECT :outletCode as OUTLET_CODE, :orderNo as ORDER_NO, ITEM_CODE, ITEM_DESCRIPTION, 0 as JUMLAH_BESAR, UOM_WAREHOUSE AS SATUAN_BESAR, 0 AS JUMLAH_KECIL, UOM_PURCHASE AS SATUAN_KECIL, 0 AS TOTAL_QTY, UOM_STOCK, CONV_STOCK, (CONV_WAREHOUSE * CONV_STOCK) AS UOM_WAREHOUSE "
+                    + "FROM M_ITEM a where a.STATUS = 'A' AND S.CD_SUPPLIER = :cdSupplier ";
+                // order ke supplier
+                default -> "SELECT :outletCode as OUTLET_CODE, :orderNo as ORDER_NO, ITEM_CODE, ITEM_DESCRIPTION, 0 as JUMLAH_BESAR, UOM_WAREHOUSE AS SATUAN_BESAR, 0 AS JUMLAH_KECIL, UOM_PURCHASE AS SATUAN_KECIL, 0 AS TOTAL_QTY, UOM_STOCK, CONV_STOCK, (CONV_WAREHOUSE * CONV_STOCK) AS UOM_WAREHOUSE "
+                    + "FROM M_ITEM a WHERE a.STATUS = 'A' AND a.CD_SUPPLIER = :cdSupplier ";
+            };
+        }
+        
+        List<Map<String, Object>> list = jdbcTemplate.query(viewQuery, param, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("outletCode", rs.getString("OUTLET_CODE"));
+                rt.put("orderNo", rs.getString("ORDER_NO"));
+                rt.put("itemCode", rs.getString("ITEM_CODE"));
+                rt.put("itemDesc", rs.getString("ITEM_DESCRIPTION"));
+                rt.put("jmlBesar", rs.getString("jumlah_besar"));
+                rt.put("satuanBesar", rs.getString("satuan_besar"));
+                rt.put("jmlKecil", rs.getString("jumlah_kecil"));
+                rt.put("satuanKecil", rs.getString("satuan_kecil"));
+                rt.put("totalQty", rs.getString("total_qty"));
+                rt.put("uomTotal", rs.getString("UOM_STOCK"));
+                rt.put("convStock", rs.getString("CONV_STOCK"));
+                rt.put("uomWarehouse", rs.getString("UOM_WAREHOUSE"));
+                return rt;
+            }
+        });
+        return list;
+    }
 }

@@ -459,79 +459,40 @@ public class ProcessDaoImpl implements ProcessDao {
         Date tgl = new Date();
         String month = df.format(tgl);
         String year = dfYear.format(tgl);
+        Gson gson = new Gson();
 
         String insertOrderHeader = "INSERT INTO T_ORDER_HEADER (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ORDER_DATE,ORDER_TO,CD_SUPPLIER,DT_DUE,DT_EXPIRED,REMARK,NO_OF_PRINT,STATUS,USER_UPD,DATE_UPD,TIME_UPD)"
                 + " VALUES(:outletCode,:orderType,:orderId,:orderNo,:orderDate,:orderTo,:cdSupplier,:dtDue,:dtExpired,:remark,:noOfPrint,:status,:userUpd,:dateUpd,:timeUpd)";
 
-        String insertOrderDetailQuery = "";
         String orderNo = checkOrderNo(balance.get("orderNo"));
         String orderId = checkOrderId(balance.get("orderId"));
         
-        Map<String, Object> param = new HashMap();
-        param.put("outletCode", balance.get("outletCode"));
-        param.put("orderType", balance.get("orderType"));
-        param.put("orderId", orderId);
-        param.put("orderNo", orderNo);
-        param.put("orderDate", balance.get("orderDate"));
-        param.put("orderTo", balance.get("orderTo"));
-        param.put("cdSupplier", balance.get("cdSupplier"));
-        param.put("dtDue", balance.get("dtDue"));
-        param.put("dtExpired", balance.get("dtExpired"));
-        param.put("remark", balance.get("remark"));
-        param.put("noOfPrint", balance.get("noOfPrint"));
-        param.put("status", balance.get("status"));
-        param.put("userUpd", balance.get("userUpd"));
-        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
-        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
-        param.put("year", year);
-        param.put("month", month);
-        param.put("transType", balance.get("transType"));
-        param.put("valueSupplier", balance.get("valueSupplier"));
+        balance.put("orderId", orderId);
+        balance.put("orderNo", orderNo);
+        balance.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        balance.put("timeUpd", LocalDateTime.now().format(timeFormatter));
+        balance.put("year", year);
+        balance.put("month", month);
                
-        if (balance.get("orderTo").equals("3")) { // order ke gudang
-            if(balance.get("orderType").equals("4")){ // order ke Gudang FSD
-                insertOrderDetailQuery = "INSERT INTO T_ORDER_DETAIL (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,TOTAL_QTY_STOCK,UNIT_PRICE,USER_UPD,DATE_UPD,TIME_UPD) "
-                    + "SELECT :outletCode, :orderType, :orderId, :orderNo, item_code, 0, UOM_WAREHOUSE, 0, UOM_PURCHASE, 0, 0, :userUpd, :dateUpd, :timeUpd "
-                    + "FROM m_item "
-                    + "WHERE CD_WAREHOUSE = :cdSupplier AND STATUS = 'A' "; 
-            } else { // order ke gudang
-                insertOrderDetailQuery = "INSERT INTO T_ORDER_DETAIL (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,TOTAL_QTY_STOCK,UNIT_PRICE,USER_UPD,DATE_UPD,TIME_UPD) "
-                    + "SELECT :outletCode, :orderType, :orderId, :orderNo, item_code, 0, UOM_WAREHOUSE, 0, UOM_PURCHASE, 0, 0, :userUpd, :dateUpd, :timeUpd "
-                    + "FROM m_item "
-                    + "WHERE CD_WAREHOUSE = LPAD(:valueSupplier,5,0) AND STATUS = 'A' ";
-            }
-        } if (balance.get("orderTo").equals("2")) { // order ke outlet
-            insertOrderDetailQuery = "INSERT INTO T_ORDER_DETAIL (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,TOTAL_QTY_STOCK,UNIT_PRICE,USER_UPD,DATE_UPD,TIME_UPD) "
-                + "SELECT :outletCode, :orderType, :orderId, :orderNo, item_code, 0, UOM_PURCHASE, 0, UOM_STOCK, 0, 0, :userUpd, :dateUpd, :timeUpd "
-                + "FROM m_item "
-                + "WHERE SUBSTR(ITEM_CODE,1,1) != 'X' AND STATUS = 'A' AND FLAG_MATERIAL = 'Y' AND FLAG_STOCK = 'Y' ";
-        }
-        if (balance.get("orderTo").equals("0") || balance.get("orderTo").equals("1")) { // order ke supplier
-            insertOrderDetailQuery = switch (balance.get("orderType")) {
-                // Order Entry Vendor Supplier FSD
-                case "4" -> "INSERT INTO T_ORDER_DETAIL (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,TOTAL_QTY_STOCK,UNIT_PRICE,USER_UPD,DATE_UPD,TIME_UPD) "
-                    + "SELECT :outletCode, :orderType, :orderId, :orderNo, a.item_code, 0, UOM_WAREHOUSE, 0, UOM_PURCHASE, 0, 0, :userUpd, :dateUpd, :timeUpd "
-                    + "FROM M_ITEM a LEFT JOIN M_ITEM_SUPPLIER S "
-                    + "ON A.ITEM_CODE=S.ITEM_CODE WHERE a.STATUS = 'A' AND S.CD_SUPPLIER=:cdSupplier ";
-                // Order Entry SSD
-                case "5" -> "INSERT INTO T_ORDER_DETAIL (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,TOTAL_QTY_STOCK,UNIT_PRICE,USER_UPD,DATE_UPD,TIME_UPD) "
-                    + "SELECT :outletCode, :orderType, :orderId, :orderNo, a.item_code, 0, UOM_WAREHOUSE, 0, UOM_PURCHASE, 0, 0, :userUpd, :dateUpd, :timeUpd "
-                    + "FROM M_ITEM a LEFT JOIN M_ITEM_SUPPLIER S "
-                    + "ON A.ITEM_CODE=S.ITEM_CODE WHERE a.STATUS = 'A' AND S.CD_SUPPLIER=:cdSupplier ";
-                // order ke supplier
-                default -> "INSERT INTO T_ORDER_DETAIL (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,TOTAL_QTY_STOCK,UNIT_PRICE,USER_UPD,DATE_UPD,TIME_UPD) "
-                    + "SELECT :outletCode, :orderType, :orderId, :orderNo, a.item_code, 0, UOM_WAREHOUSE, 0, UOM_PURCHASE, 0, 0, :userUpd, :dateUpd, :timeUpd "
-                    + "FROM M_ITEM a LEFT JOIN M_ITEM_SUPPLIER S "
-                    + "ON A.ITEM_CODE=S.ITEM_CODE WHERE a.STATUS = 'A' AND S.CD_SUPPLIER=:cdSupplier ";
-            };
-        }
-        System.out.println("insertOrderDetailQuery");
-        System.out.println(insertOrderDetailQuery);
-        jdbcTemplate.update(insertOrderHeader, param);
-        jdbcTemplate.update(insertOrderDetailQuery, param);
+        JsonArray details = gson.toJsonTree(balance.get("details")).getAsJsonArray();
+        details.forEach(detail -> {
+            Map<String, String> bal = gson.fromJson(detail, new TypeToken<Map<String, String>>() {
+            }.getType());
+            bal.put("outletCode", (String) balance.get("outletCode"));
+            bal.put("orderId", (String) balance.get("orderId"));
+            bal.put("orderNo", (String) balance.get("orderNo"));
+            bal.put("orderType", (String) balance.get("orderType"));
+            bal.put("userUpd", (String) balance.get("userUpd"));
+            bal.put("dateUpd", (String) balance.get("dateUpd"));
+            bal.put("timeUpd", (String) balance.get("timeUpd"));
+
+            insertOrderDetail(bal);
+        });
+
+        jdbcTemplate.update(insertOrderHeader, balance);
         
-        String returnDetailItem = "SELECT * FROM T_ORDER_detail toh WHERE toh.ORDER_no = :orderNo AND OUTLET_CODE = :outletCode ";
-        List<Map<String, Object>> list = jdbcTemplate.query(returnDetailItem, param, new DynamicRowMapper());
+        String returnDetailItem = "SELECT * FROM T_ORDER_detail toh WHERE toh.ORDER_no = :orderNo ";
+        List<Map<String, Object>> list = jdbcTemplate.query(returnDetailItem, balance, new DynamicRowMapper());
 
         Map<String, Object> returnedItem = new HashMap();
         returnedItem.put("detail", list);

@@ -354,4 +354,7 @@ public interface ViewDao {
     // =============== New Method From Sifa 21-02-2024 ===============
     List<Map<String, Object>> itemDetail(Map<String, String> ref);
     
+    // Get order detail temporary list by Fathur 23 Feb 24
+    List<Map<String, Object>> orderDetailTemporaryList(Map<String, String> ref);
+    
 }

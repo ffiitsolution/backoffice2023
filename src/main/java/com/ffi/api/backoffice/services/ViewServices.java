@@ -606,4 +606,9 @@ public class ViewServices {
     public List<Map<String, Object>> itemDetail(Map<String, String> ref) {
         return viewDao.itemDetail(ref);
     }
+    
+    // Get order detail temporary list by Fathur 23 Feb 24 //
+    public List<Map<String, Object>> orderDetailTemporaryList(Map<String, String> ref) {
+        return viewDao.orderDetailTemporaryList(ref);
+    }
 }

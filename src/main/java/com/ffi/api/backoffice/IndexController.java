@@ -1481,6 +1481,7 @@ public class IndexController {
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Insert Failed: " + e.getMessage());
+            e.printStackTrace();
         }
         rm.setItem(list);
         return rm;
@@ -3903,6 +3904,27 @@ public class IndexController {
 
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         list = viewServices.itemDetail(logan);
+        Response res = new Response();
+        res.setData(list);
+        res.setRecordsTotal(list.size());
+        return res;
+
+    }
+    
+    @RequestMapping(value = "/order-detail-temporary-list", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get order detail temporary list by Fathur 23 Feb 24", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response orderDetailTemporaryList(@RequestBody String param) throws JRException, IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> logan = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        List<Map<String, Object>> list = new ArrayList<>();
+        list = viewServices.orderDetailTemporaryList(logan);
         Response res = new Response();
         res.setData(list);
         res.setRecordsTotal(list.size());
