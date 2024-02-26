@@ -462,7 +462,7 @@ public class ViewServices {
     ////////////Done  ////////////
 
     // New Method List MPCS Production - Fathur 13 Dec 2023 //
-    public List<Map<String, Object>> listMpcsProduction(Map<String, String> ref) {
+    public List<Map<String, Object>> listMpcsProduction(Map<String, String> ref) throws Exception {
         return viewDao.mpcsProductionList(ref);
     }
     // Done List MPCS Production //

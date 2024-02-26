@@ -3637,7 +3637,7 @@ public class ViewDoaImpl implements ViewDao {
     // Updated code: insert into t_summ_mpcs when mpcs group not available Fathur 26 Jan 2024//
     @Transactional
     @Override
-    public List<Map<String, Object>> mpcsProductionList(Map<String, String> balance) {
+    public List<Map<String, Object>> mpcsProductionList(Map<String, String> balance) throws Exception{
         Map prm = new HashMap();
         prm.put("mpcsGroup", balance.get("mpcsGroup"));
         prm.put("dateMpcs", balance.get("dateMpcs"));
@@ -3659,7 +3659,10 @@ public class ViewDoaImpl implements ViewDao {
             rt.put("dateUpd", rs.getString("DATE_UPD"));
             return rt;
         });
-        return list;
+        if (list.size() > 0) {
+            return list;
+        }
+        throw new Exception("Data " + balance.get("recipeCode") + " tidak tersedia. Silakan input MPCS Plan terlebih dahulu! ");
     }
     // Done Method List MPCS Production //
 

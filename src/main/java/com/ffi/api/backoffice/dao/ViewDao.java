@@ -257,7 +257,7 @@ public interface ViewDao {
     //////////////////////////DONE////////////////////////////
 
     // New Method MPCS Production List By Fathur 13 Dec 2023 //
-    List<Map<String, Object>> mpcsProductionList(Map<String, String> ref);
+    List<Map<String, Object>> mpcsProductionList(Map<String, String> ref) throws Exception;
     // Done Method MPCS Production List //
 
     // New Method MPCS Production Detail By Fathur 13 Dec 2023 //
