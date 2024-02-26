@@ -1515,16 +1515,13 @@ public class ViewDoaImpl implements ViewDao {
             qry += " AND STATUS = :status";
             prm.put("status", balance.get("status"));
         }
-        // open limit report tacobell 7/2/24 by M Joko acc Dona
-//        if (balance.containsKey("outletBrand") && balance.get("outletBrand").equalsIgnoreCase("TACOBELL")) {
-//            qry += " AND DESCRIPTION IN ('Report Menu & Detail Modifier', 'Sales by Date', 'Sales by Item', 'Sales by Time', 'Summary Sales by Item Code', 'Report Stock Card')";
-//        }
+        qry += " ORDER BY APLIKASI, ID_NO";
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new DynamicRowMapper());
-        // jika kosong/belum ada, atau total bukan 15 (INV) bukan 22 (POS), hapus dan insert baru
+        // jika kosong/belum ada, atau total bukan 17 (INV) bukan 20 (POS), hapus dan insert baru
         // set: total report valid
-        int TOTAL_INVENTORY = 15;
-        int TOTAL_POS = 22;
+        int TOTAL_INVENTORY = 17;
+        int TOTAL_POS = 20;
         int TOTAL_REPORT = TOTAL_INVENTORY + TOTAL_POS;
         int size = list.size();
         if (size == TOTAL_INVENTORY || size == TOTAL_POS || size == TOTAL_REPORT) {
@@ -1532,80 +1529,80 @@ public class ViewDoaImpl implements ViewDao {
         }
             String qryDelete = "DELETE FROM M_MENUDTL WHERE TYPE_MENU = 'REPORT'";
             String qryInsert = """
-            INSERT INTO M_MENUDTL (TYPE_ID, MENU_ID, DESCRIPTION, ID_NO, APLIKASI, DBASE, STATUS, TYPE_MENU)
-            SELECT 'PROGRAM', 'INV0001', 'Order Entry', 1, 'INV', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'INV0002', 'Receiving', 2, 'INV', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'INV0003', 'Delivery Order', 3, 'INV', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'INV0004', 'Wastage', 4, 'INV', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'INV0005', 'Return Order', 5, 'INV', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'INV0006', 'Laporan Produksi', 6, 'INV', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'INV0007', 'Laporan Produksi Aktual', 7, 'INV', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'INV0008', 'Laporan Delete MPCS Produksi', 8, 'INV', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'INV0009', 'Inventory Movement', 9, 'INV', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'INV0010', 'Report Stock', 10, 'INV', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'INV0011', 'Report Stock Card', 11, 'INV', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'INV0012', 'Item Barang', 12, 'INV', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'INV0013', 'Daftar Menu', 13, 'INV', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'INV0014', 'Listing Recipe', 14, 'INV', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'INV0015', 'Free Meal Dept', 15, 'INV', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'POS0001', 'Sales by Date', 1, 'POS', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'POS0002', 'Sales by Item', 2, 'POS', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'POS0003', 'Sales by Time', 3, 'POS', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'POS0004', 'Cashier By Date', 4, 'POS', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'POS0005', 'Receipt Maintenance', 5, 'POS', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'POS0006', 'Sales Mix by Department', 6, 'POS', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'POS0007', 'Item Sales Analisis', 7, 'POS', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'POS0008', 'Sales Void', 8, 'POS', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'POS0009', 'End of Day', 9, 'POS', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'POS0010', 'Laporan Pemakaian by Sales', 10, 'POS', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'POS0011', 'Transaction by Payment Type', 11, 'POS', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'POS0012', 'Refund Report', 12, 'POS', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'POS0013', 'Report Sales Item By Time', 13, 'POS', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'POS0014', 'Report Pajak', 14, 'POS', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'POS0015', 'Laporan Down Payment (DP)', 15, 'POS', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'POS0016', 'Laporan Selected by Item Detail', 16, 'POS', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'POS0017', 'Laporan Item Selected By Time', 17, 'POS', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'POS0018', 'Actual Stock Opname', 18, 'POS', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'POS0019', 'Laporan Product Efficiency', 19, 'POS', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'POS0020', 'Summary Sales by Item Code', 20, 'POS', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'POS0021', 'Laporan Item Selected By Product', 21, 'POS', 'R', 'A', 'REPORT' FROM dual
-            UNION ALL
-            SELECT 'PROGRAM', 'POS0022', 'Report Menu & Detail Modifier', 22, 'POS', 'R', 'A', 'REPORT' FROM dual
+               INSERT INTO M_MENUDTL (TYPE_ID, MENU_ID, DESCRIPTION, ID_NO, APLIKASI, DBASE, STATUS, TYPE_MENU)
+               SELECT 'PROGRAM', 'POS0001', 'Sales by Date', 1, 'POS', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'POS0002', 'Sales by Item', 2, 'POS', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'POS0003', 'Sales by Time', 3, 'POS', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'POS0004', 'Cashier By Date', 4, 'POS', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'POS0005', 'Receipt Maintenance', 5, 'POS', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'POS0006', 'Sales Mix by Department', 6, 'POS', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'POS0007', 'Item Sales Analisis', 7, 'POS', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'POS0008', 'Sales Void', 8, 'POS', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'POS0009', 'End of Day', 9, 'POS', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'POS0010', 'Laporan Pemakaian by Sales', 10, 'POS', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'POS0011', 'Transaction by Payment Type', 11, 'POS', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'POS0012', 'Refund Report', 12, 'POS', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'POS0013', 'Report Sales Item By Time', 13, 'POS', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'POS0014', 'Report Pajak', 14, 'POS', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'POS0015', 'Laporan Down Payment (DP)', 15, 'POS', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'POS0016', 'Laporan Selected by Item Detail', 16, 'POS', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'POS0017', 'Laporan Item Selected By Time', 17, 'POS', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'POS0018', 'Summary Sales by Item Code', 18, 'POS', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'POS0019', 'Laporan Item Selected By Product', 19, 'POS', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'POS0020', 'Report Menu & Detail Modifier', 20, 'POS', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'INV0001', 'Order Entry', 1, 'INV', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'INV0002', 'Receiving', 2, 'INV', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'INV0003', 'Delivery Order', 3, 'INV', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'INV0004', 'Wastage', 4, 'INV', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'INV0005', 'Return Order', 5, 'INV', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'INV0006', 'Laporan Produksi', 6, 'INV', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'INV0007', 'Laporan Produksi Aktual', 7, 'INV', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'INV0008', 'Laporan Delete MPCS Produksi', 8, 'INV', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'INV0009', 'Inventory Movement', 9, 'INV', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'INV0010', 'Report Stock', 10, 'INV', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'INV0011', 'Report Stock Card', 11, 'INV', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'INV0012', 'Item Barang', 12, 'INV', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'INV0013', 'Daftar Menu', 13, 'INV', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'INV0014', 'Listing Recipe', 14, 'INV', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'INV0015', 'Free Meal Dept', 15, 'INV', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'INV0016', 'Actual Stock Opname', 16, 'INV', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'INV0017', 'Laporan Product Efficiency', 17, 'INV', 'R', 'A', 'REPORT' FROM dual
                 """;
             System.err.println("insert New Menu report");
             try{
@@ -4542,20 +4539,49 @@ return finalResultList;
     // =============== New Method From Sifa 20-02-2024 ===============
     @Override
     public List<Map<String, Object>> listmenuApplicationAccess(Map<String, String> balance) {
-        String qry = "SELECT mlad.* " +
-                    "FROM M_LEVEL_AKSES_HEADER mlah " +
-                    "JOIN M_LEVEL_AKSES_DETAIL mlad ON (mlah.MENU_ID = mlad.MENU_ID AND mlad.STATUS = 'A' AND mlad.BRAND = :outletBrand AND mlad.ENV = :env) " +
-                    "WHERE mlah.GROUP_ID = :groupId AND mlah.STATUS = 'A'";
+        String qry = "SELECT " + 
+            "mlad.TYPE_MENU, " + 
+            "mlad.BRAND, " + 
+            "mlad.ENV, " + 
+            "mlad.TYPE_ID, " + 
+            "mlad.MENU_ID, " + 
+            "mlad.PARENT, " + 
+            "mlad.DESCRIPTION, " + 
+            "mlad.URL, " + 
+            "mlad.ICON, " + 
+            "mlad.BADGE, " + 
+            "mlad.BADGE_COLOR, " + 
+            "mlad.ID_NO, " + 
+            "LISTAGG(mlah2.MENU_ID, ', ') WITHIN GROUP (ORDER BY mlad.MENU_ID) AS PERMISSION " + 
+            "FROM " + 
+            "M_LEVEL_AKSES_DETAIL mlad " + 
+            "JOIN " + 
+            "M_LEVEL_AKSES_HEADER mlah ON (mlah.MENU_ID = mlad.MENU_ID AND mlad.STATUS = 'A' AND mlad.BRAND = :outletBrand AND mlad.ENV = :env) " + 
+            "FULL OUTER JOIN " + 
+            "M_LEVEL_AKSES_HEADER mlah2 ON mlah2.MENU_ID LIKE '%' || mlad.MENU_ID || '.%' AND mlah2.STATUS = 'A' AND mlah2.GROUP_ID = :groupId " + 
+            "WHERE " + 
+            "mlah.GROUP_ID = :groupId " + 
+            "AND mlah.STATUS = 'A' " + 
+            "GROUP BY " + 
+            "mlad.TYPE_MENU, " + 
+            "mlad.BRAND, " + 
+            "mlad.ENV, " + 
+            "mlad.TYPE_ID, " + 
+            "mlad.MENU_ID, " + 
+            "mlad.PARENT, " + 
+            "mlad.DESCRIPTION, " + 
+            "mlad.URL, " + 
+            "mlad.ICON, " + 
+            "mlad.BADGE, " + 
+            "mlad.BADGE_COLOR, " + 
+            "mlad.ID_NO";
         Map prm = new HashMap();
         prm.put("outletBrand", balance.get("outletBrand"));
         prm.put("env", balance.get("env"));
         prm.put("groupId", balance.get("groupId"));
         System.err.println("q :" + qry);
 
-        // Initialize the list variable as an empty list
-        List<Map<String, Object>> list = new ArrayList<>();
-
-        jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
                 Map<String, Object> rt = new HashMap<>();
@@ -4565,38 +4591,50 @@ return finalResultList;
                 rt.put("url", rs.getString("URL"));
                 rt.put("parent", rs.getString("PARENT"));
                 rt.put("sequence", Integer.valueOf(rs.getString("ID_NO")));
-                
-                // Check if badge is not null
+                rt.put("permission", rs.getString("PERMISSION"));
                 if (rs.getString("BADGE") != null) {
                     Map<String, Object> badge = new HashMap<>();
                     badge.put("text", rs.getString("BADGE"));
                     badge.put("color", rs.getString("BADGE_COLOR"));
                     rt.put("badge", badge);
                 }
-
-                // Check if the menu has a parent
-                if (rs.getString("PARENT") == null || rs.getString("PARENT") == "") {
-                    // Root menu, return it directly
-                    list.add(rt);
-                } else {
-                    // Find the parent menu and add this menu as a child
-                    for (Map<String, Object> parentMenu : list) {
-                        if (parentMenu.get("menuId").equals(rs.getString("PARENT"))) {
-                            // Create a 'children' list if it doesn't exist
-                            if (parentMenu.get("children") == null) {
-                                parentMenu.put("children", new ArrayList<>());
-                            }
-                            // Add this menu as a child of the parent
-                            ((List<Map<String, Object>>) parentMenu.get("children")).add(rt);
-                            break;
-                        }
-                    }
-                }
-                return null; // Return null since we're adding children to existing menus
+                return rt;
             }
         });
 
-        return list;
+        return transformMenuAccess(list);
+    }
+
+    public static List<Map<String, Object>> transformMenuAccess(List<Map<String, Object>> menuList) {
+        Map<String, List<Map<String, Object>>> parentToChildrenMap = new HashMap<>();
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        // Group menu items by their parent
+        for (Map<String, Object> menu : menuList) {
+            String parent = (String) menu.get("parent");
+            parentToChildrenMap.computeIfAbsent(parent, k -> new ArrayList<>()).add(menu);
+        }
+
+        // Populate the result list with root-level menu items
+        for (Map<String, Object> menu : menuList) {
+            if (menu.get("parent") == null) {
+                result.add(menu);
+                addChildrenMenuAccess(menu, parentToChildrenMap);
+            }
+        }
+
+        return result;
+    }
+
+    private static void addChildrenMenuAccess(Map<String, Object> parent, Map<String, List<Map<String, Object>>> parentToChildrenMap) {
+        String menuId = (String) parent.get("menuId");
+        List<Map<String, Object>> children = parentToChildrenMap.get(menuId);
+        if (children != null) {
+            parent.put("children", children);
+            for (Map<String, Object> child : children) {
+                addChildrenMenuAccess(child, parentToChildrenMap);
+            }
+        }
     }
 
     // =============== New Method From Sifa 21-02-2024 ===============
@@ -4682,6 +4720,179 @@ return finalResultList;
                 rt.put("itemJual", rs.getString("ITEM_JUAL"));
                 rt.put("itemleftover", rs.getString("ITEM_LEFTOVER"));
                 rt.put("status", rs.getString("STATUS"));
+                return rt;
+            }
+        });
+        return list;
+    }
+    
+    @Override
+    public List<Map<String, Object>> listOutletDetail(Map<String, String> balance) {
+        String qry = "SELECT a.REGION_CODE, b.DESCRIPTION AS REGION_NAME, a.OUTLET_CODE, a.OUTLET_NAME, a.TYPE, d.DESCRIPTION AS TYPE_STORE, a.ADDRESS_1, a.ADDRESS_2, a.CITY, e.DESCRIPTION AS CITY_NAME, a.POST_CODE, a.PHONE, a.FAX, a.CASH_BALANCE, a.TRANS_DATE, a.DEL_LIMIT, a.DEL_CHARGE, a.RND_PRINT, a.RND_FACT, a.RND_LIMIT, a.TAX, a.DP_MIN, a.CANCEL_FEE, a.CAT_ITEMS, a.MAX_BILLS, a.MIN_ITEMS, a.REF_TIME, a.TIME_OUT, a.MAX_SHIFT, a.SEND_DATA, a.MIN_PULL_TRX, a.MAX_PULL_VALUE, a.STATUS, a.START_DATE, a.FINISH_DATE, a.MAX_DISC_PERCENT, a.MAX_DISC_AMOUNT, a.OPEN_TIME, a.CLOSE_TIME, a.REFUND_TIME_LIMIT, a.MONDAY, a.TUESDAY, a.WEDNESDAY, a.THURSDAY, a.FRIDAY, a.SATURDAY, a.SUNDAY, a.HOLIDAY, a.OUTLET_24_HOUR, a.IP_OUTLET, a.PORT_OUTLET, a.USER_UPD, a.DATE_UPD, a.TIME_UPD, a.FTP_ADDR, a.FTP_USER, a.FTP_PASSWORD, a.INITIAL_OUTLET, a.AREA_CODE, c.DESCRIPTION AS AREA_NAME, a.RSC_CODE, f.DESCRIPTION AS RSC_NAME, a.TAX_CHARGE FROM M_OUTLET a JOIN M_GLOBAL b ON a.REGION_CODE = b.CODE AND b.COND = 'REG_OUTLET' JOIN M_GLOBAL c ON a.AREA_CODE = c.CODE AND c.COND = 'AREACODE' JOIN M_GLOBAL d ON a.TYPE = d.CODE AND d.COND = 'OUTLET_TP' JOIN M_GLOBAL e ON a.CITY = e.CODE AND e.COND = 'CITY' JOIN M_GLOBAL f ON a.RSC_CODE = f.CODE AND f.COND = 'RSC_OUTLET' WHERE OUTLET_CODE =:outletCode";
+
+        Map prm = new HashMap();
+        prm.put("outletCode", balance.get("outletCode"));
+        
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, (ResultSet rs, int i) -> {
+            Map<String, Object> rt = new HashMap<>();
+            rt.put("regionCode", rs.getString("REGION_CODE"));
+            rt.put("regionname", rs.getString("REGION_NAME"));
+            rt.put("outletCode", rs.getString("OUTLET_CODE"));
+            rt.put("outletName", rs.getString("OUTLET_NAME"));
+            rt.put("type", rs.getString("TYPE"));
+            rt.put("typeStore", rs.getString("TYPE_STORE"));
+            rt.put("address1", rs.getString("ADDRESS_1"));
+            rt.put("address2", rs.getString("ADDRESS_2"));
+            rt.put("city", rs.getString("CITY"));
+            rt.put("cityName", rs.getString("CITY_NAME"));
+            rt.put("posCode", rs.getString("POST_CODE"));
+            rt.put("phone", rs.getString("PHONE"));
+            rt.put("fax", rs.getString("FAX"));
+            rt.put("cashBalance", rs.getString("CASH_BALANCE"));
+            rt.put("transDate", rs.getString("TRANS_DATE"));
+            rt.put("delLimit", rs.getString("DEL_LIMIT"));
+            rt.put("delCharge", rs.getString("DEL_CHARGE"));
+            rt.put("rndPrint", rs.getString("RND_PRINT"));
+            rt.put("rndFact", rs.getString("RND_FACT"));
+            rt.put("rndLimit", rs.getString("RND_LIMIT"));
+            rt.put("tax", rs.getString("TAX"));
+            rt.put("dpMin", rs.getString("DP_MIN"));
+            rt.put("cancelFee", rs.getString("CANCEL_FEE"));
+            rt.put("catItems", rs.getString("CAT_ITEMS"));
+            rt.put("maxBills", rs.getString("MAX_BILLS"));
+            rt.put("minItems", rs.getString("MIN_ITEMS"));
+            rt.put("refTime", rs.getString("REF_TIME"));
+            rt.put("timeOut", rs.getString("TIME_OUT"));
+            rt.put("maxShift", rs.getString("MAX_SHIFT"));
+            rt.put("sendData", rs.getString("SEND_DATA"));
+            rt.put("minPullTrx", rs.getString("MIN_PULL_TRX"));
+            rt.put("maxPullValue", rs.getString("MAX_PULL_VALUE"));
+            rt.put("Status", rs.getString("STATUS"));
+            rt.put("startDate", rs.getString("START_DATE"));
+            rt.put("finishDate", rs.getString("FINISH_DATE"));
+            rt.put("maxDiscPercent", rs.getString("MAX_DISC_PERCENT"));
+            rt.put("maxDiscAmount", rs.getString("MAX_DISC_AMOUNT"));
+            rt.put("openTime", rs.getString("OPEN_TIME"));
+            rt.put("closeTime", rs.getString("CLOSE_TIME"));
+            rt.put("refundTimeLimit", rs.getString("REFUND_TIME_LIMIT"));
+            rt.put("monday", rs.getString("MONDAY"));
+            rt.put("tuesday", rs.getString("TUESDAY"));
+            rt.put("wednesday", rs.getString("WEDNESDAY"));
+            rt.put("thursday", rs.getString("THURSDAY"));
+            rt.put("friday", rs.getString("FRIDAY"));
+            rt.put("saturday", rs.getString("SATURDAY"));
+            rt.put("sunday", rs.getString("SUNDAY"));
+            rt.put("holiday", rs.getString("HOLIDAY"));
+            rt.put("outlet24Hour", rs.getString("OUTLET_24_HOUR"));
+            rt.put("ipOutlet", rs.getString("IP_OUTLET"));
+            rt.put("portOutlet", rs.getString("PORT_OUTLET"));
+            rt.put("userUpd", rs.getString("USER_UPD"));
+            rt.put("dateUpd", rs.getString("DATE_UPD"));
+            rt.put("timeUpd", rs.getString("TIME_UPD"));
+            rt.put("ftpAddr", rs.getString("FTP_ADDR"));
+            rt.put("ftpUser", rs.getString("FTP_USER"));
+            rt.put("ftpPassword", rs.getString("FTP_PASSWORD"));
+            rt.put("initialOutlet", rs.getString("INITIAL_OUTLET"));
+            rt.put("areaCode", rs.getString("AREA_CODE"));
+            rt.put("areaName", rs.getString("AREA_NAME"));
+            rt.put("rscCode", rs.getString("RSC_CODE"));
+            rt.put("rscName", rs.getString("RSC_NAME"));
+            rt.put("taxCharge", rs.getString("TAX_CHARGE"));            
+            return rt;
+        });
+        return list;
+    }
+    
+    @Override
+    public List<Map<String, Object>> listOutletDetailGroup(Map<String, String> balance) {
+        String qry = "SELECT a.*, b.OUTLET_NAME AS PARENT_NAME, c.OUTLET_NAME AS CHILD_NAME FROM M_OUTLET_DETAIL a JOIN M_OUTLET b ON a.PARENT_OUTLET = b.OUTLET_CODE JOIN M_OUTLET c ON a.CHILD_OUTLET = c.OUTLET_CODE WHERE b.OUTLET_CODE =:OUTLET_CODE";
+
+        Map prm = new HashMap();
+        prm.put("outletCode", balance.get("parentOutlet"));
+        
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, (ResultSet rs, int i) -> {
+            Map<String, Object> rt = new HashMap<>();
+            rt.put("parentOutlet", rs.getString("PARENT_OUTLET"));
+            rt.put("parentName", rs.getString("PARENT_NAME"));
+            rt.put("childOutlet", rs.getString("CHILD_OUTLET"));
+            rt.put("childName", rs.getString("CHILD_NAME"));           
+            return rt;
+        });
+        return list;
+    }
+    
+    @Override
+    public List<Map<String, Object>> listOutletDetailTypeOrder(Map<String, String> balance) {
+        String qry = "SELECT a.*, b.DESCRIPTION AS ORDER_NAME FROM M_OUTLET_PRICE a JOIN M_GLOBAL b ON a.ORDER_TYPE = b.CODE AND COND = 'ORDER_TYPE' WHERE a.OUTLET_CODE =:outletCode AND a.ORDER_TYPE IN ('AGG', 'BFG', 'BOX', 'BRD')";
+
+        Map prm = new HashMap();
+        prm.put("outletCode", balance.get("outletCode"));
+        
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, (ResultSet rs, int i) -> {
+            Map<String, Object> rt = new HashMap<>();
+            rt.put("outletCode", rs.getString("OUTLET_CODE"));
+            rt.put("orderType", rs.getString("ORDER_TYPE"));
+            rt.put("orderName", rs.getString("ORDER_NAME")); 
+            rt.put("priceTypeOrder", rs.getString("PRICE_TYPE_ORDER"));          
+            return rt;
+        });
+        return list;
+    }
+
+        
+    // Get order detail temporary list by Fathur 23 Feb 24
+    @Override
+    public List<Map<String, Object>> orderDetailTemporaryList (Map<String, String> balance) {
+        Map<String, Object> param = new HashMap();
+        param.put("orderNo", balance.get("orderNo"));
+        param.put("outletCode", balance.get("outletCode"));
+        param.put("cdSupplier", balance.get("cdSupplier"));
+        param.put("valueSupplier", balance.get("valueSupplier"));
+        param.put("orderTo", balance.get("orderTo"));
+        param.put("orderType", balance.get("orderType"));
+        String viewQuery = "";
+        if (balance.get("orderTo").equals("3")) { // order ke gudang
+            if (balance.get("orderType").equals("4")){ // order ke Gudang FSD
+                viewQuery = "SELECT :outletCode as OUTLET_CODE, :orderNo as ORDER_NO, ITEM_CODE, ITEM_DESCRIPTION, 0 as JUMLAH_BESAR, UOM_WAREHOUSE AS SATUAN_BESAR, 0 AS JUMLAH_KECIL, UOM_PURCHASE AS SATUAN_KECIL, 0 AS TOTAL_QTY, UOM_STOCK, CONV_STOCK, (CONV_WAREHOUSE * CONV_STOCK) AS UOM_WAREHOUSE "
+                    + "FROM m_item WHERE CD_WAREHOUSE = :cdSupplier AND STATUS = 'A' "; 
+            } else { // order ke gudang
+                viewQuery = "SELECT :outletCode as OUTLET_CODE, :orderNo as ORDER_NO, ITEM_CODE, ITEM_DESCRIPTION, 0 as JUMLAH_BESAR, UOM_WAREHOUSE AS SATUAN_BESAR, 0 AS JUMLAH_KECIL, UOM_PURCHASE AS SATUAN_KECIL, 0 AS TOTAL_QTY, UOM_STOCK, CONV_STOCK, (CONV_WAREHOUSE * CONV_STOCK) AS UOM_WAREHOUSE "
+                    + "FROM m_item WHERE CD_WAREHOUSE = LPAD(:valueSupplier,5,0) AND STATUS = 'A' ";
+            }
+        } if (balance.get("orderTo").equals("2")) { // order ke outlet
+            viewQuery = "SELECT :outletCode as OUTLET_CODE, :orderNo as ORDER_NO, ITEM_CODE, ITEM_DESCRIPTION, 0 as JUMLAH_BESAR, UOM_PURCHASE AS SATUAN_BESAR, 0 AS JUMLAH_KECIL, UOM_STOCK AS SATUAN_KECIL, 0 AS TOTAL_QTY, UOM_STOCK, CONV_STOCK, CONV_STOCK AS UOM_WAREHOUSE "
+                + "FROM m_item WHERE SUBSTR(ITEM_CODE,1,1) != 'X' AND STATUS = 'A' AND FLAG_MATERIAL = 'Y' AND FLAG_STOCK = 'Y' ";
+        }
+        if (balance.get("orderTo").equals("0") || balance.get("orderTo").equals("1")) { // order ke supplier
+            viewQuery = switch (balance.get("orderType")) {
+                // Order Entry Vendor Supplier FSD
+                case "4" -> "SELECT :outletCode as OUTLET_CODE, :orderNo as ORDER_NO, ITEM_CODE, ITEM_DESCRIPTION, 0 as JUMLAH_BESAR, UOM_WAREHOUSE AS SATUAN_BESAR, 0 AS JUMLAH_KECIL, UOM_PURCHASE AS SATUAN_KECIL, 0 AS TOTAL_QTY, UOM_STOCK, CONV_STOCK, (CONV_WAREHOUSE * CONV_STOCK) AS UOM_WAREHOUSE "
+                    + "FROM M_ITEM a WHERE a.STATUS = 'A' AND S.CD_SUPPLIER = :cdSupplier ";
+                // Order Entry SSD
+                case "5" -> "SELECT :outletCode as OUTLET_CODE, :orderNo as ORDER_NO, ITEM_CODE, ITEM_DESCRIPTION, 0 as JUMLAH_BESAR, UOM_WAREHOUSE AS SATUAN_BESAR, 0 AS JUMLAH_KECIL, UOM_PURCHASE AS SATUAN_KECIL, 0 AS TOTAL_QTY, UOM_STOCK, CONV_STOCK, (CONV_WAREHOUSE * CONV_STOCK) AS UOM_WAREHOUSE "
+                    + "FROM M_ITEM a where a.STATUS = 'A' AND S.CD_SUPPLIER = :cdSupplier ";
+                // order ke supplier
+                default -> "SELECT :outletCode as OUTLET_CODE, :orderNo as ORDER_NO, ITEM_CODE, ITEM_DESCRIPTION, 0 as JUMLAH_BESAR, UOM_WAREHOUSE AS SATUAN_BESAR, 0 AS JUMLAH_KECIL, UOM_PURCHASE AS SATUAN_KECIL, 0 AS TOTAL_QTY, UOM_STOCK, CONV_STOCK, (CONV_WAREHOUSE * CONV_STOCK) AS UOM_WAREHOUSE "
+                    + "FROM M_ITEM a WHERE a.STATUS = 'A' AND a.CD_SUPPLIER = :cdSupplier ";
+            };
+        }
+        
+        List<Map<String, Object>> list = jdbcTemplate.query(viewQuery, param, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("outletCode", rs.getString("OUTLET_CODE"));
+                rt.put("orderNo", rs.getString("ORDER_NO"));
+                rt.put("itemCode", rs.getString("ITEM_CODE"));
+                rt.put("itemDesc", rs.getString("ITEM_DESCRIPTION"));
+                rt.put("jmlBesar", rs.getString("jumlah_besar"));
+                rt.put("satuanBesar", rs.getString("satuan_besar"));
+                rt.put("jmlKecil", rs.getString("jumlah_kecil"));
+                rt.put("satuanKecil", rs.getString("satuan_kecil"));
+                rt.put("totalQty", rs.getString("total_qty"));
+                rt.put("uomTotal", rs.getString("UOM_STOCK"));
+                rt.put("convStock", rs.getString("CONV_STOCK"));
+                rt.put("uomWarehouse", rs.getString("UOM_WAREHOUSE"));
                 return rt;
             }
         });

@@ -41,6 +41,9 @@ public interface ProcessDao {
     public void insertPos(Map<String, String> mapping);
 
     public void updatePos(Map<String, String> mapping);
+    
+    ///////////////new method update outlet detail from asep 21 Feb 2023 ////////////// 
+    public void updateOutlet(Map<String, String> mapping);
 
     //done
     ///////////////Updated By Pandu 14-03-2023////////////////////////////

@@ -62,15 +62,34 @@ public class TableAliasUtil {
     }
 
     private boolean matches(TableAlias tableAlias, String columnName, Object columnValue) {
-        return switch (columnName) {
-            case "data" -> tableAlias.getData().equals(columnValue);
-            case "table" -> tableAlias.getTable().equals(columnValue);
-            case "alias" -> tableAlias.getAlias().equals(columnValue);
-            case "process" -> tableAlias.getProcess() == (boolean) columnValue;
-            case "dateColumn" -> tableAlias.getDateColumn().equals(columnValue);
-            case "dateUpd" -> tableAlias.getDateUpd().equals(columnValue);
-            case "timeUpd" -> tableAlias.getTimeUpd().equals(columnValue);
-            default -> false;
-        };
+    switch (columnName) {
+        case "data" -> {
+            return Objects.equals(tableAlias.getData(), columnValue);
+            }
+        case "table" -> {
+            return Objects.equals(tableAlias.getTable(), columnValue);
+            }
+        case "alias" -> {
+            return Objects.equals(tableAlias.getAlias(), columnValue);
+            }
+        case "process" -> {
+            if (columnValue instanceof Boolean) {
+                return (boolean) columnValue == tableAlias.getProcess();
+            }
+            return false;
+            }
+        case "dateColumn" -> {
+            return Objects.equals(tableAlias.getDateColumn(), columnValue);
+            }
+        case "dateUpd" -> {
+            return Objects.equals(tableAlias.getDateUpd(), columnValue);
+            }
+        case "timeUpd" -> {
+            return Objects.equals(tableAlias.getTimeUpd(), columnValue);
+            }
+        default -> {
+            return false;
+            }
     }
+}
 }

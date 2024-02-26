@@ -117,6 +117,21 @@ public class ViewServices {
     public List<Map<String, Object>> listOutlet(Map<String, String> ref) {
         return viewDao.listOutlet(ref);
     }
+    
+    ///////////////new method for List Detail from adit 21-02-2024////////////////////////////
+    public List<Map<String, Object>> listOutletDetail(Map<String, String> ref) {
+        return viewDao.listOutletDetail(ref);
+    }
+    
+    public List<Map<String, Object>> listOutletDetailGroup(Map<String, String> ref) {
+        return viewDao.listOutletDetailGroup(ref);
+    }
+    
+    public List<Map<String, Object>> listOutletDetailTypeOrder(Map<String, String> ref) {
+        return viewDao.listOutletDetailTypeOrder(ref);
+    }
+
+    /// Done adit 21-02-2024
 
     public List<Map<String, Object>> listPos(Map<String, String> ref) {
         return viewDao.listPos(ref);
@@ -590,5 +605,10 @@ public class ViewServices {
     // =============== New Method From Sifa 21-02-2024 ===============
     public List<Map<String, Object>> itemDetail(Map<String, String> ref) {
         return viewDao.itemDetail(ref);
+    }
+    
+    // Get order detail temporary list by Fathur 23 Feb 24 //
+    public List<Map<String, Object>> orderDetailTemporaryList(Map<String, String> ref) {
+        return viewDao.orderDetailTemporaryList(ref);
     }
 }

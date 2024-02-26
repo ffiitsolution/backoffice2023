@@ -208,17 +208,13 @@ public class ProcessDaoImpl implements ProcessDao {
     /////////////////////////////////done
 
     ///////////////new method from dona 06-03-2023////////////////////////////
+    @Override
     public void updateFrayer(Map<String, String> balance) {
-        String qy = "UPDATE M_MPCS_DETAIL SET FRYER_TYPE_CNT= :fryerTypeCnt,FRYER_TYPE_RESET= :fryerTypeReset,"
-                + "STATUS= :status,USER_UPD= :userUpd,DATE_UPD= :dateUpd,TIME_UPD= :timeUpd,FRYER_TYPE_SEQ_CNT= :fryerTypeSeqCnt "
-                + "where fryer_type=:fryerType and OUTLET_CODE=:outletCode and FRYER_TYPE_SEQ=:fryerTypeSeq ";
+        String qy = "UPDATE M_MPCS_DETAIL SET STATUS= :status, USER_UPD= :userUpd, DATE_UPD = :dateUpd, TIME_UPD = :timeUpd where FRYER_TYPE = :fryerType and OUTLET_CODE = :outletCode and FRYER_TYPE_SEQ = :fryerTypeSeq";
         Map param = new HashMap();
         param.put("outletCode", balance.get("outletCode"));
-        param.put("fryerType", balance.get("fryerType"));
         param.put("fryerTypeSeq", balance.get("fryerTypeSeq"));
-        param.put("fryerTypeCnt", balance.get("fryerTypeCnt"));
-        param.put("fryerTypeReset", balance.get("fryerTypeReset"));
-        param.put("fryerTypeSeqCnt", balance.get("fryerTypeSeqCnt"));
+        param.put("fryerType", balance.get("fryerType"));
         param.put("status", balance.get("status"));
         param.put("userUpd", balance.get("userUpd"));
         param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
@@ -463,79 +459,40 @@ public class ProcessDaoImpl implements ProcessDao {
         Date tgl = new Date();
         String month = df.format(tgl);
         String year = dfYear.format(tgl);
+        Gson gson = new Gson();
 
         String insertOrderHeader = "INSERT INTO T_ORDER_HEADER (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ORDER_DATE,ORDER_TO,CD_SUPPLIER,DT_DUE,DT_EXPIRED,REMARK,NO_OF_PRINT,STATUS,USER_UPD,DATE_UPD,TIME_UPD)"
                 + " VALUES(:outletCode,:orderType,:orderId,:orderNo,:orderDate,:orderTo,:cdSupplier,:dtDue,:dtExpired,:remark,:noOfPrint,:status,:userUpd,:dateUpd,:timeUpd)";
 
-        String insertOrderDetailQuery = "";
         String orderNo = checkOrderNo(balance.get("orderNo"));
         String orderId = checkOrderId(balance.get("orderId"));
         
-        Map<String, Object> param = new HashMap();
-        param.put("outletCode", balance.get("outletCode"));
-        param.put("orderType", balance.get("orderType"));
-        param.put("orderId", orderId);
-        param.put("orderNo", orderNo);
-        param.put("orderDate", balance.get("orderDate"));
-        param.put("orderTo", balance.get("orderTo"));
-        param.put("cdSupplier", balance.get("cdSupplier"));
-        param.put("dtDue", balance.get("dtDue"));
-        param.put("dtExpired", balance.get("dtExpired"));
-        param.put("remark", balance.get("remark"));
-        param.put("noOfPrint", balance.get("noOfPrint"));
-        param.put("status", balance.get("status"));
-        param.put("userUpd", balance.get("userUpd"));
-        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
-        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
-        param.put("year", year);
-        param.put("month", month);
-        param.put("transType", balance.get("transType"));
-        param.put("valueSupplier", balance.get("valueSupplier"));
+        balance.put("orderId", orderId);
+        balance.put("orderNo", orderNo);
+        balance.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        balance.put("timeUpd", LocalDateTime.now().format(timeFormatter));
+        balance.put("year", year);
+        balance.put("month", month);
                
-        if (balance.get("orderTo").equals("3")) { // order ke gudang
-            if(balance.get("orderType").equals("4")){ // order ke Gudang FSD
-                insertOrderDetailQuery = "INSERT INTO T_ORDER_DETAIL (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,TOTAL_QTY_STOCK,UNIT_PRICE,USER_UPD,DATE_UPD,TIME_UPD) "
-                    + "SELECT :outletCode, :orderType, :orderId, :orderNo, item_code, 0, UOM_WAREHOUSE, 0, UOM_PURCHASE, 0, 0, :userUpd, :dateUpd, :timeUpd "
-                    + "FROM m_item "
-                    + "WHERE CD_WAREHOUSE = :cdSupplier AND STATUS = 'A' "; 
-            } else { // order ke gudang
-                insertOrderDetailQuery = "INSERT INTO T_ORDER_DETAIL (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,TOTAL_QTY_STOCK,UNIT_PRICE,USER_UPD,DATE_UPD,TIME_UPD) "
-                    + "SELECT :outletCode, :orderType, :orderId, :orderNo, item_code, 0, UOM_WAREHOUSE, 0, UOM_PURCHASE, 0, 0, :userUpd, :dateUpd, :timeUpd "
-                    + "FROM m_item "
-                    + "WHERE CD_WAREHOUSE = LPAD(:valueSupplier,5,0) AND STATUS = 'A' ";
-            }
-        } if (balance.get("orderTo").equals("2")) { // order ke outlet
-            insertOrderDetailQuery = "INSERT INTO T_ORDER_DETAIL (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,TOTAL_QTY_STOCK,UNIT_PRICE,USER_UPD,DATE_UPD,TIME_UPD) "
-                + "SELECT :outletCode, :orderType, :orderId, :orderNo, item_code, 0, UOM_PURCHASE, 0, UOM_STOCK, 0, 0, :userUpd, :dateUpd, :timeUpd "
-                + "FROM m_item "
-                + "WHERE SUBSTR(ITEM_CODE,1,1) != 'X' AND STATUS = 'A' AND FLAG_MATERIAL = 'Y' AND FLAG_STOCK = 'Y' ";
-        }
-        if (balance.get("orderTo").equals("0") || balance.get("orderTo").equals("1")) { // order ke supplier
-            insertOrderDetailQuery = switch (balance.get("orderType")) {
-                // Order Entry Vendor Supplier FSD
-                case "4" -> "INSERT INTO T_ORDER_DETAIL (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,TOTAL_QTY_STOCK,UNIT_PRICE,USER_UPD,DATE_UPD,TIME_UPD) "
-                    + "SELECT :outletCode, :orderType, :orderId, :orderNo, a.item_code, 0, UOM_WAREHOUSE, 0, UOM_PURCHASE, 0, 0, :userUpd, :dateUpd, :timeUpd "
-                    + "FROM M_ITEM a LEFT JOIN M_ITEM_SUPPLIER S "
-                    + "ON A.ITEM_CODE=S.ITEM_CODE WHERE a.STATUS = 'A' AND S.CD_SUPPLIER=:cdSupplier ";
-                // Order Entry SSD
-                case "5" -> "INSERT INTO T_ORDER_DETAIL (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,TOTAL_QTY_STOCK,UNIT_PRICE,USER_UPD,DATE_UPD,TIME_UPD) "
-                    + "SELECT :outletCode, :orderType, :orderId, :orderNo, a.item_code, 0, UOM_WAREHOUSE, 0, UOM_PURCHASE, 0, 0, :userUpd, :dateUpd, :timeUpd "
-                    + "FROM M_ITEM a LEFT JOIN M_ITEM_SUPPLIER S "
-                    + "ON A.ITEM_CODE=S.ITEM_CODE WHERE a.STATUS = 'A' AND S.CD_SUPPLIER=:cdSupplier ";
-                // order ke supplier
-                default -> "INSERT INTO T_ORDER_DETAIL (OUTLET_CODE,ORDER_TYPE,ORDER_ID,ORDER_NO,ITEM_CODE,QTY_1,CD_UOM_1,QTY_2,CD_UOM_2,TOTAL_QTY_STOCK,UNIT_PRICE,USER_UPD,DATE_UPD,TIME_UPD) "
-                    + "SELECT :outletCode, :orderType, :orderId, :orderNo, a.item_code, 0, UOM_WAREHOUSE, 0, UOM_PURCHASE, 0, 0, :userUpd, :dateUpd, :timeUpd "
-                    + "FROM M_ITEM a LEFT JOIN M_ITEM_SUPPLIER S "
-                    + "ON A.ITEM_CODE=S.ITEM_CODE WHERE a.STATUS = 'A' AND S.CD_SUPPLIER=:cdSupplier ";
-            };
-        }
-        System.out.println("insertOrderDetailQuery");
-        System.out.println(insertOrderDetailQuery);
-        jdbcTemplate.update(insertOrderHeader, param);
-        jdbcTemplate.update(insertOrderDetailQuery, param);
+        JsonArray details = gson.toJsonTree(balance.get("details")).getAsJsonArray();
+        details.forEach(detail -> {
+            Map<String, String> bal = gson.fromJson(detail, new TypeToken<Map<String, String>>() {
+            }.getType());
+            bal.put("outletCode", (String) balance.get("outletCode"));
+            bal.put("orderId", (String) balance.get("orderId"));
+            bal.put("orderNo", (String) balance.get("orderNo"));
+            bal.put("orderType", (String) balance.get("orderType"));
+            bal.put("userUpd", (String) balance.get("userUpd"));
+            bal.put("dateUpd", (String) balance.get("dateUpd"));
+            bal.put("timeUpd", (String) balance.get("timeUpd"));
+
+            insertOrderDetail(bal);
+        });
+
+        jdbcTemplate.update(insertOrderHeader, balance);
         
-        String returnDetailItem = "SELECT * FROM T_ORDER_detail toh WHERE toh.ORDER_no = :orderNo AND OUTLET_CODE = :outletCode ";
-        List<Map<String, Object>> list = jdbcTemplate.query(returnDetailItem, param, new DynamicRowMapper());
+        String returnDetailItem = "SELECT * FROM T_ORDER_detail toh WHERE toh.ORDER_no = :orderNo ";
+        List<Map<String, Object>> list = jdbcTemplate.query(returnDetailItem, balance, new DynamicRowMapper());
 
         Map<String, Object> returnedItem = new HashMap();
         returnedItem.put("detail", list);
@@ -820,15 +777,9 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("opnameNo", balance.get("opnameNo"));
         param.put("status", status);
 
-        // cek jika ada nilai nol dan belum di confirmZero, kembalikan list
+        // cek jika ada nilai nol dan belum di confirmZero, kembalikan list item yg ada freeze namun total 0
         if (confirmZero < 1 && (status == 1 || status == '1')) {
-            String qry = """
-                select o.opname_no, o.item_code, mi.item_description, o.qty_purch, o.uom_purch, o.qty_stock, o.uom_stock, o.total_qty 
-                from t_opname_detail o
-                JOIN m_item mi ON o.item_code = mi.item_code
-                where o.outlet_code = :outletCode and o.opname_no = :opnameNo and o.qty_purch = 0 and o.qty_stock = 0 and o.total_qty = 0
-                order by o.item_code
-            """;
+            String qry = "SELECT O.OPNAME_NO, O.ITEM_CODE, MI.ITEM_DESCRIPTION, O.QTY_FREEZE, O.QTY_PURCH, O.UOM_PURCH, O.QTY_STOCK, O.UOM_STOCK, O.TOTAL_QTY FROM T_OPNAME_DETAIL O LEFT JOIN M_ITEM MI ON O.ITEM_CODE = MI.ITEM_CODE WHERE O.OUTLET_CODE = :outletCode AND O.OPNAME_NO = :opnameNo AND O.QTY_FREEZE != 0 AND (O.QTY_STOCK + O.QTY_PURCH) = 0 ORDER BY O.ITEM_CODE";
             list = jdbcTemplate.query(qry, param, new DynamicRowMapper());
             if (!list.isEmpty()) {
                 System.out.println("terdapat nilai semua 0 saat opname: " + list.size());
@@ -3638,11 +3589,10 @@ public class ProcessDaoImpl implements ProcessDao {
         rm.setSuccess(false);
         List<Map<String, Object>> list = new ArrayList();
         String date = mapping.get("date").toString();
-        Boolean isTerimaMaster = "TERIMA DATA MASTER".equals(mapping.get("type"));
-        Boolean isKirimTransaksi = "TRANSFER DATA TRANSAKSI".equals(mapping.get("type"));
         List<String> tables = (List<String>) mapping.getOrDefault("listTable", new ArrayList<String>());
-        
-        if(isTerimaMaster){
+        System.out.println("listTransferData type: " + mapping.get("type"));
+        System.out.println("listTransferData tables: " + tables.size());
+        if("TERIMA DATA MASTER".equals(mapping.get("type"))){
             try {
                 // todo: handle terima/kirim
                 for (String tableName : tables) {
@@ -3654,7 +3604,6 @@ public class ProcessDaoImpl implements ProcessDao {
                     String outletId = mapping.get("outletCode").toString();
                     URI uri = new URIBuilder(getData.getURI()).addParameter("param", tableName).addParameter("date", date).addParameter("outletId", outletId).build();
                     getData.setURI(uri);
-                    System.err.println("listTransferData :" + uri);
                     CloseableHttpResponse response = client.execute(getData);
                     BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
                     StringBuilder content = new StringBuilder();
@@ -3676,6 +3625,7 @@ public class ProcessDaoImpl implements ProcessDao {
                         }
                         mapq.put(aliasedTableName, listItem);
                         list.add(mapq);
+                        System.err.println("listTransferData "+aliasedTableName+":" + listItem.size());
                     }
                 }
                 rm.setItem(list);
@@ -3690,23 +3640,21 @@ public class ProcessDaoImpl implements ProcessDao {
                 
                 Logger.getLogger(ProcessDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } else if(isKirimTransaksi){
-            for (String tableName : tables) {
-                String conditionText = conditionTextTransfer(tableName, date);
-                String query = "SELECT * FROM " + tableName + conditionText;
+        } else if("KIRIM DATA TRANSAKSI".equals(mapping.get("type"))){
+//            List<TableAlias> tablesT = tableAliasUtil.searchByColumn(TableAliasUtil.TABLE_ALIAS_T, "process", true);
+            List<TableAlias> tablesT = tableAliasUtil.getDataList(TableAliasUtil.TABLE_ALIAS_T);
+            System.out.println("isKirimTransaksi: " + tablesT.size());
+            for (TableAlias table : tablesT) {
+                String conditionText = conditionTextTransfer(table.getTable(), date);
+                String query = "SELECT * FROM " + table.getTable() + conditionText;
                 Map prm = new HashMap();
                 List<Map<String, Object>> listItem = jdbcTemplate.query(query, prm, (ResultSet rs, int index) -> convertObject(rs));
-            if (listItem != null && !listItem.isEmpty()) {
-                Map<String, Object> mapq = new HashMap();
-                // Rubah nama tabel ke alias nya
-                Optional<TableAlias> tbl = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M,"table",tableName);
-                String aliasedTableName = tableName;
-                if(tbl.isPresent()){
-                    aliasedTableName = tbl.get().getAlias();
+                if (listItem != null && !listItem.isEmpty()) {
+                    Map<String, Object> mapq = new HashMap();
+                    // Rubah nama tabel ke alias nya
+                    mapq.put(table.getAlias(), listItem);
+                    list.add(mapq);
                 }
-                mapq.put(aliasedTableName, listItem);
-                list.add(mapq);
-            }
             }
             rm.setItem(list);
             rm.setSuccess(true);
@@ -4581,5 +4529,75 @@ public class ProcessDaoImpl implements ProcessDao {
         System.out.println("checkMCounterNextMonth rows affected: " + rowsAffected);
         double elapsedTimeSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
         System.err.println("checkMCounterNextMonth process in: " + elapsedTimeSeconds + " seconds");
+    }
+    
+    /////////////// new method update outlet adit 21 Feb 2024
+    public void updateOutlet(Map<String, String> balance) {
+        String qy = "UPDATE M_OUTLET SET OUTLET_NAME=:outletName, TYPE=:type, ADDRESS_1=:address1, ADDRESS_2=:address2, CITY=:city, POST_CODE=:posCode, PHONE=:phone, FAX=:fax, CASH_BALANCE=:cashBalance, TRANS_DATE=:transDate, DEL_LIMIT=:delLimit, DEL_CHARGE=:delCharge, RND_PRINT=:rndPrint, RND_FACT=:rndFact, RND_LIMIT=:rndLimit, TAX=:tax, DP_MIN=:dpMin, CANCEL_FEE=:cancelFee, CAT_ITEMS=:calItems, MAX_BILLS=:maxBills, MIN_ITEMS=:minItems, REF_TIME=:refTime, TIME_OUT=:timeOut, MAX_SHIFT=:maxShift, SEND_DATA=:sendData, MIN_PULL_TRX=:minPullTrx, MAX_PULL_VALUE=:maxPullTrx, STATUS=:status, START_DATE=:startDate, FINISH_DATE=:finishDate, MAX_DISC_PERCENT=:maxDiscPercent, MAX_DISC_AMOUNT=:maxDiscAmount, OPEN_TIME=:openTime, CLOSE_TIME=:closeTime, REFUND_TIME_LIMIT=:refundTimeLimit, MONDAY=:monday, TUESDAY=:tuesday, WEDNESDAY=:wednesday, THURSDAY=:thursday, FRIDAY=:friday, SATURDAY=:saturday, SUNDAY=:sunday, HOLIDAY=:holiday, OUTLET_24_HOUR=:outlet24Hour, IP_OUTLET=:ipOutlet, PORT_OUTLET=:portOutlet, USER_UPD=:userUpd, DATE_UPD=:dateUpd, TIME_UPD=:timeUpd, FTP_ADDR=:ftpAddr, FTP_USER=:ftpUser, FTP_PASSWORD=:ftpPassword, INITIAL_OUTLET=:initialOutlet, AREA_CODE=:areaCode, RSC_CODE=:rscCode, TAX_CHARGE=:taxCharge WHERE REGION_CODE=:regionCode AND OUTLET_CODE=:outletCode";
+        Map param = new HashMap();
+             param.put("regionCode", balance.get("REGION_CODE"));
+             param.put("regionname", balance.get("REGION_NAME"));
+             param.put("outletCode", balance.get("OUTLET_CODE"));
+             param.put("outletName", balance.get("OUTLET_NAME"));
+             param.put("type", balance.get("TYPE"));
+             param.put("typeStore", balance.get("TYPE_STORE"));
+             param.put("address1", balance.get("ADDRESS_1"));
+             param.put("address2", balance.get("ADDRESS_2"));
+             param.put("city", balance.get("CITY"));
+             param.put("cityName", balance.get("CITY_NAME"));
+             param.put("posCode", balance.get("POST_CODE"));
+             param.put("phone", balance.get("PHONE"));
+             param.put("fax", balance.get("FAX"));
+             param.put("cashBalance", balance.get("CASH_BALANCE"));
+             param.put("transDate", balance.get("TRANS_DATE"));
+             param.put("delLimit", balance.get("DEL_LIMIT"));
+             param.put("delCharge", balance.get("DEL_CHARGE"));
+             param.put("rndPrint", balance.get("RND_PRINT"));
+             param.put("rndFact", balance.get("RND_FACT"));
+             param.put("rndLimit", balance.get("RND_LIMIT"));
+             param.put("tax", balance.get("TAX"));
+             param.put("dpMin", balance.get("DP_MIN"));
+             param.put("cancelFee", balance.get("CANCEL_FEE"));
+             param.put("catItems", balance.get("CAT_ITEMS"));
+             param.put("maxBills", balance.get("MAX_BILLS"));
+             param.put("minItems", balance.get("MIN_ITEMS"));
+             param.put("refTime", balance.get("REF_TIME"));
+             param.put("timeOut", balance.get("TIME_OUT"));
+             param.put("maxShift", balance.get("MAX_SHIFT"));
+             param.put("sendData", balance.get("SEND_DATA"));
+             param.put("minPullTrx", balance.get("MIN_PULL_TRX"));
+             param.put("maxPullValue", balance.get("MAX_PULL_VALUE"));
+             param.put("Status", balance.get("STATUS"));
+             param.put("startDate", balance.get("START_DATE"));
+             param.put("finishDate", balance.get("FINISH_DATE"));
+             param.put("maxDiscPercent", balance.get("MAX_DISC_PERCENT"));
+             param.put("maxDiscAmount", balance.get("MAX_DISC_AMOUNT"));
+             param.put("openTime", balance.get("OPEN_TIME"));
+             param.put("closeTime", balance.get("CLOSE_TIME"));
+             param.put("refundTimeLimit", balance.get("REFUND_TIME_LIMIT"));
+             param.put("monday", balance.get("MONDAY"));
+             param.put("tuesday", balance.get("TUESDAY"));
+             param.put("wednesday", balance.get("WEDNESDAY"));
+             param.put("thursday", balance.get("THURSDAY"));
+             param.put("friday", balance.get("FRIDAY"));
+             param.put("saturday", balance.get("SATURDAY"));
+             param.put("sunday", balance.get("SUNDAY"));
+             param.put("holiday", balance.get("HOLIDAY"));
+             param.put("outlet24Hour", balance.get("OUTLET_24_HOUR"));
+             param.put("ipOutlet", balance.get("IP_OUTLET"));
+             param.put("portOutlet", balance.get("PORT_OUTLET"));
+             param.put("userUpd", balance.get("USER_UPD"));
+             param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+             param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
+             param.put("ftpAddr", balance.get("FTP_ADDR"));
+             param.put("ftpUser", balance.get("FTP_USER"));
+             param.put("ftpPassword", balance.get("FTP_PASSWORD"));
+             param.put("initialOutlet", balance.get("INITIAL_OUTLET"));
+             param.put("areaCode", balance.get("AREA_CODE"));
+             param.put("areaName", balance.get("AREA_NAME"));
+             param.put("rscCode", balance.get("RSC_CODE"));
+             param.put("rscName", balance.get("RSC_NAME"));
+             param.put("taxCharge", balance.get("TAX_CHARGE"));
+        jdbcTemplate.update(qy, param);
     }
 }

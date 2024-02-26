@@ -1481,6 +1481,7 @@ public class IndexController {
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Insert Failed: " + e.getMessage());
+            e.printStackTrace();
         }
         rm.setItem(list);
         return rm;
@@ -2544,7 +2545,7 @@ public class IndexController {
                 rm.setMessage("Update Success");
             } else {
                 rm.setSuccess(false);
-                rm.setMessage(list.size() + " item berikut terdeteksi memiliki nilai input total 0");
+                rm.setMessage(list.size() + " item berikut terdeteksi memiliki nilai awal namun di input 0");
             }
         } catch (Exception e) {
             rm.setSuccess(false);
@@ -3300,44 +3301,6 @@ public class IndexController {
         return rm;
     }
 
-    /////// NEW METHOD to get list Menu Aplikasi by M Joko 8 Januari 2024
-    @RequestMapping(value = "/list-menu-application", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Digunakan untuk list Menu Aplikasi", response = Object.class)
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "OK"),
-        @ApiResponse(code = 404, message = "The resource not found"),}
-    )
-    public @ResponseBody
-    Response listMenuApplication(@RequestBody String param) throws IOException, Exception {
-        Gson gsn = new Gson();
-        Map<String, Object> data = gsn.fromJson(param, new TypeToken<Map<String, String>>() {
-        }.getType());
-        // List<Map<String, Object>> list = viewServices.listMenuApplication(data);
-        String env = data.containsKey("env") ? data.getOrDefault("env", "prod").toString() : appUtil.getOrDefault("app.env", "development");
-        Response res = new Response();
-        String filepath = env.toLowerCase().contains("dev") ? "json/menuKFC-dev.json" : "json/menuKFC.json";
-        System.err.println("menu filepath: " + filepath);
-        if (data.containsKey("outletBrand") && data.get("outletBrand").toString().equalsIgnoreCase("TACOBELL")) {
-            filepath = "json/menuTACOBELL.json";
-        }
-        try {
-            ClassPathResource resource = new ClassPathResource(filepath);
-            byte[] bytes = FileCopyUtils.copyToByteArray(resource.getInputStream());
-            String jsonString = new String(bytes, StandardCharsets.UTF_8);
-            ObjectMapper objectMapper = new ObjectMapper();
-            List<Map<String, Object>> menuList = objectMapper.readValue(jsonString, new ArrayList<LinkedHashMap<String, Object>>().getClass());
-            res.setData(menuList);
-        } catch (IOException e) {
-            System.err.println("e: " + e.getMessage());
-            List<Map<String, Object>> menuList = new ArrayList();
-            data.put("success", false);
-            data.put("message", e.getMessage());
-            menuList.add(data);
-            res.setData(menuList);
-        }
-        return res;
-    }
-
     // Get List Daftar Menu Report  By Rafi 9 Jan 2024
     @RequestMapping(value = "/get-list-item-detail-report", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan get list report selected by item detail", response = Object.class)
@@ -3946,5 +3909,118 @@ public class IndexController {
         res.setRecordsTotal(list.size());
         return res;
 
+    }
+    
+    @RequestMapping(value = "/order-detail-temporary-list", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get order detail temporary list by Fathur 23 Feb 24", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response orderDetailTemporaryList(@RequestBody String param) throws JRException, IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> logan = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        List<Map<String, Object>> list = new ArrayList<>();
+        list = viewServices.orderDetailTemporaryList(logan);
+        Response res = new Response();
+        res.setData(list);
+        res.setRecordsTotal(list.size());
+        return res;
+
+    }
+    ///// adit list outlet detail 21 Feb 2024 
+    @RequestMapping(value = "/list-outlet-detail", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view supplier", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listOutletDetail(@RequestBody String param) throws JRException, IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> logan = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+
+        Response res = new Response();
+        res.setData(viewServices.listOutletDetail(logan));
+        return res;
+
+    }
+    
+    ///// adit list outlet detail group 21 Feb 2024 
+    @RequestMapping(value = "/list-outlet-detail-group", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view supplier", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listOutletDetailGroup(@RequestBody String param) throws JRException, IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> logan = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+
+        Response res = new Response();
+        res.setData(viewServices.listOutletDetailGroup(logan));
+        return res;
+
+    }
+    
+    ///// adit list outlet detail Type Order group 21 Feb 2024 
+    @RequestMapping(value = "/list-outlet-detail-type-order", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view supplier", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listOutletDetailTypeOrder(@RequestBody String param) throws JRException, IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> logan = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+
+        Response res = new Response();
+        res.setData(viewServices.listOutletDetailTypeOrder(logan));
+        return res;
+
+    }
+    
+    ///// adit Update outlet detail 21 Feb 2024 
+    @RequestMapping(value = "/update-outlet", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk update mpcs", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage updateOutlet(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new com.google.gson.reflect.TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        ResponseMessage rm = new ResponseMessage();
+        try {
+            processServices.updateOutlet(balance);
+            rm.setSuccess(true);
+            rm.setMessage("Update Success Successfuly");
+
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Update Failed Successfuly: " + e.getMessage());
+        }
+
+        rm.setItem(list);
+
+        return rm;
     }
 }
