@@ -1,8 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ReportSummarySalesbyItemCode" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6bb117e1-89a2-438b-9004-122ab48111d8">
-	<property name="ireport.zoom" value="1.2100000000000046"/>
+	<property name="ireport.zoom" value="1.4641000000000068"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<subDataset name="dataset1" uuid="62d60cf7-bf50-43ee-988a-a5bd017ed87c">
+		<parameter name="outletCode" class="java.lang.String">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="fromDate" class="java.lang.String">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="toDate" class="java.lang.String">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="shift1" class="java.lang.String">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="shift2" class="java.lang.String">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="cashier1" class="java.lang.String">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="cashier2" class="java.lang.String">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="fromTime" class="java.lang.String">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="toTime" class="java.lang.String">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="pos1" class="java.lang.String">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<parameter name="pos2" class="java.lang.String">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<queryString>
+			<![CDATA[    SELECT
+      SUM (TOTAL_AMOUNT) AS total_amount,
+      SUM (total_discount) AS TOTAL_DISCOUNT,
+      SUM (TOTAL_AMOUNT - TOTAL_DISCOUNT) AS sumamt
+    FROM
+      T_POS_BILL
+    WHERE
+      outlet_code = $P{outletCode}
+      AND trans_date BETWEEN $P{fromDate}
+      AND $P{toDate}
+      AND pos_code BETWEEN $P{pos1}
+      AND $P{pos2}
+      AND shift_code BETWEEN $P{shift1}
+      AND $P{shift2}
+      AND cashier_code BETWEEN $P{cashier1}
+      AND $P{cashier2}
+      AND bill_time BETWEEN $P{fromTime}
+      AND $P{toTime}
+      and delivery_status = 'CLS']]>
+		</queryString>
+		<field name="TOTAL_AMOUNT" class="java.math.BigDecimal"/>
+		<field name="TOTAL_DISCOUNT" class="java.math.BigDecimal"/>
+		<field name="SUMAMT" class="java.math.BigDecimal"/>
+	</subDataset>
 	<parameter name="outletCode" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
@@ -352,7 +411,7 @@ SELECT A.*,M.ITEM_DESCRIPTION,M.uom_stock FROM( SELECT   a.ITEM, SUM (a.TOTAL_EI
 		<band splitType="Stretch"/>
 	</background>
 	<pageHeader>
-		<band height="115" splitType="Stretch">
+		<band height="150" splitType="Stretch">
 			<textField>
 				<reportElement x="60" y="11" width="141" height="11" uuid="4c9593ab-6123-447b-be10-cad7a6942c84"/>
 				<textElement>
@@ -525,6 +584,91 @@ SELECT A.*,M.ITEM_DESCRIPTION,M.uom_stock FROM( SELECT   a.ITEM, SUM (a.TOTAL_EI
 				</textElement>
 				<text><![CDATA[Halaman]]></text>
 			</staticText>
+			<staticText>
+				<reportElement x="5" y="116" width="90" height="12" uuid="a5b3a110-58e1-403b-b7ac-c77afa6d2190"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TOTAL AMOUNT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="105" y="116" width="90" height="12" uuid="e5e959e1-fd6c-41a4-94cc-54372a5422cc"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TOTAL DISCOUNT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="205" y="116" width="90" height="12" uuid="40e06bb3-347d-4202-a846-32301da9883c"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TAXABLE]]></text>
+			</staticText>
+			<componentElement>
+				<reportElement x="1" y="128" width="400" height="22" uuid="decf6d69-cd54-41d1-b50d-95effa386144"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="dataset1" uuid="2f880b91-c5a4-4d57-ae51-bb8c907d739b">
+						<datasetParameter name="outletCode">
+							<datasetParameterExpression><![CDATA[$P{outletCode}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="fromDate">
+							<datasetParameterExpression><![CDATA[$P{fromDate}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="toDate">
+							<datasetParameterExpression><![CDATA[$P{toDate}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="shift1">
+							<datasetParameterExpression><![CDATA[$P{shift1}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="shift2">
+							<datasetParameterExpression><![CDATA[$P{shift2}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="cashier1">
+							<datasetParameterExpression><![CDATA[$P{cashier1}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="cashier2">
+							<datasetParameterExpression><![CDATA[$P{cashier2}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="fromTime">
+							<datasetParameterExpression><![CDATA[$P{fromTime}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="toTime">
+							<datasetParameterExpression><![CDATA[$P{toTime}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="pos1">
+							<datasetParameterExpression><![CDATA[$P{pos1}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="pos2">
+							<datasetParameterExpression><![CDATA[$P{pos2}]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:listContents height="22" width="400">
+						<textField pattern="#,##0.00">
+							<reportElement x="4" y="0" width="100" height="15" uuid="7ea5d9b7-add2-49e2-8e6a-019a024d87d3"/>
+							<textElement>
+								<font size="8" isBold="true"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{TOTAL_AMOUNT}]]></textFieldExpression>
+						</textField>
+						<textField pattern="#,##0.00">
+							<reportElement x="104" y="0" width="100" height="15" uuid="b3f63150-e1ca-44c3-b76d-2a4a44b962de"/>
+							<textElement>
+								<font size="8" isBold="true"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{TOTAL_DISCOUNT}]]></textFieldExpression>
+						</textField>
+						<textField pattern="#,##0.00">
+							<reportElement x="204" y="0" width="100" height="15" uuid="649300cf-c32f-473a-98c8-e59a1c00a725"/>
+							<textElement>
+								<font size="8" isBold="true"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{SUMAMT}]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
 		</band>
 	</pageHeader>
 	<columnHeader>
