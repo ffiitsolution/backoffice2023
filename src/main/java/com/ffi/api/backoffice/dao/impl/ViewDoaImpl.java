@@ -769,7 +769,7 @@ public class ViewDoaImpl implements ViewDao {
             qry += " AND a.STATUS IN ('A', 'I' )";
         }
 
-        qry += " ORDER BY a.MPCS_GROUP ASC";
+        qry += " ORDER BY a.status ASC, a.MPCS_GROUP ASC ";
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
