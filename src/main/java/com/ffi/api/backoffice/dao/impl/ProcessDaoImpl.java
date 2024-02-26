@@ -586,12 +586,12 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("orderId", balance.get("orderId"));
         param.put("orderNo", balance.get("orderNo"));
         param.put("itemCode", balance.get("itemCode"));
-        param.put("qty1", balance.get("qty1"));
-        param.put("cdUom1", balance.get("cdUom1"));
-        param.put("qty2", balance.get("qty2"));
-        param.put("cdUom2", balance.get("cdUom2"));
-        param.put("totalQtyStock", balance.get("totalQtyStock"));
-        param.put("unitPrice", balance.get("unitPrice"));
+        param.put("qty1", balance.get("jmlBesar"));
+        param.put("cdUom1", balance.get("satuanBesar"));
+        param.put("qty2", balance.get("jmlKecil"));
+        param.put("cdUom2", balance.get("satuanKecil"));
+        param.put("totalQtyStock", balance.get("totalQty"));
+        param.put("unitPrice", "0");
         param.put("userUpd", balance.get("userUpd"));
         param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
         param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
