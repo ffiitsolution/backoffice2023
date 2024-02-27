@@ -4649,6 +4649,13 @@ return finalResultList;
                         "mi.ITEM_DESCRIPTION, " +
                         "mi.UOM_WAREHOUSE, " +
                         "mi.UOM_STOCK, " +
+                        "mi.UOM_PURCHASE, " +
+                        "mi.CONV_WAREHOUSE, " +
+                        "mi.CONV_STOCK, " +
+                        "mi.CD_LEVEL_1, " +
+                        "mi.CD_LEVEL_2, " +
+                        "mi.CD_LEVEL_3, " +
+                        "mi.CD_LEVEL_4, " +
                         "mi.FLAG_OTHERS, " +
                         "mi.FLAG_MATERIAL, " +
                         "mi.FLAG_HALF_FINISH , " +
@@ -4698,6 +4705,13 @@ return finalResultList;
                 rt.put("description", rs.getString("ITEM_DESCRIPTION"));
                 rt.put("satuanBesar", rs.getString("UOM_WAREHOUSE"));
                 rt.put("satuanKecil", rs.getString("UOM_STOCK"));
+                rt.put("satuanBeli", rs.getString("UOM_PURCHASE"));
+                rt.put("convWarehouse", rs.getString("CONV_WAREHOUSE"));
+                rt.put("convStock", rs.getString("CONV_STOCK"));
+                rt.put("level1", rs.getString("CD_LEVEL_1"));
+                rt.put("level2", rs.getString("CD_LEVEL_2"));
+                rt.put("level3", rs.getString("CD_LEVEL_3"));
+                rt.put("level4", rs.getString("CD_LEVEL_4"));
                 rt.put("flagOthers", rs.getString("FLAG_OTHERS"));
                 rt.put("flagMaterial", rs.getString("FLAG_MATERIAL"));
                 rt.put("flagHalfFinish", rs.getString("FLAG_HALF_FINISH"));
