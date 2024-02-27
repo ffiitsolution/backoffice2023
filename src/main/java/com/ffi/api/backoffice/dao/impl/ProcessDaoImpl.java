@@ -586,12 +586,12 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("orderId", balance.get("orderId"));
         param.put("orderNo", balance.get("orderNo"));
         param.put("itemCode", balance.get("itemCode"));
-        param.put("qty1", balance.get("qty1"));
-        param.put("cdUom1", balance.get("cdUom1"));
-        param.put("qty2", balance.get("qty2"));
-        param.put("cdUom2", balance.get("cdUom2"));
-        param.put("totalQtyStock", balance.get("totalQtyStock"));
-        param.put("unitPrice", balance.get("unitPrice"));
+        param.put("qty1", balance.get("jmlBesar"));
+        param.put("cdUom1", balance.get("satuanBesar"));
+        param.put("qty2", balance.get("jmlKecil"));
+        param.put("cdUom2", balance.get("satuanKecil"));
+        param.put("totalQtyStock", balance.get("totalQty"));
+        param.put("unitPrice", "0");
         param.put("userUpd", balance.get("userUpd"));
         param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
         param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
@@ -3241,6 +3241,24 @@ public class ProcessDaoImpl implements ProcessDao {
             rm.setItem(null);
             return rm;
         }
+        
+        prm.put("fryerType", params.getOrDefault("fryerType", " "));
+        prm.put("fryerTypeSeq", params.getOrDefault("fryerTypeSeq"," "));
+
+        if (!prm.get("fryerType").equals(" ") || !prm.get("fryerTypeSeq").equals(" ") || !prm.get("fryerType").equals(null) || !prm.get("fryerTypeSeq").equals(null)) {
+            if (prm.get("fryerType").equals("S")) {
+                String oilItemCode = "06-1002";
+                String updateFryer = "Update M_MPCS_DETAIL "
+                    + " SET FRYER_TYPE_CNT = (FRYER_TYPE_CNT - (SELECT (QTY_STOCK * :qtyMpcs) as total FROM M_RECIPE_DETAIL where RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup) AND ITEM_CODE = '"+oilItemCode+"' )) " 
+                    + " WHERE OUTLET_CODE = :outletCode AND FRYER_TYPE = :fryerType and FRYER_TYPE_SEQ = :fryerTypeSeq ";
+                jdbcTemplate.update(updateFryer, prm);
+            } else {
+                String updateFryer = "Update M_MPCS_DETAIL "
+                    + " SET FRYER_TYPE_CNT = (FRYER_TYPE_CNT - (SELECT (sum(QTY_STOCK) * :qtyMpcs) FROM m_recipe_product WHERE RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup))) " 
+                    + " WHERE OUTLET_CODE = :outletCode AND FRYER_TYPE = :fryerType and FRYER_TYPE_SEQ = :fryerTypeSeq ";
+                jdbcTemplate.update(updateFryer, prm);
+            }
+        } 
         
         String updateQtyQuery = "UPDATE T_SUMM_MPCS "
                 + "SET QTY_PROD = (QTY_PROD - (SELECT (sum(QTY_STOCK) * :qtyMpcs) FROM m_recipe_product WHERE RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup))), "

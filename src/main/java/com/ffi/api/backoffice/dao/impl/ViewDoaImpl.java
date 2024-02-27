@@ -1711,7 +1711,7 @@ public class ViewDoaImpl implements ViewDao {
         } else {
             status = " H.STATUS LIKE :status ";
         }
-        String qry = "SELECT H.*, case when G.DESCRIPTION is null and  m.outlet_name is null then s.supplier_name  "
+        String qry = "SELECT H.*, K.jam_kirim, case when G.DESCRIPTION is null and  m.outlet_name is null then s.supplier_name  "
                 + "                when G.DESCRIPTION is null and s.supplier_name  is null then m.outlet_name else "
                 + "               g.description end as NAMA_GUDANG, "
                 + "               case when K.status_kirim = 'S' then 'Sudah' "
@@ -1760,6 +1760,7 @@ public class ViewDoaImpl implements ViewDao {
             rt.put("timeUpd", rs.getString("TIME_UPD"));
             rt.put("gudangName", rs.getString("NAMA_GUDANG"));
             rt.put("statusKirim", rs.getString("STATUS_KIRIM"));
+            rt.put("jamKirim", rs.getString("JAM_KIRIM"));
             rt.put("emailSupplier", rs.getString("CP_EMAIL_SUPPLIER"));
             
             return rt;
@@ -3637,7 +3638,7 @@ public class ViewDoaImpl implements ViewDao {
     // Updated code: insert into t_summ_mpcs when mpcs group not available Fathur 26 Jan 2024//
     @Transactional
     @Override
-    public List<Map<String, Object>> mpcsProductionList(Map<String, String> balance) {
+    public List<Map<String, Object>> mpcsProductionList(Map<String, String> balance) throws Exception{
         Map prm = new HashMap();
         prm.put("mpcsGroup", balance.get("mpcsGroup"));
         prm.put("dateMpcs", balance.get("dateMpcs"));
@@ -3659,7 +3660,10 @@ public class ViewDoaImpl implements ViewDao {
             rt.put("dateUpd", rs.getString("DATE_UPD"));
             return rt;
         });
-        return list;
+        if (list.size() > 0) {
+            return list;
+        }
+        throw new Exception("Data " + balance.get("recipeCode") + " tidak tersedia. Silakan input MPCS Plan terlebih dahulu! ");
     }
     // Done Method List MPCS Production //
 

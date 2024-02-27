@@ -2849,15 +2849,20 @@ public class IndexController {
     )
 
     public @ResponseBody
-    Response listMpcsProduction(@RequestBody String param) {
+    Map <String, Object> listMpcsProduction(@RequestBody String param) throws Exception {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        Map<String, Object> map = new LinkedHashMap<String, Object>();
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        Response res = new Response();
-        res.setData(viewServices.listMpcsProduction(balance));
-        return res;
+        Map<String, Object> map = new LinkedHashMap<>();
+        try {
+            List list = viewServices.listMpcsProduction(balance);
+            map.put("data", list);
+            map.put("success", true);
+        } catch (Exception e) {
+            map.put("message", e.getMessage());
+            map.put("success", false);
+        }
+        return map;
     }
     //////////////////Done Method List MPCS Production //////////////////////////// 
 
