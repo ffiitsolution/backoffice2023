@@ -3625,7 +3625,12 @@ public class ViewDoaImpl implements ViewDao {
             }
         });
         if(list.isEmpty()){
-            String insertTSummMpcs = "INSERT INTO t_summ_mpcs (SELECT a.OUTLET_CODE, b.MPCS_GROUP, :dateMpcs AS DATE_MPCS, a.SEQ_MPCS, a.TIME_MPCS, 0 as QTY_PROJ, d.UOM_STOCK AS UOM_PROJ, 0 AS QTY_PROJ_CONV, d.UOM_STOCK AS UOM_PROJ_CONV, 0 AS QTY_ACC_PROJ, d.UOM_STOCK AS UOM_ACC_PROJ, ' ' AS DESC_PROD, 0 AS QTY_PROD, d.UOM_STOCK AS UOM_PROD, 0 AS QTY_ACC_PROD, d.UOM_STOCK AS UOM_ACC_PROD, ' ' AS PROD_BY, 0 AS QTY_SOLD, d.UOM_STOCK AS UOM_SOLD, 0 AS QTY_ACC_SOLD, d.UOM_STOCK AS UOM_ACC_SOLD, 0 AS QTY_REJECT, d.UOM_STOCK AS UOM_REJECT, 0 AS QTY_ACC_REJECT, d.UOM_STOCK AS UOM_ACC_REJECT, 0 AS QTY_WASTAGE, d.UOM_STOCK AS UOM_WASTAGE, 0 AS QTY_ACC_WASTAGE, d.UOM_STOCK AS UOM_ACC_WASTAGE, 0 AS QTY_ONHAND, d.UOM_STOCK AS UOM_ONHAND, 0 AS QTY_ACC_ONHAND, d.UOM_STOCK AS UOM_ACC_ONHAND, 0 AS QTY_VARIANCE, d.UOM_STOCK AS UOM_VARIANCE, 0 AS QTY_ACC_VARIANCE, d.UOM_STOCK AS UOM_ACC_VARIANCE, a.USER_UPD AS USER_UPD, :dateMpcs AS DATE_UPD, TO_CHAR(SYSDATE, 'HH24MISS') AS TIME_UPD , 0 AS QTY_IN, 0 AS QTY_OUT FROM TEMPLATE_MPCS a JOIN M_MPCS_HEADER b ON a.OUTLET_CODE = b.OUTLET_CODE JOIN M_RECIPE_HEADER c ON b.MPCS_GROUP = c.MPCS_GROUP JOIN M_RECIPE_PRODUCT d ON c.RECIPE_CODE = d.RECIPE_CODE WHERE b.MPCS_GROUP =:mpcsGroup AND a.OUTLET_CODE =:outletCode)";
+            String insertTSummMpcs = "INSERT INTO t_summ_mpcs ("
+                + "SELECT a.OUTLET_CODE, :mpcsGroup AS MPCS_GROUP, :dateMpcs AS DATE_MPCS, a.SEQ_MPCS, a.TIME_MPCS, 0 as QTY_PROJ, d.UOM_STOCK AS UOM_PROJ, 0 AS QTY_PROJ_CONV, d.UOM_STOCK AS UOM_PROJ_CONV, 0 AS QTY_ACC_PROJ, d.UOM_STOCK AS UOM_ACC_PROJ, ' ' AS DESC_PROD, 0 AS QTY_PROD, d.UOM_STOCK AS UOM_PROD, 0 AS QTY_ACC_PROD, d.UOM_STOCK AS UOM_ACC_PROD, ' ' AS PROD_BY, 0 AS QTY_SOLD, d.UOM_STOCK AS UOM_SOLD, 0 AS QTY_ACC_SOLD, d.UOM_STOCK AS UOM_ACC_SOLD, 0 AS QTY_REJECT, d.UOM_STOCK AS UOM_REJECT, 0 AS QTY_ACC_REJECT, d.UOM_STOCK AS UOM_ACC_REJECT, 0 AS QTY_WASTAGE, d.UOM_STOCK AS UOM_WASTAGE, 0 AS QTY_ACC_WASTAGE, d.UOM_STOCK AS UOM_ACC_WASTAGE, 0 AS QTY_ONHAND, d.UOM_STOCK AS UOM_ONHAND, 0 AS QTY_ACC_ONHAND, d.UOM_STOCK AS UOM_ACC_ONHAND, 0 AS QTY_VARIANCE, d.UOM_STOCK AS UOM_VARIANCE, 0 AS QTY_ACC_VARIANCE, d.UOM_STOCK AS UOM_ACC_VARIANCE, a.USER_UPD AS USER_UPD, :dateMpcs AS DATE_UPD, TO_CHAR(SYSDATE, 'HH24MISS') AS TIME_UPD , 0 AS QTY_IN, 0 AS QTY_OUT "
+                + "FROM TEMPLATE_MPCS a "
+                + "LEFT JOIN M_RECIPE_HEADER c ON c.MPCS_GROUP = :mpcsGroup "
+                + "LEFT JOIN (SELECT DISTINCT(RECIPE_CODE), UOM_STOCK FROM M_RECIPE_PRODUCT mrp GROUP BY RECIPE_CODE, UOM_STOCK) d ON c.RECIPE_CODE = d.RECIPE_CODE "
+                + "WHERE a.OUTLET_CODE =:outletCode) ";
             jdbcTemplate.update(insertTSummMpcs, prm);
             System.out.print("success insert");
             list = listMpcsPlan(balance);
@@ -4809,10 +4814,10 @@ return finalResultList;
     
     @Override
     public List<Map<String, Object>> listOutletDetailGroup(Map<String, String> balance) {
-        String qry = "SELECT a.*, b.OUTLET_NAME AS PARENT_NAME, c.OUTLET_NAME AS CHILD_NAME FROM M_OUTLET_DETAIL a JOIN M_OUTLET b ON a.PARENT_OUTLET = b.OUTLET_CODE JOIN M_OUTLET c ON a.CHILD_OUTLET = c.OUTLET_CODE WHERE b.OUTLET_CODE =:OUTLET_CODE";
+        String qry = "SELECT a.*, b.OUTLET_NAME AS PARENT_NAME, c.OUTLET_NAME AS CHILD_NAME FROM M_OUTLET_DETAIL a JOIN M_OUTLET b ON a.PARENT_OUTLET = b.OUTLET_CODE JOIN M_OUTLET c ON a.CHILD_OUTLET = c.OUTLET_CODE WHERE b.OUTLET_CODE =:outletCode";
 
         Map prm = new HashMap();
-        prm.put("outletCode", balance.get("parentOutlet"));
+        prm.put("outletCode", balance.get("outletCode"));
         
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, (ResultSet rs, int i) -> {
             Map<String, Object> rt = new HashMap<>();
@@ -4837,7 +4842,7 @@ return finalResultList;
             rt.put("outletCode", rs.getString("OUTLET_CODE"));
             rt.put("orderType", rs.getString("ORDER_TYPE"));
             rt.put("orderName", rs.getString("ORDER_NAME")); 
-            rt.put("priceTypeOrder", rs.getString("PRICE_TYPE_ORDER"));          
+            rt.put("priceTypeOrder", rs.getString("PRICE_TYPE_CODE"));          
             return rt;
         });
         return list;

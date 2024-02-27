@@ -4551,10 +4551,9 @@ public class ProcessDaoImpl implements ProcessDao {
     
     /////////////// new method update outlet adit 21 Feb 2024
     public void updateOutlet(Map<String, String> balance) {
-        String qy = "UPDATE M_OUTLET SET OUTLET_NAME=:outletName, TYPE=:type, ADDRESS_1=:address1, ADDRESS_2=:address2, CITY=:city, POST_CODE=:posCode, PHONE=:phone, FAX=:fax, CASH_BALANCE=:cashBalance, TRANS_DATE=:transDate, DEL_LIMIT=:delLimit, DEL_CHARGE=:delCharge, RND_PRINT=:rndPrint, RND_FACT=:rndFact, RND_LIMIT=:rndLimit, TAX=:tax, DP_MIN=:dpMin, CANCEL_FEE=:cancelFee, CAT_ITEMS=:calItems, MAX_BILLS=:maxBills, MIN_ITEMS=:minItems, REF_TIME=:refTime, TIME_OUT=:timeOut, MAX_SHIFT=:maxShift, SEND_DATA=:sendData, MIN_PULL_TRX=:minPullTrx, MAX_PULL_VALUE=:maxPullTrx, STATUS=:status, START_DATE=:startDate, FINISH_DATE=:finishDate, MAX_DISC_PERCENT=:maxDiscPercent, MAX_DISC_AMOUNT=:maxDiscAmount, OPEN_TIME=:openTime, CLOSE_TIME=:closeTime, REFUND_TIME_LIMIT=:refundTimeLimit, MONDAY=:monday, TUESDAY=:tuesday, WEDNESDAY=:wednesday, THURSDAY=:thursday, FRIDAY=:friday, SATURDAY=:saturday, SUNDAY=:sunday, HOLIDAY=:holiday, OUTLET_24_HOUR=:outlet24Hour, IP_OUTLET=:ipOutlet, PORT_OUTLET=:portOutlet, USER_UPD=:userUpd, DATE_UPD=:dateUpd, TIME_UPD=:timeUpd, FTP_ADDR=:ftpAddr, FTP_USER=:ftpUser, FTP_PASSWORD=:ftpPassword, INITIAL_OUTLET=:initialOutlet, AREA_CODE=:areaCode, RSC_CODE=:rscCode, TAX_CHARGE=:taxCharge WHERE REGION_CODE=:regionCode AND OUTLET_CODE=:outletCode";
+        String qy = "UPDATE M_OUTLET SET OUTLET_NAME=:outletName, TYPE=:type, ADDRESS_1=:address1, ADDRESS_2=:address2, CITY=:city, POST_CODE=:posCode, PHONE=:phone, FAX=:fax, CASH_BALANCE=:cashBalance, TRANS_DATE=:transDate, DEL_LIMIT=:delLimit, DEL_CHARGE=:delCharge, RND_PRINT=:rndPrint, RND_FACT=:rndFact, RND_LIMIT=:rndLimit, TAX=:tax, DP_MIN=:dpMin, CANCEL_FEE=:cancelFee, CAT_ITEMS=:catItems, MAX_BILLS=:maxBills, MIN_ITEMS=:minItems, REF_TIME=:refTime, TIME_OUT=:timeOut, MAX_SHIFT=:maxShift, SEND_DATA=:sendData, MIN_PULL_TRX=:minPullTrx, MAX_PULL_VALUE=:maxPullValue, STATUS=:status, START_DATE=:startDate, FINISH_DATE=:finishDate, MAX_DISC_PERCENT=:maxDiscPercent, MAX_DISC_AMOUNT=:maxDiscAmount, OPEN_TIME=:openTime, CLOSE_TIME=:closeTime, REFUND_TIME_LIMIT=:refundTimeLimit, MONDAY=:monday, TUESDAY=:tuesday, WEDNESDAY=:wednesday, THURSDAY=:thursday, FRIDAY=:friday, SATURDAY=:saturday, SUNDAY=:sunday, HOLIDAY=:holiday, OUTLET_24_HOUR=:outlet24Hour, IP_OUTLET=:ipOutlet, PORT_OUTLET=:portOutlet, USER_UPD=:userUpd, DATE_UPD=:dateUpd, TIME_UPD=:timeUpd, FTP_ADDR=:ftpAddr, FTP_USER=:ftpUser, FTP_PASSWORD=:ftpPassword, INITIAL_OUTLET=:initialOutlet, AREA_CODE=:areaCode, RSC_CODE=:rscCode, TAX_CHARGE=:taxCharge WHERE REGION_CODE=:regionCode AND OUTLET_CODE=:outletCode";
         Map param = new HashMap();
              param.put("regionCode", balance.get("REGION_CODE"));
-             param.put("regionname", balance.get("REGION_NAME"));
              param.put("outletCode", balance.get("OUTLET_CODE"));
              param.put("outletName", balance.get("OUTLET_NAME"));
              param.put("type", balance.get("TYPE"));
@@ -4562,7 +4561,6 @@ public class ProcessDaoImpl implements ProcessDao {
              param.put("address1", balance.get("ADDRESS_1"));
              param.put("address2", balance.get("ADDRESS_2"));
              param.put("city", balance.get("CITY"));
-             param.put("cityName", balance.get("CITY_NAME"));
              param.put("posCode", balance.get("POST_CODE"));
              param.put("phone", balance.get("PHONE"));
              param.put("fax", balance.get("FAX"));
@@ -4585,7 +4583,7 @@ public class ProcessDaoImpl implements ProcessDao {
              param.put("sendData", balance.get("SEND_DATA"));
              param.put("minPullTrx", balance.get("MIN_PULL_TRX"));
              param.put("maxPullValue", balance.get("MAX_PULL_VALUE"));
-             param.put("Status", balance.get("STATUS"));
+             param.put("status", balance.get("STATUS"));
              param.put("startDate", balance.get("START_DATE"));
              param.put("finishDate", balance.get("FINISH_DATE"));
              param.put("maxDiscPercent", balance.get("MAX_DISC_PERCENT"));
@@ -4612,9 +4610,7 @@ public class ProcessDaoImpl implements ProcessDao {
              param.put("ftpPassword", balance.get("FTP_PASSWORD"));
              param.put("initialOutlet", balance.get("INITIAL_OUTLET"));
              param.put("areaCode", balance.get("AREA_CODE"));
-             param.put("areaName", balance.get("AREA_NAME"));
              param.put("rscCode", balance.get("RSC_CODE"));
-             param.put("rscName", balance.get("RSC_NAME"));
              param.put("taxCharge", balance.get("TAX_CHARGE"));
         jdbcTemplate.update(qy, param);
     }
