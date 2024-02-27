@@ -3927,12 +3927,16 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> logan = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-
-        List<Map<String, Object>> list = new ArrayList<>();
-        list = viewServices.orderDetailTemporaryList(logan);
         Response res = new Response();
-        res.setData(list);
-        res.setRecordsTotal(list.size());
+        
+        try {
+            List<Map<String, Object>> list = new ArrayList<>();
+            list = viewServices.orderDetailTemporaryList(logan);
+            res.setData(list);
+            res.setRecordsTotal(list.size());
+        } catch (Exception e) {
+            throw new Error(e.getMessage());
+        }   
         return res;
 
     }

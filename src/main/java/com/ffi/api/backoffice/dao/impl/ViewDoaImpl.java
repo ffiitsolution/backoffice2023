@@ -4890,34 +4890,31 @@ return finalResultList;
             viewQuery = switch (balance.get("orderType")) {
                 // Order Entry Vendor Supplier FSD
                 case "4" -> "SELECT :outletCode as OUTLET_CODE, :orderNo as ORDER_NO, ITEM_CODE, ITEM_DESCRIPTION, 0 as JUMLAH_BESAR, UOM_WAREHOUSE AS SATUAN_BESAR, 0 AS JUMLAH_KECIL, UOM_PURCHASE AS SATUAN_KECIL, 0 AS TOTAL_QTY, UOM_STOCK, CONV_STOCK, (CONV_WAREHOUSE * CONV_STOCK) AS UOM_WAREHOUSE "
-                    + "FROM M_ITEM a WHERE a.STATUS = 'A' AND S.CD_SUPPLIER = :cdSupplier ";
+                    + "FROM M_ITEM a WHERE a.STATUS = 'A' AND ITEM_CODE IN (SELECT item_code FROM M_ITEM_SUPPLIER mis2 WHERE CD_SUPPLIER = :cdSupplier) ";
                 // Order Entry SSD
                 case "5" -> "SELECT :outletCode as OUTLET_CODE, :orderNo as ORDER_NO, ITEM_CODE, ITEM_DESCRIPTION, 0 as JUMLAH_BESAR, UOM_WAREHOUSE AS SATUAN_BESAR, 0 AS JUMLAH_KECIL, UOM_PURCHASE AS SATUAN_KECIL, 0 AS TOTAL_QTY, UOM_STOCK, CONV_STOCK, (CONV_WAREHOUSE * CONV_STOCK) AS UOM_WAREHOUSE "
-                    + "FROM M_ITEM a where a.STATUS = 'A' AND S.CD_SUPPLIER = :cdSupplier ";
-                // order ke supplier
+                    + "FROM M_ITEM a where a.STATUS = 'A' AND ITEM_CODE IN (SELECT item_code FROM M_ITEM_SUPPLIER mis2 WHERE CD_SUPPLIER = :cdSupplier) ";
+                // order ke supplier orderType = 1
                 default -> "SELECT :outletCode as OUTLET_CODE, :orderNo as ORDER_NO, ITEM_CODE, ITEM_DESCRIPTION, 0 as JUMLAH_BESAR, UOM_WAREHOUSE AS SATUAN_BESAR, 0 AS JUMLAH_KECIL, UOM_PURCHASE AS SATUAN_KECIL, 0 AS TOTAL_QTY, UOM_STOCK, CONV_STOCK, (CONV_WAREHOUSE * CONV_STOCK) AS UOM_WAREHOUSE "
-                    + "FROM M_ITEM a WHERE a.STATUS = 'A' AND a.CD_SUPPLIER = :cdSupplier ";
+                    + "FROM M_ITEM a WHERE a.STATUS = 'A' AND ITEM_CODE IN (SELECT item_code FROM M_ITEM_SUPPLIER mis2 WHERE CD_SUPPLIER = :cdSupplier) ";
             };
         }
         
-        List<Map<String, Object>> list = jdbcTemplate.query(viewQuery, param, new RowMapper<Map<String, Object>>() {
-            @Override
-            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
-                Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("outletCode", rs.getString("OUTLET_CODE"));
-                rt.put("orderNo", rs.getString("ORDER_NO"));
-                rt.put("itemCode", rs.getString("ITEM_CODE"));
-                rt.put("itemDesc", rs.getString("ITEM_DESCRIPTION"));
-                rt.put("jmlBesar", rs.getString("jumlah_besar"));
-                rt.put("satuanBesar", rs.getString("satuan_besar"));
-                rt.put("jmlKecil", rs.getString("jumlah_kecil"));
-                rt.put("satuanKecil", rs.getString("satuan_kecil"));
-                rt.put("totalQty", rs.getString("total_qty"));
-                rt.put("uomTotal", rs.getString("UOM_STOCK"));
-                rt.put("convStock", rs.getString("CONV_STOCK"));
-                rt.put("uomWarehouse", rs.getString("UOM_WAREHOUSE"));
-                return rt;
-            }
+        List<Map<String, Object>> list = jdbcTemplate.query(viewQuery, param, (ResultSet rs, int i) -> {
+            Map<String, Object> rt = new HashMap<>();
+            rt.put("outletCode", rs.getString("OUTLET_CODE"));
+            rt.put("orderNo", rs.getString("ORDER_NO"));
+            rt.put("itemCode", rs.getString("ITEM_CODE"));
+            rt.put("itemDesc", rs.getString("ITEM_DESCRIPTION"));
+            rt.put("jmlBesar", rs.getString("jumlah_besar"));
+            rt.put("satuanBesar", rs.getString("satuan_besar"));
+            rt.put("jmlKecil", rs.getString("jumlah_kecil"));
+            rt.put("satuanKecil", rs.getString("satuan_kecil"));
+            rt.put("totalQty", rs.getString("total_qty"));
+            rt.put("uomTotal", rs.getString("UOM_STOCK"));
+            rt.put("convStock", rs.getString("CONV_STOCK"));
+            rt.put("uomWarehouse", rs.getString("UOM_WAREHOUSE"));
+            return rt;
         });
         return list;
     }
