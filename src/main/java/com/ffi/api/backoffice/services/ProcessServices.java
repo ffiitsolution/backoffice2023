@@ -355,4 +355,8 @@ public class ProcessServices {
     public void checkMCounterNextMonth(Map<String, String> balancing) {
         dao.checkMCounterNextMonth(balancing);
     }
+
+    public void updateItem(Map<String, String> balance) {
+        dao.updateItem(balance);
+    }
 }

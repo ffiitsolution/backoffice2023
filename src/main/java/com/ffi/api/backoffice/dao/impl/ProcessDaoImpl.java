@@ -4618,4 +4618,87 @@ public class ProcessDaoImpl implements ProcessDao {
              param.put("taxCharge", balance.get("TAX_CHARGE"));
         jdbcTemplate.update(qy, param);
     }
+
+    @Transactional
+    @Override
+    public void updateItem(Map<String, String> balance) {
+        String itemQry = "UPDATE M_ITEM SET "
+                + "CD_LEVEL_1=:cdLevel1, "
+                + "CD_LEVEL_2=:cdLevel2, "
+                + "CD_LEVEL_3=:cdLevel3, "
+                + "CD_LEVEL_4=:cdLevel4, "
+                + "UOM_WAREHOUSE=:uomWarehouse, "
+                + "CONV_WAREHOUSE=:convWarehouse, "
+                + "UOM_PURCHASE=:uomPurchase, "
+                + "CONV_STOCK=:convStock, "
+                + "UOM_STOCK=:uomStock, "
+                + "CD_WAREHOUSE=:cdWarehouse, "
+                + "FLAG_STOCK=:flagStock, "
+                + "FLAG_MATERIAL=:flagMaterial, "
+                + "FLAG_OPEN_MARKET=:flagOpenMarket, "
+                + "FLAG_HALF_FINISH=:flagHalfFinish, "
+                + "FLAG_TRANSFER_LOC=:flagTransferLoc, "
+                + "FLAG_FINISHED_GOOD=:flagFinishedGood, "
+                + "FLAG_CANVASING=:flagCanvasing, "
+                + "FLAG_PAKET=:flagPaket, "
+                + "FLAG_OTHERS=:flagOthers, "
+                + "PLU=:plu, "
+                + "CD_SUPPLIER_DEFAULT=:cdSupplierDefault, "
+                + "MIN_STOCK=:minStock, "
+                + "MAX_STOCK=:maxStock, "
+                + "CD_MENU_ITEM=:cdMenuItem, "
+                + "CD_ITEM_LEFTOVER=:cdItemLeftOver, "
+                + "STATUS=:status, "
+                + "USER_UPD=:userUpd, "
+                + "DATE_UPD=:dateUpd, "
+                + "TIME_UPD=:timeUpd "
+                + "where ITEM_CODE =:cdItem";
+        String costQry = "UPDATE M_ITEM_COST SET "
+                + "ITEM_COST=:itemCost, "
+                + "USER_UPD=:userUpd, "
+                + "DATE_UPD=:dateUpd, "
+                + "TIME_UPD=:timeUpd "
+                + "WHERE OUTLET_CODE=:outletCode AND ITEM_CODE=:itemCode";
+        Map costParam = new HashMap();
+        costParam.put("itemCost", balance.get("cogs"));
+        costParam.put("outletCode", balance.get("outletCode"));
+        costParam.put("itemCode", balance.get("code"));
+        costParam.put("userUpd", balance.get("userUpd"));
+        costParam.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        costParam.put("timeUpd", LocalDateTime.now().format(timeFormatter));
+        
+        Map param = new HashMap();
+        param.put("cdItem", balance.get("code"));
+        param.put("cdLevel1", balance.get("cdLevel1"));
+        param.put("cdLevel2", balance.get("cdLevel2"));
+        param.put("cdLevel3", balance.get("cdLevel3"));
+        param.put("cdLevel4", balance.get("cdLevel4"));
+        param.put("uomWarehouse", balance.get("uomWarehouse"));
+        param.put("convWarehouse", balance.get("convWarehouse"));
+        param.put("uomPurchase", balance.get("uomPurchase"));
+        param.put("convStock", balance.get("convStock"));
+        param.put("uomStock", balance.get("uomStock"));
+        param.put("cdWarehouse", balance.get("cdWarehouse"));
+        param.put("flagStock", balance.get("flagStock"));
+        param.put("flagMaterial", balance.get("flagMaterial"));
+        param.put("flagOpenMarket", balance.get("flagOpenMarket"));
+        param.put("flagHalfFinish", balance.get("flagHalfFinish"));
+        param.put("flagTransferLoc", balance.get("flagTransferLoc"));
+        param.put("flagFinishedGood", balance.get("flagFinishedGood"));
+        param.put("flagCanvasing", balance.get("flagCanvasing"));
+        param.put("flagPaket", balance.get("flagPaket"));
+        param.put("flagOthers", balance.get("flagOthers"));
+        param.put("plu", balance.get("plu"));
+        param.put("cdSupplierDefault", balance.get("cdSupplierDefault"));
+        param.put("minStock", balance.get("minStock"));
+        param.put("maxStock", balance.get("maxStock"));
+        param.put("cdMenuItem", balance.get("cdMenuItem"));
+        param.put("cdItemLeftOver", balance.get("cdItemLeftOver"));
+        param.put("status", balance.get("status"));
+        param.put("userUpd", balance.get("userUpd"));
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
+        jdbcTemplate.update(itemQry, param);
+        jdbcTemplate.update(costQry, costParam);
+    }
 }

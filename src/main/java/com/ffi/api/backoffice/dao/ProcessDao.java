@@ -206,4 +206,6 @@ public interface ProcessDao {
 
     ///////////////NEW METHOD insert jika belum ada m_counter di bulan berikutnya, setelah End of Day - M Joko 20/2/2024
     public void checkMCounterNextMonth(Map<String, String> mapping);
+
+    public void updateItem(Map<String, String> mapping);
 }
