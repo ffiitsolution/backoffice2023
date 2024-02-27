@@ -1711,7 +1711,7 @@ public class ViewDoaImpl implements ViewDao {
         } else {
             status = " H.STATUS LIKE :status ";
         }
-        String qry = "SELECT H.*, case when G.DESCRIPTION is null and  m.outlet_name is null then s.supplier_name  "
+        String qry = "SELECT H.*, K.jam_kirim, case when G.DESCRIPTION is null and  m.outlet_name is null then s.supplier_name  "
                 + "                when G.DESCRIPTION is null and s.supplier_name  is null then m.outlet_name else "
                 + "               g.description end as NAMA_GUDANG, "
                 + "               case when K.status_kirim = 'S' then 'Sudah' "
@@ -1760,6 +1760,7 @@ public class ViewDoaImpl implements ViewDao {
             rt.put("timeUpd", rs.getString("TIME_UPD"));
             rt.put("gudangName", rs.getString("NAMA_GUDANG"));
             rt.put("statusKirim", rs.getString("STATUS_KIRIM"));
+            rt.put("jamKirim", rs.getString("JAM_KIRIM"));
             rt.put("emailSupplier", rs.getString("CP_EMAIL_SUPPLIER"));
             
             return rt;
