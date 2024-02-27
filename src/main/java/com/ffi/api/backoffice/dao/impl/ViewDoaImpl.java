@@ -4215,7 +4215,7 @@ public class ViewDoaImpl implements ViewDao {
         if (mpcsQuery.size() > 1) {
             Map<String, Object> summaryDay = new HashMap();
             Map<String, Object> lastData = mpcsQuery.get(mpcsQuery.size() - 1);
-            Map<String, Object> summaryDel = jdbcTemplate.queryForObject("SELECT count(1) AS COUNT_DELETE, COALESCE(sum(tmh.QUANTITY), 0) AS QTY_DELETE FROM T_MPCS_HIST tmh WHERE MPCS_GROUP =:mpcsGroup AND MPCS_DATE =:dateMpcs", mapping, new DynamicRowMapper());
+            Map<String, Object> summaryDel = jdbcTemplate.queryForObject("SELECT count(1) AS COUNT_DELETE, COALESCE(sum(tmh.QUANTITY), 0) AS QTY_DELETE FROM T_MPCS_HIST tmh WHERE MPCS_GROUP =:mpcsGroup AND MPCS_DATE =:dateMpcs AND FRYER_TYPE = 'D'", mapping, new DynamicRowMapper());
             summaryDay.put("summaryProjection", ((BigDecimal) lastData.get("qtyAccProj")).setScale(2));
             summaryDay.put("summaryOnHand", ((BigDecimal) lastData.get("qtyOnhand")).setScale(2));
             summaryDay.put("summaryVariance", ((BigDecimal) lastData.get("qtyAccVariance")).setScale(2));

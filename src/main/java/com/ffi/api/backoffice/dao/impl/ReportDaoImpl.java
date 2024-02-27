@@ -1908,9 +1908,19 @@ public class ReportDaoImpl implements ReportDao {
 
         System.err.println("==============================================================================================");
         System.err.println(param);
-        ClassPathResource classPathResource = new ClassPathResource("report/salesDate.jrxml");
-        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
-        return JasperFillManager.fillReport(jasperReport, param, connection);
+        ClassPathResource classSalesDatePathResource = new ClassPathResource("report/salesDate.jrxml");
+        JasperReport salesByDatejasperReport = JasperCompileManager.compileReport(classSalesDatePathResource.getInputStream());
+        JasperPrint salesByDatePrint = JasperFillManager.fillReport(salesByDatejasperReport, param, connection);
+
+        ClassPathResource classRekapPaymentPathResource = new ClassPathResource("report/laporanRecapPaymentMethod.jrxml");
+        JasperReport rekapPaymentJasperReport = JasperCompileManager.compileReport(classRekapPaymentPathResource.getInputStream());
+        JasperPrint rekapPaymentPrint = JasperFillManager.fillReport(rekapPaymentJasperReport, param, connection);
+
+        for (int i = 0; i < rekapPaymentPrint.getPages().size(); i++) {
+            salesByDatePrint.addPage(rekapPaymentPrint.getPages().get(i));
+        }
+
+        return salesByDatePrint;
     }
 
     @Override

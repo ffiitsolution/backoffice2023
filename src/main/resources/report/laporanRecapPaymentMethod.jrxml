@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="laporanRecapPaymentMethod" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="552a7890-4ce0-4e74-ab73-0edbf3b3bc88">
+	<property name="ireport.zoom" value="1.771561000000001"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="fromDate" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="toDate" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="outletCode" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="user" class="java.lang.String"/>
+	<parameter name="outletBrand" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="cashierCode" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="posCode" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="orderType" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="shiftCode" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="cashierCode1" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="cashierCode2" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="shiftCode1" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="shiftCode2" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="posCode1" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="posCode2" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="orderType1" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="orderType2" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+	DATA.*,
+	otl.OUTLET_NAME AS OUTLET_CODE_NAME,
+	otl.ADDRESS_1 AS OUTLET_CODE_ADDR_1,
+	otl.ADDRESS_2 AS OUTLET_CODE_ADDR_2,
+		otl.PHONE AS OUTLET_CODE_PHONE
+FROM
+	(
+	SELECT
+		a.OUTLET_CODE,
+		A.TRANS_DATE AS TRANS_DATE,
+		A.ORDER_TYPE,
+		C.DESCRIPTION AS ORDER_TYPE_DESC,
+		B.PAYMENT_METHOD_CODE,
+		D.DESCRIPTION AS PAYMENT_METHOD_CODE_DESC,
+		SUM(B.PAYMENT_USED) AS TOTAL_PAYMENT
+	FROM
+		T_POS_BILL A
+	JOIN T_POS_BILL_PAYMENT B ON
+		A.BILL_NO = B.BILL_NO
+	LEFT JOIN M_GLOBAL C ON
+		C.COND = 'ORDER_TYPE'
+		AND A.ORDER_TYPE = C.CODE
+	LEFT JOIN M_GLOBAL D ON
+		D.COND = 'PAY_CARD'
+		AND B.PAYMENT_METHOD_CODE = D.CODE
+	WHERE
+		A.TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
+		AND A.OUTLET_CODE = $P{outletCode}
+		AND A.POS_CODE BETWEEN $P{posCode1} AND $P{posCode2}
+        AND A.CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2} AND A.SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
+        AND (A.DELIVERY_STATUS IN (' ','CLS') OR A.DELIVERY_STATUS IS NULL) and A.order_type 
+        IN (SELECT CODE FROM M_GLOBAL WHERE DESCRIPTION = 'GRPTP' AND COND BETWEEN  
+         $P{orderType1} AND $P{orderType2}) 
+	GROUP BY
+		a.OUTLET_CODE,
+		A.TRANS_DATE,
+		A.ORDER_TYPE,
+		C.DESCRIPTION,
+		B.PAYMENT_METHOD_CODE,
+		D.DESCRIPTION) DATA
+LEFT JOIN M_OUTLET otl ON
+	DATA.OUTLET_CODE = otl.outlet_code ORDER BY DATA.TRANS_DATE ASC, DATA.TOTAL_PAYMENT DESC]]>
+	</queryString>
+	<field name="OUTLET_CODE_NAME" class="java.lang.String"/>
+	<field name="OUTLET_CODE_ADDR_1" class="java.lang.String"/>
+	<field name="OUTLET_CODE_ADDR_2" class="java.lang.String"/>
+	<field name="OUTLET_CODE_PHONE" class="java.lang.String"/>
+	<field name="OUTLET_CODE" class="java.lang.String"/>
+	<field name="TRANS_DATE" class="java.sql.Date"/>
+	<field name="ORDER_TYPE" class="java.lang.String"/>
+	<field name="ORDER_TYPE_DESC" class="java.lang.String"/>
+	<field name="PAYMENT_METHOD_CODE" class="java.lang.String"/>
+	<field name="PAYMENT_METHOD_CODE_DESC" class="java.lang.String"/>
+	<field name="TOTAL_PAYMENT" class="java.math.BigDecimal"/>
+	<variable name="sum_total_payment" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{TOTAL_PAYMENT}]]></variableExpression>
+		<initialValueExpression><![CDATA[BigDecimal.ZERO]]></initialValueExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="106" splitType="Stretch">
+			<staticText>
+				<reportElement x="150" y="52" width="221" height="20" uuid="da160f17-0bc5-42af-8577-77798dce43ba"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[REKAPITULASI PAYMENT METHOD]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="69" y="95" width="270" height="11" uuid="34f91b86-0682-4936-ae12-7b11d0400946"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + $P{fromDate} +" s/d "+ $P{toDate}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="6" y="85" width="90" height="11" uuid="e1f162f3-81a5-45b8-9902-520252926d1d"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Outlet]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="6" y="75" width="90" height="11" uuid="7e95cfaa-4367-4aff-b20f-f312e1061520"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Order Type]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="6" y="95" width="90" height="11" uuid="e6c1d7cc-ab9a-4cda-af4a-353d14954c80"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Periode]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="69" y="85" width="270" height="11" uuid="685cb765-03f9-4ab8-9b7e-4702006433e4"/>
+				<textElement>
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": "+ $F{OUTLET_CODE} + " - " + $F{OUTLET_CODE_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="69" y="75" width="270" height="11" uuid="aab20f18-d40e-4e28-a5cb-2a13895ec857"/>
+				<textElement>
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + $P{orderType}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="424" y="2" width="142" height="11" uuid="f6c0714a-cff2-41e3-8158-78eb61f1af2c"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="60" y="31" width="122" height="11" isPrintWhenDetailOverflows="true" uuid="0830bbf5-d292-4f19-914b-9e82fe2daa4e"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OUTLET_CODE_ADDR_2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="424" y="22" width="142" height="11" uuid="039b49ad-9e28-4128-bd0c-0b85a121c6dd"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="362" y="2" width="84" height="11" uuid="1fa1564d-62db-4263-863c-b903c67dae12"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Halaman]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="362" y="12" width="84" height="11" uuid="127a6e82-4b44-4b86-b7d2-b7443f69f6c0"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[User Cetak]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="60" y="41" width="122" height="11" isPrintWhenDetailOverflows="true" uuid="bee7b81d-4731-4fed-8dbc-a2acd5a04244"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Phone : " + $F{OUTLET_CODE_PHONE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="60" y="11" width="122" height="11" uuid="3d7d20f1-3842-4f4c-aef1-83f486eb5983"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OUTLET_CODE_NAME}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="362" y="22" width="84" height="11" uuid="d52c6298-6058-4418-af1c-23eacd6ab4a7"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Tanggal Cetak]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="60" y="21" width="122" height="11" isPrintWhenDetailOverflows="true" uuid="05568133-2aa8-4f82-97db-d08e92116913"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OUTLET_CODE_ADDR_1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="424" y="32" width="142" height="11" uuid="ba02dab3-912c-4db0-9ca8-d1f88a4648d5"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="60" y="1" width="112" height="11" uuid="2881d899-6828-469a-aaec-53af0e6171a8"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="362" y="32" width="84" height="11" uuid="8949d45d-024c-481c-84c2-9a9f12e2d572"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Jam Cetak]]></text>
+			</staticText>
+			<image scaleImage="FillFrame">
+				<reportElement x="1" y="2" width="48" height="48" isPrintWhenDetailOverflows="true" uuid="98ab54d0-cd13-49a6-97ce-5482ac1ff747"/>
+				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="424" y="12" width="142" height="11" uuid="9091df76-b31c-4d12-b61c-02ff55fe9fd5"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + $P{user}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="424" y="85" width="142" height="11" uuid="5b3dc39d-4f57-4830-903c-a5343732460a"/>
+				<textElement>
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + $P{cashierCode}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="424" y="75" width="142" height="11" uuid="fce0f1e8-eee9-4856-8119-7e1931c53330"/>
+				<textElement>
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + $P{posCode}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="361" y="75" width="85" height="11" uuid="655b68ea-bb6d-44c9-a874-1e6cc3baab50"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[POS#]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="424" y="95" width="142" height="11" uuid="4c2f9b6a-9d1b-429c-ae0c-8d56f88089f4"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[": " + $P{shiftCode}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="361" y="95" width="85" height="11" uuid="27e47e3f-2831-482a-80f6-3a878abaacf3"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Shift]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="361" y="85" width="85" height="11" uuid="24f980de-f903-4981-b1b7-f6a50bb3267b"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Cashier]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="26" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<line direction="BottomUp">
+				<reportElement x="8" y="23" width="537" height="1" uuid="7fb07890-6073-45c5-ba2c-28aebc168a13">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+			</line>
+			<staticText>
+				<reportElement x="85" y="10" width="154" height="11" uuid="f6a15573-46df-43d8-b82b-af97d740d0f6"/>
+				<textElement textAlignment="Left">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Order Type]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="245" y="10" width="145" height="11" uuid="2fbcdbe4-5206-4fd6-ace1-2cb237dd722f"/>
+				<textElement textAlignment="Left">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Payment Method]]></text>
+			</staticText>
+			<line direction="BottomUp">
+				<reportElement x="8" y="7" width="537" height="1" uuid="d4575c87-0ff4-40f4-ac65-43e9389fae06">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+			</line>
+			<staticText>
+				<reportElement x="8" y="10" width="72" height="11" uuid="7c198790-14f1-4b45-8fd1-3e4fe24adf76"/>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Trans Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="400" y="10" width="144" height="11" uuid="9a8b4edc-bb33-4a97-b844-94d577dc0a77"/>
+				<textElement textAlignment="Right">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Payment]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="25" splitType="Stretch">
+			<textField>
+				<reportElement x="8" y="2" width="72" height="18" uuid="039c76a5-c8aa-4bea-96ee-e0a242e68370"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($F{TRANS_DATE})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="85" y="2" width="154" height="18" uuid="c9915e64-adc8-4446-b7a8-a790c55f4edd"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ORDER_TYPE_DESC}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="245" y="2" width="145" height="18" uuid="87514a50-65d8-4451-87bc-73862564317d"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PAYMENT_METHOD_CODE}.equals("CSH") ? "CASH":$F{PAYMENT_METHOD_CODE_DESC}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="400" y="2" width="145" height="18" uuid="d648c5b8-c227-40b6-a6b9-fb52a07b7373"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{TOTAL_PAYMENT})]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="484" splitType="Stretch">
+			<line direction="BottomUp">
+				<reportElement x="8" y="7" width="537" height="1" uuid="2ea6f2a5-ac73-4245-8b45-807fc86ab842">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+			</line>
+			<staticText>
+				<reportElement x="268" y="10" width="122" height="11" uuid="e34fcfd0-a6ae-48a3-b5dc-61bbb9557a7a"/>
+				<textElement textAlignment="Right">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Sub Total :]]></text>
+			</staticText>
+			<line direction="BottomUp">
+				<reportElement x="8" y="31" width="537" height="1" uuid="0fe8b027-07da-4f27-a25b-01f28752c95d">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+			</line>
+			<textField>
+				<reportElement x="400" y="10" width="145" height="18" uuid="83a1f8da-d11a-449b-a678-8d0eb8e7edf0"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{sum_total_payment})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="444" y="40" width="100" height="14" uuid="25b1920b-8dd8-4523-9ed8-0674a396acbc"/>
+				<textElement textAlignment="Right">
+					<font isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[-- End Of Report --]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>
