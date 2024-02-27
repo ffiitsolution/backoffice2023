@@ -180,8 +180,8 @@ public interface ProcessDao {
     ///////////////Done aditya 29-01-2024////////////////////////////
     
     //============== New Method From Lukas 17-10-2023 ================
-    public boolean insertDataLocal(String tableName, String date);
-    public boolean sendDataLocal(String tableName, String date, String outletId);
+    public boolean insertDataLocal(Map<String, Object> param);
+    public boolean sendDataLocal(Map<String, Object> param);
     //============== End Method From Lukas 17-10-2023 ================
 
     //============== Delete order entry detail by Dani 2 Feb 2024
