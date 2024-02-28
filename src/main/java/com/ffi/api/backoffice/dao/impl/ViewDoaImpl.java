@@ -4325,10 +4325,16 @@ public class ViewDoaImpl implements ViewDao {
 
     //////// NEW METHOD to get list daftar menu by Rafi 9 Jan 2024
     @Override
-    public List<Map<String, Object>> getListItemDetailReport() {
+    public List<Map<String, Object>> getListItemDetailReport(Map<String, String> balance) {
         String query = "SELECT mg.CODE, mg.DESCRIPTION FROM M_GLOBAL mg WHERE mg.COND = 'ITEM' ORDER BY mg.CODE ASC ";
-
-        return jdbcTemplate.query(query, new HashMap(), new DynamicRowMapper());
+        String fromDate = balance.getOrDefault("fromDate", "");
+        if (!(fromDate.equals(""))) {
+            query = "SELECT mg.CODE, mg.DESCRIPTION FROM M_GLOBAL mg "
+                + "WHERE mg.COND = 'ITEM' "
+                + "AND code in (SELECT DISTINCT(MENU_ITEM_CODE) FROM T_POS_BILL_ITEM tpbi WHERE TRANS_DATE BETWEEN :fromDate AND :toDate) "
+                + "ORDER BY mg.CODE ASC ";
+        }
+        return jdbcTemplate.query(query, balance, new DynamicRowMapper());
     }
 
     /////// NEW METHOD to mengambil data user absensi by id by M Joko 16 Jan 2024

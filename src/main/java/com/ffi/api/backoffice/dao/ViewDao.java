@@ -318,7 +318,7 @@ public interface ViewDao {
     public List<Map<String, Object>> listOrderTypeReportDp();
 
      //////// NEW METHOD to get list daftar menu report by Rafi 9 Jan 2024
-    public List<Map<String, Object>> getListItemDetailReport();
+    public List<Map<String, Object>> getListItemDetailReport(Map<String, String> balance);
 
     /////// NEW METHOD to mengambil data user absensi by id by M Joko 16 Jan 2024
     public  List<Map<String, Object>>  getIdAbsensi(Map<String, String> mapping);

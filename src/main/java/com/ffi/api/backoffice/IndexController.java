@@ -3314,13 +3314,15 @@ public class IndexController {
         @ApiResponse(code = 404, message = "The resource not found"),}
     )
     public @ResponseBody
-    ResponseMessage getListItemDetailReport() throws JRException, IOException, Exception {
-
+    ResponseMessage getListItemDetailReport(@RequestBody String params) throws JRException, IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(params, new TypeToken<Map<String, String>>() {
+        }.getType());
         var rm = new ResponseMessage();
         try {
             rm.setSuccess(true);
             rm.setMessage("Success Successfuly");
-            rm.setItem(viewServices.getListItemDetailReport());
+            rm.setItem(viewServices.getListItemDetailReport(balance));
         } catch (Exception e) {
             e.printStackTrace();
             rm.setSuccess(false);
