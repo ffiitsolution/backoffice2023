@@ -4828,7 +4828,7 @@ return finalResultList;
     
     @Override
     public List<Map<String, Object>> listOutletDetailGroup(Map<String, String> balance) {
-        String qry = "SELECT a.*, b.OUTLET_NAME AS PARENT_NAME, c.OUTLET_NAME AS CHILD_NAME FROM M_OUTLET_DETAIL a JOIN M_OUTLET b ON a.PARENT_OUTLET = b.OUTLET_CODE JOIN M_OUTLET c ON a.CHILD_OUTLET = c.OUTLET_CODE WHERE b.OUTLET_CODE =:outletCode";
+        String qry = "SELECT a.*, b.OUTLET_NAME AS PARENT_NAME, c.OUTLET_NAME AS CHILD_NAME, c.STATUS FROM M_OUTLET_DETAIL a JOIN M_OUTLET b ON a.PARENT_OUTLET = b.OUTLET_CODE JOIN M_OUTLET c ON a.CHILD_OUTLET = c.OUTLET_CODE WHERE b.OUTLET_CODE =:outletCode";
 
         Map prm = new HashMap();
         prm.put("outletCode", balance.get("outletCode"));
@@ -4838,7 +4838,8 @@ return finalResultList;
             rt.put("parentOutlet", rs.getString("PARENT_OUTLET"));
             rt.put("parentName", rs.getString("PARENT_NAME"));
             rt.put("childOutlet", rs.getString("CHILD_OUTLET"));
-            rt.put("childName", rs.getString("CHILD_NAME"));           
+            rt.put("childName", rs.getString("CHILD_NAME")); 
+            rt.put("status", rs.getString("STATUS")); 
             return rt;
         });
         return list;
