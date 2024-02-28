@@ -361,7 +361,7 @@ ORDER BY
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new SimpleDateFormat("dd MMM yyyy").format(new SimpleDateFormat("yyyy-mm-dd").parse($F{TRANS_DATE}))]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{Group1_COUNT}.equals(1) ? new SimpleDateFormat("dd MMM yyyy").format(new SimpleDateFormat("yyyy-mm-dd").parse($F{TRANS_DATE})) : ""]]></textFieldExpression>
 			</textField>
 			<textField pattern="">
 				<reportElement x="380" y="0" width="172" height="18" uuid="f497bc7a-4945-4ec5-b375-973cff3defd2"/>
