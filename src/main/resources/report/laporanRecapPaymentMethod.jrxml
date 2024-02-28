@@ -372,7 +372,7 @@ LEFT JOIN M_OUTLET otl ON
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{PAYMENT_METHOD_CODE}.equals("CSH") ? "CASH":$F{PAYMENT_METHOD_CODE_DESC}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{PAYMENT_METHOD_CODE}.equals("CSH") ? "CASH" : $F{PAYMENT_METHOD_CODE}.equals("VCR") ? "VOUCHER" : $F{PAYMENT_METHOD_CODE_DESC}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="400" y="2" width="145" height="18" uuid="d648c5b8-c227-40b6-a6b9-fb52a07b7373"/>
@@ -390,7 +390,7 @@ LEFT JOIN M_OUTLET otl ON
 		<band splitType="Stretch"/>
 	</pageFooter>
 	<summary>
-		<band height="484" splitType="Stretch">
+		<band height="54" splitType="Stretch">
 			<line direction="BottomUp">
 				<reportElement x="8" y="7" width="537" height="1" uuid="2ea6f2a5-ac73-4245-8b45-807fc86ab842">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
