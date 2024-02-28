@@ -180,8 +180,8 @@ public interface ProcessDao {
     ///////////////Done aditya 29-01-2024////////////////////////////
     
     //============== New Method From Lukas 17-10-2023 ================
-    public boolean insertDataLocal(String tableName, String date);
-    public boolean sendDataLocal(String tableName, String date, String outletId);
+    public boolean insertDataLocal(Map<String, Object> param);
+    public boolean sendDataLocal(Map<String, Object> param);
     //============== End Method From Lukas 17-10-2023 ================
 
     //============== Delete order entry detail by Dani 2 Feb 2024
@@ -206,4 +206,6 @@ public interface ProcessDao {
 
     ///////////////NEW METHOD insert jika belum ada m_counter di bulan berikutnya, setelah End of Day - M Joko 20/2/2024
     public void checkMCounterNextMonth(Map<String, String> mapping);
+
+    public void updateItem(Map<String, String> mapping);
 }

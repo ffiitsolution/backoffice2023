@@ -3612,7 +3612,6 @@ public class ProcessDaoImpl implements ProcessDao {
         System.out.println("listTransferData tables: " + tables.size());
         if("TERIMA DATA MASTER".equals(mapping.get("type"))){
             try {
-                // todo: handle terima/kirim
                 for (String tableName : tables) {
                     Gson gson = new Gson();
                     Map<String, Object> map1;
@@ -3659,18 +3658,17 @@ public class ProcessDaoImpl implements ProcessDao {
                 Logger.getLogger(ProcessDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else if("KIRIM DATA TRANSAKSI".equals(mapping.get("type"))){
-//            List<TableAlias> tablesT = tableAliasUtil.searchByColumn(TableAliasUtil.TABLE_ALIAS_T, "process", true);
-            List<TableAlias> tablesT = tableAliasUtil.getDataList(TableAliasUtil.TABLE_ALIAS_T);
-            System.out.println("isKirimTransaksi: " + tablesT.size());
-            for (TableAlias table : tablesT) {
-                String conditionText = conditionTextTransfer(table.getTable(), date);
-                String query = "SELECT * FROM " + table.getTable() + conditionText;
+            for (String table : tables) {
+                String conditionText = conditionTextTransfer(table, date);
+                String query = "SELECT * FROM " + table + conditionText;
                 Map prm = new HashMap();
                 List<Map<String, Object>> listItem = jdbcTemplate.query(query, prm, (ResultSet rs, int index) -> convertObject(rs));
                 if (listItem != null && !listItem.isEmpty()) {
                     Map<String, Object> mapq = new HashMap();
                     // Rubah nama tabel ke alias nya
-                    mapq.put(table.getAlias(), listItem);
+                    Optional<TableAlias> ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_T, "table", table);
+                    TableAlias tableAlias = ta.get();
+                    mapq.put(tableAlias.getAlias(), listItem);
                     list.add(mapq);
                 }
             }
@@ -3685,14 +3683,22 @@ public class ProcessDaoImpl implements ProcessDao {
 
     // =========== New Method Copy Data Server From Lukas 17-10-2023 ===========
     @Override
-    public boolean insertDataLocal(String tableName, String date) {
+    public boolean insertDataLocal(Map<String, Object> param) {
+        param.put("trx", 0);
         Date startApp = new Date();
         Gson gson = new Gson();
-        Map<String, Object> map1 = new HashMap<String, Object>();
+        String tableName = param.get("tableName").toString();
+        String aliasName = param.get("tableName").toString();
+        String dateUpd = param.get("dateUpd").toString();
+        String timeUpd = param.get("timeUpd").toString();
+        Optional<TableAlias> ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M, "table", tableName);
+        if(ta.isEmpty()){
+            ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M, "alias", tableName);
+        }
+        TableAlias tableAlias = ta.get();
+        tableName = tableAlias.getTable();
+        aliasName = tableAlias.getAlias();
         try {
-            System.out.println("Start Copy Data " + tableName + " At " + startApp.toString());
-            FileLoggerUtil.log("terimaDataMaster", ("Start Copy Data " + tableName), "SYSTEM");
-
             // Start Get Data API Server
             CloseableHttpClient client = HttpClients.createDefault();
             String url = urlMaster + "/get-data";
@@ -3702,7 +3708,7 @@ public class ProcessDaoImpl implements ProcessDao {
 
             HttpGet getData = new HttpGet(url);
 
-            URI uri = new URIBuilder(getData.getURI()).addParameter("param", tableName).addParameter("date", date).build();
+            URI uri = new URIBuilder(getData.getURI()).addParameter("param", tableName).addParameter("date", dateUpd).build();
             getData.setURI(uri);
 
             CloseableHttpResponse response = client.execute(getData);
@@ -3716,8 +3722,9 @@ public class ProcessDaoImpl implements ProcessDao {
 
             String result = content.toString();
 
-            System.out.println("Result: " + result);
+//            System.out.println("Result: " + result);
 
+            Map<String, Object> map1;
             map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
             }.getType());
 
@@ -3729,7 +3736,7 @@ public class ProcessDaoImpl implements ProcessDao {
                 FileLoggerUtil.log("terimaDataMaster", ("FAILED COPY DATA " + tableName), "SYSTEM");
                 return false;
             } else {
-                compareData(listItem, tableName);
+                compareData(listItem, tableName, param);
                 System.out.println("Ended Copy Data " + tableName);
                 FileLoggerUtil.log("terimaDataMaster", ("Ended Copy Data " + tableName), "SYSTEM");
                 return true;
@@ -3746,7 +3753,7 @@ public class ProcessDaoImpl implements ProcessDao {
     }
 
     // ==== Function Stand Alone ====
-    public void compareData(List<Map<String, Object>> itemServer, String tableName) {
+    public void compareData(List<Map<String, Object>> itemServer, String tableName, Map<String, Object> param) {
         List<String> primaryKey = primaryKeyTable(tableName);
         int totalUpdateRow = 0;
         int totalInsertRow = 0;
@@ -3786,22 +3793,22 @@ public class ProcessDaoImpl implements ProcessDao {
             Map<String, Object> exist = list.isEmpty() ? null : list.get(0);
 
             if (exist == null || "".equals(conditionText)) {
-                totalInsertRow++;
-                insertData(tableName, item);
+                totalInsertRow += insertData(tableName, item);
             } else if (checkAllColumn(item, exist) == false) {
-                totalUpdateRow++;
-                updateData(tableName, item, primaryKey);
+                totalUpdateRow += updateData(tableName, item, primaryKey);
             }
         }
-
-        System.err.println("Total Update Data " + tableName + " : " + totalUpdateRow + " Row ");
-        System.err.println("Total Insert Data " + tableName + " : " + totalInsertRow + " Row ");
-        FileLoggerUtil.log("terimaDataMaster", ("Total Update Data " + tableName + " : " + totalUpdateRow + " Row "), "SYSTEM");
-        FileLoggerUtil.log("terimaDataMaster", ("Total Insert Data " + tableName + " : " + totalInsertRow + " Row "), "SYSTEM");
-
+        
+        
+        int total = totalInsertRow + totalUpdateRow;
+        String status = total == itemServer.size() ? "UPDATED" : (total == 0 && !itemServer.isEmpty() ? "NOT UPDATED" : total + " OF " + itemServer.size());
+        param.put("totalRow", total);
+        param.put("status", status);
+        saveToQueryKirimTerimaData(param);
+        messagingTemplate.convertAndSend("/topic/kirim-terima-data", param.getOrDefault("aliasName", "data") + ": " + total + " Row");
     }
 
-    public void insertData(String tableName, Map<String, Object> data) {
+    public int  insertData(String tableName, Map<String, Object> data) {
         String columnName = "";
         String value = "";
         int indexKey = 0;
@@ -3825,10 +3832,10 @@ public class ProcessDaoImpl implements ProcessDao {
         }
 
         String query = "INSERT INTO " + tableName + " (" + columnName + ") VALUES (" + value + ")";
-        jdbcTemplate.update(query, params);
+        return jdbcTemplate.update(query, params);
     }
 
-    public void updateData(String tableName, Map<String, Object> data, List<String> primaryKey) {
+    public int updateData(String tableName, Map<String, Object> data, List<String> primaryKey) {
         String columnValue = "";
         String conditionQuery = "";
         int indexKey = 0;
@@ -3857,26 +3864,72 @@ public class ProcessDaoImpl implements ProcessDao {
             }
         }
         String query = "UPDATE " + tableName + " SET " + columnValue + " WHERE " + conditionQuery;
-        jdbcTemplate.update(query, params);
+        return jdbcTemplate.update(query, params);
+    }
+    
+    @Transactional
+    private void saveToQueryKirimTerimaData(Map<String,Object> prm){
+        String qryHeader = """
+                INSERT INTO M_OUTLET_FTP_HIST
+                    (TRX_CODE, DATA_CODE, REGION_CODE, AREA_CODE, PARENT_OUTLET, OUTLET_CODE, TRANS_DATE, OUTLET_CHOICE, PROCESS_STATUS, RECEIVE_STATUS, USER_UPD, DATE_UPD, TIME_UPD, CITY)
+                SELECT CASE WHEN :trx = 1 THEN '1' ELSE '0' END, CASE WHEN :trx = 0 THEN '1' ELSE '0' END, mo.REGION_CODE, mo.AREA_CODE, mod2.PARENT_OUTLET, :outletCode, :dateUpd, 'Y', CASE WHEN :trx = 1 THEN 'Y' ELSE 'N' END, CASE WHEN :trx = 0 THEN 'Y' ELSE 'N' END, :userUpd, :dateUpd, :timeUpd, mo.CITY
+                FROM M_OUTLET mo
+                LEFT JOIN M_OUTLET_DETAIL mod2 ON mod2.CHILD_OUTLET = mo.OUTLET_CODE
+                WHERE mo.OUTLET_CODE = :outletCode
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM M_OUTLET_FTP_HIST
+                    WHERE TRANS_DATE = :dateUpd
+                    AND DATE_UPD = :dateUpd
+                    AND TIME_UPD = :timeUpd
+                    AND OUTLET_CODE = :outletCode
+                    AND TRX_CODE = CASE WHEN :trx = 1 THEN '1' ELSE '0' END
+                    AND DATA_CODE = CASE WHEN :trx = 0 THEN '1' ELSE '0' END
+                )
+                           """;
+        String qryDetail = """
+                INSERT INTO M_OUTLET_FTP_HIST_DTL
+                (TIME_UPD, TRANS_DATE, USER_UPD, DESCRIPTION, REMARK, STATUS, TOTAL)
+                SELECT :timeUpd, :dateUpd, :userUpd, :tableName, :remark, :status, :totalRow
+                FROM dual
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM M_OUTLET_FTP_HIST_DTL
+                    WHERE TRANS_DATE = :dateUpd
+                    AND TIME_UPD = :timeUpd
+                    AND DESCRIPTION = :tableName
+                )
+                           """;
+        jdbcTemplate.update(qryHeader, prm);
+        jdbcTemplate.update(qryDetail, prm);
     }
 
     // ======= New Method Send Data From Local to Server (Table with name "T_") =========
     @Override
-    public boolean sendDataLocal(String tableName, String date, String outletId) {
+    public boolean sendDataLocal(Map<String, Object> param) {
+        param.put("trx", 0);
         Date startApp = new Date();
         Gson gson = new Gson();
-        Map<String, Object> map1 = new HashMap<String, Object>();
+        String tableName = param.get("tableName").toString();
+        String aliasName = param.get("tableName").toString();
+        String dateUpd = param.get("dateUpd").toString();
+        String timeUpd = param.get("timeUpd").toString();
+        Optional<TableAlias> ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_T, "table", tableName);
+        if(ta.isEmpty()){
+            ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_T, "alias", tableName);
+        }
+        System.out.println(tableName);
+        TableAlias tableAlias = ta.get();
+        aliasName = tableAlias.getAlias();
         String json = "";
 
         try {
             System.out.println("Start Transfer Data " + tableName + " At " + startApp.toString());
 
             // todo: cek column name
-            String conditionText = conditionTextTransfer(tableName, date);
+            String conditionText = conditionTextTransfer(tableName, dateUpd);
 
             String query = "SELECT * FROM " + tableName + conditionText;
-            Map prm = new HashMap();
-            List<Map<String, Object>> list = jdbcTemplate.query(query, prm, (ResultSet rs, int index) -> convertObject(rs));
+            List<Map<String, Object>> list = jdbcTemplate.query(query, param, (ResultSet rs, int index) -> convertObject(rs));
 
             // START API to Send Master
             CloseableHttpClient client = HttpClients.createDefault();
@@ -3886,12 +3939,11 @@ public class ProcessDaoImpl implements ProcessDao {
             post.setHeader("Accept", "*/*");
             post.setHeader("Content-Type", "application/json");
 
-            Map<String, Object> param = new HashMap<String, Object>();
-            param.put("outletId", outletId);
             param.put("tableName", tableName);
             param.put("data", list);
 
             json = new Gson().toJson(param);
+            System.err.println("json :" + json);
             StringEntity entity = new StringEntity(json);
             post.setEntity(entity);
             CloseableHttpResponse response = client.execute(post);
@@ -3906,6 +3958,8 @@ public class ProcessDaoImpl implements ProcessDao {
                 content.append(line);
             }
             String result = content.toString();
+            System.err.println("result :" + result);
+            Map map1 = new HashMap();
             map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
             }.getType());
             // END API to Send Master
@@ -3916,7 +3970,7 @@ public class ProcessDaoImpl implements ProcessDao {
                 System.err.println(map1.get("message"));
                 return false;
             }
-        } catch (Exception e) {
+        } catch (JsonSyntaxException | IOException | UnsupportedOperationException | DataAccessException e) {
             Date failedApp = new Date();
             System.out.println("FAILED SEND DATA " + tableName + " At " + failedApp.toString());
             System.err.println(e.getMessage());
@@ -3925,90 +3979,10 @@ public class ProcessDaoImpl implements ProcessDao {
     }
 
     public String conditionTextTransfer(String tableName, String date) {
-        List<String> dateUpd = new ArrayList<>();
-        dateUpd.add("T_AGENT_LOG");
-        dateUpd.add("T_COPNAME_DETAIL");
-        dateUpd.add("T_COPNAME_HEADER");
-        dateUpd.add("T_COST_SCHEDULE");
-        dateUpd.add("T_DEV_DETAIL");
-        dateUpd.add("T_DEV_HEADER");
-        dateUpd.add("T_ITEM_PRICE_SCH");
-        dateUpd.add("T_LOC_DETAIL");
-        dateUpd.add("T_LOC_HEADER");
-        dateUpd.add("T_MPCS_DETAIL");
-        dateUpd.add("T_MPCS_HIST");
-        dateUpd.add("T_OPNAME_DETAIL");
-        dateUpd.add("T_OPNAME_HEADER");
-        dateUpd.add("T_ORDER_DETAIL");
-        dateUpd.add("T_ORDER_HEADER");
-        dateUpd.add("T_PC_CLAIM_DTL");
-        dateUpd.add("T_PC_CLAIM_HDR");
-        dateUpd.add("T_PC_DTL");
-        dateUpd.add("T_PROJECTION_HEADER");
-        dateUpd.add("T_PROJECTION_TARGET");
-        dateUpd.add("T_RECIPE_HIST");
-        dateUpd.add("T_RECV_DETAIL");
-        dateUpd.add("T_RECV_HEADER");
-        dateUpd.add("T_RETURN_DETAIL");
-        dateUpd.add("T_RETURN_HEADER");
-        dateUpd.add("T_SEND_RECV_D");
-        dateUpd.add("T_SUMM_MPCS");
-        dateUpd.add("T_WASTAGE_DETAIL");
-        dateUpd.add("T_WASTAGE_HEADER");
-
-        List<String> transDate = new ArrayList<>();
-        transDate.add("T_POS_BILL_ITEM_DETAIL");
-        transDate.add("T_POS_DAY_TRANS");
-        transDate.add("T_PC_BALANCE");
-        transDate.add("T_POS_BILL_DONATE");
-        transDate.add("T_POS_BILL_PAYMENT");
-        transDate.add("T_POS_CAT_ITEM_DETAIL");
-        transDate.add("T_POS_CC");
-        transDate.add("T_KDS_ITEM");
-        transDate.add("T_MPCS_LOG");
-        transDate.add("T_POS_FORM_ITEM");
-        transDate.add("T_STOCK_CARD_HIST");
-        transDate.add("T_STOCK_CARD_RECAP");
-        transDate.add("T_KDS_ITEM_DETAIL");
-        transDate.add("T_STOCK_CARD_DETAIL");
-        transDate.add("T_STOCK_CARD_HIST_TRIGGER");
-        transDate.add("T_POS_CAT");
-        transDate.add("T_POS_CC_ITEM_DETAIL");
-        transDate.add("T_EOD_HIST");
-        transDate.add("T_POS_ITEM_VOID");
-        transDate.add("T_SCHEDULE_DETAIL");
-        transDate.add("T_POS_BOOK_PAYMENT");
-        transDate.add("T_POS_CAT_ITEM");
-        transDate.add("T_POS_DAY");
-        transDate.add("T_POS_BILL");
-        transDate.add("T_POS_FORM_ITEM_DETAIL");
-        transDate.add("T_STOCK_CARD");
-        transDate.add("T_POS_BILL_ITEM");
-        transDate.add("T_POS_BOOK");
-        transDate.add("T_POS_BOOK_DP_DETAIL");
-        transDate.add("T_POS_BOOK_ITEM");
-        transDate.add("T_POS_BOOK_ITEM_DETAIL");
-        transDate.add("T_POS_BOOK_PAYMENT_DETAIL");
-        transDate.add("T_POS_DAY_LOG");
-        transDate.add("T_EOD_HIST_DTL");
-        transDate.add("T_KDS_HEADER");
-        transDate.add("T_SUM_ABSENSI");
-        transDate.add("T_POS_BILL_PAYMENT_DETAIL");
-        transDate.add("T_PC_HDR");
-        transDate.add("T_POS_CATERING");
-        transDate.add("T_POS_CC_ITEM");
-        transDate.add("T_POS_FORM");
-        transDate.add("T_SCHEDULE_HEADER");
-        transDate.add("T_SCHEDULE_SUBHEADER");
-        transDate.add("T_SEND_RECV_D");
-        transDate.add("T_SEND_RECV_H");
-
-        if (transDate.contains(tableName)) {
-            return " WHERE TRANS_DATE = '" + date + "' ";
-        } else if (dateUpd.contains(tableName)) {
-            return " WHERE DATE_UPD = '" + date + "' ";
-        }
-        return " WHERE DATE_UPD = '" + date + "' ";
+        // todo27
+        Optional<TableAlias> ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_T, "table", tableName);
+        TableAlias tableAlias = ta.get();
+        return " WHERE " + tableAlias.getDateColumn() + " = '" + date + "' ";
     }
 
     public Map<String, Object> convertObject(ResultSet result) throws SQLException {
@@ -4076,204 +4050,22 @@ public class ProcessDaoImpl implements ProcessDao {
     }
 
     public List<String> primaryKeyTable(String tableName) {
-        List<String> primaryKey = new ArrayList<>();
-
-        switch (tableName) {
-            case "M_COLOR" ->
-                primaryKey.add("COLOR_CODE");
-            case "M_DISCOUNT_METHOD" -> {
-                primaryKey.add("REGION_CODE");
-                primaryKey.add("OUTLET_CODE");
-                primaryKey.add("DISCOUNT_METHOD_CODE");
-            }
-            case "M_DISCOUNT_METHOD_LIMIT" -> {
-                primaryKey.add("REGION_CODE");
-                primaryKey.add("OUTLET_CODE");
-                primaryKey.add("DISCOUNT_METHOD_CODE");
-                primaryKey.add("ORDER_TYPE");
-            }
-            case "M_DONATE_METHOD" -> {
-                primaryKey.add("REGION_CODE");
-                primaryKey.add("OUTLET_CODE");
-                primaryKey.add("DONATE_METHOD_CODE");
-            }
-            case "M_DONATE_METHOD_LIMIT" -> {
-                primaryKey.add("REGION_CODE");
-                primaryKey.add("OUTLET_CODE");
-                primaryKey.add("DONATE_METHOD_CODE");
-                primaryKey.add("ORDER_TYPE");
-            }
-            case "M_GLOBAL" -> {
-                primaryKey.add("COND");
-                primaryKey.add("CODE");
-            }
-            case "M_GROUP_ITEM" -> {
-                primaryKey.add("ITEM_CODE");
-                primaryKey.add("GROUP_ITEM_CODE");
-            }
-            case "M_ITEM" ->
-                primaryKey.add("ITEM_CODE");
-            case "M_LEVEL_1" ->
-                primaryKey.add("CD_LEVEL_1");
-            case "M_LEVEL_2" -> {
-                primaryKey.add("CD_LEVEL_1");
-                primaryKey.add("CD_LEVEL_2");
-            }
-            case "M_LEVEL_3" -> {
-                primaryKey.add("CD_LEVEL_1");
-                primaryKey.add("CD_LEVEL_2");
-                primaryKey.add("CD_LEVEL_3");
-            }
-            case "M_LEVEL_4" -> {
-                primaryKey.add("CD_LEVEL_1");
-                primaryKey.add("CD_LEVEL_2");
-                primaryKey.add("CD_LEVEL_3");
-                primaryKey.add("CD_LEVEL_4");
-            }
-            case "M_MENU_GROUP" -> {
-                primaryKey.add("REGION_CODE");
-                primaryKey.add("OUTLET_CODE");
-                primaryKey.add("MENU_GROUP_CODE");
-            }
-            case "M_MENU_GROUP_LIMIT" -> {
-                primaryKey.add("REGION_CODE");
-                primaryKey.add("OUTLET_CODE");
-                primaryKey.add("MENU_GROUP_CODE");
-                primaryKey.add("ORDER_TYPE");
-            }
-            case "M_MENU_ITEM" -> {
-                primaryKey.add("REGION_CODE");
-                primaryKey.add("OUTLET_CODE");
-                primaryKey.add("MENU_ITEM_CODE");
-            }
-            case "M_MENU_ITEM_LIMIT" -> {
-                primaryKey.add("REGION_CODE");
-                primaryKey.add("OUTLET_CODE");
-                primaryKey.add("MENU_ITEM_CODE");
-                primaryKey.add("ORDER_TYPE");
-            }
-            case "M_MENU_ITEM_SCHEDULE" -> {
-                primaryKey.add("REGION_CODE");
-                primaryKey.add("OUTLET_CODE");
-                primaryKey.add("MENU_ITEM_CODE");
-                primaryKey.add("START_DATE");
-            }
-            case "M_MENU_SET" -> {
-                primaryKey.add("REGION_CODE");
-                primaryKey.add("OUTLET_CODE");
-                primaryKey.add("MENU_SET_CODE");
-                primaryKey.add("MENU_SET_ITEM_CODE");
-            }
-            case "M_MODIFIER_ITEM" -> {
-                primaryKey.add("MODIFIER_ITEM_CODE");
-                primaryKey.add("OUTLET_CODE");
-                primaryKey.add("MODIFIER_GROUP_CODE");
-                primaryKey.add("REGION_CODE");
-            }
-            case "M_MODIFIER_PRICE" -> {
-                primaryKey.add("MODIFIER_GROUP_CODE");
-                primaryKey.add("MODIFIER_ITEM_CODE");
-                primaryKey.add("PRICE_TYPE_CODE");
-            }
-            case "M_MPCS_HEADER" -> {
-                primaryKey.add("OUTLET_CODE");
-                primaryKey.add("MPCS_GROUP");
-            }
-            case "M_MPCS_DETAIL" -> {
-                primaryKey.add("OUTLET_CODE");
-                primaryKey.add("FRYER_TYPE");
-                primaryKey.add("FRYER_TYPE_SEQ");
-            }
-            case "M_OPNAME_TEMPL_HEADER" ->
-                primaryKey.add("CD_TEMPLATE");
-            case "M_OPNAME_TEMPL_DETAIL" -> {
-                primaryKey.add("CD_TEMPLATE");
-                primaryKey.add("ITEM_CODE");
-            }
-            case "M_OUTLET" -> {
-                primaryKey.add("REGION_CODE");
-                primaryKey.add("OUTLET_CODE");
-            }
-            case "M_PAYMENT_METHOD" -> {
-                primaryKey.add("REGION_CODE");
-                primaryKey.add("OUTLET_CODE");
-                primaryKey.add("PAYMENT_METHOD_CODE");
-            }
-            case "M_PAYMENT_METHOD_LIMIT" -> {
-                primaryKey.add("REGION_CODE");
-                primaryKey.add("OUTLET_CODE");
-                primaryKey.add("PAYMENT_METHOD_CODE");
-                primaryKey.add("ORDER_TYPE");
-            }
-            case "M_OUTLET_PRICE" -> {
-                primaryKey.add("OUTLET_CODE");
-                primaryKey.add("ORDER_TYPE");
-            }
-            case "M_PRICE" -> {
-                primaryKey.add("MENU_ITEM_CODE");
-                primaryKey.add("PRICE_TYPE_CODE");
-            }
-            case "M_RECIPE_HEADER" ->
-                primaryKey.add("RECIPE_CODE");
-            case "M_RECIPE_DETAIL" -> {
-                primaryKey.add("RECIPE_CODE");
-                primaryKey.add("ITEM_CODE");
-            }
-            case "M_RECIPE_PRODUCT" -> {
-                primaryKey.add("RECIPE_CODE");
-                primaryKey.add("PRODUCT_CODE");
-            }
-            case "M_SALES_RECIPE" -> {
-                primaryKey.add("ITEM_CODE");
-                primaryKey.add("PLU_CODE");
-            }
-            case "M_UOM_CONV" -> {
-                primaryKey.add("FROM_UOM");
-                primaryKey.add("TO_UOM");
-            }
-            case "M_DELETED" -> {
-                primaryKey.add("OUTLET_CODE");
-                primaryKey.add("TABLE_CODE");
-                primaryKey.add("SEQ");
-            }
-            case "M_NPWP" ->
-                primaryKey.add("OUTLET_CODE");
-            case "M_MENUGRP" -> {
-                primaryKey.add("GROUP_ID");
-                primaryKey.add("APPL_ID");
-                primaryKey.add("MENU_ID");
-            }
-            case "M_MENUDTL" -> {
-                primaryKey.add("TYPE_ID");
-                primaryKey.add("MENU_ID");
-            }
-            case "M_MPCS_DETAIL_HIST" -> {
-                primaryKey.add("OUTLET_CODE");
-                primaryKey.add("FRYER_TYPE");
-                primaryKey.add("FRYER_TYPE_SEQ");
-                primaryKey.add("FRYER_TYPE_SEQ_CNT");
-                primaryKey.add("DATE_UPD");
-                primaryKey.add("TIME_UPD");
-            }
-            case "M_DELIVERY_TIME" -> {
-                primaryKey.add("REGION_CODE");
-                primaryKey.add("OUTLET_CODE");
-                primaryKey.add("AREA");
-            }
-            case "M_ITEM_SUPPLIER" -> {
-                primaryKey.add("ITEM_CODE");
-                primaryKey.add("CD_SUPPLIER");
-            }
+        Optional<TableAlias> ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M, "table", tableName);
+        if(ta.isEmpty()){
+            ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M, "alias", tableName);
         }
-
+        TableAlias tableAlias = ta.get();
+        List<String> primaryKey = tableAlias.getPrimaryKeyList();
         return primaryKey;
     }
     // =========== End Method Copy Data Server From Lukas 17-10-2023 ===========
 
+    @Override
     public void deleteOrderEntryDetail(Map<String, Object> param) {
         String query = "DELETE T_ORDER_DETAIL WHERE OUTLET_CODE = :outletCode AND ORDER_NO = :orderNo AND ITEM_CODE = :itemCode";
         jdbcTemplate.update(query, param);
     }
+    
 
     //============== New Method From M Joko 5-2-2024 ================
     @Override
@@ -4331,7 +4123,6 @@ public class ProcessDaoImpl implements ProcessDao {
 //                            TableAlias t = this.tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M, "table", m.getOrDefault("table", "").toString()).get();
 //                            String msg = t.getAlias() + ": " + m.getOrDefault("row", "0");
                             messagingTemplate.convertAndSend("/topic/backup-db", line);
-                            messagingTemplate.convertAndSend("/topic", line);
 //                        }
                     }
                 }
@@ -4412,7 +4203,8 @@ public class ProcessDaoImpl implements ProcessDao {
                             }
                             fileList.add(fileInfo);
                         }
-                        rm.setMessage("Success get list.");
+                        double freeSpace = appUtil.getDiskFreeSpace();
+                        rm.setMessage(String.format("%.2f", freeSpace));
                         rm.setItem(fileList);
                         rm.setSuccess(true);
                     } else {
@@ -4551,10 +4343,9 @@ public class ProcessDaoImpl implements ProcessDao {
     
     /////////////// new method update outlet adit 21 Feb 2024
     public void updateOutlet(Map<String, String> balance) {
-        String qy = "UPDATE M_OUTLET SET OUTLET_NAME=:outletName, TYPE=:type, ADDRESS_1=:address1, ADDRESS_2=:address2, CITY=:city, POST_CODE=:posCode, PHONE=:phone, FAX=:fax, CASH_BALANCE=:cashBalance, TRANS_DATE=:transDate, DEL_LIMIT=:delLimit, DEL_CHARGE=:delCharge, RND_PRINT=:rndPrint, RND_FACT=:rndFact, RND_LIMIT=:rndLimit, TAX=:tax, DP_MIN=:dpMin, CANCEL_FEE=:cancelFee, CAT_ITEMS=:calItems, MAX_BILLS=:maxBills, MIN_ITEMS=:minItems, REF_TIME=:refTime, TIME_OUT=:timeOut, MAX_SHIFT=:maxShift, SEND_DATA=:sendData, MIN_PULL_TRX=:minPullTrx, MAX_PULL_VALUE=:maxPullTrx, STATUS=:status, START_DATE=:startDate, FINISH_DATE=:finishDate, MAX_DISC_PERCENT=:maxDiscPercent, MAX_DISC_AMOUNT=:maxDiscAmount, OPEN_TIME=:openTime, CLOSE_TIME=:closeTime, REFUND_TIME_LIMIT=:refundTimeLimit, MONDAY=:monday, TUESDAY=:tuesday, WEDNESDAY=:wednesday, THURSDAY=:thursday, FRIDAY=:friday, SATURDAY=:saturday, SUNDAY=:sunday, HOLIDAY=:holiday, OUTLET_24_HOUR=:outlet24Hour, IP_OUTLET=:ipOutlet, PORT_OUTLET=:portOutlet, USER_UPD=:userUpd, DATE_UPD=:dateUpd, TIME_UPD=:timeUpd, FTP_ADDR=:ftpAddr, FTP_USER=:ftpUser, FTP_PASSWORD=:ftpPassword, INITIAL_OUTLET=:initialOutlet, AREA_CODE=:areaCode, RSC_CODE=:rscCode, TAX_CHARGE=:taxCharge WHERE REGION_CODE=:regionCode AND OUTLET_CODE=:outletCode";
+        String qy = "UPDATE M_OUTLET SET OUTLET_NAME=:outletName, TYPE=:type, ADDRESS_1=:address1, ADDRESS_2=:address2, CITY=:city, POST_CODE=:posCode, PHONE=:phone, FAX=:fax, CASH_BALANCE=:cashBalance, TRANS_DATE=:transDate, DEL_LIMIT=:delLimit, DEL_CHARGE=:delCharge, RND_PRINT=:rndPrint, RND_FACT=:rndFact, RND_LIMIT=:rndLimit, TAX=:tax, DP_MIN=:dpMin, CANCEL_FEE=:cancelFee, CAT_ITEMS=:catItems, MAX_BILLS=:maxBills, MIN_ITEMS=:minItems, REF_TIME=:refTime, TIME_OUT=:timeOut, MAX_SHIFT=:maxShift, SEND_DATA=:sendData, MIN_PULL_TRX=:minPullTrx, MAX_PULL_VALUE=:maxPullValue, STATUS=:status, START_DATE=:startDate, FINISH_DATE=:finishDate, MAX_DISC_PERCENT=:maxDiscPercent, MAX_DISC_AMOUNT=:maxDiscAmount, OPEN_TIME=:openTime, CLOSE_TIME=:closeTime, REFUND_TIME_LIMIT=:refundTimeLimit, MONDAY=:monday, TUESDAY=:tuesday, WEDNESDAY=:wednesday, THURSDAY=:thursday, FRIDAY=:friday, SATURDAY=:saturday, SUNDAY=:sunday, HOLIDAY=:holiday, OUTLET_24_HOUR=:outlet24Hour, IP_OUTLET=:ipOutlet, PORT_OUTLET=:portOutlet, USER_UPD=:userUpd, DATE_UPD=:dateUpd, TIME_UPD=:timeUpd, FTP_ADDR=:ftpAddr, FTP_USER=:ftpUser, FTP_PASSWORD=:ftpPassword, INITIAL_OUTLET=:initialOutlet, AREA_CODE=:areaCode, RSC_CODE=:rscCode, TAX_CHARGE=:taxCharge WHERE REGION_CODE=:regionCode AND OUTLET_CODE=:outletCode";
         Map param = new HashMap();
              param.put("regionCode", balance.get("REGION_CODE"));
-             param.put("regionname", balance.get("REGION_NAME"));
              param.put("outletCode", balance.get("OUTLET_CODE"));
              param.put("outletName", balance.get("OUTLET_NAME"));
              param.put("type", balance.get("TYPE"));
@@ -4562,7 +4353,6 @@ public class ProcessDaoImpl implements ProcessDao {
              param.put("address1", balance.get("ADDRESS_1"));
              param.put("address2", balance.get("ADDRESS_2"));
              param.put("city", balance.get("CITY"));
-             param.put("cityName", balance.get("CITY_NAME"));
              param.put("posCode", balance.get("POST_CODE"));
              param.put("phone", balance.get("PHONE"));
              param.put("fax", balance.get("FAX"));
@@ -4585,7 +4375,7 @@ public class ProcessDaoImpl implements ProcessDao {
              param.put("sendData", balance.get("SEND_DATA"));
              param.put("minPullTrx", balance.get("MIN_PULL_TRX"));
              param.put("maxPullValue", balance.get("MAX_PULL_VALUE"));
-             param.put("Status", balance.get("STATUS"));
+             param.put("status", balance.get("STATUS"));
              param.put("startDate", balance.get("START_DATE"));
              param.put("finishDate", balance.get("FINISH_DATE"));
              param.put("maxDiscPercent", balance.get("MAX_DISC_PERCENT"));
@@ -4612,10 +4402,91 @@ public class ProcessDaoImpl implements ProcessDao {
              param.put("ftpPassword", balance.get("FTP_PASSWORD"));
              param.put("initialOutlet", balance.get("INITIAL_OUTLET"));
              param.put("areaCode", balance.get("AREA_CODE"));
-             param.put("areaName", balance.get("AREA_NAME"));
              param.put("rscCode", balance.get("RSC_CODE"));
-             param.put("rscName", balance.get("RSC_NAME"));
              param.put("taxCharge", balance.get("TAX_CHARGE"));
         jdbcTemplate.update(qy, param);
+    }
+
+    @Transactional
+    @Override
+    public void updateItem(Map<String, String> balance) {
+        String itemQry = "UPDATE M_ITEM SET "
+                + "CD_LEVEL_1=:cdLevel1, "
+                + "CD_LEVEL_2=:cdLevel2, "
+                + "CD_LEVEL_3=:cdLevel3, "
+                + "CD_LEVEL_4=:cdLevel4, "
+                + "UOM_WAREHOUSE=:uomWarehouse, "
+                + "CONV_WAREHOUSE=:convWarehouse, "
+                + "UOM_PURCHASE=:uomPurchase, "
+                + "CONV_STOCK=:convStock, "
+                + "UOM_STOCK=:uomStock, "
+                + "CD_WAREHOUSE=:cdWarehouse, "
+                + "FLAG_STOCK=:flagStock, "
+                + "FLAG_MATERIAL=:flagMaterial, "
+                + "FLAG_OPEN_MARKET=:flagOpenMarket, "
+                + "FLAG_HALF_FINISH=:flagHalfFinish, "
+                + "FLAG_TRANSFER_LOC=:flagTransferLoc, "
+                + "FLAG_FINISHED_GOOD=:flagFinishedGood, "
+                + "FLAG_CANVASING=:flagCanvasing, "
+                + "FLAG_PAKET=:flagPaket, "
+                + "FLAG_OTHERS=:flagOthers, "
+                + "PLU=:plu, "
+                + "CD_SUPPLIER_DEFAULT=:cdSupplierDefault, "
+                + "MIN_STOCK=:minStock, "
+                + "MAX_STOCK=:maxStock, "
+                + "CD_MENU_ITEM=:cdMenuItem, "
+                + "CD_ITEM_LEFTOVER=:cdItemLeftOver, "
+                + "STATUS=:status, "
+                + "USER_UPD=:userUpd, "
+                + "DATE_UPD=:dateUpd, "
+                + "TIME_UPD=:timeUpd "
+                + "where ITEM_CODE =:cdItem";
+        String costQry = "UPDATE M_ITEM_COST SET "
+                + "ITEM_COST=:itemCost, "
+                + "USER_UPD=:userUpd, "
+                + "DATE_UPD=:dateUpd, "
+                + "TIME_UPD=:timeUpd "
+                + "WHERE OUTLET_CODE=:outletCode AND ITEM_CODE=:itemCode";
+        Map costParam = new HashMap();
+        costParam.put("itemCost", balance.get("cogs"));
+        costParam.put("outletCode", balance.get("outletCode"));
+        costParam.put("itemCode", balance.get("code"));
+        costParam.put("userUpd", balance.get("userUpd"));
+        costParam.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        costParam.put("timeUpd", LocalDateTime.now().format(timeFormatter));
+        
+        Map param = new HashMap();
+        param.put("cdItem", balance.get("code"));
+        param.put("cdLevel1", balance.get("cdLevel1"));
+        param.put("cdLevel2", balance.get("cdLevel2"));
+        param.put("cdLevel3", balance.get("cdLevel3"));
+        param.put("cdLevel4", balance.get("cdLevel4"));
+        param.put("uomWarehouse", balance.get("uomWarehouse"));
+        param.put("convWarehouse", balance.get("convWarehouse"));
+        param.put("uomPurchase", balance.get("uomPurchase"));
+        param.put("convStock", balance.get("convStock"));
+        param.put("uomStock", balance.get("uomStock"));
+        param.put("cdWarehouse", balance.get("cdWarehouse"));
+        param.put("flagStock", balance.get("flagStock"));
+        param.put("flagMaterial", balance.get("flagMaterial"));
+        param.put("flagOpenMarket", balance.get("flagOpenMarket"));
+        param.put("flagHalfFinish", balance.get("flagHalfFinish"));
+        param.put("flagTransferLoc", balance.get("flagTransferLoc"));
+        param.put("flagFinishedGood", balance.get("flagFinishedGood"));
+        param.put("flagCanvasing", balance.get("flagCanvasing"));
+        param.put("flagPaket", balance.get("flagPaket"));
+        param.put("flagOthers", balance.get("flagOthers"));
+        param.put("plu", balance.get("plu"));
+        param.put("cdSupplierDefault", balance.get("cdSupplierDefault"));
+        param.put("minStock", balance.get("minStock"));
+        param.put("maxStock", balance.get("maxStock"));
+        param.put("cdMenuItem", balance.get("cdMenuItem"));
+        param.put("cdItemLeftOver", balance.get("cdItemLeftOver"));
+        param.put("status", balance.get("status"));
+        param.put("userUpd", balance.get("userUpd"));
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
+        jdbcTemplate.update(itemQry, param);
+        jdbcTemplate.update(costQry, costParam);
     }
 }

@@ -3625,7 +3625,12 @@ public class ViewDoaImpl implements ViewDao {
             }
         });
         if(list.isEmpty()){
-            String insertTSummMpcs = "INSERT INTO t_summ_mpcs (SELECT a.OUTLET_CODE, b.MPCS_GROUP, :dateMpcs AS DATE_MPCS, a.SEQ_MPCS, a.TIME_MPCS, 0 as QTY_PROJ, d.UOM_STOCK AS UOM_PROJ, 0 AS QTY_PROJ_CONV, d.UOM_STOCK AS UOM_PROJ_CONV, 0 AS QTY_ACC_PROJ, d.UOM_STOCK AS UOM_ACC_PROJ, ' ' AS DESC_PROD, 0 AS QTY_PROD, d.UOM_STOCK AS UOM_PROD, 0 AS QTY_ACC_PROD, d.UOM_STOCK AS UOM_ACC_PROD, ' ' AS PROD_BY, 0 AS QTY_SOLD, d.UOM_STOCK AS UOM_SOLD, 0 AS QTY_ACC_SOLD, d.UOM_STOCK AS UOM_ACC_SOLD, 0 AS QTY_REJECT, d.UOM_STOCK AS UOM_REJECT, 0 AS QTY_ACC_REJECT, d.UOM_STOCK AS UOM_ACC_REJECT, 0 AS QTY_WASTAGE, d.UOM_STOCK AS UOM_WASTAGE, 0 AS QTY_ACC_WASTAGE, d.UOM_STOCK AS UOM_ACC_WASTAGE, 0 AS QTY_ONHAND, d.UOM_STOCK AS UOM_ONHAND, 0 AS QTY_ACC_ONHAND, d.UOM_STOCK AS UOM_ACC_ONHAND, 0 AS QTY_VARIANCE, d.UOM_STOCK AS UOM_VARIANCE, 0 AS QTY_ACC_VARIANCE, d.UOM_STOCK AS UOM_ACC_VARIANCE, a.USER_UPD AS USER_UPD, :dateMpcs AS DATE_UPD, TO_CHAR(SYSDATE, 'HH24MISS') AS TIME_UPD , 0 AS QTY_IN, 0 AS QTY_OUT FROM TEMPLATE_MPCS a JOIN M_MPCS_HEADER b ON a.OUTLET_CODE = b.OUTLET_CODE JOIN M_RECIPE_HEADER c ON b.MPCS_GROUP = c.MPCS_GROUP JOIN M_RECIPE_PRODUCT d ON c.RECIPE_CODE = d.RECIPE_CODE WHERE b.MPCS_GROUP =:mpcsGroup AND a.OUTLET_CODE =:outletCode)";
+            String insertTSummMpcs = "INSERT INTO t_summ_mpcs ("
+                + "SELECT a.OUTLET_CODE, :mpcsGroup AS MPCS_GROUP, :dateMpcs AS DATE_MPCS, a.SEQ_MPCS, a.TIME_MPCS, 0 as QTY_PROJ, d.UOM_STOCK AS UOM_PROJ, 0 AS QTY_PROJ_CONV, d.UOM_STOCK AS UOM_PROJ_CONV, 0 AS QTY_ACC_PROJ, d.UOM_STOCK AS UOM_ACC_PROJ, ' ' AS DESC_PROD, 0 AS QTY_PROD, d.UOM_STOCK AS UOM_PROD, 0 AS QTY_ACC_PROD, d.UOM_STOCK AS UOM_ACC_PROD, ' ' AS PROD_BY, 0 AS QTY_SOLD, d.UOM_STOCK AS UOM_SOLD, 0 AS QTY_ACC_SOLD, d.UOM_STOCK AS UOM_ACC_SOLD, 0 AS QTY_REJECT, d.UOM_STOCK AS UOM_REJECT, 0 AS QTY_ACC_REJECT, d.UOM_STOCK AS UOM_ACC_REJECT, 0 AS QTY_WASTAGE, d.UOM_STOCK AS UOM_WASTAGE, 0 AS QTY_ACC_WASTAGE, d.UOM_STOCK AS UOM_ACC_WASTAGE, 0 AS QTY_ONHAND, d.UOM_STOCK AS UOM_ONHAND, 0 AS QTY_ACC_ONHAND, d.UOM_STOCK AS UOM_ACC_ONHAND, 0 AS QTY_VARIANCE, d.UOM_STOCK AS UOM_VARIANCE, 0 AS QTY_ACC_VARIANCE, d.UOM_STOCK AS UOM_ACC_VARIANCE, a.USER_UPD AS USER_UPD, :dateMpcs AS DATE_UPD, TO_CHAR(SYSDATE, 'HH24MISS') AS TIME_UPD , 0 AS QTY_IN, 0 AS QTY_OUT "
+                + "FROM TEMPLATE_MPCS a "
+                + "LEFT JOIN M_RECIPE_HEADER c ON c.MPCS_GROUP = :mpcsGroup "
+                + "LEFT JOIN (SELECT DISTINCT(RECIPE_CODE), UOM_STOCK FROM M_RECIPE_PRODUCT mrp GROUP BY RECIPE_CODE, UOM_STOCK) d ON c.RECIPE_CODE = d.RECIPE_CODE "
+                + "WHERE a.OUTLET_CODE =:outletCode) ";
             jdbcTemplate.update(insertTSummMpcs, prm);
             System.out.print("success insert");
             list = listMpcsPlan(balance);
@@ -4649,6 +4654,13 @@ return finalResultList;
                         "mi.ITEM_DESCRIPTION, " +
                         "mi.UOM_WAREHOUSE, " +
                         "mi.UOM_STOCK, " +
+                        "mi.UOM_PURCHASE, " +
+                        "mi.CONV_WAREHOUSE, " +
+                        "mi.CONV_STOCK, " +
+                        "mi.CD_LEVEL_1, " +
+                        "mi.CD_LEVEL_2, " +
+                        "mi.CD_LEVEL_3, " +
+                        "mi.CD_LEVEL_4, " +
                         "mi.FLAG_OTHERS, " +
                         "mi.FLAG_MATERIAL, " +
                         "mi.FLAG_HALF_FINISH , " +
@@ -4698,6 +4710,13 @@ return finalResultList;
                 rt.put("description", rs.getString("ITEM_DESCRIPTION"));
                 rt.put("satuanBesar", rs.getString("UOM_WAREHOUSE"));
                 rt.put("satuanKecil", rs.getString("UOM_STOCK"));
+                rt.put("satuanBeli", rs.getString("UOM_PURCHASE"));
+                rt.put("convWarehouse", rs.getString("CONV_WAREHOUSE"));
+                rt.put("convStock", rs.getString("CONV_STOCK"));
+                rt.put("level1", rs.getString("CD_LEVEL_1"));
+                rt.put("level2", rs.getString("CD_LEVEL_2"));
+                rt.put("level3", rs.getString("CD_LEVEL_3"));
+                rt.put("level4", rs.getString("CD_LEVEL_4"));
                 rt.put("flagOthers", rs.getString("FLAG_OTHERS"));
                 rt.put("flagMaterial", rs.getString("FLAG_MATERIAL"));
                 rt.put("flagHalfFinish", rs.getString("FLAG_HALF_FINISH"));
@@ -4809,10 +4828,10 @@ return finalResultList;
     
     @Override
     public List<Map<String, Object>> listOutletDetailGroup(Map<String, String> balance) {
-        String qry = "SELECT a.*, b.OUTLET_NAME AS PARENT_NAME, c.OUTLET_NAME AS CHILD_NAME FROM M_OUTLET_DETAIL a JOIN M_OUTLET b ON a.PARENT_OUTLET = b.OUTLET_CODE JOIN M_OUTLET c ON a.CHILD_OUTLET = c.OUTLET_CODE WHERE b.OUTLET_CODE =:OUTLET_CODE";
+        String qry = "SELECT a.*, b.OUTLET_NAME AS PARENT_NAME, c.OUTLET_NAME AS CHILD_NAME FROM M_OUTLET_DETAIL a JOIN M_OUTLET b ON a.PARENT_OUTLET = b.OUTLET_CODE JOIN M_OUTLET c ON a.CHILD_OUTLET = c.OUTLET_CODE WHERE b.OUTLET_CODE =:outletCode";
 
         Map prm = new HashMap();
-        prm.put("outletCode", balance.get("parentOutlet"));
+        prm.put("outletCode", balance.get("outletCode"));
         
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, (ResultSet rs, int i) -> {
             Map<String, Object> rt = new HashMap<>();
@@ -4837,7 +4856,7 @@ return finalResultList;
             rt.put("outletCode", rs.getString("OUTLET_CODE"));
             rt.put("orderType", rs.getString("ORDER_TYPE"));
             rt.put("orderName", rs.getString("ORDER_NAME")); 
-            rt.put("priceTypeOrder", rs.getString("PRICE_TYPE_ORDER"));          
+            rt.put("priceTypeOrder", rs.getString("PRICE_TYPE_CODE"));          
             return rt;
         });
         return list;
@@ -4871,34 +4890,31 @@ return finalResultList;
             viewQuery = switch (balance.get("orderType")) {
                 // Order Entry Vendor Supplier FSD
                 case "4" -> "SELECT :outletCode as OUTLET_CODE, :orderNo as ORDER_NO, ITEM_CODE, ITEM_DESCRIPTION, 0 as JUMLAH_BESAR, UOM_WAREHOUSE AS SATUAN_BESAR, 0 AS JUMLAH_KECIL, UOM_PURCHASE AS SATUAN_KECIL, 0 AS TOTAL_QTY, UOM_STOCK, CONV_STOCK, (CONV_WAREHOUSE * CONV_STOCK) AS UOM_WAREHOUSE "
-                    + "FROM M_ITEM a WHERE a.STATUS = 'A' AND S.CD_SUPPLIER = :cdSupplier ";
+                    + "FROM M_ITEM a WHERE a.STATUS = 'A' AND ITEM_CODE IN (SELECT item_code FROM M_ITEM_SUPPLIER mis2 WHERE CD_SUPPLIER = :cdSupplier) ";
                 // Order Entry SSD
                 case "5" -> "SELECT :outletCode as OUTLET_CODE, :orderNo as ORDER_NO, ITEM_CODE, ITEM_DESCRIPTION, 0 as JUMLAH_BESAR, UOM_WAREHOUSE AS SATUAN_BESAR, 0 AS JUMLAH_KECIL, UOM_PURCHASE AS SATUAN_KECIL, 0 AS TOTAL_QTY, UOM_STOCK, CONV_STOCK, (CONV_WAREHOUSE * CONV_STOCK) AS UOM_WAREHOUSE "
-                    + "FROM M_ITEM a where a.STATUS = 'A' AND S.CD_SUPPLIER = :cdSupplier ";
-                // order ke supplier
+                    + "FROM M_ITEM a where a.STATUS = 'A' AND ITEM_CODE IN (SELECT item_code FROM M_ITEM_SUPPLIER mis2 WHERE CD_SUPPLIER = :cdSupplier) ";
+                // order ke supplier orderType = 1
                 default -> "SELECT :outletCode as OUTLET_CODE, :orderNo as ORDER_NO, ITEM_CODE, ITEM_DESCRIPTION, 0 as JUMLAH_BESAR, UOM_WAREHOUSE AS SATUAN_BESAR, 0 AS JUMLAH_KECIL, UOM_PURCHASE AS SATUAN_KECIL, 0 AS TOTAL_QTY, UOM_STOCK, CONV_STOCK, (CONV_WAREHOUSE * CONV_STOCK) AS UOM_WAREHOUSE "
-                    + "FROM M_ITEM a WHERE a.STATUS = 'A' AND a.CD_SUPPLIER = :cdSupplier ";
+                    + "FROM M_ITEM a WHERE a.STATUS = 'A' AND ITEM_CODE IN (SELECT item_code FROM M_ITEM_SUPPLIER mis2 WHERE CD_SUPPLIER = :cdSupplier) ";
             };
         }
         
-        List<Map<String, Object>> list = jdbcTemplate.query(viewQuery, param, new RowMapper<Map<String, Object>>() {
-            @Override
-            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
-                Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("outletCode", rs.getString("OUTLET_CODE"));
-                rt.put("orderNo", rs.getString("ORDER_NO"));
-                rt.put("itemCode", rs.getString("ITEM_CODE"));
-                rt.put("itemDesc", rs.getString("ITEM_DESCRIPTION"));
-                rt.put("jmlBesar", rs.getString("jumlah_besar"));
-                rt.put("satuanBesar", rs.getString("satuan_besar"));
-                rt.put("jmlKecil", rs.getString("jumlah_kecil"));
-                rt.put("satuanKecil", rs.getString("satuan_kecil"));
-                rt.put("totalQty", rs.getString("total_qty"));
-                rt.put("uomTotal", rs.getString("UOM_STOCK"));
-                rt.put("convStock", rs.getString("CONV_STOCK"));
-                rt.put("uomWarehouse", rs.getString("UOM_WAREHOUSE"));
-                return rt;
-            }
+        List<Map<String, Object>> list = jdbcTemplate.query(viewQuery, param, (ResultSet rs, int i) -> {
+            Map<String, Object> rt = new HashMap<>();
+            rt.put("outletCode", rs.getString("OUTLET_CODE"));
+            rt.put("orderNo", rs.getString("ORDER_NO"));
+            rt.put("itemCode", rs.getString("ITEM_CODE"));
+            rt.put("itemDesc", rs.getString("ITEM_DESCRIPTION"));
+            rt.put("jmlBesar", rs.getString("jumlah_besar"));
+            rt.put("satuanBesar", rs.getString("satuan_besar"));
+            rt.put("jmlKecil", rs.getString("jumlah_kecil"));
+            rt.put("satuanKecil", rs.getString("satuan_kecil"));
+            rt.put("totalQty", rs.getString("total_qty"));
+            rt.put("uomTotal", rs.getString("UOM_STOCK"));
+            rt.put("convStock", rs.getString("CONV_STOCK"));
+            rt.put("uomWarehouse", rs.getString("UOM_WAREHOUSE"));
+            return rt;
         });
         return list;
     }

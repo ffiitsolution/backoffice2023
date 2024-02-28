@@ -4,7 +4,6 @@
  */
 package com.ffi.api.backoffice;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ffi.api.backoffice.model.DetailOpname;
 import com.ffi.api.backoffice.model.HeaderOpname;
 import com.ffi.api.backoffice.model.ParameterLogin;
@@ -23,13 +22,9 @@ import com.google.gson.reflect.TypeToken;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -41,12 +36,12 @@ import javax.transaction.Transactional;
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
+import org.springframework.messaging.MessagingException;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -62,8 +57,10 @@ public class IndexController {
 
     @Autowired
     ViewServices viewServices;
+    
     @Autowired
     ProcessServices processServices;
+    
     @Autowired
     ReportServices reportServices;
 
@@ -72,6 +69,9 @@ public class IndexController {
     
     @Autowired
     AppUtil appUtil;
+    
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
 //    @Autowired
 //    TransServices transServices;
@@ -3503,34 +3503,25 @@ public class IndexController {
     }
     ///////////////done
     
-    public List<String> listTableMaster(String typeTable) {
-        List<TableAlias> sourcesAliases = tableAliasUtil.searchByColumn(TableAliasUtil.TABLE_ALIAS_M, "process", true);
-        return sourcesAliases.stream().map(TableAlias::getTable).toList();
-    }
-    
-    public List<String> listTableTransaction(String typeTable){
-        List<TableAlias> sourcesAliases = tableAliasUtil.searchByColumn(TableAliasUtil.TABLE_ALIAS_T, "process", true);
-        return sourcesAliases.stream().map(TableAlias::getTable).toList();
-    }
-    
     // =============== New Method From Lukas 17-10-2023 ===============
     // =============== Method Copy Data Local All / Selected / Single ===============
     @RequestMapping(value = "/copy-all", method = RequestMethod.POST)
     public @ResponseBody
     ResponseMessage copyAll(@RequestBody Map<String, Object> param) throws IOException, Exception {
         ResponseMessage rm = new ResponseMessage();
-
-        List<String> listTable = listTableMaster("All");
-        
-        String dateCopy = (String) param.get("date");
-        if (dateCopy == null || "".equals(dateCopy)) {
-            dateCopy = new SimpleDateFormat("dd-MMM-yyyy").format(Calendar.getInstance().getTime());
-        }
-        System.out.println("Copy All Table Start At " + dateCopy);
+        List<TableAlias> allActiveTable = tableAliasUtil.searchByColumn(TableAliasUtil.TABLE_ALIAS_M, "process", true);
+        List<String> listTable = allActiveTable.stream().map(TableAlias::getTable).toList();
+        String dateUpd = (String) param.get("dateUpd");
+        String timeUpd = (String) param.get("timeUpd");
+        System.out.println("Copy All Table Start At " + dateUpd);
         List<String> listError = new ArrayList<>();
         try {
             for (String table : listTable) {
-                if (processServices.insertDataLocal(table, dateCopy) == false) {
+                Map prm = new HashMap();
+                prm.put("tableName",table);
+                prm.put("dateUpd",dateUpd);
+                prm.put("timeUpd",timeUpd);
+                if (processServices.insertDataLocal(prm) == false) {
                     Date dateError = new Date();
                     listError.add(table);
                     System.out.println("Error Insert Table " + table + " At " + dateError);
@@ -3539,7 +3530,7 @@ public class IndexController {
 
             if (listError.isEmpty()) {
                 rm.setSuccess(true);
-                rm.setMessage("Copy " + listTable.size() + " Table for " + dateCopy + " Successfuly");
+                rm.setMessage("Copy " + listTable.size() + " Table for " + dateUpd + " Successfuly");
             } else {
                 rm.setSuccess(false);
                 rm.setMessage("Some Table Failed");
@@ -3560,12 +3551,10 @@ public class IndexController {
             throws IOException, Exception {
         ResponseMessage rm = new ResponseMessage();
         List<String> nameTable = (List<String>) param.get("listTable");
-        String dateCopy = (String) param.get("date");
-        if (dateCopy == null || "".equals(dateCopy)) {
-            dateCopy = new SimpleDateFormat("dd-MMM-yyyy").format(Calendar.getInstance().getTime());
-        }
+        String dateUpd = (String) param.get("dateUpd");
+        String timeUpd = (String) param.get("timeUpd");
 
-        System.out.println("Copy Selected Table Start at " + dateCopy);
+        System.out.println("Copy Selected Table Start at " + dateUpd);
         List<String> listError = new ArrayList<>();
         try {
             if (nameTable.isEmpty()) {
@@ -3573,7 +3562,13 @@ public class IndexController {
                 rm.setMessage("Please Choose Table First");
             } else {
                 for (String table : nameTable) {
-                    if (processServices.insertDataLocal(table, dateCopy) == false) {
+                    Map prm = new HashMap();
+                    TableAlias ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M, "alias", table).get();
+                    String tableName = ta.getTable();
+                    prm.put("tableName",tableName);
+                    prm.put("dateUpd",dateUpd);
+                    prm.put("timeUpd",timeUpd);
+                    if (processServices.insertDataLocal(prm) == false) {
                         Date dateError = new Date();
                         listError.add(table);
                         System.out.println("Error Insert Table " + table + " At " + dateError);
@@ -3584,7 +3579,7 @@ public class IndexController {
 
                 if (listError.isEmpty()) {
                     rm.setSuccess(true);
-                    rm.setMessage("Copy " + nameTable.size() + " Table for " + dateCopy + " Successfuly");
+                    rm.setMessage("Copy " + nameTable.size() + " Table for " + dateUpd + " Successfuly");
                 } else {
                     rm.setSuccess(false);
                     rm.setMessage("Some Table Failed");
@@ -3602,18 +3597,22 @@ public class IndexController {
     @RequestMapping(value = "/copy-single", method = RequestMethod.POST)
     public @ResponseBody
     ResponseMessage copyPaste(@RequestBody Map<String, Object> param) throws IOException, Exception {
-        String tableName = (String) param.get("tableName");
-        String dateCopy = (String) param.get("date");
-        if (dateCopy == null || "".equals(dateCopy)) {
-            dateCopy = new SimpleDateFormat("dd-MMM-yyyy").format(Calendar.getInstance().getTime());
+        String alias = (String) param.get("tableName");
+        messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Proses di " + alias);
+        TableAlias ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M, "alias", alias).get();
+        String tableName = ta.getTable();
+        String dateUpd = (String) param.get("dateUpd");
+        param.put("trx",0);
+        param.put("tableName",tableName);
+        param.put("aliasName",ta.getAlias());
+        if(!param.containsKey("remark") || param.get("remark").toString().isBlank()){
+            param.put("remark", "SINGLE");
         }
-
-        System.out.println("Copy Table " + tableName + " Start at " + dateCopy);
         ResponseMessage rm = new ResponseMessage();
         try {
-            if (processServices.insertDataLocal(tableName, dateCopy)) {
+            if (processServices.insertDataLocal(param)) {
                 rm.setSuccess(true);
-                rm.setMessage("Insert " + tableName + " for " + dateCopy + " Successfuly");
+                rm.setMessage("Insert " + tableName + " for " + dateUpd + " Successfuly");
             } else {
                 rm.setSuccess(false);
                 rm.setMessage("Insert Failed. Please Check Log Insert");
@@ -3622,6 +3621,7 @@ public class IndexController {
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Insert Failed: " + e.getMessage());
+            System.err.println("Copy Table " + tableName + " Failed: " + e.getMessage());
         }
         return rm;
     }
@@ -3631,7 +3631,8 @@ public class IndexController {
     public @ResponseBody
     ResponseMessage transferDataAll(@RequestBody Map<String, Object> param) throws IOException, Exception {
         ResponseMessage rm = new ResponseMessage();
-        List<String> listTable = listTableTransaction("All");
+        List<TableAlias> allActiveTable = tableAliasUtil.searchByColumn(TableAliasUtil.TABLE_ALIAS_T, "process", true);
+        List<String> listTable = allActiveTable.stream().map(TableAlias::getTable).toList();
         
         String outletId = param.get("outletId") != null ? (String) param.get("outletId") : null;
         String dateCopy = (String) param.get("date");
@@ -3642,7 +3643,7 @@ public class IndexController {
         List<String> listError = new ArrayList<>();
         try {
             for (String table : listTable) {
-                if (processServices.sendDataLocal(table, dateCopy, outletId) == false) {
+                if (processServices.sendDataLocal(param) == false) {
                     Date dateError = new Date();
                     listError.add(table);
                     System.out.println("Error Insert Table " + table + " At " + dateError);
@@ -3685,7 +3686,7 @@ public class IndexController {
                 rm.setMessage("Please Choose Table First");
             } else {
                 for (String table : nameTable) {
-                    if (processServices.sendDataLocal(table, dateCopy, outletId) == false) {
+                    if (processServices.sendDataLocal(param) == false) {
                         Date dateError = new Date();
                         listError.add(table);
                         System.out.println("Error Transfer Table " + table + " At " + dateError);
@@ -3706,6 +3707,37 @@ public class IndexController {
             System.out.println("Transfer Selected Table End");
         } catch (Exception e) {
             rm.setSuccess(false);
+            rm.setMessage("Transfer Failed: " + e.getMessage());
+        }
+        return rm;
+    }
+    
+    @RequestMapping(value = "/transfer-data-single", method = RequestMethod.POST)
+    public @ResponseBody
+    ResponseMessage transferDataSingle(@RequestBody Map<String, Object> param) throws IOException, Exception {
+        String aliasName = (String) param.get("tableName");
+        
+        TableAlias ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_T, "alias", aliasName).get();
+        String tableName = ta.getTable();
+        String dateUpd = (String) param.get("dateUpd");
+        param.put("trx",0);
+        param.put("outletId",param.get("outletCode").toString());
+        param.put("tableName",tableName);
+        param.put("aliasName",ta.getAlias());
+        if(!param.containsKey("remark") || param.get("remark").toString().isBlank()){
+            param.put("remark", "SINGLE");
+        }
+        ResponseMessage rm = new ResponseMessage();
+        rm.setSuccess(false);
+        try {
+                    if (processServices.sendDataLocal(param)) {
+                        messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Success Kirim Data: " + aliasName);
+                        rm.setSuccess(true);
+                        rm.setMessage("Success Kirim Data: " + aliasName);
+                    } else {
+                        messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Failed Kirim Data: " + aliasName);
+                    }
+        } catch (MessagingException e) {
             rm.setMessage("Transfer Failed: " + e.getMessage());
         }
         return rm;
@@ -3781,12 +3813,15 @@ public class IndexController {
     ResponseMessage listTransferData(@RequestBody Map<String, Object> param) throws IOException, Exception {
         String typeTable = param.getOrDefault("type", "ALL").toString();
         Boolean isTerimaMaster = "TERIMA DATA MASTER".equals(param.get("type"));
-        Boolean isKirimTransaksi = "TRANSFER DATA TRANSAKSI".equals(param.get("type"));
         List<String> listTable = new ArrayList();
         if(isTerimaMaster){
-            listTable = listTableMaster(typeTable);
-        } else if(isKirimTransaksi){
-            listTable = listTableTransaction("All");
+            List<TableAlias> allActiveTable = tableAliasUtil.searchByColumn(TableAliasUtil.TABLE_ALIAS_M, "process", true);
+            listTable = allActiveTable.stream().map(TableAlias::getTable).toList();
+            System.err.println("testTableM :" + listTable.size());
+        } else {
+            List<TableAlias> allActiveTable = tableAliasUtil.searchByColumn(TableAliasUtil.TABLE_ALIAS_T, "process", true);
+            listTable = allActiveTable.stream().map(TableAlias::getTable).toList();
+            System.err.println("testTableT :" + listTable.size());
         }
         param.put("listTable", listTable);
         return processServices.listTransferData(param);
@@ -3927,12 +3962,16 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> logan = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-
-        List<Map<String, Object>> list = new ArrayList<>();
-        list = viewServices.orderDetailTemporaryList(logan);
         Response res = new Response();
-        res.setData(list);
-        res.setRecordsTotal(list.size());
+        
+        try {
+            List<Map<String, Object>> list = new ArrayList<>();
+            list = viewServices.orderDetailTemporaryList(logan);
+            res.setData(list);
+            res.setRecordsTotal(list.size());
+        } catch (Exception e) {
+            throw new Error(e.getMessage());
+        }   
         return res;
 
     }
@@ -4016,6 +4055,34 @@ public class IndexController {
         ResponseMessage rm = new ResponseMessage();
         try {
             processServices.updateOutlet(balance);
+            rm.setSuccess(true);
+            rm.setMessage("Update Success Successfuly");
+
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Update Failed Successfuly: " + e.getMessage());
+        }
+
+        rm.setItem(list);
+
+        return rm;
+    }
+
+    @RequestMapping(value = "/update-item", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk update item", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage updateItem(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        ResponseMessage rm = new ResponseMessage();
+        try {
+            processServices.updateItem(balance);
             rm.setSuccess(true);
             rm.setMessage("Update Success Successfuly");
 

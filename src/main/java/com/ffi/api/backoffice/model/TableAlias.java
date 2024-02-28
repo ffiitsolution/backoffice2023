@@ -1,6 +1,8 @@
 package com.ffi.api.backoffice.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  *
@@ -37,6 +39,9 @@ public class TableAlias {
     
     @JsonProperty("timeUpd")
     private String timeUpd;
+    
+    @JsonProperty("primaryKeys")
+    private String primaryKeys;
 
     public String getData() {
         return data;
@@ -118,10 +123,22 @@ public class TableAlias {
         this.timeUpd = timeUpd;
     }
 
+    public List getPrimaryKeyList() {
+        return Arrays.asList(primaryKeys.split(","));
+    }
+
+    public String getPrimaryKeys() {
+        return primaryKeys;
+    }
+
+    public void setPrimaryKeys(String primaryKeys) {
+        this.primaryKeys = primaryKeys;
+    }
+
     @Override
     public String toString() {
         return "TableAlias [data=" + data + ", table=" + table + ", alias=" + alias + ", dateColumn=" + dateColumn
                 + ", hasOutletCode=" + hasOutletCode + ", emptyFirst=" + emptyFirst + ", active=" + active
-                + ", process=" + process + ", dateUpd=" + dateUpd + ", timeUpd=" + timeUpd + "]\n";
+                + ", process=" + process + ", dateUpd=" + dateUpd + ", timeUpd=" + timeUpd + ", primaryKeys=" + primaryKeys + "]\n";
     }
 }
