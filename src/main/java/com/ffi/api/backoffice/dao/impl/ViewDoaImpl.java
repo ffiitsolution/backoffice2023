@@ -3682,7 +3682,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "FROM T_MPCS_HIST WHERE MPCS_GROUP = :mpcsGroup AND MPCS_DATE = :dateMpcs "
                 + "AND TIME_UPD <= replace(:maxTime, '.' , '')||'00' "
                 + "AND TIME_UPD >= replace(:minTime, '.' , '')||'00' "
-                + "AND (FRYER_TYPE <> 'D' or FRYER_TYPE IS NULL)";
+                + "AND (FRYER_TYPE <> 'D' or FRYER_TYPE IS NULL) ORDER BY TIME_UPD ASC ";
 
         Map prm = new HashMap();
         prm.put("mpcsGroup", balance.get("mpcsGroup"));
@@ -3690,7 +3690,6 @@ public class ViewDoaImpl implements ViewDao {
         prm.put("maxTime", balance.get("maxTime"));
         prm.put("minTime", balance.get("minTime"));
 
-        System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
