@@ -4538,9 +4538,18 @@ return finalResultList;
     @Override
     public List<Map<String, Object>> listTransferDataHistory(Map<String, String> balance) {
         List<Map<String, Object>> returnList = new ArrayList();
+        Object type = balance.get("type");
+        if(!(type instanceof String)){
+            balance.put("type", "");
+        } else if( isValidParamKey(balance.get("type")) && balance.get("type").equalsIgnoreCase("KIRIM DATA TRANSAKSI")){
+            balance.put("type", "1");
+        } else if(isValidParamKey(balance.get("type")) && balance.get("type").equalsIgnoreCase("TERIMA DATA MASTER")){
+            balance.put("type", "0");
+        } else {
+            balance.put("type", "");
+        }
         boolean isDetail = isValidParamKey(balance.get("transDate")) && isValidParamKey(balance.get("timeUpd"));
-        String qry = "SELECT * FROM ( SELECT NVL(ms.STAFF_FULL_NAME, ofh.USER_UPD) AS USER_NAME, TO_CHAR(ofh.TRANS_DATE, 'DD MON YYYY') AS F_TRANS_DATE, CASE WHEN ofh.TRX_CODE = 1 THEN 'KIRIM DATA TRANSAKSI' ELSE 'TERIMA DATA MASTER' END AS TYPE, ofh.* FROM M_OUTLET_FTP_HIST ofh LEFT JOIN M_STAFF ms ON ms.STAFF_CODE = ofh.USER_UPD ORDER BY ofh.TRANS_DATE DESC, ofh.TIME_UPD DESC ) WHERE ";
-        qry += " ROWNUM <= 50";
+        String qry = "SELECT NVL(ms.STAFF_FULL_NAME, ofh.USER_UPD) AS USER_NAME, TO_CHAR(ofh.TRANS_DATE, 'DD MON YYYY') AS F_TRANS_DATE, CASE WHEN ofh.TRX_CODE = 1 THEN 'KIRIM DATA TRANSAKSI' ELSE 'TERIMA DATA MASTER' END AS TYPE, ofh.* FROM M_OUTLET_FTP_HIST ofh LEFT JOIN M_STAFF ms ON ms.STAFF_CODE = ofh.USER_UPD WHERE ofh.TRX_CODE LIKE '%' || :type || '%' AND ofh.TRANS_DATE BETWEEN :startDate AND :endDate ORDER BY ofh.TRANS_DATE DESC, ofh.TIME_UPD DESC ";
         if(isDetail){
             qry = "SELECT TO_CHAR(ofd.TRANS_DATE, 'DD MON YYYY') AS F_TRANS_DATE, ofd.* FROM M_OUTLET_FTP_HIST_DTL ofd WHERE ofd.TRANS_DATE = :transDate AND ofd.TIME_UPD = :timeUpd";
         }
