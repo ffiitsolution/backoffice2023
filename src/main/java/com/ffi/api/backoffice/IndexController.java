@@ -3643,11 +3643,11 @@ public class IndexController {
         List<String> listError = new ArrayList<>();
         try {
             for (String table : listTable) {
-                if (processServices.sendDataLocal(param) == false) {
-                    Date dateError = new Date();
-                    listError.add(table);
-                    System.out.println("Error Insert Table " + table + " At " + dateError);
-                }
+//                if (processServices.sendDataLocal(param) == false) {
+//                    Date dateError = new Date();
+//                    listError.add(table);
+//                    System.out.println("Error Insert Table " + table + " At " + dateError);
+//                }
             }
 
             if (listError.isEmpty()) {
@@ -3686,13 +3686,13 @@ public class IndexController {
                 rm.setMessage("Please Choose Table First");
             } else {
                 for (String table : nameTable) {
-                    if (processServices.sendDataLocal(param) == false) {
-                        Date dateError = new Date();
-                        listError.add(table);
-                        System.out.println("Error Transfer Table " + table + " At " + dateError);
-                    } else {
-                        System.out.println("Done Transfer Table " + table);
-                    }
+//                    if (processServices.sendDataLocal(param) == false) {
+//                        Date dateError = new Date();
+//                        listError.add(table);
+//                        System.out.println("Error Transfer Table " + table + " At " + dateError);
+//                    } else {
+//                        System.out.println("Done Transfer Table " + table);
+//                    }
                 }
 
                 if (listError.isEmpty()) {
@@ -3720,7 +3720,7 @@ public class IndexController {
         TableAlias ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_T, "alias", aliasName).get();
         String tableName = ta.getTable();
         String dateUpd = (String) param.get("dateUpd");
-        param.put("trx",0);
+        param.put("trx",1);
         param.put("outletId",param.get("outletCode").toString());
         param.put("tableName",tableName);
         param.put("aliasName",ta.getAlias());
@@ -3730,13 +3730,18 @@ public class IndexController {
         ResponseMessage rm = new ResponseMessage();
         rm.setSuccess(false);
         try {
-                    if (processServices.sendDataLocal(param)) {
-                        messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Success Kirim Data: " + aliasName);
-                        rm.setSuccess(true);
-                        rm.setMessage("Success Kirim Data: " + aliasName);
-                    } else {
-                        messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Failed Kirim Data: " + aliasName);
-                    }
+            Map map1 = processServices.sendDataLocal(param);
+            boolean status = (boolean) map1.get("success");
+            List list = (List) map1.get("item");
+            if (status) {
+                messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Success Kirim Data: " + aliasName);
+                rm.setSuccess(true);
+                rm.setItem(list);
+                rm.setMessage("Success Kirim Data: " + aliasName);
+            } else {
+                rm.setMessage("Failed Kirim Data: " + aliasName);
+                messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Failed Kirim Data: " + aliasName);
+            }
         } catch (MessagingException e) {
             rm.setMessage("Transfer Failed: " + e.getMessage());
         }

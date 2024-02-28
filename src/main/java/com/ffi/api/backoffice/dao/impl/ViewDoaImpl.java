@@ -6,9 +6,11 @@ package com.ffi.api.backoffice.dao.impl;
 
 import com.ffi.api.backoffice.dao.ViewDao;
 import com.ffi.api.backoffice.model.ParameterLogin;
+import com.ffi.api.backoffice.model.TableAlias;
 import com.ffi.api.backoffice.utils.AppUtil;
 import com.ffi.api.backoffice.utils.DynamicRowMapper;
 import com.ffi.api.backoffice.utils.FileLoggerUtil;
+import com.ffi.api.backoffice.utils.TableAliasUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -19,8 +21,6 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -39,7 +39,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.lang.Nullable;
-//import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -54,6 +53,9 @@ public class ViewDoaImpl implements ViewDao {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final AppUtil appUtil;
+
+    @Autowired
+    TableAliasUtil tableAliasUtil;
 
     @Autowired
     public ViewDoaImpl(NamedParameterJdbcTemplate jdbcTemplate, AppUtil appUtil) {
@@ -4536,13 +4538,30 @@ return finalResultList;
     // =============== Ambil list riwayat Master - Kirim Terima Data
     @Override
     public List<Map<String, Object>> listTransferDataHistory(Map<String, String> balance) {
-        String qry = "SELECT * FROM ( SELECT NVL(ms.STAFF_FULL_NAME, ofh.USER_UPD) AS USER_NAME, TO_CHAR(ofh.TRANS_DATE, 'DD MON YYYY') AS F_TRANS_DATE, CASE WHEN ofh.TRX_CODE = '1' THEN 'KIRIM DATA TRANSAKSI' ELSE 'TERIMA DATA MASTER' END AS TYPE, ofh.* FROM M_OUTLET_FTP_HIST ofh LEFT JOIN M_STAFF ms ON ms.STAFF_CODE = ofh.USER_UPD ORDER BY ofh.TRANS_DATE DESC, ofh.TIME_UPD DESC ) WHERE ROWNUM <= 50";
-        if(isValidParamKey(balance.get("transDate")) && isValidParamKey(balance.get("timeUpd"))){
+        List<Map<String, Object>> returnList = new ArrayList();
+        boolean isDetail = isValidParamKey(balance.get("transDate")) && isValidParamKey(balance.get("timeUpd"));
+        String qry = "SELECT * FROM ( SELECT NVL(ms.STAFF_FULL_NAME, ofh.USER_UPD) AS USER_NAME, TO_CHAR(ofh.TRANS_DATE, 'DD MON YYYY') AS F_TRANS_DATE, CASE WHEN ofh.TRX_CODE = 1 THEN 'KIRIM DATA TRANSAKSI' ELSE 'TERIMA DATA MASTER' END AS TYPE, ofh.* FROM M_OUTLET_FTP_HIST ofh LEFT JOIN M_STAFF ms ON ms.STAFF_CODE = ofh.USER_UPD ORDER BY ofh.TRANS_DATE DESC, ofh.TIME_UPD DESC ) WHERE ";
+        qry += " ROWNUM <= 50";
+        if(isDetail){
             qry = "SELECT TO_CHAR(ofd.TRANS_DATE, 'DD MON YYYY') AS F_TRANS_DATE, ofd.* FROM M_OUTLET_FTP_HIST_DTL ofd WHERE ofd.TRANS_DATE = :transDate AND ofd.TIME_UPD = :timeUpd";
         }
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, balance, new DynamicRowMapper());
-        return list;
+        if(isDetail){
+            for (Map<String, Object> row : list) {
+                String tableName = row.get("description").toString();
+                Optional<TableAlias> ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M, "table", tableName);
+                if(ta.isEmpty()){
+                    ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_T, "table", tableName);
+                }
+                TableAlias tableAlias = ta.get();
+                row.put("description", tableAlias.getAlias());
+                returnList.add(row);
+            }
+        } else {
+            returnList = list;
+        }
+        return returnList;
     }
 
     // =============== New Method From Sifa 20-02-2024 ===============

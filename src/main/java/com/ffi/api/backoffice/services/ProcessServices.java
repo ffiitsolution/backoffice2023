@@ -312,7 +312,7 @@ public class ProcessServices {
     public boolean insertDataLocal(Map<String, Object> param) {
         return dao.insertDataLocal(param);
     }
-    public boolean sendDataLocal(Map<String, Object> param) {
+    public Map sendDataLocal(Map<String, Object> param) {
         return dao.sendDataLocal(param);
     }
     //============== End Method Copy Data From Lukas 17-10-2023 ================
