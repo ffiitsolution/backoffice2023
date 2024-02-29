@@ -4933,6 +4933,7 @@ return finalResultList;
                     + "FROM M_ITEM a WHERE a.STATUS = 'A' AND ITEM_CODE IN (SELECT item_code FROM M_ITEM_SUPPLIER mis2 WHERE CD_SUPPLIER = :cdSupplier) ";
             };
         }
+        viewQuery += " ORDER BY ITEM_CODE ASC ";
         
         List<Map<String, Object>> list = jdbcTemplate.query(viewQuery, param, (ResultSet rs, int i) -> {
             Map<String, Object> rt = new HashMap<>();
