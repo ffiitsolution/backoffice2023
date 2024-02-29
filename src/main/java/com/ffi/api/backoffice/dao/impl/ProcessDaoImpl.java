@@ -4371,68 +4371,11 @@ public class ProcessDaoImpl implements ProcessDao {
     
     /////////////// new method update outlet adit 21 Feb 2024
     public void updateOutlet(Map<String, String> balance) {
-        String qy = "UPDATE M_OUTLET SET OUTLET_NAME=:outletName, TYPE=:type, ADDRESS_1=:address1, ADDRESS_2=:address2, CITY=:city, POST_CODE=:posCode, PHONE=:phone, FAX=:fax, CASH_BALANCE=:cashBalance, TRANS_DATE=:transDate, DEL_LIMIT=:delLimit, DEL_CHARGE=:delCharge, RND_PRINT=:rndPrint, RND_FACT=:rndFact, RND_LIMIT=:rndLimit, TAX=:tax, DP_MIN=:dpMin, CANCEL_FEE=:cancelFee, CAT_ITEMS=:catItems, MAX_BILLS=:maxBills, MIN_ITEMS=:minItems, REF_TIME=:refTime, TIME_OUT=:timeOut, MAX_SHIFT=:maxShift, SEND_DATA=:sendData, MIN_PULL_TRX=:minPullTrx, MAX_PULL_VALUE=:maxPullValue, STATUS=:status, START_DATE=:startDate, FINISH_DATE=:finishDate, MAX_DISC_PERCENT=:maxDiscPercent, MAX_DISC_AMOUNT=:maxDiscAmount, OPEN_TIME=:openTime, CLOSE_TIME=:closeTime, REFUND_TIME_LIMIT=:refundTimeLimit, MONDAY=:monday, TUESDAY=:tuesday, WEDNESDAY=:wednesday, THURSDAY=:thursday, FRIDAY=:friday, SATURDAY=:saturday, SUNDAY=:sunday, HOLIDAY=:holiday, OUTLET_24_HOUR=:outlet24Hour, IP_OUTLET=:ipOutlet, PORT_OUTLET=:portOutlet, USER_UPD=:userUpd, DATE_UPD=:dateUpd, TIME_UPD=:timeUpd, FTP_ADDR=:ftpAddr, FTP_USER=:ftpUser, FTP_PASSWORD=:ftpPassword, INITIAL_OUTLET=:initialOutlet, AREA_CODE=:areaCode, RSC_CODE=:rscCode, TAX_CHARGE=:taxCharge WHERE REGION_CODE=:regionCode AND OUTLET_CODE=:outletCode";
-        Map param = new HashMap();
-             param.put("regionCode", balance.get("REGION_CODE"));
-             param.put("outletCode", balance.get("OUTLET_CODE"));
-             param.put("outletName", balance.get("OUTLET_NAME"));
-             param.put("type", balance.get("TYPE"));
-             param.put("typeStore", balance.get("TYPE_STORE"));
-             param.put("address1", balance.get("ADDRESS_1"));
-             param.put("address2", balance.get("ADDRESS_2"));
-             param.put("city", balance.get("CITY"));
-             param.put("posCode", balance.get("POST_CODE"));
-             param.put("phone", balance.get("PHONE"));
-             param.put("fax", balance.get("FAX"));
-             param.put("cashBalance", balance.get("CASH_BALANCE"));
-             param.put("transDate", balance.get("TRANS_DATE"));
-             param.put("delLimit", balance.get("DEL_LIMIT"));
-             param.put("delCharge", balance.get("DEL_CHARGE"));
-             param.put("rndPrint", balance.get("RND_PRINT"));
-             param.put("rndFact", balance.get("RND_FACT"));
-             param.put("rndLimit", balance.get("RND_LIMIT"));
-             param.put("tax", balance.get("TAX"));
-             param.put("dpMin", balance.get("DP_MIN"));
-             param.put("cancelFee", balance.get("CANCEL_FEE"));
-             param.put("catItems", balance.get("CAT_ITEMS"));
-             param.put("maxBills", balance.get("MAX_BILLS"));
-             param.put("minItems", balance.get("MIN_ITEMS"));
-             param.put("refTime", balance.get("REF_TIME"));
-             param.put("timeOut", balance.get("TIME_OUT"));
-             param.put("maxShift", balance.get("MAX_SHIFT"));
-             param.put("sendData", balance.get("SEND_DATA"));
-             param.put("minPullTrx", balance.get("MIN_PULL_TRX"));
-             param.put("maxPullValue", balance.get("MAX_PULL_VALUE"));
-             param.put("status", balance.get("STATUS"));
-             param.put("startDate", balance.get("START_DATE"));
-             param.put("finishDate", balance.get("FINISH_DATE"));
-             param.put("maxDiscPercent", balance.get("MAX_DISC_PERCENT"));
-             param.put("maxDiscAmount", balance.get("MAX_DISC_AMOUNT"));
-             param.put("openTime", balance.get("OPEN_TIME"));
-             param.put("closeTime", balance.get("CLOSE_TIME"));
-             param.put("refundTimeLimit", balance.get("REFUND_TIME_LIMIT"));
-             param.put("monday", balance.get("MONDAY"));
-             param.put("tuesday", balance.get("TUESDAY"));
-             param.put("wednesday", balance.get("WEDNESDAY"));
-             param.put("thursday", balance.get("THURSDAY"));
-             param.put("friday", balance.get("FRIDAY"));
-             param.put("saturday", balance.get("SATURDAY"));
-             param.put("sunday", balance.get("SUNDAY"));
-             param.put("holiday", balance.get("HOLIDAY"));
-             param.put("outlet24Hour", balance.get("OUTLET_24_HOUR"));
-             param.put("ipOutlet", balance.get("IP_OUTLET"));
-             param.put("portOutlet", balance.get("PORT_OUTLET"));
-             param.put("userUpd", balance.get("USER_UPD"));
-             param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
-             param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
-             param.put("ftpAddr", balance.get("FTP_ADDR"));
-             param.put("ftpUser", balance.get("FTP_USER"));
-             param.put("ftpPassword", balance.get("FTP_PASSWORD"));
-             param.put("initialOutlet", balance.get("INITIAL_OUTLET"));
-             param.put("areaCode", balance.get("AREA_CODE"));
-             param.put("rscCode", balance.get("RSC_CODE"));
-             param.put("taxCharge", balance.get("TAX_CHARGE"));
-        jdbcTemplate.update(qy, param);
+        String qy = "UPDATE M_OUTLET SET OUTLET_NAME=:outletName, TYPE=:type, ADDRESS_1=:address1, ADDRESS_2=:address2, CITY=:city, POST_CODE=:postCode, PHONE=:phone, FAX=:fax, CASH_BALANCE=:cashBalance, DEL_LIMIT=:delLimit, DEL_CHARGE=:delCharge, RND_PRINT=:rndPrint, RND_FACT=:rndFact, RND_LIMIT=:rndLimit, TAX=:tax, DP_MIN=:dpMin, CANCEL_FEE=:cancelFee, CAT_ITEMS=:catItems, MAX_BILLS=:maxBills, MIN_ITEMS=:minItems, REF_TIME=:refTime, TIME_OUT=:timeOut, MAX_SHIFT=:maxShift, SEND_DATA=:sendData, MIN_PULL_TRX=:minPullTrx, MAX_PULL_VALUE=:maxPullValue, STATUS=:status, START_DATE=:startDate, FINISH_DATE=:finishDate, MAX_DISC_PERCENT=:maxDiscPercent, MAX_DISC_AMOUNT=:maxDiscAmount, OPEN_TIME=:openTime, CLOSE_TIME=:closeTime, REFUND_TIME_LIMIT=:refundTimeLimit, MONDAY=:monday, TUESDAY=:tuesday, WEDNESDAY=:wednesday, THURSDAY=:thursday, FRIDAY=:friday, SATURDAY=:saturday, SUNDAY=:sunday, HOLIDAY=:holiday, OUTLET_24_HOUR=:outlet24Hour, IP_OUTLET=:ipOutlet, PORT_OUTLET=:portOutlet, USER_UPD=:userUpd, DATE_UPD=:dateUpd, TIME_UPD=:timeUpd, FTP_ADDR=:ftpAddr, FTP_USER=:ftpUser, FTP_PASSWORD=:ftpPassword, INITIAL_OUTLET=:initialOutlet, AREA_CODE=:areaCode, RSC_CODE=:rscCode, TAX_CHARGE=:taxCharge WHERE OUTLET_CODE=:outletCode";
+ 
+             balance.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+             balance.put("timeUpd", LocalDateTime.now().format(timeFormatter));
+        Integer success = jdbcTemplate.update(qy, balance);
     }
 
     @Transactional
