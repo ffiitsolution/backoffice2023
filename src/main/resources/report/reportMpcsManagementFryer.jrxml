@@ -115,7 +115,7 @@ WHERE a.DATE_UPD between  $P{fromDate}  and $P{toDate} ORDER BY a.DATE_UPD DESC,
 		<band splitType="Stretch"/>
 	</background>
 	<pageHeader>
-		<band height="128" splitType="Stretch">
+		<band height="134" splitType="Stretch">
 			<line>
 				<reportElement x="0" y="108" width="555" height="1" uuid="646b9ea6-8fe0-4179-9481-1bd831cd8f04"/>
 			</line>
@@ -123,7 +123,7 @@ WHERE a.DATE_UPD between  $P{fromDate}  and $P{toDate} ORDER BY a.DATE_UPD DESC,
 				<reportElement x="0" y="127" width="555" height="1" uuid="9b4d6d14-cf2e-439c-b05a-8d96be9a55db"/>
 			</line>
 			<staticText>
-				<reportElement x="0" y="109" width="120" height="18" uuid="2ca99acf-c14d-4fc0-a86f-93d01961953c">
+				<reportElement x="0" y="109" width="90" height="18" uuid="2ca99acf-c14d-4fc0-a86f-93d01961953c">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -132,7 +132,7 @@ WHERE a.DATE_UPD between  $P{fromDate}  and $P{toDate} ORDER BY a.DATE_UPD DESC,
 				<text><![CDATA[Date]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="120" y="109" width="90" height="18" uuid="9324eae0-eb3a-4cec-80fe-05b194865441">
+				<reportElement x="90" y="109" width="110" height="18" uuid="9324eae0-eb3a-4cec-80fe-05b194865441">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -141,19 +141,19 @@ WHERE a.DATE_UPD between  $P{fromDate}  and $P{toDate} ORDER BY a.DATE_UPD DESC,
 				<text><![CDATA[Fryer Type]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="210" y="109" width="70" height="18" uuid="a1d7f151-0761-47c1-83da-1f9dff65c070">
+				<reportElement x="200" y="109" width="50" height="18" uuid="a1d7f151-0761-47c1-83da-1f9dff65c070">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Fryer No]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="280" y="109" width="60" height="18" uuid="10e8d854-2e49-4cb8-924a-6416547dc2bc">
+				<reportElement x="250" y="109" width="73" height="18" uuid="10e8d854-2e49-4cb8-924a-6416547dc2bc">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Oil Use]]></text>
@@ -402,45 +402,48 @@ $P{fryerType}.equals("S") ? "Split Fryer" :
 		</band>
 	</pageHeader>
 	<detail>
-		<band height="14" splitType="Stretch">
-			<textField>
-				<reportElement x="0" y="0" width="120" height="14" uuid="18e5c05c-88e4-4989-bb20-b3853c4ae32a">
+		<band height="18" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="0" y="0" width="90" height="14" uuid="18e5c05c-88e4-4989-bb20-b3853c4ae32a">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{DATE_UPD} + "   " + $F{TIME_UPD}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{DATE_UPD} + " \n" + $F{TIME_UPD}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="120" y="0" width="90" height="14" uuid="de5ce1e6-b238-47b5-8de1-b9de8c29bf5c"/>
+				<reportElement x="90" y="0" width="110" height="14" uuid="de5ce1e6-b238-47b5-8de1-b9de8c29bf5c"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{FRYER_DESC}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,###.###;#,###.###-">
-				<reportElement x="210" y="0" width="70" height="14" uuid="bd751e55-be43-4bba-8119-cc1a3a9ad6f7">
+				<reportElement x="200" y="0" width="50" height="14" uuid="bd751e55-be43-4bba-8119-cc1a3a9ad6f7">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{FRYER_NO}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="280" y="0" width="60" height="14" uuid="caba4ab2-1ac8-485e-9864-104a3ffc5afc"/>
-				<textElement verticalAlignment="Middle">
+				<reportElement x="250" y="0" width="35" height="14" uuid="caba4ab2-1ac8-485e-9864-104a3ffc5afc">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{OIL_USE} + " HEAD"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{OIL_USE}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,###.###;#,###.###-">
 				<reportElement x="340" y="0" width="80" height="14" uuid="469ba032-f8a6-4a5f-a8a0-3d519f0a3676"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{MAXIMUM_USE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{MAXIMUM_USE} + ($F{FRYER_TYPE}.equals("S") ? " Kg" : " Head")]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,###.###;#,###.###-">
 				<reportElement x="420" y="0" width="80" height="14" uuid="6fa9a5d6-eacd-4211-97e2-19d99dc86967"/>
@@ -455,6 +458,15 @@ $P{fryerType}.equals("S") ? "Split Fryer" :
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{PIC}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="288" y="0" width="35" height="14" uuid="dc7b21f7-d59e-4fa9-8751-7fe64cf68b18">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[ $F{FRYER_TYPE}.equals("S") ? " Kg" : " Head"]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
