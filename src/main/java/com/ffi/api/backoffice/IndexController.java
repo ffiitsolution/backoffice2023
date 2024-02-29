@@ -2705,6 +2705,7 @@ public class IndexController {
     )
     public @ResponseBody
     Response processEod(@RequestBody String param) throws IOException, Exception {
+        messagingTemplate.convertAndSend("/topic", "Mulai End Of Day");
         long startTime = System.currentTimeMillis();
         System.err.println("Start End of Day Process");
         Gson gsn = new Gson();
@@ -2730,6 +2731,7 @@ public class IndexController {
         for (int i = 0; i < listMPosActive.size(); i++) {
             var mPos = listMPosActive.get(i);
             String posCode = mPos.get("posCode").toString();
+            messagingTemplate.convertAndSend("/topic", "End Of Day - Cek POS: " + posCode);
             if (posCode.length() < 1) {
                 errors.add("! posCode kosong ");
             } else {
@@ -2795,6 +2797,7 @@ public class IndexController {
         res.setData(data);
         double elapsedTimeSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
         System.err.println("Finished End of Day Process after total: " + elapsedTimeSeconds + " seconds");
+        messagingTemplate.convertAndSend("/topic", "Selesai End Of Day: " + elapsedTimeSeconds + " detik");
         res.setDraw((int) elapsedTimeSeconds);
         return res;
     }

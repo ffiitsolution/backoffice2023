@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="stockOpname" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="2f9ba0bb-b878-42b5-bf5c-af89e4fc2ee3">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
@@ -10,6 +11,7 @@
 	<parameter name="outletCode" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
+	<parameter name="outletBrand" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT
 	a.ITEM_CODE,
@@ -102,9 +104,12 @@ Barang]]></text>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{OUTLET_NAME}]]></textFieldExpression>
 			</textField>
-			<image>
-				<reportElement x="0" y="1" width="56" height="42" isPrintWhenDetailOverflows="true" uuid="71eb630e-99f0-47ab-81f0-799578335071"/>
-				<imageExpression><![CDATA["logo/logoKfc.png"]]></imageExpression>
+			<image scaleImage="FillFrame">
+				<reportElement x="0" y="1" width="48" height="48" isPrintWhenDetailOverflows="true" uuid="71eb630e-99f0-47ab-81f0-799578335071">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
 			</image>
 			<textField>
 				<reportElement x="59" y="30" width="122" height="11" isPrintWhenDetailOverflows="true" uuid="21c10fca-dae6-4083-a3d3-7ed0337c26dd"/>
@@ -422,14 +427,16 @@ Freeze]]></text>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{QTY_PURCH}) + "   " + $F{UOM_PURCH}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{QTY_PURCH} != null ? new DecimalFormat("#,##0.00").format(((Number) $F{QTY_PURCH}).doubleValue()) + "   " + $F{UOM_PURCH}  : "0.00"
+]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="362" y="0" width="70" height="15" uuid="5df18908-eb48-4220-85c9-59a01e508db3"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{QTY_STOCK}) + "   " + $F{SATUAN_STOCK}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[($F{QTY_STOCK} != null) ? new DecimalFormat("#,##0.00").format(((Number) $F{QTY_STOCK}).doubleValue()) + "   " + $F{SATUAN_STOCK}  : "0.00"
+]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="431" y="0" width="42" height="15" uuid="be3cbe05-0096-4640-8891-bc542c541707"/>

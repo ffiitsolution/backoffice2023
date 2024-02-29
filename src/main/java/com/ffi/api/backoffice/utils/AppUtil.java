@@ -50,15 +50,22 @@ public class AppUtil implements EnvironmentAware {
         return (value != null) ? value : defaultValue;
     }
     
-    @SuppressWarnings("UnusedAssignment")
     public double getDiskFreeSpace() {
         double freeSpaceGB = -1;
         try {
             String location = AppUtil.class.getProtectionDomain().getCodeSource().getLocation().getFile();
             String jarFilePath = URLDecoder.decode(location, "UTF-8");
-            if(jarFilePath.startsWith("/") && jarFilePath.contains(":/")){
+            if (jarFilePath.startsWith("/") && jarFilePath.contains(":/")) {
                 jarFilePath = jarFilePath.substring(1);
             }
+            if (jarFilePath.startsWith("file:/")) {
+                int jarIndex = jarFilePath.lastIndexOf(".jar");
+                int endIndex = jarFilePath.indexOf("!/", jarIndex);
+                if (jarIndex != -1 && endIndex != -1) {
+                    jarFilePath = jarFilePath.substring(6, endIndex);
+                }
+            }
+            System.out.println("getDiskFreeSpace: " + jarFilePath);
             Path jarPath = Paths.get(jarFilePath).toRealPath();
             for (FileStore store : FileSystems.getDefault().getFileStores()) {
                 for (Path root : FileSystems.getDefault().getRootDirectories()) {
@@ -70,7 +77,7 @@ public class AppUtil implements EnvironmentAware {
                 }
             }
         } catch (IOException  ex) {
-            Logger.getLogger(AppUtil.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("getDiskFreeSpace: " + ex.getMessage());
         }
         return freeSpaceGB;
     }

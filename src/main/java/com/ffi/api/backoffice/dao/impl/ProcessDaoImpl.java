@@ -818,6 +818,7 @@ public class ProcessDaoImpl implements ProcessDao {
         List<Map<String, Object>> list = jdbcTemplate.query(qryListStockOpname, param, new DynamicRowMapper());
 
         if (!list.isEmpty()) {
+            Integer successRow = 0;
             for (Map<String, Object> sc : list) {
                 Map paramUpd = new HashMap();
                 paramUpd.put("itemCode", sc.get("itemCode"));
@@ -832,12 +833,13 @@ public class ProcessDaoImpl implements ProcessDao {
                     WHERE sc.trans_date = (SELECT trans_date FROM m_outlet WHERE outlet_code = :outletCode) AND sc.item_code = :itemCode
                                             """;
                 try {
-                    System.out.println("akan update so to sc detail: " + paramUpd);
-                    jdbcTemplate.update(qryUpd, paramUpd);
+                    messagingTemplate.convertAndSend("/topic", "Update Stock Opname: " + sc.get("itemCode").toString());
+                    successRow += jdbcTemplate.update(qryUpd, paramUpd);
                 } catch (DataAccessException e) {
                     System.out.println("error update sc: " + paramUpd);
                 }
             }
+            messagingTemplate.convertAndSend("/topic", "Berhasil Stock Opname - " + balance.get("opnameNo") + ": " + successRow + " item disimpan");
         }
     }
 ///////////////done///////////////
@@ -2568,6 +2570,7 @@ public class ProcessDaoImpl implements ProcessDao {
         jdbcTemplate.update(query, param);
         double elapsedTimeSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
         System.err.println("insertTStockCard process in: " + elapsedTimeSeconds + " seconds");
+        messagingTemplate.convertAndSend("/topic", "Update Stock Card: " + elapsedTimeSeconds + " detik");
     }
 
     ////////////New method for insert T EOD Hist - M Joko M 12-Dec-2023////////////
@@ -2587,6 +2590,7 @@ public class ProcessDaoImpl implements ProcessDao {
         jdbcTemplate.update(query, param);
         double elapsedTimeSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
         System.err.println("insertTEodHist process in: " + elapsedTimeSeconds + " seconds");
+        messagingTemplate.convertAndSend("/topic", "Update History EOD: " + elapsedTimeSeconds + " detik");
     }
 
     ////////////New method for increase trans_date M Outlet selesai EOD - M Joko M 11-Dec-2023////////////
@@ -2602,6 +2606,7 @@ public class ProcessDaoImpl implements ProcessDao {
         jdbcTemplate.update(query, param);
         double elapsedTimeSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
         System.err.println("increaseTransDateMOutlet process in: " + elapsedTimeSeconds + " seconds");
+        messagingTemplate.convertAndSend("/topic", "Update Trans Date: " + elapsedTimeSeconds + " detik");
     }
 
     ///////////////NEW METHOD insert T SUMM MPCS - M Joko 14/12/2023//// 
@@ -2745,6 +2750,7 @@ public class ProcessDaoImpl implements ProcessDao {
         jdbcTemplate.update(query, param);
         double elapsedTimeSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
         System.err.println("insertTSummMpcs process in: " + elapsedTimeSeconds + " seconds");
+        messagingTemplate.convertAndSend("/topic", "Update Summary MPCS: " + elapsedTimeSeconds + " detik");
     }
 
     ///////////////NEW METHOD update MPCS plan by Dona 14/12/2023//// 
@@ -3670,6 +3676,7 @@ public class ProcessDaoImpl implements ProcessDao {
                     TableAlias tableAlias = ta.get();
                     mapq.put(tableAlias.getAlias(), listItem);
                     list.add(mapq);
+                    messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Cek Data Transaksi: " + tableAlias.getAlias() + " - " + listItem.size() + " row");
                 }
             }
             rm.setItem(list);
@@ -3731,22 +3738,17 @@ public class ProcessDaoImpl implements ProcessDao {
             // End Get Data API Server
             List<Map<String, Object>> listItem = (List<Map<String, Object>>) map1.get("item");
             if (listItem == null) {
-                System.err.println("Error From Server API");
-                System.out.println("FAILED COPY DATA " + tableName);
-                FileLoggerUtil.log("terimaDataMaster", ("FAILED COPY DATA " + tableName), "SYSTEM");
+                System.err.println("FAILED COPY DATA : Error From Server API: " + tableName);
+                messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Gagal Terima Data: " + aliasName);
                 return false;
             } else {
                 compareData(listItem, tableName, param);
-                System.out.println("Ended Copy Data " + tableName);
-                FileLoggerUtil.log("terimaDataMaster", ("Ended Copy Data " + tableName), "SYSTEM");
                 return true;
             }
         } catch (JsonSyntaxException | IOException | UnsupportedOperationException | URISyntaxException e) {
             Date failedApp = new Date();
-            System.out.println("FAILED COPY DATA " + tableName + " At " + failedApp.toString());
-            System.err.println(e.getMessage());
-            FileLoggerUtil.log("terimaDataMaster", ("FAILED COPY DATA " + tableName), "SYSTEM");
-            FileLoggerUtil.log("terimaDataMaster", ("Error: " + e.getMessage()), "SYSTEM");
+            System.out.println("FAILED COPY DATA " + tableName + " At " + failedApp.toString() + ": " + e.getMessage());
+            messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Gagal Terima Data: " + aliasName);
 
             return false;
         }
@@ -3799,13 +3801,12 @@ public class ProcessDaoImpl implements ProcessDao {
             }
         }
         
-        
         int total = totalInsertRow + totalUpdateRow;
         String status = total == itemServer.size() ? "UPDATED" : (total == 0 && !itemServer.isEmpty() ? "NOT UPDATED" : total + " OF " + itemServer.size());
         param.put("totalRow", total);
         param.put("status", status);
         saveToQueryKirimTerimaData(param);
-        messagingTemplate.convertAndSend("/topic/kirim-terima-data", param.getOrDefault("aliasName", "data") + ": " + total + " Row");
+        messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Berhasil Terima Data " + param.getOrDefault("aliasName", "data") + ": " + total + " row");
     }
 
     public int  insertData(String tableName, Map<String, Object> data) {
@@ -3869,8 +3870,6 @@ public class ProcessDaoImpl implements ProcessDao {
     
     @Transactional
     private void saveToQueryKirimTerimaData(Map<String,Object> prm){
-        System.err.println("saveToQueryKirimTerimaData trx: " + prm.get("trx").getClass().getSimpleName());
-        System.err.println("saveToQueryKirimTerimaData trx: " + prm.get("trx"));
         if((Integer) prm.get("trx") == 1){
             prm.put("trxCode","1");
             prm.put("dataCode","0");
@@ -3933,6 +3932,7 @@ public class ProcessDaoImpl implements ProcessDao {
         System.out.println(tableName);
         TableAlias tableAlias = ta.get();
         aliasName = tableAlias.getAlias();
+        messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Mulai Kirim Data: " + aliasName);
         Map map1 = new HashMap();
 
         try {
@@ -3982,11 +3982,13 @@ public class ProcessDaoImpl implements ProcessDao {
                 param.put("totalRow", lst.get(0));
                 param.put("status", status);
                 saveToQueryKirimTerimaData(param);
+                messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Selesai Kirim Data: " + aliasName + " " + lst.get(0) + " row");
             }
         } catch (JsonSyntaxException | IOException | UnsupportedOperationException | DataAccessException e) {
             Date failedApp = new Date();
-            System.out.println("FAILED SEND DATA " + tableName + " At " + failedApp.toString());
-            System.err.println(e.getMessage());
+            System.out.println("FAILED SEND DATA " + tableName + " At " + failedApp.toString() + " " + e.getMessage());
+            messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Gagal Kirim Data: " + aliasName);
+            
         }
         return map1;
     }
@@ -4142,16 +4144,28 @@ public class ProcessDaoImpl implements ProcessDao {
                 Process process = processBuilder.start();
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                     String line;
+                    Integer lineNumber = 0;
                     while ((line = reader.readLine()) != null) {
-                        // todo: hubungkan output ke websocket untuk update progress
+                        lineNumber++;
+                        String percentage = ((int) Math.round((double) lineNumber / 5)) + "%";
                         System.out.println("backupDb: " + line);
-//                        Map m = parseOutputBackupDb(line);
-//                        if(!m.isEmpty()){
-//                            System.out.println(m);
-//                            TableAlias t = this.tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M, "table", m.getOrDefault("table", "").toString()).get();
-//                            String msg = t.getAlias() + ": " + m.getOrDefault("row", "0");
-                            messagingTemplate.convertAndSend("/topic/backup-db", line);
-//                        }
+                        if(!line.isEmpty() && line.contains(". exported")){
+                            Map m = parseOutputBackupDb(line);
+                            System.out.println(m);
+                            Optional<TableAlias> t = this.tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M, "table", m.getOrDefault("table", "").toString());
+                            if(t.isEmpty()){
+                                t = this.tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_T, "table", m.getOrDefault("table", "").toString());
+                            }
+                            if(t.isPresent()){
+                                TableAlias ta = t.get();
+                                String msg = ta.getAlias() + ": " + m.getOrDefault("row", "0");
+                                messagingTemplate.convertAndSend("/topic/backup-db", "Progress " + percentage + " : " + msg);
+                            } else {
+                                messagingTemplate.convertAndSend("/topic/backup-db", "Progress " + percentage);
+                            }
+                        } else {
+                            messagingTemplate.convertAndSend("/topic/backup-db", "Progress " + percentage);
+                        }
                     }
                 }
                 int exitCode = process.waitFor();
@@ -4168,6 +4182,7 @@ public class ProcessDaoImpl implements ProcessDao {
                 rm.setMessage("Error processBackupDb : " + e.getMessage());
             }
             double elapsedTimeSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
+            messagingTemplate.convertAndSend("/topic/backup-db", "Progress 100% dalam " + elapsedTimeSeconds + " detik");
             System.err.println("processBackupDb process in: " + elapsedTimeSeconds + " seconds");
         } else if (param.containsKey("delete") && param.get("delete").toString().length() > 0) {
             // fungsi hapus backup dan log di parameter delete
