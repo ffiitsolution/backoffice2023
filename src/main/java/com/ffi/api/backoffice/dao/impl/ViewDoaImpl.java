@@ -1526,7 +1526,7 @@ public class ViewDoaImpl implements ViewDao {
         int TOTAL_POS = 20;
         int size = list.size();
         System.err.println(size);
-        if (size == TOTAL_POS || size == TOTAL_INVENTORY) {
+        if (size == TOTAL_POS || size == TOTAL_INVENTORY || size == (TOTAL_INVENTORY + TOTAL_POS)) {
             return list;
         }
             String qryDelete = "DELETE FROM M_MENUDTL WHERE TYPE_MENU = 'REPORT'";
