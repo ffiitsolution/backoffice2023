@@ -3544,7 +3544,7 @@ public class ProcessDaoImpl implements ProcessDao {
         prm.put("oilUse", param.getAsJsonObject().getAsJsonPrimitive("oilUse").getAsString());
         prm.put("precentage", param.getAsJsonObject().getAsJsonPrimitive("precentage").getAsString());
         prm.put("userUpd", param.getAsJsonObject().getAsJsonPrimitive("userUpd").getAsString());
-        prm.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        prm.put("dateUpd", param.getAsJsonObject().getAsJsonPrimitive("dateUpd").getAsString());
         prm.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         jdbcTemplate.update(queryHeader, prm);
 
