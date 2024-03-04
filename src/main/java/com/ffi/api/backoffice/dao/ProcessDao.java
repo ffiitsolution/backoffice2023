@@ -181,7 +181,7 @@ public interface ProcessDao {
     
     //============== New Method From Lukas 17-10-2023 ================
     public boolean insertDataLocal(Map<String, Object> param);
-    public boolean sendDataLocal(Map<String, Object> param);
+    public Map sendDataLocal(Map<String, Object> param);
     //============== End Method From Lukas 17-10-2023 ================
 
     //============== Delete order entry detail by Dani 2 Feb 2024

@@ -6,9 +6,11 @@ package com.ffi.api.backoffice.dao.impl;
 
 import com.ffi.api.backoffice.dao.ViewDao;
 import com.ffi.api.backoffice.model.ParameterLogin;
+import com.ffi.api.backoffice.model.TableAlias;
 import com.ffi.api.backoffice.utils.AppUtil;
 import com.ffi.api.backoffice.utils.DynamicRowMapper;
 import com.ffi.api.backoffice.utils.FileLoggerUtil;
+import com.ffi.api.backoffice.utils.TableAliasUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -19,8 +21,6 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -39,7 +39,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.lang.Nullable;
-//import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -54,6 +53,9 @@ public class ViewDoaImpl implements ViewDao {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final AppUtil appUtil;
+
+    @Autowired
+    TableAliasUtil tableAliasUtil;
 
     @Autowired
     public ViewDoaImpl(NamedParameterJdbcTemplate jdbcTemplate, AppUtil appUtil) {
@@ -1522,9 +1524,9 @@ public class ViewDoaImpl implements ViewDao {
         // set: total report valid
         int TOTAL_INVENTORY = 17;
         int TOTAL_POS = 20;
-        int TOTAL_REPORT = TOTAL_INVENTORY + TOTAL_POS;
         int size = list.size();
-        if (size == TOTAL_INVENTORY || size == TOTAL_POS || size == TOTAL_REPORT) {
+        System.err.println(size);
+        if (size == TOTAL_POS || size == TOTAL_INVENTORY || size == (TOTAL_INVENTORY + TOTAL_POS)) {
             return list;
         }
             String qryDelete = "DELETE FROM M_MENUDTL WHERE TYPE_MENU = 'REPORT'";
@@ -3626,7 +3628,7 @@ public class ViewDoaImpl implements ViewDao {
         });
         if(list.isEmpty()){
             String insertTSummMpcs = "INSERT INTO t_summ_mpcs ("
-                + "SELECT a.OUTLET_CODE, :mpcsGroup AS MPCS_GROUP, :dateMpcs AS DATE_MPCS, a.SEQ_MPCS, a.TIME_MPCS, 0 as QTY_PROJ, d.UOM_STOCK AS UOM_PROJ, 0 AS QTY_PROJ_CONV, d.UOM_STOCK AS UOM_PROJ_CONV, 0 AS QTY_ACC_PROJ, d.UOM_STOCK AS UOM_ACC_PROJ, ' ' AS DESC_PROD, 0 AS QTY_PROD, d.UOM_STOCK AS UOM_PROD, 0 AS QTY_ACC_PROD, d.UOM_STOCK AS UOM_ACC_PROD, ' ' AS PROD_BY, 0 AS QTY_SOLD, d.UOM_STOCK AS UOM_SOLD, 0 AS QTY_ACC_SOLD, d.UOM_STOCK AS UOM_ACC_SOLD, 0 AS QTY_REJECT, d.UOM_STOCK AS UOM_REJECT, 0 AS QTY_ACC_REJECT, d.UOM_STOCK AS UOM_ACC_REJECT, 0 AS QTY_WASTAGE, d.UOM_STOCK AS UOM_WASTAGE, 0 AS QTY_ACC_WASTAGE, d.UOM_STOCK AS UOM_ACC_WASTAGE, 0 AS QTY_ONHAND, d.UOM_STOCK AS UOM_ONHAND, 0 AS QTY_ACC_ONHAND, d.UOM_STOCK AS UOM_ACC_ONHAND, 0 AS QTY_VARIANCE, d.UOM_STOCK AS UOM_VARIANCE, 0 AS QTY_ACC_VARIANCE, d.UOM_STOCK AS UOM_ACC_VARIANCE, a.USER_UPD AS USER_UPD, :dateMpcs AS DATE_UPD, TO_CHAR(SYSDATE, 'HH24MISS') AS TIME_UPD , 0 AS QTY_IN, 0 AS QTY_OUT "
+                + "SELECT a.OUTLET_CODE, :mpcsGroup AS MPCS_GROUP, :dateMpcs AS DATE_MPCS, a.SEQ_MPCS, a.TIME_MPCS, 0 as QTY_PROJ, d.UOM_STOCK AS UOM_PROJ, 0 AS QTY_PROJ_CONV, d.UOM_STOCK AS UOM_PROJ_CONV, 0 AS QTY_ACC_PROJ, d.UOM_STOCK AS UOM_ACC_PROJ, ' ' AS DESC_PROD, 0 AS QTY_PROD, d.UOM_STOCK AS UOM_PROD, 0 AS QTY_ACC_PROD, d.UOM_STOCK AS UOM_ACC_PROD, ' ' AS PROD_BY, 0 AS QTY_SOLD, d.UOM_STOCK AS UOM_SOLD, 0 AS QTY_ACC_SOLD, d.UOM_STOCK AS UOM_ACC_SOLD, 0 AS QTY_REJECT, d.UOM_STOCK AS UOM_REJECT, 0 AS QTY_ACC_REJECT, d.UOM_STOCK AS UOM_ACC_REJECT, 0 AS QTY_WASTAGE, d.UOM_STOCK AS UOM_WASTAGE, 0 AS QTY_ACC_WASTAGE, d.UOM_STOCK AS UOM_ACC_WASTAGE, 0 AS QTY_ONHAND, d.UOM_STOCK AS UOM_ONHAND, 0 AS QTY_ACC_ONHAND, d.UOM_STOCK AS UOM_ACC_ONHAND, 0 AS QTY_VARIANCE, d.UOM_STOCK AS UOM_VARIANCE, 0 AS QTY_ACC_VARIANCE, d.UOM_STOCK AS UOM_ACC_VARIANCE, a.USER_UPD AS USER_UPD, TO_CHAR(SYSDATE, 'DD MON YYYY') AS DATE_UPD, TO_CHAR(SYSDATE, 'HH24MISS') AS TIME_UPD , 0 AS QTY_IN, 0 AS QTY_OUT "
                 + "FROM TEMPLATE_MPCS a "
                 + "LEFT JOIN M_RECIPE_HEADER c ON c.MPCS_GROUP = :mpcsGroup "
                 + "LEFT JOIN (SELECT DISTINCT(RECIPE_CODE), UOM_STOCK FROM M_RECIPE_PRODUCT mrp GROUP BY RECIPE_CODE, UOM_STOCK) d ON c.RECIPE_CODE = d.RECIPE_CODE "
@@ -3680,7 +3682,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "FROM T_MPCS_HIST WHERE MPCS_GROUP = :mpcsGroup AND MPCS_DATE = :dateMpcs "
                 + "AND TIME_UPD <= replace(:maxTime, '.' , '')||'00' "
                 + "AND TIME_UPD >= replace(:minTime, '.' , '')||'00' "
-                + "AND (FRYER_TYPE <> 'D' or FRYER_TYPE IS NULL)";
+                + "AND (FRYER_TYPE <> 'D' or FRYER_TYPE IS NULL) ORDER BY TIME_UPD ASC ";
 
         Map prm = new HashMap();
         prm.put("mpcsGroup", balance.get("mpcsGroup"));
@@ -3688,7 +3690,6 @@ public class ViewDoaImpl implements ViewDao {
         prm.put("maxTime", balance.get("maxTime"));
         prm.put("minTime", balance.get("minTime"));
 
-        System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
@@ -4324,10 +4325,16 @@ public class ViewDoaImpl implements ViewDao {
 
     //////// NEW METHOD to get list daftar menu by Rafi 9 Jan 2024
     @Override
-    public List<Map<String, Object>> getListItemDetailReport() {
+    public List<Map<String, Object>> getListItemDetailReport(Map<String, String> balance) {
         String query = "SELECT mg.CODE, mg.DESCRIPTION FROM M_GLOBAL mg WHERE mg.COND = 'ITEM' ORDER BY mg.CODE ASC ";
-
-        return jdbcTemplate.query(query, new HashMap(), new DynamicRowMapper());
+        String fromDate = balance.getOrDefault("fromDate", "");
+        if (!(fromDate.equals(""))) {
+            query = "SELECT mg.CODE, mg.DESCRIPTION FROM M_GLOBAL mg "
+                + "WHERE mg.COND = 'ITEM' "
+                + "AND code in (SELECT DISTINCT(MENU_ITEM_CODE) FROM T_POS_BILL_ITEM tpbi WHERE TRANS_DATE BETWEEN :fromDate AND :toDate) "
+                + "ORDER BY mg.CODE ASC ";
+        }
+        return jdbcTemplate.query(query, balance, new DynamicRowMapper());
     }
 
     /////// NEW METHOD to mengambil data user absensi by id by M Joko 16 Jan 2024
@@ -4374,7 +4381,7 @@ public class ViewDoaImpl implements ViewDao {
     ///////////////new method from aditya 30-01-2024////////////////////////////
     @Override
     public List<Map<String, Object>> listManagementFryer(Map<String, String> balance) {
-        String qry = "SELECT TO_CHAR(a.DATE_UPD, 'DD Mon YYYY') AS DATE_UPD, TO_CHAR(TO_DATE(a.TIME_UPD, 'HH24MISS'), 'HH24:MI:SS') AS TIME_UPD, a.OUTLET_CODE, a.PROCESS_NO, a.FRYER_TYPE, c.DESCRIPTION AS FRYER_DESC, a.FRYER_NO, a.OIL_USE, c.VALUE AS MAXIMUM_USE, a.PRECENTAGE AS PROGRESS, a.NOTES, a.USER_UPD, d.STAFF_NAME AS PIC FROM T_MPCS_MANAGEMENT a JOIN M_OUTLET b ON a.OUTLET_CODE = b.OUTLET_CODE AND a.OUTLET_CODE =:outletCode JOIN M_GLOBAL c ON a.FRYER_TYPE = c.CODE AND COND = 'FRYER' AND (:fryerType IS NULL OR a.FRYER_TYPE = :fryerType) JOIN M_STAFF d ON a.USER_UPD = d.STAFF_CODE WHERE a.DATE_UPD between :fromDate and :toDate ORDER BY a.DATE_UPD DESC, a.TIME_UPD, a.PROCESS_NO DESC";
+        String qry = "SELECT TO_CHAR(a.DATE_UPD, 'DD Mon YYYY') AS DATE_UPD, TO_CHAR(TO_DATE(a.TIME_UPD, 'HH24MISS'), 'HH24:MI:SS') AS TIME_UPD, a.OUTLET_CODE, a.PROCESS_NO, a.FRYER_TYPE, c.DESCRIPTION AS FRYER_DESC, a.FRYER_NO, a.OIL_USE, c.VALUE AS MAXIMUM_USE, a.PRECENTAGE AS PROGRESS, a.NOTES, a.USER_UPD, d.STAFF_NAME AS PIC FROM T_MPCS_MANAGEMENT a JOIN M_OUTLET b ON a.OUTLET_CODE = b.OUTLET_CODE AND a.OUTLET_CODE =:outletCode JOIN M_GLOBAL c ON a.FRYER_TYPE = c.CODE AND COND = 'FRYER' AND (:fryerType IS NULL OR a.FRYER_TYPE = :fryerType) JOIN M_STAFF d ON a.USER_UPD = d.STAFF_CODE WHERE a.DATE_UPD between :fromDate and :toDate ORDER BY a.DATE_UPD DESC, a.TIME_UPD DESC, a.PROCESS_NO DESC";
         Map prm = new HashMap();
         prm.put("outletCode", balance.get("outletCode"));
         prm.put("fryerType", balance.get("fryerType"));
@@ -4536,13 +4543,39 @@ return finalResultList;
     // =============== Ambil list riwayat Master - Kirim Terima Data
     @Override
     public List<Map<String, Object>> listTransferDataHistory(Map<String, String> balance) {
-        String qry = "SELECT * FROM ( SELECT NVL(ms.STAFF_FULL_NAME, ofh.USER_UPD) AS USER_NAME, TO_CHAR(ofh.TRANS_DATE, 'DD MON YYYY') AS F_TRANS_DATE, CASE WHEN ofh.TRX_CODE = '1' THEN 'KIRIM DATA TRANSAKSI' ELSE 'TERIMA DATA MASTER' END AS TYPE, ofh.* FROM M_OUTLET_FTP_HIST ofh LEFT JOIN M_STAFF ms ON ms.STAFF_CODE = ofh.USER_UPD ORDER BY ofh.TRANS_DATE DESC, ofh.TIME_UPD DESC ) WHERE ROWNUM <= 50";
-        if(isValidParamKey(balance.get("transDate")) && isValidParamKey(balance.get("timeUpd"))){
+        List<Map<String, Object>> returnList = new ArrayList();
+        Object type = balance.get("type");
+        if(!(type instanceof String)){
+            balance.put("type", "");
+        } else if( isValidParamKey(balance.get("type")) && balance.get("type").equalsIgnoreCase("KIRIM DATA TRANSAKSI")){
+            balance.put("type", "1");
+        } else if(isValidParamKey(balance.get("type")) && balance.get("type").equalsIgnoreCase("TERIMA DATA MASTER")){
+            balance.put("type", "0");
+        } else {
+            balance.put("type", "");
+        }
+        boolean isDetail = isValidParamKey(balance.get("transDate")) && isValidParamKey(balance.get("timeUpd"));
+        String qry = "SELECT NVL(ms.STAFF_FULL_NAME, ofh.USER_UPD) AS USER_NAME, TO_CHAR(ofh.TRANS_DATE, 'DD MON YYYY') AS F_TRANS_DATE, CASE WHEN ofh.TRX_CODE = 1 THEN 'KIRIM DATA TRANSAKSI' ELSE 'TERIMA DATA MASTER' END AS TYPE, ofh.* FROM M_OUTLET_FTP_HIST ofh LEFT JOIN M_STAFF ms ON ms.STAFF_CODE = ofh.USER_UPD WHERE ofh.TRX_CODE LIKE '%' || :type || '%' AND ofh.TRANS_DATE BETWEEN :startDate AND :endDate ORDER BY ofh.TRANS_DATE DESC, ofh.TIME_UPD DESC ";
+        if(isDetail){
             qry = "SELECT TO_CHAR(ofd.TRANS_DATE, 'DD MON YYYY') AS F_TRANS_DATE, ofd.* FROM M_OUTLET_FTP_HIST_DTL ofd WHERE ofd.TRANS_DATE = :transDate AND ofd.TIME_UPD = :timeUpd";
         }
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, balance, new DynamicRowMapper());
-        return list;
+        if(isDetail){
+            for (Map<String, Object> row : list) {
+                String tableName = row.get("description").toString();
+                Optional<TableAlias> ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M, "table", tableName);
+                if(ta.isEmpty()){
+                    ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_T, "table", tableName);
+                }
+                TableAlias tableAlias = ta.get();
+                row.put("description", tableAlias.getAlias());
+                returnList.add(row);
+            }
+        } else {
+            returnList = list;
+        }
+        return returnList;
     }
 
     // =============== New Method From Sifa 20-02-2024 ===============
@@ -4828,7 +4861,7 @@ return finalResultList;
     
     @Override
     public List<Map<String, Object>> listOutletDetailGroup(Map<String, String> balance) {
-        String qry = "SELECT a.*, b.OUTLET_NAME AS PARENT_NAME, c.OUTLET_NAME AS CHILD_NAME FROM M_OUTLET_DETAIL a JOIN M_OUTLET b ON a.PARENT_OUTLET = b.OUTLET_CODE JOIN M_OUTLET c ON a.CHILD_OUTLET = c.OUTLET_CODE WHERE b.OUTLET_CODE =:outletCode";
+        String qry = "SELECT a.*, b.OUTLET_NAME AS PARENT_NAME, c.OUTLET_NAME AS CHILD_NAME, c.STATUS FROM M_OUTLET_DETAIL a JOIN M_OUTLET b ON a.PARENT_OUTLET = b.OUTLET_CODE JOIN M_OUTLET c ON a.CHILD_OUTLET = c.OUTLET_CODE WHERE b.OUTLET_CODE =:outletCode";
 
         Map prm = new HashMap();
         prm.put("outletCode", balance.get("outletCode"));
@@ -4838,7 +4871,8 @@ return finalResultList;
             rt.put("parentOutlet", rs.getString("PARENT_OUTLET"));
             rt.put("parentName", rs.getString("PARENT_NAME"));
             rt.put("childOutlet", rs.getString("CHILD_OUTLET"));
-            rt.put("childName", rs.getString("CHILD_NAME"));           
+            rt.put("childName", rs.getString("CHILD_NAME")); 
+            rt.put("status", rs.getString("STATUS")); 
             return rt;
         });
         return list;
@@ -4899,6 +4933,7 @@ return finalResultList;
                     + "FROM M_ITEM a WHERE a.STATUS = 'A' AND ITEM_CODE IN (SELECT item_code FROM M_ITEM_SUPPLIER mis2 WHERE CD_SUPPLIER = :cdSupplier) ";
             };
         }
+        viewQuery += " ORDER BY ITEM_CODE ASC ";
         
         List<Map<String, Object>> list = jdbcTemplate.query(viewQuery, param, (ResultSet rs, int i) -> {
             Map<String, Object> rt = new HashMap<>();

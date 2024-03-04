@@ -2705,6 +2705,7 @@ public class IndexController {
     )
     public @ResponseBody
     Response processEod(@RequestBody String param) throws IOException, Exception {
+        messagingTemplate.convertAndSend("/topic", "Mulai End Of Day");
         long startTime = System.currentTimeMillis();
         System.err.println("Start End of Day Process");
         Gson gsn = new Gson();
@@ -2730,6 +2731,7 @@ public class IndexController {
         for (int i = 0; i < listMPosActive.size(); i++) {
             var mPos = listMPosActive.get(i);
             String posCode = mPos.get("posCode").toString();
+            messagingTemplate.convertAndSend("/topic", "End Of Day - Cek POS: " + posCode);
             if (posCode.length() < 1) {
                 errors.add("! posCode kosong ");
             } else {
@@ -2795,6 +2797,7 @@ public class IndexController {
         res.setData(data);
         double elapsedTimeSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
         System.err.println("Finished End of Day Process after total: " + elapsedTimeSeconds + " seconds");
+        messagingTemplate.convertAndSend("/topic", "Selesai End Of Day: " + elapsedTimeSeconds + " detik");
         res.setDraw((int) elapsedTimeSeconds);
         return res;
     }
@@ -3314,13 +3317,15 @@ public class IndexController {
         @ApiResponse(code = 404, message = "The resource not found"),}
     )
     public @ResponseBody
-    ResponseMessage getListItemDetailReport() throws JRException, IOException, Exception {
-
+    ResponseMessage getListItemDetailReport(@RequestBody String params) throws JRException, IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(params, new TypeToken<Map<String, String>>() {
+        }.getType());
         var rm = new ResponseMessage();
         try {
             rm.setSuccess(true);
             rm.setMessage("Success Successfuly");
-            rm.setItem(viewServices.getListItemDetailReport());
+            rm.setItem(viewServices.getListItemDetailReport(balance));
         } catch (Exception e) {
             e.printStackTrace();
             rm.setSuccess(false);
@@ -3643,11 +3648,11 @@ public class IndexController {
         List<String> listError = new ArrayList<>();
         try {
             for (String table : listTable) {
-                if (processServices.sendDataLocal(param) == false) {
-                    Date dateError = new Date();
-                    listError.add(table);
-                    System.out.println("Error Insert Table " + table + " At " + dateError);
-                }
+//                if (processServices.sendDataLocal(param) == false) {
+//                    Date dateError = new Date();
+//                    listError.add(table);
+//                    System.out.println("Error Insert Table " + table + " At " + dateError);
+//                }
             }
 
             if (listError.isEmpty()) {
@@ -3686,13 +3691,13 @@ public class IndexController {
                 rm.setMessage("Please Choose Table First");
             } else {
                 for (String table : nameTable) {
-                    if (processServices.sendDataLocal(param) == false) {
-                        Date dateError = new Date();
-                        listError.add(table);
-                        System.out.println("Error Transfer Table " + table + " At " + dateError);
-                    } else {
-                        System.out.println("Done Transfer Table " + table);
-                    }
+//                    if (processServices.sendDataLocal(param) == false) {
+//                        Date dateError = new Date();
+//                        listError.add(table);
+//                        System.out.println("Error Transfer Table " + table + " At " + dateError);
+//                    } else {
+//                        System.out.println("Done Transfer Table " + table);
+//                    }
                 }
 
                 if (listError.isEmpty()) {
@@ -3720,7 +3725,7 @@ public class IndexController {
         TableAlias ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_T, "alias", aliasName).get();
         String tableName = ta.getTable();
         String dateUpd = (String) param.get("dateUpd");
-        param.put("trx",0);
+        param.put("trx",1);
         param.put("outletId",param.get("outletCode").toString());
         param.put("tableName",tableName);
         param.put("aliasName",ta.getAlias());
@@ -3730,13 +3735,18 @@ public class IndexController {
         ResponseMessage rm = new ResponseMessage();
         rm.setSuccess(false);
         try {
-                    if (processServices.sendDataLocal(param)) {
-                        messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Success Kirim Data: " + aliasName);
-                        rm.setSuccess(true);
-                        rm.setMessage("Success Kirim Data: " + aliasName);
-                    } else {
-                        messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Failed Kirim Data: " + aliasName);
-                    }
+            Map map1 = processServices.sendDataLocal(param);
+            boolean status = (boolean) map1.get("success");
+            List list = (List) map1.get("item");
+            if (status) {
+                messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Success Kirim Data: " + aliasName);
+                rm.setSuccess(true);
+                rm.setItem(list);
+                rm.setMessage("Success Kirim Data: " + aliasName);
+            } else {
+                rm.setMessage("Failed Kirim Data: " + aliasName);
+                messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Failed Kirim Data: " + aliasName);
+            }
         } catch (MessagingException e) {
             rm.setMessage("Transfer Failed: " + e.getMessage());
         }

@@ -159,14 +159,14 @@ ORDER BY Q.ITEM_CODE]]>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Code]]></text>
+				<text><![CDATA[Kode Item]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="44" y="99" width="186" height="18" uuid="9324eae0-eb3a-4cec-80fe-05b194865441"/>
+				<reportElement x="54" y="99" width="176" height="18" uuid="9324eae0-eb3a-4cec-80fe-05b194865441"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Outlet Name]]></text>
+				<text><![CDATA[Deskripsi]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="229" y="99" width="80" height="18" uuid="a1d7f151-0761-47c1-83da-1f9dff65c070">
@@ -401,7 +401,7 @@ ORDER BY Q.ITEM_CODE]]>
 				<textFieldExpression><![CDATA[$F{ITEM_CODE}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="46" y="0" width="184" height="14" uuid="de5ce1e6-b238-47b5-8de1-b9de8c29bf5c"/>
+				<reportElement x="54" y="0" width="176" height="14" uuid="de5ce1e6-b238-47b5-8de1-b9de8c29bf5c"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>

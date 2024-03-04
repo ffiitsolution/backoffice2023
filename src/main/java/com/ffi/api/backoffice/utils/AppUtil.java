@@ -8,9 +8,12 @@ import com.ffi.api.backoffice.dao.impl.ProcessDaoImpl;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.nio.file.FileStore;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.context.EnvironmentAware;
@@ -47,16 +50,34 @@ public class AppUtil implements EnvironmentAware {
         return (value != null) ? value : defaultValue;
     }
     
-    public double getDiskFreeSpace(){
-        double freeSpaceGB = 0;
+    public double getDiskFreeSpace() {
+        double freeSpaceGB = -1;
         try {
-            String jarFilePath = AppUtil.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-            Path jarPath = new File(jarFilePath).toPath();
-            FileStore fileStore = Files.getFileStore(jarPath);
-            long freeSpace = fileStore.getUsableSpace();
-            freeSpaceGB = freeSpace / (1024.0 * 1024.0 * 1024.0);
-        } catch (IOException | URISyntaxException ex) {
-            Logger.getLogger(ProcessDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+            String location = AppUtil.class.getProtectionDomain().getCodeSource().getLocation().getFile();
+            String jarFilePath = URLDecoder.decode(location, "UTF-8");
+            if (jarFilePath.startsWith("/") && jarFilePath.contains(":/")) {
+                jarFilePath = jarFilePath.substring(1);
+            }
+            if (jarFilePath.startsWith("file:/")) {
+                int jarIndex = jarFilePath.lastIndexOf(".jar");
+                int endIndex = jarFilePath.indexOf("!/", jarIndex);
+                if (jarIndex != -1 && endIndex != -1) {
+                    jarFilePath = jarFilePath.substring(6, endIndex);
+                }
+            }
+            System.out.println("getDiskFreeSpace: " + jarFilePath);
+            Path jarPath = Paths.get(jarFilePath).toRealPath();
+            for (FileStore store : FileSystems.getDefault().getFileStores()) {
+                for (Path root : FileSystems.getDefault().getRootDirectories()) {
+                    if (jarPath.startsWith(root)) {
+                        long freeSpace = store.getUsableSpace();
+                        freeSpaceGB = freeSpace / (1024.0 * 1024.0 * 1024.0);
+                        return freeSpaceGB;
+                    }
+                }
+            }
+        } catch (IOException  ex) {
+            System.out.println("getDiskFreeSpace: " + ex.getMessage());
         }
         return freeSpaceGB;
     }
