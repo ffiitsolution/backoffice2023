@@ -41,7 +41,7 @@ FROM T_MPCS_MANAGEMENT a
 JOIN M_OUTLET b ON a.OUTLET_CODE = b.OUTLET_CODE AND a.OUTLET_CODE = $P{outletCode} 
 JOIN M_GLOBAL c ON a.FRYER_TYPE = c.CODE AND COND = 'FRYER' AND ( $P{fryerType} IS NULL OR a.FRYER_TYPE = $P{fryerType})
 JOIN M_STAFF d ON a.USER_UPD = d.STAFF_CODE 
-WHERE a.DATE_UPD between  $P{fromDate}  and $P{toDate} ORDER BY a.DATE_UPD DESC, a.TIME_UPD, a.PROCESS_NO  DESC]]>
+WHERE a.DATE_UPD between  $P{fromDate}  and $P{toDate} ORDER BY a.DATE_UPD DESC, a.TIME_UPD DESC, a.PROCESS_NO  DESC]]>
 	</queryString>
 	<field name="DATE_UPD" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="DATE_UPD"/>
@@ -466,7 +466,7 @@ $P{fryerType}.equals("S") ? "Split Fryer" :
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[ $F{FRYER_TYPE}.equals("S") ? " Kg" : " Head"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{FRYER_TYPE}.equals("S") ? " Kg" : " Head"]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
