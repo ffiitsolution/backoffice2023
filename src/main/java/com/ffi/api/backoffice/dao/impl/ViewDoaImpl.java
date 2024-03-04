@@ -2184,7 +2184,7 @@ public class ViewDoaImpl implements ViewDao {
         } else if (filter.equalsIgnoreCase("5")) {
             qry += "and ord.order_type = '5' ";
         }
-        qry += "order by rc.ORDER_NO ";
+        qry += "ORDER BY rc.STATUS ASC, rc.DATE_UPD DESC, rc.TIME_UPD DESC ";
         System.err.println("q :" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
