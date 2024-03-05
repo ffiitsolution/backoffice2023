@@ -821,9 +821,10 @@ public class ViewDoaImpl implements ViewDao {
         
         if (balance.getOrDefault("outletCode", "").length() > 0){
             String areaCode = jdbcTemplate.queryForObject("SELECT AREA_CODE FROM M_OUTLET WHERE OUTLET_CODE = :outletCode", balance, String.class);
-            qry += " ORDER BY CASE WHEN AREA_CODE = '" + areaCode + "' THEN 0 ELSE 1 END ASC ";
+            qry += " ORDER BY CASE WHEN AREA_CODE = '" + areaCode + "' THEN 0 ELSE 1 END ASC, OUTLET_CODE ASC";
             prm.put("status", balance.get("status"));
         }
+        System.out.println(qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, (ResultSet rs, int i) -> {
             Map<String, Object> rt = new HashMap<>();
             rt.put("region", rs.getString("region_code"));
