@@ -2978,7 +2978,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "wastage_id, case when status = '1' then 'CLOSED' else 'OPEN' end as final_status "
                 + "from t_wastage_header "
                 + "where wastage_date between TO_DATE(:startDate, 'dd-mm-yyyy') and TO_DATE(:endDate, 'dd-mm-yyyy') "
-                + "order by wastage_date, wastage_no ";
+                + "order by wastage_date desc, wastage_no desc";
         Map prm = new HashMap();
         prm.put("startDate", ref.get("startDate"));
         prm.put("endDate", ref.get("endDate"));
@@ -3022,7 +3022,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("uomStock", rs.getString("uom_stock"));
                 rt.put("itemTo", rs.getString("item_to"));
                 rt.put("itemDescTo", rs.getString("item_description_to"));
-                rt.put("quantityTo", String.format("%.2f", qty));
+                rt.put("quantityTo", String.format("%.4f", qty));
                 rt.put("uomStockTo", rs.getString("uom_stock_to"));
                 return rt;
             }

@@ -1507,7 +1507,6 @@ public class ProcessDaoImpl implements ProcessDao {
             jdbcTemplate.update(sql, paramIns);
             noUrut = transType.concat(outletCode).concat(year.substring(2)).concat(month).concat(noUrut);
         }
-        System.err.println("No Urut :" + noUrut);
         return noUrut;
     }
 
@@ -1533,9 +1532,9 @@ public class ProcessDaoImpl implements ProcessDao {
     public void InsertWastageHeaderDetail(JsonObject balancing) {
         DateFormat df = new SimpleDateFormat("MM");
         DateFormat dfYear = new SimpleDateFormat("yyyy");
-        Date tgl = new Date();
-        String month = df.format(tgl);
-        String year = dfYear.format(tgl);
+        String wastageDate = balancing.getAsJsonObject().getAsJsonPrimitive("wastageDate").getAsString();
+        String month = df.format(new Date(wastageDate));
+        String year = dfYear.format(new Date(wastageDate));
 
         //Getting last number for Wastage/Leftover
         String transType = balancing.getAsJsonObject().getAsJsonPrimitive("transType").getAsString();
@@ -1569,7 +1568,7 @@ public class ProcessDaoImpl implements ProcessDao {
         //Detail
         JsonArray emp = balancing.getAsJsonObject().getAsJsonArray("itemList");
         for (int i = 0; i < emp.size(); i++) {
-            Map<String, String> detailParam = new HashMap<String, String>();
+            Map<String, String> detailParam = new HashMap<>();
             detailParam.put("outletCode", balancing.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
             detailParam.put("wastageId", opId);
             detailParam.put("wastageNo", opNo);
