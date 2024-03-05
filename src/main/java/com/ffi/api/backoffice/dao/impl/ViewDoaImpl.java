@@ -2189,9 +2189,11 @@ public class ViewDoaImpl implements ViewDao {
         } else if (filter.equalsIgnoreCase("3")) { //Supplier
             qry += "and length(ord.cd_supplier) = 10 ";
         } else if (filter.equalsIgnoreCase("4")) {
-            qry += "and ord.order_type = '4' ";
+            qry += "and ord.order_type = '4' and ord.order_to = '3' "; // FSD Gudang
         } else if (filter.equalsIgnoreCase("5")) {
-            qry += "and ord.order_type = '5' ";
+            qry += "and ord.order_type = '4' and ord.order_to IN ('0', '1') "; // FSD Supplier
+        } else if (filter.equalsIgnoreCase("6")) {
+            qry += "and ord.order_type = '5' and ord.order_to IN ('0', '1') "; // SDD
         }
         qry += "ORDER BY rc.STATUS ASC, rc.DATE_UPD DESC, rc.TIME_UPD DESC ";
         System.err.println("q :" + qry);
