@@ -89,6 +89,9 @@ public class ProcessDaoImpl implements ProcessDao {
 
     @Autowired
     AppUtil appUtil;
+            
+    @Autowired
+    private FileLoggerUtil fileLoggerUtil;
 
     @Value("${endpoint.warehouse}")
     private String urlWarehouse;
@@ -3976,12 +3979,15 @@ public class ProcessDaoImpl implements ProcessDao {
             // END API to Send Master
             List lst = (List) map1.get("item");
             if(!lst.isEmpty()){
-                double total = (double) lst.get(0);
+                double total = 0;
+                if(lst.get(0) != null){
+                    total = (double) lst.get(0);
+                }
                 String status = total == list.size() ? "UPDATED" : (total == 0 && !list.isEmpty() ? "NOT UPDATED" : total + " OF " + list.size());
-                param.put("totalRow", lst.get(0));
+                param.put("totalRow", total);
                 param.put("status", status);
                 saveToQueryKirimTerimaData(param);
-                messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Selesai Kirim Data: " + aliasName + " " + lst.get(0) + " row");
+                messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Selesai Kirim Data: " + aliasName + " " + total + " row");
             }
         } catch (JsonSyntaxException | IOException | UnsupportedOperationException | DataAccessException e) {
             Date failedApp = new Date();

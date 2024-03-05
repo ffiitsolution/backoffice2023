@@ -260,7 +260,7 @@ public class ViewServices {
     ///////////////done
     //////////////////new method by Dona 30-03-2023//////////////////////////
 
-    public List<Map<String, Object>> listGlobal(Map<String, String> ref) {
+    public List<Map<String, Object>> listGlobal(Map<String, Object> ref) {
         return viewDao.listGlobal(ref);
     }
 

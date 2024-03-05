@@ -58,6 +58,9 @@ public class ViewDoaImpl implements ViewDao {
     TableAliasUtil tableAliasUtil;
 
     @Autowired
+    private FileLoggerUtil fileLoggerUtil;
+    
+    @Autowired
     public ViewDoaImpl(NamedParameterJdbcTemplate jdbcTemplate, AppUtil appUtil) {
         this.jdbcTemplate = jdbcTemplate;
         this.appUtil = appUtil;
@@ -1505,15 +1508,15 @@ public class ViewDoaImpl implements ViewDao {
 ///////new methode from Dona 30-03-23//////////////////
 
     @Override
-    public List<Map<String, Object>> listGlobal(Map<String, String> balance) {
+    public List<Map<String, Object>> listGlobal(Map<String, Object> balance) {
         Map prm = new HashMap();
         prm.put("cond", balance.get("cond"));
         String qry = "SELECT DESCRIPTION, TYPE_MENU, APLIKASI, ID_NO FROM m_menudtl WHERE TYPE_MENU = :cond";
-        if(balance.getOrDefault("aplikasi", "").length() > 0){
+        if(balance.getOrDefault("aplikasi", "").toString().length() > 0){
             qry += " AND APLIKASI = :aplikasi";
             prm.put("aplikasi", balance.get("aplikasi"));
         }
-        if(balance.getOrDefault("status", "").length() > 0){
+        if(balance.getOrDefault("status", "").toString().length() > 0){
             qry += " AND STATUS = :status";
             prm.put("status", balance.get("status"));
         }
@@ -1525,7 +1528,6 @@ public class ViewDoaImpl implements ViewDao {
         int TOTAL_INVENTORY = 17;
         int TOTAL_POS = 20;
         int size = list.size();
-        System.err.println(size);
         if (size == TOTAL_POS || size == TOTAL_INVENTORY || size == (TOTAL_INVENTORY + TOTAL_POS)) {
             return list;
         }
@@ -4114,35 +4116,7 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> outletInfo(String outletCode) {
         String envBe = appUtil.getOrDefault("app.env", "production");
-        String qry = """
-                    SELECT 
-                        region_code, 
-                        outlet_code, 
-                        outlet_name, 
-                        type, 
-                        address_1, 
-                        address_2, 
-                        city, 
-                        post_code, 
-                        phone, 
-                        fax, 
-                        TO_CHAR(TRANS_DATE, 'DD-MM-YYYY') AS TRANS_DATE,
-                        area_code,
-                        mg.description as area_description,
-                        initial_outlet,
-                        rsc_code,
-                        tax_charge,
-                        outlet_24_hour,
-                        CASE 
-                            WHEN outlet_name LIKE '%TACOBELL%' THEN 'TACOBELL'
-                            ELSE 'KFC'
-                        END AS brand,
-                        :envBe AS env_be
-                     
-                    FROM M_OUTLET mo
-                    JOIN M_GLOBAL mg ON mo.area_code = mg.code AND mg.cond = 'AREACODE'
-                    WHERE outlet_code = :outletcode
-                     """;
+        String qry = "SELECT region_code, outlet_code, outlet_name, type, address_1, address_2, city, post_code, phone, fax, TO_CHAR(TRANS_DATE, 'DD-MM-YYYY') AS TRANS_DATE, area_code, mg.description as area_description, initial_outlet, rsc_code, tax_charge, outlet_24_hour, CASE WHEN outlet_name LIKE '%TACOBELL%' THEN 'TACOBELL' ELSE 'KFC' END AS brand, :envBe AS env_be FROM M_OUTLET mo JOIN M_GLOBAL mg ON mo.area_code = mg.code AND mg.cond = 'AREACODE' WHERE outlet_code = :outletcode";
         Map prm = new HashMap();
         prm.put("outletcode", outletCode);
         prm.put("envBe", envBe);
@@ -4487,7 +4461,10 @@ return finalResultList;
     public List<String> listLogger(Map<String, Object> param) {
         String module = (String) param.get("module");
         List<String> logs;
-        if(param.containsKey("log") && !param.get("log").toString().isBlank()){
+        if(param.containsKey("log") && !param.get("log").toString().isBlank() && "ActivityLog".equals(module)){
+            String log = (String) param.get("log");
+            logs = FileLoggerUtil.readActivityLogsFromFile(module,log);
+        } else if (param.containsKey("log") && !param.get("log").toString().isBlank()){
             String log = (String) param.get("log");
             logs = FileLoggerUtil.readLogsFromFile(module,log);
         } else {
