@@ -69,8 +69,11 @@ public class ReportController {
     ///////////////NEW METHOD REPORT BY PASCA 23 MEI 2023////
     @RequestMapping(value = "/report-order-entry")
     @ApiOperation(value = "Mepampilkan report order entry", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "ok"), @ApiResponse(code = 400, message = "The resource not found")})
-    public @ResponseBody Response reportOrderEntry(@RequestBody String param) throws IOException {
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "ok"),
+        @ApiResponse(code = 400, message = "The resource not found")})
+    public @ResponseBody
+    Response reportOrderEntry(@RequestBody String param) throws IOException {
         Gson gson = new Gson();
         Map<String, Object> listParam = gson.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
@@ -81,8 +84,11 @@ public class ReportController {
 
     @RequestMapping(value = "/report-delivery-order")
     @ApiOperation(value = "Mepampilkan report delivery order", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "ok"), @ApiResponse(code = 400, message = "The resource not found")})
-    public @ResponseBody Response reportDeliveryOrder(@RequestBody String param) {
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "ok"),
+        @ApiResponse(code = 400, message = "The resource not found")})
+    public @ResponseBody
+    Response reportDeliveryOrder(@RequestBody String param) {
         Gson gson = new Gson();
 
         Map<String, Object> listParam = gson.fromJson(param, new TypeToken<Map<String, Object>>() {
@@ -97,8 +103,11 @@ public class ReportController {
     ///////////////NEW METHOD REPORT recive BY PASCA 24 MEI 2023////
     @RequestMapping(value = "/report-receiving")
     @ApiOperation(value = "Mepampilkan report receiving", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "ok"), @ApiResponse(code = 400, message = "The resource not found")})
-    public @ResponseBody Response reportReceiving(@RequestBody String param) {
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "ok"),
+        @ApiResponse(code = 400, message = "The resource not found")})
+    public @ResponseBody
+    Response reportReceiving(@RequestBody String param) {
         Gson gson = new Gson();
 
         Map<String, Object> listParam = gson.fromJson(param, new TypeToken<Map<String, Object>>() {
@@ -111,8 +120,11 @@ public class ReportController {
 
     @RequestMapping(value = "/report-return-order")
     @ApiOperation(value = "Mepampilkan report return order", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "ok"), @ApiResponse(code = 400, message = "The resource not found")})
-    public @ResponseBody Response reportReturnOrder(@RequestBody String param) {
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "ok"),
+        @ApiResponse(code = 400, message = "The resource not found")})
+    public @ResponseBody
+    Response reportReturnOrder(@RequestBody String param) {
         Gson gson = new Gson();
 
         Map<String, Object> listParam = gson.fromJson(param, new TypeToken<Map<String, Object>>() {
@@ -125,8 +137,11 @@ public class ReportController {
 
     @RequestMapping(value = "/report-wastage")
     @ApiOperation(value = "Mepampilkan report wastage", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "ok"), @ApiResponse(code = 400, message = "The resource not found")})
-    public @ResponseBody Response reportWastage(@RequestBody String param) {
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "ok"),
+        @ApiResponse(code = 400, message = "The resource not found")})
+    public @ResponseBody
+    Response reportWastage(@RequestBody String param) {
         Gson gson = new Gson();
 
         Map<String, Object> listParam = gson.fromJson(param, new TypeToken<Map<String, Object>>() {
@@ -141,8 +156,11 @@ public class ReportController {
     ///////////////NEW METHOD REPORT recive BY PASCA 29 MEI 2023////
     @RequestMapping(value = "/insert-log-report", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk Insert data ke tabel log-report", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
-    public @ResponseBody ResponseMessage insertStaff(@RequestBody String param) throws JRException, IOException, Exception {
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
+    public @ResponseBody
+    ResponseMessage insertStaff(@RequestBody String param) throws JRException, IOException, Exception {
         Gson gsn = new Gson();
         Map<String, String> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
@@ -163,7 +181,9 @@ public class ReportController {
     @CrossOrigin
     @RequestMapping(value = "/report-order-entry-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report order entry", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportOrderEntry(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -178,13 +198,16 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=OrderEntryReport.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
+        }
     }
 
     @RequestMapping(value = "/report-order-entry-jesper-html", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report order entry", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public void jesperReportOrderEntryHtml(@RequestBody String param, HttpServletResponse response) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -206,7 +229,9 @@ public class ReportController {
     @CrossOrigin
     @RequestMapping(value = "/report-receiving-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report receiving", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportReceiving(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -221,14 +246,17 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=ReceivingReport.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
+        }
     }
 
     @CrossOrigin
     @RequestMapping(value = "/report-return-order-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report return order", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportReturnOrder(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -243,14 +271,17 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=ReturnOrderReport.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
+        }
     }
 
     @CrossOrigin
     @RequestMapping(value = "/report-wastage-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report wastage", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportWastage(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -265,14 +296,17 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=Wastage.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
+        }
     }
 
     @CrossOrigin
     @RequestMapping(value = "/report-delivery-order-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report delivery order", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportDeliveryOrder(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -287,14 +321,17 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=DeliveryOrder.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
     }
 
     @CrossOrigin
     @RequestMapping(value = "/report-delivery-order-ex-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report delivery order", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<?> jesperReportDeliveryOrderTest(@RequestBody String param, HttpServletResponse response) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -318,14 +355,17 @@ public class ReportController {
             response.setContentType("application/octet-stream");
             exporter.exportReport();
             return ResponseEntity.ok().build();
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data");
+        }
     }
 
     @CrossOrigin
     @RequestMapping(value = "/report-item-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report item", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportItem(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -340,14 +380,17 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=item.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
+        }
     }
 
     @CrossOrigin
     @RequestMapping(value = "/report-stock-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report stock", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportStock(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -362,8 +405,9 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=stock.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
+        }
     }
 
     /////////////////////////////////DONE///////////////////////////////////////
@@ -371,7 +415,9 @@ public class ReportController {
     @CrossOrigin
     @RequestMapping(value = "/report-recipe-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report recipe", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportRecipe(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -386,8 +432,9 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=recipe.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
+        }
     }
 
     /////////////////////////////////DONE///////////////////////////////////////
@@ -395,7 +442,9 @@ public class ReportController {
     @CrossOrigin
     @RequestMapping(value = "/report-free-meal-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report free meal departemen", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportFreeMealDepartemen(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -410,8 +459,9 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=freeMeal.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
+        }
     }
 
     /////////////////////////////////DONE///////////////////////////////////////
@@ -419,7 +469,9 @@ public class ReportController {
     @CrossOrigin
     @RequestMapping(value = "/report-sales-by-time-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report sales by time", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportSalesTime(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -438,8 +490,8 @@ public class ReportController {
     @RequestMapping(value = "/list-param-report", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk mengambil list param report", response = Object.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 404, message = "The resource not found")
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")
     }
     )
     public @ResponseBody
@@ -464,7 +516,9 @@ public class ReportController {
     @CrossOrigin
     @RequestMapping(value = "/report-sales-by-date-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report sales by date", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportSalesDate(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -485,7 +539,9 @@ public class ReportController {
     @CrossOrigin
     @RequestMapping(value = "/report-sales-by-date-new-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report sales by date", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportSalesDateNew(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -506,7 +562,9 @@ public class ReportController {
     @CrossOrigin
     @RequestMapping(value = "/report-sales-by-item-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan report sales by item", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jasperReportSalesItem(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -520,7 +578,7 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=salesByItem.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else {   
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
         }
     }
@@ -528,20 +586,25 @@ public class ReportController {
     @CrossOrigin
     @RequestMapping(value = "/report-menu-vs-detail-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan report menu vs detail", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jasperReportMenuVsDetail(@RequestBody String param) throws SQLException, JRException, IOException {
-        Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
-        Gson gsn = new Gson();
-        Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
-        }.getType());
-
-        JasperPrint jasperPrint = reportServices.jasperReportMenuVsDetail(prm, conn);
-        conn.close();
-        byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=salesByMenu&Detail.pdf");
-
-        return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        JasperPrint jasperPrint;
+        try (Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass)) {
+            Gson gsn = new Gson();
+            Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+            }.getType());
+            jasperPrint = reportServices.jasperReportMenuVsDetail(prm, conn);
+        }
+        if (!jasperPrint.getPages().isEmpty()) {
+            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "inline; filename=salesByMenuDetail.pdf");
+            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
     }
 
     /////////////////////////////////DONE///////////////////////////////////////
@@ -549,7 +612,9 @@ public class ReportController {
     @CrossOrigin
     @RequestMapping(value = "/report-summary-sales-by-item-code-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan report summary sales by item code", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jasperReportSalesDetailByItemCode(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -558,13 +623,14 @@ public class ReportController {
 
         JasperPrint jasperPrint = reportServices.jasperReportSummarySalesByItemCode(prm, conn);
         conn.close();
-        if (! jasperPrint.getPages().isEmpty()) {
+        if (!jasperPrint.getPages().isEmpty()) {
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=summarySalesByItemCode.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
     }
 
     /////////////////////////////////DONE///////////////////////////////////////
@@ -572,7 +638,9 @@ public class ReportController {
     @CrossOrigin
     @RequestMapping(value = "/report-stock-card-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan report stock cart", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jasperReportStockCard(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -590,7 +658,7 @@ public class ReportController {
 
     @PostMapping("/test/{size}/{page}")
     public Page<Map<String, Object>> getTestPagination(@PathVariable(value = "size") int size,
-                                                       @PathVariable(value = "page") int page) {
+            @PathVariable(value = "page") int page) {
 
         PageRequest pageable = PageRequest.of(page, size);
         Page<Map<String, Object>> result = reportServices.getTestPagination(pageable);
@@ -602,7 +670,9 @@ public class ReportController {
     @CrossOrigin
     @RequestMapping(value = "/report-transaksi-kasir-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report transakasi kasir", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportTransaksiKasir(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -612,19 +682,22 @@ public class ReportController {
 //        Integer cekDataReport = viewServices.cekDataReport(prm, "transaksiKasir");
         JasperPrint jasperPrint = reportServices.jasperReportTransaksiKasir(prm, conn);
         conn.close();
-        if (! jasperPrint.getPages().isEmpty()) {
+        if (!jasperPrint.getPages().isEmpty()) {
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=transaksiKasir.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
     }
 
     @CrossOrigin
     @RequestMapping(value = "/report-receipt-maintenance-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan report receipt maintenance", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jasperReportReceiptMaintenance(@RequestBody String param) throws SQLException, JRException, IOException, ParseException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -639,14 +712,17 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=ReceiptMaintenance.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
     }
 
     @CrossOrigin
     @RequestMapping(value = "/report-sales-mix-department-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan report sales mix by department", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jasperReportSalesMixDepartment(@RequestBody String param) throws SQLException, JRException, IOException, ParseException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -661,14 +737,17 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=ReportSalesMixByDepartment.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
     }
 
     @CrossOrigin
     @RequestMapping(value = "/report-query-bill-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan report sales mix by department", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jasperReportQueryBill(@RequestBody String param) throws SQLException, JRException, IOException, ParseException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -686,8 +765,8 @@ public class ReportController {
     @RequestMapping(value = "/list-query-bill", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk mengambil list query bill", response = Object.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 404, message = "The resource not found")
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")
     }
     )
     public @ResponseBody
@@ -733,7 +812,9 @@ public class ReportController {
     @CrossOrigin
     @RequestMapping(value = "/report-transaction-by-payment-type-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report transaction by payment type", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportTransactionByPaymentType(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -748,14 +829,17 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=TransactionByPaymentType.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
     }
 
     @CrossOrigin
     @RequestMapping(value = "/report-pemakaian-by-sales-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report pemakaian by sales", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportPemakaianBySalesReport(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -770,35 +854,41 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=PemakaianBySales.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
     }
 
     @CrossOrigin
     @RequestMapping(value = "/report-produksi-aktual-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report produksi aktual", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportProduksiAktual(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-            JasperPrint jasperPrint = reportServices.jasperReportProduksiAktual(prm, conn);
-            conn.close();
+        JasperPrint jasperPrint = reportServices.jasperReportProduksiAktual(prm, conn);
+        conn.close();
         if (!jasperPrint.getPages().isEmpty()) {
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=ProduksiAktual.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
     }
 
     @CrossOrigin
     @RequestMapping(value = "/report-inventory-movement-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report inventory movement", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportInventoryMovement(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -813,13 +903,17 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=InventoryMovement.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
     }
+
     @CrossOrigin
     @RequestMapping(value = "/report-stock-opname-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report stock opname", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportStockOpname(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -834,14 +928,17 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=StockOpname.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
     }
 
     @CrossOrigin
     @RequestMapping(value = "/report-order-entry-transactions-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report order entry transactions", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<?> jesperReportOrderEntryTransactions(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -868,7 +965,9 @@ public class ReportController {
     @CrossOrigin
     @RequestMapping(value = "/report-receiving-transactions-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report receiving transactions", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportReceivingTransactions(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -887,14 +986,17 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=receivingTransactions.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
     }
 
     @CrossOrigin
     @RequestMapping(value = "/report-wastage-transactions-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report wastage transactions", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportWastageTransactions(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -909,14 +1011,17 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=wastageTransactions.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
     }
 
     @CrossOrigin
     @RequestMapping(value = "/report-return-order-transactions-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report return order transactions", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportReturnOrderTransactions(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -931,14 +1036,17 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=returnOrderTransactions.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
     }
- 
+
     @CrossOrigin
     @RequestMapping(value = "/report-delivery-order-transactions-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report return order transactions", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportDeliveryOrderTransactions(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -953,14 +1061,17 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=returnOrderTransactions.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
     }
 
     @CrossOrigin
     @RequestMapping(value = "/report-return-item-selected-by-time-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report item selected by time", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportItemSelectedByTime(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -975,15 +1086,18 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=itemSelectedByTime.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
     }
 
     /// report sales void by M Joko 29/12/23
     @CrossOrigin
     @RequestMapping(value = "/report-sales-void-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan report sales void", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportSalesVoid(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -997,15 +1111,18 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=salesVoid.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
     }
 
     //////////////// New Method Report Item Selected By Product by M Joko 10 Januari 2024
     @CrossOrigin
     @RequestMapping(value = "/report-item-selected-by-product-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan report item selected by product", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportItemSelectedByProduct(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -1019,15 +1136,18 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=itemSelectedByProduct.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
     }
 
     ///////////////NEW METHOD REPORT daftar menu by Rafi 29 Desember 2023////
     @CrossOrigin
     @RequestMapping(value = "/report-daftar-menu-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan report daftar menu", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportDaftarMenu(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -1042,15 +1162,18 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=DaftarMenuReport.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
+        }
     }
-    
+
     ///////////////NEW METHOD REPORT delete mpcs produksi by adit 3 Januari 2024////
     @CrossOrigin
     @RequestMapping(value = "/report-delete-mpcs-produksi-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan report DELETE MPCS Produksi", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportDeleteMpcsProduksi(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -1065,8 +1188,9 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=DeleteMpcsProduksi.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else 
-                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
     }
     ///////////////////////////////// done adit 04-01-2024 ///////////////////////////////////////
 
@@ -1074,7 +1198,9 @@ public class ReportController {
     @CrossOrigin
     @RequestMapping(value = "/report-report-refund-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan report refund", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportRefund(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -1089,66 +1215,76 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=RefundReport.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
+        }
     }
-    
+
     ///////////////NEW METHOD REPORT +++ by adit 8 Januari 2024////
     ////////////////// Actual Stock Opname
     @CrossOrigin
     @RequestMapping(value = "/report-actual-stock-opname-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan report actual stock opname", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportaActualStockOpname(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
-            JasperPrint jasperPrint = reportServices.jesperReportaActualStockOpname(prm, conn);
-            conn.close();
-            if (!jasperPrint.getPages().isEmpty()) {
+
+        JasperPrint jasperPrint = reportServices.jesperReportaActualStockOpname(prm, conn);
+        conn.close();
+        if (!jasperPrint.getPages().isEmpty()) {
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=ActualStockOpname.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-            } else 
-                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
-        
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
+
     }
+
     ////////////////// performance rider HD
     @CrossOrigin
     @RequestMapping(value = "/report-performance-rider-hd-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan report performance rider hd", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportPerformanceRiderHd(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-            JasperPrint jasperPrint = reportServices.jesperReportPerformanceRiderHd(prm, conn);
-            conn.close();
-            if (!jasperPrint.getPages().isEmpty()) {
+        JasperPrint jasperPrint = reportServices.jesperReportPerformanceRiderHd(prm, conn);
+        conn.close();
+        if (!jasperPrint.getPages().isEmpty()) {
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=PerformanceRiderHd.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-            } else 
-                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
-            
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
+
     }
+
     ////////////////// pajak
     @CrossOrigin
     @RequestMapping(value = "/report-pajak-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan report pajak", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportPajak(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-
 
         JasperPrint jasperPrint = reportServices.jesperReportPajak(prm, conn);
         conn.close();
@@ -1157,8 +1293,9 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=Pajak.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
 
     }
     ///////////////////////////////// done adit 04-01-2024 ///////////////////////////////////////
@@ -1167,7 +1304,9 @@ public class ReportController {
     @CrossOrigin
     @RequestMapping(value = "/report-product-efficiency-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report product efficiency", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportProductEfficiency(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -1181,15 +1320,18 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=productEfficiency.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
     }
 
     ///////////////NEW METHOD REPORT down payment by Dani 9 Januari 2024////
     @CrossOrigin
     @RequestMapping(value = "/report-down-payment-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan report Down Payment", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportDownPayment(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -1201,9 +1343,9 @@ public class ReportController {
         String customerName = (String) prm.get("customerName");
         String orderType = (String) prm.get("orderType");
         String bookStatus = (String) prm.get("bookStatus");
-        prm.put("customerName", "%"+ (customerName != null && customerName.equalsIgnoreCase("All") ? "" : customerName) +"%");                
-        prm.put("orderType", "%"+ (orderType != null && orderType.equalsIgnoreCase("All") ? "" : orderType) +"%");                
-        prm.put("bookStatus", "%"+ (bookStatus != null && bookStatus.equalsIgnoreCase("All") ? "" : bookStatus)+"%");  
+        prm.put("customerName", "%" + (customerName != null && customerName.equalsIgnoreCase("All") ? "" : customerName) + "%");
+        prm.put("orderType", "%" + (orderType != null && orderType.equalsIgnoreCase("All") ? "" : orderType) + "%");
+        prm.put("bookStatus", "%" + (bookStatus != null && bookStatus.equalsIgnoreCase("All") ? "" : bookStatus) + "%");
         Integer cekDataReport = viewServices.cekDataReport(prm, "DownPayment");
         if (cekDataReport > 0) {
             JasperPrint jasperPrint = reportServices.jasperReportDownPayment(prm, conn);
@@ -1212,37 +1354,44 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=DownPayment.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
+        }
     }
 
     ///////////////NEW METHOD REPORT SELECTED ITEM BY DETAIL by Rafi 9 Januari 2024////
     @CrossOrigin
     @RequestMapping(value = "/report-selected-item-by-detail-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan report selected item by detail", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportSelectedItemByDetail(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-            JasperPrint jasperPrint = reportServices.jesperReportSelectedItemByDetail(prm, conn);
-            conn.close();
+        JasperPrint jasperPrint = reportServices.jesperReportSelectedItemByDetail(prm, conn);
+        conn.close();
 
         if (!jasperPrint.getPages().isEmpty()) {
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=ReportSelectedItemByDetail.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
     }
+
     ///////////////NEW METHOD REPORT PRODUCTION by Sifa 11 Januari 2024////
     @CrossOrigin
     @RequestMapping(value = "/report-production-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report production", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jasperReportProduction(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -1251,7 +1400,7 @@ public class ReportController {
 
         JasperPrint jasperPrint = reportServices.jasperReportProduction(prm, conn);
         conn.close();
-        
+
         if (!jasperPrint.getPages().isEmpty()) {
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
             HttpHeaders headers = new HttpHeaders();
@@ -1261,11 +1410,14 @@ public class ReportController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
         }
     }
+
     ///////////////NEW METHOD REPORT EOD by Dani 16 Januari 2024////
     @CrossOrigin
     @RequestMapping(value = "/report-eod-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report production", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jasperReportEod(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -1284,7 +1436,9 @@ public class ReportController {
     @CrossOrigin
     @RequestMapping(value = "/report-item-sales-analysis-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Mepampilkan report item sales analysis", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportItemSalesAnalysis(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -1298,14 +1452,17 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=itemSalesAnalysis.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
     }
-    
+
     @CrossOrigin
     @RequestMapping(value = "/report-time-management-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan report Time Management by fathur 22 Jan 2024", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportTimeManagement(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -1319,14 +1476,17 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=reportTimeManagement.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
     }
-    
+
     @CrossOrigin
     @RequestMapping(value = "/report-sales-item-by-time-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Report Sales Item by Time - Fathur 26 Jan 2024", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jasperReportSalesItembyTime(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
@@ -1334,28 +1494,29 @@ public class ReportController {
         }.getType());
         JasperPrint jasperPrint = reportServices.jasperReportSalesItembyTime(prm, conn);
         conn.close();
-        
+
         if (!jasperPrint.getPages().isEmpty()) {
             byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=salesByItem.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        }
-        else 
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
     }
-    
+
     ////////////////// new Report MPCS Management Fryer by Aditya 30 Jan 2024
     @CrossOrigin
     @RequestMapping(value = "/report-mpcs-management-fryer-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan report MPCS Management Fryer", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportMpcsManagementFryer(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-
 
         JasperPrint jasperPrint = reportServices.jesperReportMpcsManagementFryer(prm, conn);
         conn.close();
@@ -1364,8 +1525,9 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=mpcsManagementFryer.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
 
     }
     ///////////////////////////////// done adit 30-01-2024 ///////////////////////////////////////
@@ -1374,13 +1536,14 @@ public class ReportController {
     @CrossOrigin
     @RequestMapping(value = "/report-transaksi-hd-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan report transaksi hd", response = Object.class)
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 404, message = "The resource not found")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
     public ResponseEntity<byte[]> jesperReportTransaksiHd(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-
 
         JasperPrint jasperPrint = reportServices.jesperReportTransaksiHd(prm, conn);
         conn.close();
@@ -1389,8 +1552,9 @@ public class ReportController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "inline; filename=transaksiHd.pdf");
             return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
 
     }
     ///////////////////////////////// done Pasca 16-02-2024 ///////////////////////////////////////

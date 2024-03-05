@@ -83,13 +83,13 @@ public class ProcessDaoImpl implements ProcessDao {
         this.jdbcTemplate = jdbcTemplate;
         this.tableAliasUtil = tableAliasUtil;
     }
-    
+
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
     @Autowired
     AppUtil appUtil;
-            
+
     @Autowired
     private FileLoggerUtil fileLoggerUtil;
 
@@ -455,7 +455,7 @@ public class ProcessDaoImpl implements ProcessDao {
     /////////////////////////////////DONE///////////////////////////////////////
     ///////////////NEW METHOD LIST ORDER HEADER BY DONA 14 APRIL 2023////
     @Override
-    public Map<String,Object> insertOrderHeader(Map<String, String> balance) {
+    public Map<String, Object> insertOrderHeader(Map<String, String> balance) {
 
         DateFormat df = new SimpleDateFormat("MM");
         DateFormat dfYear = new SimpleDateFormat("yyyy");
@@ -469,14 +469,14 @@ public class ProcessDaoImpl implements ProcessDao {
 
         String orderNo = checkOrderNo(balance.get("orderNo"));
         String orderId = checkOrderId(balance.get("orderId"));
-        
+
         balance.put("orderId", orderId);
         balance.put("orderNo", orderNo);
         balance.put("dateUpd", LocalDateTime.now().format(dateFormatter));
         balance.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         balance.put("year", year);
         balance.put("month", month);
-               
+
         JsonArray details = gson.toJsonTree(balance.get("details")).getAsJsonArray();
         details.forEach(detail -> {
             Map<String, String> bal = gson.fromJson(detail, new TypeToken<Map<String, String>>() {
@@ -493,7 +493,7 @@ public class ProcessDaoImpl implements ProcessDao {
         });
 
         jdbcTemplate.update(insertOrderHeader, balance);
-        
+
         String returnDetailItem = "SELECT * FROM T_ORDER_detail toh WHERE toh.ORDER_no = :orderNo ";
         List<Map<String, Object>> list = jdbcTemplate.query(returnDetailItem, balance, new DynamicRowMapper());
 
@@ -501,10 +501,10 @@ public class ProcessDaoImpl implements ProcessDao {
         returnedItem.put("detail", list);
         returnedItem.put("orderId", orderId);
         returnedItem.put("orderNo", orderNo);
-        
+
         return returnedItem;
     }
-    
+
     public String checkOrderNo(String orderNo) {
         System.out.print("orderNo function: " + orderNo);
         String orderNoCanUse = orderNo;
@@ -512,12 +512,12 @@ public class ProcessDaoImpl implements ProcessDao {
         Integer count = jdbcTemplate.queryForObject(checkOrderNoExist, new HashMap(), Integer.class);
         if (count > 0) {
             Integer newCounter = Integer.parseInt(orderNo.substring(orderNo.length() - 5)) + 1;
-            orderNoCanUse = orderNo.substring(0, 9) + newCounter ;
+            orderNoCanUse = orderNo.substring(0, 9) + newCounter;
             return checkOrderNo(orderNoCanUse);
-        } 
+        }
         return orderNoCanUse;
     }
-    
+
     public String checkOrderId(String orderId) {
         String orderIdCanUse = orderId;
         String checkOrderNoExist = "SELECT count(*) FROM T_ORDER_HEADER toh WHERE toh.ORDER_ID = '" + orderIdCanUse + "' ";
@@ -526,8 +526,8 @@ public class ProcessDaoImpl implements ProcessDao {
             Integer counter = Integer.parseInt(orderIdCanUse) + 1;
             orderIdCanUse = String.valueOf(counter);
             return checkOrderId(String.valueOf(orderIdCanUse));
-        } 
-        
+        }
+
         return orderIdCanUse;
     }
 
@@ -1130,14 +1130,14 @@ public class ProcessDaoImpl implements ProcessDao {
     // Remove empty qty order entry by Fathur 15 Feb 2024 //
     @Override
     public void removeEmptyOrder(Map<String, String> balance) {
-        try {   
+        try {
             String removeEmptyQtyQuery = "delete T_ORDER_DETAIL tod WHERE tod.ORDER_NO = :orderNo AND qty_1 = 0 AND qty_2 = 0 ";
             jdbcTemplate.update(removeEmptyQtyQuery, balance);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
+
     @Override
     public void sendDataToWarehouse(Map<String, String> balance) {
 
@@ -1644,10 +1644,10 @@ public class ProcessDaoImpl implements ProcessDao {
             MapSqlParameterSource params = new MapSqlParameterSource();
             params.addValue("outletCode", outletCode);
             params.addValue("seqMpcs", sequence);
-            params.addValue("timeMpcs", String.format("%tH%tM%tS", startTimestamp, startTimestamp,startTimestamp).substring(0,6));
+            params.addValue("timeMpcs", String.format("%tH%tM%tS", startTimestamp, startTimestamp, startTimestamp).substring(0, 6));
             params.addValue("userUpd", userUpd);
             params.addValue("dateUpd", String.format("%td %tb %tY", currentTimeMillis, currentTimeMillis, currentTimeMillis));
-            params.addValue("timeUpd", String.format("%tH%tM%S", currentTimeMillis, currentTimeMillis, currentTimeMillis).substring(0,6));
+            params.addValue("timeUpd", String.format("%tH%tM%S", currentTimeMillis, currentTimeMillis, currentTimeMillis).substring(0, 6));
             jdbcTemplate.update(sqlInsert, params);
             sequence++;
             startTimestamp.setTime(startTimestamp.getTime() + (interval * 60 * 1000));
@@ -1777,8 +1777,8 @@ public class ProcessDaoImpl implements ProcessDao {
         query.append(" SELECT * FROM dual");
         String queryDetail = query.toString();
         jdbcTemplate.update(queryDetail, new HashMap<>());
-        
-        if(!typeReturn.equals("1")){
+
+        if (!typeReturn.equals("1")) {
             updateStockCardRO(noReturn, outletCode);
         }
     }
@@ -2779,7 +2779,7 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
 
         jdbcTemplate.update(qy, param);
-        
+
         String updateQuantityAccQuery = "MERGE INTO T_SUMM_MPCS tsm "
                 + "USING ("
                 + "	SELECT SEQ_MPCS, QTY_PROJ, sum(QTY_PROJ) OVER (ORDER BY seq_mpcs) AS UPDATED_QTY_ACC_PROJ, sum(QTY_VARIANCE) OVER (ORDER BY seq_mpcs) AS UPDATED_QTY_ACC_VARIANCE "
@@ -3028,22 +3028,22 @@ public class ProcessDaoImpl implements ProcessDao {
         prm.put("outletCode", params.get("outletCode"));
 
         prm.put("fryerType", params.getOrDefault("fryerType", " "));
-        prm.put("fryerTypeSeq", params.getOrDefault("fryerTypeSeq"," "));
+        prm.put("fryerTypeSeq", params.getOrDefault("fryerTypeSeq", " "));
 
         if (!prm.get("fryerType").equals(" ") || !prm.get("fryerTypeSeq").equals(" ") || !prm.get("fryerType").equals(null) || !prm.get("fryerTypeSeq").equals(null)) {
             if (prm.get("fryerType").equals("S")) {
                 String oilItemCode = "06-1002";
                 String updateFryer = "Update M_MPCS_DETAIL "
-                    + " SET FRYER_TYPE_CNT = (FRYER_TYPE_CNT + (SELECT (QTY_STOCK * :qtyMpcs) as total FROM M_RECIPE_DETAIL where RECIPE_CODE = :recipeCode AND ITEM_CODE = '"+oilItemCode+"' )) " 
-                    + " WHERE OUTLET_CODE = :outletCode AND FRYER_TYPE = :fryerType and FRYER_TYPE_SEQ = :fryerTypeSeq ";
+                        + " SET FRYER_TYPE_CNT = (FRYER_TYPE_CNT + (SELECT (QTY_STOCK * :qtyMpcs) as total FROM M_RECIPE_DETAIL where RECIPE_CODE = :recipeCode AND ITEM_CODE = '" + oilItemCode + "' )) "
+                        + " WHERE OUTLET_CODE = :outletCode AND FRYER_TYPE = :fryerType and FRYER_TYPE_SEQ = :fryerTypeSeq ";
                 jdbcTemplate.update(updateFryer, prm);
             } else {
                 String updateFryer = "Update M_MPCS_DETAIL "
-                    + " SET FRYER_TYPE_CNT = (FRYER_TYPE_CNT + (SELECT (sum(QTY_STOCK) * :qtyMpcs) FROM m_recipe_product WHERE RECIPE_CODE = :recipeCode)) " 
-                    + " WHERE OUTLET_CODE = :outletCode AND FRYER_TYPE = :fryerType and FRYER_TYPE_SEQ = :fryerTypeSeq ";
+                        + " SET FRYER_TYPE_CNT = (FRYER_TYPE_CNT + (SELECT (sum(QTY_STOCK) * :qtyMpcs) FROM m_recipe_product WHERE RECIPE_CODE = :recipeCode)) "
+                        + " WHERE OUTLET_CODE = :outletCode AND FRYER_TYPE = :fryerType and FRYER_TYPE_SEQ = :fryerTypeSeq ";
                 jdbcTemplate.update(updateFryer, prm);
             }
-        } 
+        }
 
         String insertProductionQuery = "UPDATE T_SUMM_MPCS SET "
                 + "QTY_PROD = (QTY_PROD + (SELECT (sum(QTY_STOCK) * :qtyMpcs) FROM m_recipe_product WHERE RECIPE_CODE = :recipeCode)), "
@@ -3239,35 +3239,35 @@ public class ProcessDaoImpl implements ProcessDao {
 
         String selectedProductionTime = jdbcTemplate.queryForObject("SELECT time_upd FROM T_MPCS_HIST WHERE HIST_SEQ = :histSeq", prm, String.class);
 
-        String timeValidationQuery = "SELECT CASE WHEN TO_TIMESTAMP(TO_CHAR(SYSDATE, 'YYYYMMDD') || '"+selectedProductionTime+"', 'YYYYMMDDHH24MISS') + INTERVAL '"+maxMinutesvalidation+"' MINUTE >= SYSDATE THEN 'Y' ELSE 'N' END AS ALLOW_DELETE FROM dual ";
+        String timeValidationQuery = "SELECT CASE WHEN TO_TIMESTAMP(TO_CHAR(SYSDATE, 'YYYYMMDD') || '" + selectedProductionTime + "', 'YYYYMMDDHH24MISS') + INTERVAL '" + maxMinutesvalidation + "' MINUTE >= SYSDATE THEN 'Y' ELSE 'N' END AS ALLOW_DELETE FROM dual ";
         String allowDelete = jdbcTemplate.queryForObject(timeValidationQuery, prm, String.class);
-        System.out.println("allowDelete: " +allowDelete);
+        System.out.println("allowDelete: " + allowDelete);
 
         if (allowDelete.equals("N")) {
             rm.setSuccess(false);
-            rm.setMessage("Tidak dapat menghapus data produksi lebih dari "+maxMinutesvalidation+" menit yang lalu");
+            rm.setMessage("Tidak dapat menghapus data produksi lebih dari " + maxMinutesvalidation + " menit yang lalu");
             rm.setItem(null);
             return rm;
         }
-        
+
         prm.put("fryerType", params.getOrDefault("fryerType", " "));
-        prm.put("fryerTypeSeq", params.getOrDefault("fryerTypeSeq"," "));
+        prm.put("fryerTypeSeq", params.getOrDefault("fryerTypeSeq", " "));
 
         if (!prm.get("fryerType").equals(" ") || !prm.get("fryerTypeSeq").equals(" ") || !prm.get("fryerType").equals(null) || !prm.get("fryerTypeSeq").equals(null)) {
             if (prm.get("fryerType").equals("S")) {
                 String oilItemCode = "06-1002";
                 String updateFryer = "Update M_MPCS_DETAIL "
-                    + " SET FRYER_TYPE_CNT = (FRYER_TYPE_CNT - (SELECT (QTY_STOCK * :qtyMpcs) as total FROM M_RECIPE_DETAIL where RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup) AND ITEM_CODE = '"+oilItemCode+"' )) " 
-                    + " WHERE OUTLET_CODE = :outletCode AND FRYER_TYPE = :fryerType and FRYER_TYPE_SEQ = :fryerTypeSeq ";
+                        + " SET FRYER_TYPE_CNT = (FRYER_TYPE_CNT - (SELECT (QTY_STOCK * :qtyMpcs) as total FROM M_RECIPE_DETAIL where RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup) AND ITEM_CODE = '" + oilItemCode + "' )) "
+                        + " WHERE OUTLET_CODE = :outletCode AND FRYER_TYPE = :fryerType and FRYER_TYPE_SEQ = :fryerTypeSeq ";
                 jdbcTemplate.update(updateFryer, prm);
             } else {
                 String updateFryer = "Update M_MPCS_DETAIL "
-                    + " SET FRYER_TYPE_CNT = (FRYER_TYPE_CNT - (SELECT (sum(QTY_STOCK) * :qtyMpcs) FROM m_recipe_product WHERE RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup))) " 
-                    + " WHERE OUTLET_CODE = :outletCode AND FRYER_TYPE = :fryerType and FRYER_TYPE_SEQ = :fryerTypeSeq ";
+                        + " SET FRYER_TYPE_CNT = (FRYER_TYPE_CNT - (SELECT (sum(QTY_STOCK) * :qtyMpcs) FROM m_recipe_product WHERE RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup))) "
+                        + " WHERE OUTLET_CODE = :outletCode AND FRYER_TYPE = :fryerType and FRYER_TYPE_SEQ = :fryerTypeSeq ";
                 jdbcTemplate.update(updateFryer, prm);
             }
-        } 
-        
+        }
+
         String updateQtyQuery = "UPDATE T_SUMM_MPCS "
                 + "SET QTY_PROD = (QTY_PROD - (SELECT (sum(QTY_STOCK) * :qtyMpcs) FROM m_recipe_product WHERE RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup))), "
                 + "PROD_BY = :userUpd, "
@@ -3312,10 +3312,10 @@ public class ProcessDaoImpl implements ProcessDao {
         String itemNeedToUpdateInStockCard = "SELECT 'Y' AS IS_RECIPE, 'N' AS IS_PRODUCT, ITEM_CODE AS PRODUCT_CODE, QTY_STOCK FROM M_RECIPE_DETAIL WHERE RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup) UNION all SELECT 'N' AS IS_RECIPE, 'Y' AS IS_PRODUCT, product_code AS PRODUCT_CODE, QTY_STOCK FROM m_recipe_product WHERE RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup)";
         List<Map<String, Object>> rowsNeedToUpdateToStockCardDetail = jdbcTemplate.query(itemNeedToUpdateInStockCard, prm, new DynamicRowMapper());
 
-        Integer checkTableCount =jdbcTemplate.queryForObject("SELECT count(*) FROM all_tables WHERE table_name = 'T_HIST_DEL_PRD'", prm, Integer.class);
+        Integer checkTableCount = jdbcTemplate.queryForObject("SELECT count(*) FROM all_tables WHERE table_name = 'T_HIST_DEL_PRD'", prm, Integer.class);
         if (checkTableCount > 0) {
             String insertIntoMpcsDelHistoryQuery = "INSERT INTO T_HIST_DEL_PRD (MPCS_GROUP,DATE_MPCS,QTY,UOM,TIME_MPCS,ITEM_CODE) "
-                + "SELECT :mpcsGroup AS mpcs_group, :mpcsDate AS mpcs_date, -(QTY_STOCK * :qtyMpcs) AS QTY, UOM_STOCK AS UOM, :timeUpd AS TIME_MPCS, PRODUCT_CODE AS ITEM_CODE FROM M_RECIPE_PRODUCT mrp WHERE mrp.RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup) ";
+                    + "SELECT :mpcsGroup AS mpcs_group, :mpcsDate AS mpcs_date, -(QTY_STOCK * :qtyMpcs) AS QTY, UOM_STOCK AS UOM, :timeUpd AS TIME_MPCS, PRODUCT_CODE AS ITEM_CODE FROM M_RECIPE_PRODUCT mrp WHERE mrp.RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup) ";
             jdbcTemplate.update(insertIntoMpcsDelHistoryQuery, prm);
         }
 
@@ -3356,24 +3356,24 @@ public class ProcessDaoImpl implements ProcessDao {
                 + "WHERE t.OUTLET_CODE = :outletCode "
                 + "AND t.TRANS_DATE = :mpcsDate "
                 + "AND t.ITEM_CODE = :itemCode "
-                + "AND t.CD_TRANS = '"+deleteTransType+"' ";
+                + "AND t.CD_TRANS = '" + deleteTransType + "' ";
 
         Integer rowCount = jdbcTemplate.queryForObject(checkIsExist, param, Integer.class);
         if (rowCount > 0) {
             String updateStockCardDetail = "UPDATE T_STOCK_CARD_DETAIL t "
-                + "SET t.QUANTITY = (t.QUANTITY + :totalQty), "
-                + "TIME_UPD = :timeUpd, "
-                + "DATE_UPD = :dateUpd, "
-                + "USER_UPD = :userUpd "
-                + "WHERE t.OUTLET_CODE = :outletCode "
-                + "AND t.TRANS_DATE = :mpcsDate "
-                + "AND t.ITEM_CODE = :itemCode "
-                + "AND t.CD_TRANS = '"+deleteTransType+"' ";
+                    + "SET t.QUANTITY = (t.QUANTITY + :totalQty), "
+                    + "TIME_UPD = :timeUpd, "
+                    + "DATE_UPD = :dateUpd, "
+                    + "USER_UPD = :userUpd "
+                    + "WHERE t.OUTLET_CODE = :outletCode "
+                    + "AND t.TRANS_DATE = :mpcsDate "
+                    + "AND t.ITEM_CODE = :itemCode "
+                    + "AND t.CD_TRANS = '" + deleteTransType + "' ";
             jdbcTemplate.update(updateStockCardDetail, param);
         } else {
             String insertStockCardDetail = "INSERT INTO T_STOCK_CARD_DETAIL "
-                + "(OUTLET_CODE,TRANS_DATE,ITEM_CODE,CD_TRANS,QUANTITY_IN,QUANTITY,USER_UPD,DATE_UPD,TIME_UPD) "
-                + "VALUES (:outletCode, :mpcsDate, :itemCode, '"+deleteTransType+"', 0, :totalQty, :userUpd, :dateUpd, :timeUpd) ";
+                    + "(OUTLET_CODE,TRANS_DATE,ITEM_CODE,CD_TRANS,QUANTITY_IN,QUANTITY,USER_UPD,DATE_UPD,TIME_UPD) "
+                    + "VALUES (:outletCode, :mpcsDate, :itemCode, '" + deleteTransType + "', 0, :totalQty, :userUpd, :dateUpd, :timeUpd) ";
             jdbcTemplate.update(insertStockCardDetail, param);
         }
 
@@ -3393,26 +3393,26 @@ public class ProcessDaoImpl implements ProcessDao {
                 + "WHERE t.OUTLET_CODE = :outletCode "
                 + "AND t.TRANS_DATE = :mpcsDate "
                 + "AND t.ITEM_CODE = :itemCode "
-                + "AND t.CD_TRANS = '"+deleteTransType+"' ";
+                + "AND t.CD_TRANS = '" + deleteTransType + "' ";
 
         Integer rowCount = jdbcTemplate.queryForObject(checkIsExist, param, Integer.class);
 
         if (rowCount > 0) {
             // Update stock card detail from mpcs production
             String updateStockCardDetail = "UPDATE T_STOCK_CARD_DETAIL t "
-                + "SET t.QUANTITY_IN = (t.QUANTITY_IN - :totalQty), "
-                + "TIME_UPD = :timeUpd, "
-                + "DATE_UPD = :dateUpd, "
-                + "USER_UPD = :userUpd "
-                + "WHERE t.OUTLET_CODE = :outletCode "
-                + "AND t.TRANS_DATE = :mpcsDate "
-                + "AND t.ITEM_CODE = :itemCode "
-                + "AND t.CD_TRANS = '"+deleteTransType+"' ";
+                    + "SET t.QUANTITY_IN = (t.QUANTITY_IN - :totalQty), "
+                    + "TIME_UPD = :timeUpd, "
+                    + "DATE_UPD = :dateUpd, "
+                    + "USER_UPD = :userUpd "
+                    + "WHERE t.OUTLET_CODE = :outletCode "
+                    + "AND t.TRANS_DATE = :mpcsDate "
+                    + "AND t.ITEM_CODE = :itemCode "
+                    + "AND t.CD_TRANS = '" + deleteTransType + "' ";
             jdbcTemplate.update(updateStockCardDetail, param);
         } else {
             String insertStockCardDetail = "INSERT INTO T_STOCK_CARD_DETAIL "
-                + "(OUTLET_CODE,TRANS_DATE,ITEM_CODE,CD_TRANS,QUANTITY_IN,QUANTITY,USER_UPD,DATE_UPD,TIME_UPD) "
-                + "VALUES (:outletCode, :mpcsDate, :itemCode, '"+deleteTransType+"', :totalQty, 0, :userUpd, :dateUpd, :timeUpd) ";
+                    + "(OUTLET_CODE,TRANS_DATE,ITEM_CODE,CD_TRANS,QUANTITY_IN,QUANTITY,USER_UPD,DATE_UPD,TIME_UPD) "
+                    + "VALUES (:outletCode, :mpcsDate, :itemCode, '" + deleteTransType + "', :totalQty, 0, :userUpd, :dateUpd, :timeUpd) ";
             jdbcTemplate.update(insertStockCardDetail, param);
         }
 
@@ -3524,7 +3524,7 @@ public class ProcessDaoImpl implements ProcessDao {
     //////// new Method Insert MPCS Management Fryer aditya 29 Jan 2024
     @Override
     public void insertMpcsManagementFryer(JsonObject param) {
-        
+
         Map balance = new HashMap();
         balance.put("outletCode", param.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
         LocalDate transDate = this.jdbcTemplate.queryForObject("SELECT TRANS_DATE FROM M_OUTLET WHERE OUTLET_CODE = :outletCode", balance, LocalDate.class);
@@ -3562,8 +3562,9 @@ public class ProcessDaoImpl implements ProcessDao {
         prm.put("userUpd", param.getAsJsonObject().getAsJsonPrimitive("userUpd").getAsString());
         jdbcTemplate.update(queryHeader, prm);
     }
+
     //////// new Method Updated M Counter Management Fryer aditya 20 Feb 2024
-     public String MpcsManagementFryerCounter(String year, String month, String transType, String outletCode) {
+    public String MpcsManagementFryerCounter(String year, String month, String transType, String outletCode) {
         String sql = "select to_char(counter, 'fm0000') as no_urut from ( "
                 + "select max(counter_no) + 1 as counter from m_counter "
                 + "where outlet_code = :outletCode and trans_type = :transType and year = :year and month = to_number(:month) "
@@ -3618,7 +3619,7 @@ public class ProcessDaoImpl implements ProcessDao {
         List<String> tables = (List<String>) mapping.getOrDefault("listTable", new ArrayList<String>());
         System.out.println("listTransferData type: " + mapping.get("type"));
         System.out.println("listTransferData tables: " + tables.size());
-        if("TERIMA DATA MASTER".equals(mapping.get("type"))){
+        if ("TERIMA DATA MASTER".equals(mapping.get("type"))) {
             try {
                 for (String tableName : tables) {
                     Gson gson = new Gson();
@@ -3643,29 +3644,29 @@ public class ProcessDaoImpl implements ProcessDao {
                     if (listItem != null && !listItem.isEmpty()) {
                         Map<String, Object> mapq = new HashMap();
                         // Rubah nama tabel ke alias nya
-                        Optional<TableAlias> tbl = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M,"table",tableName);
+                        Optional<TableAlias> tbl = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M, "table", tableName);
                         String aliasedTableName = tableName;
-                        if(tbl.isPresent()){
+                        if (tbl.isPresent()) {
                             aliasedTableName = tbl.get().getAlias();
                         }
                         mapq.put(aliasedTableName, listItem);
                         list.add(mapq);
-                        System.err.println("listTransferData "+aliasedTableName+":" + listItem.size());
+                        System.err.println("listTransferData " + aliasedTableName + ":" + listItem.size());
                     }
                 }
                 rm.setItem(list);
                 rm.setSuccess(true);
                 rm.setMessage("Success get list.");
             } catch (IOException | URISyntaxException ex) {
-                if(ex.getMessage().contains("Connection refused:")){
+                if (ex.getMessage().contains("Connection refused:")) {
                     rm.setMessage("Failed get list: Connection to HQ refused.");
                 } else {
                     rm.setMessage("Failed get list: " + ex.getMessage());
                 }
-                
+
                 Logger.getLogger(ProcessDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } else if("KIRIM DATA TRANSAKSI".equals(mapping.get("type"))){
+        } else if ("KIRIM DATA TRANSAKSI".equals(mapping.get("type"))) {
             for (String table : tables) {
                 String conditionText = conditionTextTransfer(table, date);
                 String query = "SELECT * FROM " + table + conditionText;
@@ -3701,7 +3702,7 @@ public class ProcessDaoImpl implements ProcessDao {
         String dateUpd = param.get("dateUpd").toString();
         String timeUpd = param.get("timeUpd").toString();
         Optional<TableAlias> ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M, "table", tableName);
-        if(ta.isEmpty()){
+        if (ta.isEmpty()) {
             ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M, "alias", tableName);
         }
         TableAlias tableAlias = ta.get();
@@ -3732,7 +3733,6 @@ public class ProcessDaoImpl implements ProcessDao {
             String result = content.toString();
 
 //            System.out.println("Result: " + result);
-
             Map<String, Object> map1;
             map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
             }.getType());
@@ -3802,7 +3802,7 @@ public class ProcessDaoImpl implements ProcessDao {
                 totalUpdateRow += updateData(tableName, item, primaryKey);
             }
         }
-        
+
         int total = totalInsertRow + totalUpdateRow;
         String status = total == itemServer.size() ? "UPDATED" : (total == 0 && !itemServer.isEmpty() ? "NOT UPDATED" : total + " OF " + itemServer.size());
         param.put("totalRow", total);
@@ -3811,7 +3811,7 @@ public class ProcessDaoImpl implements ProcessDao {
         messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Berhasil Terima Data " + param.getOrDefault("aliasName", "data") + ": " + total + " row");
     }
 
-    public int  insertData(String tableName, Map<String, Object> data) {
+    public int insertData(String tableName, Map<String, Object> data) {
         String columnName = "";
         String value = "";
         int indexKey = 0;
@@ -3869,19 +3869,19 @@ public class ProcessDaoImpl implements ProcessDao {
         String query = "UPDATE " + tableName + " SET " + columnValue + " WHERE " + conditionQuery;
         return jdbcTemplate.update(query, params);
     }
-    
+
     @Transactional
-    private void saveToQueryKirimTerimaData(Map<String,Object> prm){
-        if((Integer) prm.get("trx") == 1){
-            prm.put("trxCode","1");
-            prm.put("dataCode","0");
-            prm.put("processStatus","Y");
-            prm.put("receiveStatus","N");
+    private void saveToQueryKirimTerimaData(Map<String, Object> prm) {
+        if ((Integer) prm.get("trx") == 1) {
+            prm.put("trxCode", "1");
+            prm.put("dataCode", "0");
+            prm.put("processStatus", "Y");
+            prm.put("receiveStatus", "N");
         } else {
-            prm.put("trxCode","0");
-            prm.put("dataCode","1");
-            prm.put("processStatus","N");
-            prm.put("receiveStatus","Y");
+            prm.put("trxCode", "0");
+            prm.put("dataCode", "1");
+            prm.put("processStatus", "N");
+            prm.put("receiveStatus", "Y");
         }
         String qryHeader = """
                 INSERT INTO M_OUTLET_FTP_HIST
@@ -3928,7 +3928,7 @@ public class ProcessDaoImpl implements ProcessDao {
         String dateUpd = param.get("dateUpd").toString();
         String timeUpd = param.get("timeUpd").toString();
         Optional<TableAlias> ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_T, "table", tableName);
-        if(ta.isEmpty()){
+        if (ta.isEmpty()) {
             ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_T, "alias", tableName);
         }
         System.out.println(tableName);
@@ -3956,7 +3956,7 @@ public class ProcessDaoImpl implements ProcessDao {
 
             param.put("tableName", tableName);
             param.put("data", list);
-            
+
             String json = "";
             json = new Gson().toJson(param);
             StringEntity entity = new StringEntity(json);
@@ -3978,9 +3978,9 @@ public class ProcessDaoImpl implements ProcessDao {
             }.getType());
             // END API to Send Master
             List lst = (List) map1.get("item");
-            if(!lst.isEmpty()){
+            if (!lst.isEmpty()) {
                 double total = 0;
-                if(lst.get(0) != null){
+                if (lst.get(0) != null) {
                     total = (double) lst.get(0);
                 }
                 String status = total == list.size() ? "UPDATED" : (total == 0 && !list.isEmpty() ? "NOT UPDATED" : total + " OF " + list.size());
@@ -3993,7 +3993,7 @@ public class ProcessDaoImpl implements ProcessDao {
             Date failedApp = new Date();
             System.out.println("FAILED SEND DATA " + tableName + " At " + failedApp.toString() + " " + e.getMessage());
             messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Gagal Kirim Data: " + aliasName);
-            
+
         }
         return map1;
     }
@@ -4031,7 +4031,7 @@ public class ProcessDaoImpl implements ProcessDao {
 
                     Object temp = result.getObject(i + 1);
                     if (temp == null) {
-                         resultReturn.put(rsmd.getColumnName(i + 1), null);
+                        resultReturn.put(rsmd.getColumnName(i + 1), null);
                     } else if (temp instanceof Number number) {
                         resultReturn.put(rsmd.getColumnName(i + 1), number);
                     } else if (temp instanceof String string) {
@@ -4041,7 +4041,7 @@ public class ProcessDaoImpl implements ProcessDao {
                         } catch (NumberFormatException e) {
                             resultReturn.put(rsmd.getColumnName(i + 1), 0);
                         }
-                    } else if (temp instanceof Date date) {  
+                    } else if (temp instanceof Date date) {
                         String dateData = new SimpleDateFormat("dd-MMM-yyyy").format(date);
                         resultReturn.put(columnName, dateData);
                     } else {
@@ -4086,7 +4086,7 @@ public class ProcessDaoImpl implements ProcessDao {
 
     public List<String> primaryKeyTable(String tableName) {
         Optional<TableAlias> ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M, "table", tableName);
-        if(ta.isEmpty()){
+        if (ta.isEmpty()) {
             ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M, "alias", tableName);
         }
         TableAlias tableAlias = ta.get();
@@ -4100,7 +4100,6 @@ public class ProcessDaoImpl implements ProcessDao {
         String query = "DELETE T_ORDER_DETAIL WHERE OUTLET_CODE = :outletCode AND ORDER_NO = :orderNo AND ITEM_CODE = :itemCode";
         jdbcTemplate.update(query, param);
     }
-    
 
     //============== New Method From M Joko 5-2-2024 ================
     @Override
@@ -4147,21 +4146,21 @@ public class ProcessDaoImpl implements ProcessDao {
                 );
                 processBuilder.redirectErrorStream(true);
                 Process process = processBuilder.start();
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                try ( BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                     String line;
                     Integer lineNumber = 0;
                     while ((line = reader.readLine()) != null) {
                         lineNumber++;
                         String percentage = ((int) Math.round((double) lineNumber / 5)) + "%";
                         System.out.println("backupDb: " + line);
-                        if(!line.isEmpty() && line.contains(". exported")){
+                        if (!line.isEmpty() && line.contains(". exported")) {
                             Map m = parseOutputBackupDb(line);
                             System.out.println(m);
                             Optional<TableAlias> t = this.tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M, "table", m.getOrDefault("table", "").toString());
-                            if(t.isEmpty()){
+                            if (t.isEmpty()) {
                                 t = this.tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_T, "table", m.getOrDefault("table", "").toString());
                             }
-                            if(t.isPresent()){
+                            if (t.isPresent()) {
                                 TableAlias ta = t.get();
                                 String msg = ta.getAlias() + ": " + m.getOrDefault("row", "0");
                                 messagingTemplate.convertAndSend("/topic/backup-db", "Progress " + percentage + " : " + msg);
@@ -4203,7 +4202,7 @@ public class ProcessDaoImpl implements ProcessDao {
                         System.out.println("Backup and log deleted successfully: " + fileName);
                         rm.setMessage("Backup and log deleted successfully: " + fileName);
                         rm.setSuccess(true);
-                        if(logFileToDelete.exists() && logFileToDelete.isFile()){
+                        if (logFileToDelete.exists() && logFileToDelete.isFile()) {
                             logFileToDelete.delete();
                         }
                     } else {
@@ -4268,8 +4267,8 @@ public class ProcessDaoImpl implements ProcessDao {
         }
         return rm;
     }
-    
-    Map parseOutputBackupDb(String line){
+
+    Map parseOutputBackupDb(String line) {
         Pattern pattern = Pattern.compile("exported\\s+\".+?\"\\.\"(.+?)\"\\s+(\\d+\\.\\d+\\s+(?:GB|MB|KB))\\s+(\\d+)\\s+rows");
         Matcher matcher = pattern.matcher(line);
         Map<String, Object> infoMap = new HashMap<>();
@@ -4283,7 +4282,7 @@ public class ProcessDaoImpl implements ProcessDao {
         }
         return infoMap;
     }
-    
+
     // =========== End Method Copy Data Server From M Joko 16-02-2024 ===========
     @Override
     public ResponseMessage updateRecipe(Map<String, Object> param) {
@@ -4292,10 +4291,10 @@ public class ProcessDaoImpl implements ProcessDao {
         rm.setSuccess(false);
         rm.setMessage("Update status " + param.get("recipeCode") + ": " + param.get("status") + " success.");
         String query = "UPDATE M_RECIPE_HEADER SET STATUS = :status, USER_UPD = :userUpd, DATE_UPD = TO_CHAR(SYSDATE, 'DD MON YYYY'), TIME_UPD = TO_CHAR(SYSDATE, 'HH24MISS')  WHERE RECIPE_CODE = :recipeCode";
-        try{
+        try {
             jdbcTemplate.update(query, param);
             rm.setSuccess(true);
-        } catch (DataAccessException e){
+        } catch (DataAccessException e) {
             rm.setMessage(e.getMessage());
         }
         return rm;
@@ -4308,18 +4307,18 @@ public class ProcessDaoImpl implements ProcessDao {
         rm.setItem(new ArrayList());
         rm.setSuccess(false);
         rm.setMessage("Update Item " + param.get("cdWarehouse") + ": " + param.get("homePage") + " success.");
-        String query = "UPDATE M_ITEM " +
-                        "SET CD_WAREHOUSE  = :cdWarehouse " +
-                        "WHERE ITEM_CODE IN ( " +
-                        "    SELECT DISTINCT mis.ITEM_CODE " +
-                        "    FROM M_ITEM_SUPPLIER mis " +
-                        "    JOIN M_SUPPLIER ms ON mis.CD_SUPPLIER = ms.CD_SUPPLIER " +
-                        "    WHERE ms.HOMEPAGE = :homePage " +
-                        ")";
-        try{
+        String query = "UPDATE M_ITEM "
+                + "SET CD_WAREHOUSE  = :cdWarehouse "
+                + "WHERE ITEM_CODE IN ( "
+                + "    SELECT DISTINCT mis.ITEM_CODE "
+                + "    FROM M_ITEM_SUPPLIER mis "
+                + "    JOIN M_SUPPLIER ms ON mis.CD_SUPPLIER = ms.CD_SUPPLIER "
+                + "    WHERE ms.HOMEPAGE = :homePage "
+                + ")";
+        try {
             jdbcTemplate.update(query, param);
             rm.setSuccess(true);
-        } catch (DataAccessException e){
+        } catch (DataAccessException e) {
             rm.setMessage(e.getMessage());
         }
         return rm;
@@ -4345,7 +4344,7 @@ public class ProcessDaoImpl implements ProcessDao {
             throw new RuntimeException("Gagal menghubungkan ke warehouse.");
         }
     }
-    
+
     ///////////////NEW METHOD insert jika belum ada m_counter di bulan berikutnya, setelah End of Day - M Joko 20/2/2024
     @Override
     public void checkMCounterNextMonth(Map<String, String> balance) {
@@ -4388,13 +4387,13 @@ public class ProcessDaoImpl implements ProcessDao {
         double elapsedTimeSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
         System.err.println("checkMCounterNextMonth process in: " + elapsedTimeSeconds + " seconds");
     }
-    
+
     /////////////// new method update outlet adit 21 Feb 2024
     public void updateOutlet(Map<String, String> balance) {
         String qy = "UPDATE M_OUTLET SET OUTLET_NAME=:outletName, TYPE=:type, ADDRESS_1=:address1, ADDRESS_2=:address2, CITY=:city, POST_CODE=:postCode, PHONE=:phone, FAX=:fax, CASH_BALANCE=:cashBalance, DEL_LIMIT=:delLimit, DEL_CHARGE=:delCharge, RND_PRINT=:rndPrint, RND_FACT=:rndFact, RND_LIMIT=:rndLimit, TAX=:tax, DP_MIN=:dpMin, CANCEL_FEE=:cancelFee, CAT_ITEMS=:catItems, MAX_BILLS=:maxBills, MIN_ITEMS=:minItems, REF_TIME=:refTime, TIME_OUT=:timeOut, MAX_SHIFT=:maxShift, SEND_DATA=:sendData, MIN_PULL_TRX=:minPullTrx, MAX_PULL_VALUE=:maxPullValue, STATUS=:status, START_DATE=:startDate, FINISH_DATE=:finishDate, MAX_DISC_PERCENT=:maxDiscPercent, MAX_DISC_AMOUNT=:maxDiscAmount, OPEN_TIME=:openTime, CLOSE_TIME=:closeTime, REFUND_TIME_LIMIT=:refundTimeLimit, MONDAY=:monday, TUESDAY=:tuesday, WEDNESDAY=:wednesday, THURSDAY=:thursday, FRIDAY=:friday, SATURDAY=:saturday, SUNDAY=:sunday, HOLIDAY=:holiday, OUTLET_24_HOUR=:outlet24Hour, IP_OUTLET=:ipOutlet, PORT_OUTLET=:portOutlet, USER_UPD=:userUpd, DATE_UPD=:dateUpd, TIME_UPD=:timeUpd, FTP_ADDR=:ftpAddr, FTP_USER=:ftpUser, FTP_PASSWORD=:ftpPassword, INITIAL_OUTLET=:initialOutlet, AREA_CODE=:areaCode, RSC_CODE=:rscCode, TAX_CHARGE=:taxCharge WHERE OUTLET_CODE=:outletCode";
- 
-             balance.put("dateUpd", LocalDateTime.now().format(dateFormatter));
-             balance.put("timeUpd", LocalDateTime.now().format(timeFormatter));
+
+        balance.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        balance.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         Integer success = jdbcTemplate.update(qy, balance);
     }
 
@@ -4445,7 +4444,7 @@ public class ProcessDaoImpl implements ProcessDao {
         costParam.put("userUpd", balance.get("userUpd"));
         costParam.put("dateUpd", LocalDateTime.now().format(dateFormatter));
         costParam.put("timeUpd", LocalDateTime.now().format(timeFormatter));
-        
+
         Map param = new HashMap();
         param.put("cdItem", balance.get("code"));
         param.put("cdLevel1", balance.get("cdLevel1"));
