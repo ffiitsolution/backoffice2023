@@ -4,6 +4,7 @@
  */
 package com.ffi.api.backoffice;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ffi.api.backoffice.model.DetailOpname;
 import com.ffi.api.backoffice.model.HeaderOpname;
 import com.ffi.api.backoffice.model.ParameterLogin;
@@ -12,6 +13,7 @@ import com.ffi.api.backoffice.services.ProcessServices;
 import com.ffi.api.backoffice.services.ViewServices;
 import com.ffi.api.backoffice.services.ReportServices;
 import com.ffi.api.backoffice.utils.AppUtil;
+import com.ffi.api.backoffice.utils.FileLoggerUtil;
 import com.ffi.api.backoffice.utils.TableAliasUtil;
 import com.ffi.paging.Response;
 import com.ffi.paging.ResponseMessage;
@@ -57,19 +59,22 @@ public class IndexController {
 
     @Autowired
     ViewServices viewServices;
-    
+
     @Autowired
     ProcessServices processServices;
-    
+
     @Autowired
     ReportServices reportServices;
 
     @Autowired
     TableAliasUtil tableAliasUtil;
-    
+
     @Autowired
     AppUtil appUtil;
-    
+
+    @Autowired
+    private FileLoggerUtil fileLoggerUtil;
+
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
@@ -82,7 +87,7 @@ public class IndexController {
         map.put("output", "welcome");
         return map;
     }
-    
+
     @MessageMapping("/hello")
     @SendTo("/topic/greetings")
     public ResponseMessage greeting(String message) throws Exception {
@@ -92,9 +97,8 @@ public class IndexController {
         rm.setSuccess(true);
         return rm;
     }
-    
-////////////UPDATE 27 MAR 23 BY LANI 
 
+////////////UPDATE 27 MAR 23 BY LANI 
     @RequestMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk login department", response = Object.class)
     @ApiResponses(value = {
@@ -118,10 +122,11 @@ public class IndexController {
         try {
             if (!list.isEmpty()) {
                 Map user = list.get(0);
-                if(user.getOrDefault("status", "I").equals("A")){
+                if (user.getOrDefault("status", "I").equals("A")) {
                     rm.setSuccess(true);
                     rm.setMessage("Login Success");
                     rm.setItem(list);
+                    fileLoggerUtil.logActivity("/login", "Login", "Login", balance.getUserName(), param, Boolean.TRUE, "", map);
                 } else {
                     rm.setSuccess(false);
                     rm.setMessage("Login failed, User is INACTIVE");
@@ -129,6 +134,7 @@ public class IndexController {
             } else {
                 rm.setSuccess(false);
                 rm.setMessage("User and Password not match.");
+                fileLoggerUtil.logActivity("/login", "Login", "Login", balance.getUserName(), param, Boolean.FALSE, "", map);
             }
         } catch (Exception e) {
             rm.setSuccess(false);
@@ -140,7 +146,7 @@ public class IndexController {
         return rm;
     }
 //////Done
-    
+
     ///////////////new method from dona 27-02-2023////////////////////////////
     //INSERT SUPPLIER===============================================================================================
     @RequestMapping(value = "/insert-supplier", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -421,9 +427,10 @@ public class IndexController {
     }
 
     /////////// new Method by Dani 15-Feb-2024
-    @RequestMapping(value= "/list-menu-group-tipe-order", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/list-menu-group-tipe-order", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan List Group Menu Tipe Order", response = Object.class)
-    public @ResponseBody Response listMenuGroupTipeOrder(@RequestBody String param) {
+    public @ResponseBody
+    Response listMenuGroupTipeOrder(@RequestBody String param) {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
@@ -434,13 +441,14 @@ public class IndexController {
     }
 
     /////////// new Method by Dani 15-Feb-2024
-    @RequestMapping(value= "/list-menu-group-outlet-limit", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/list-menu-group-outlet-limit", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan List Group Menu Outlet Limit", response = Object.class)
-    public @ResponseBody Response listMenuGroupOutletLimit(@RequestBody String param) {
+    public @ResponseBody
+    Response listMenuGroupOutletLimit(@RequestBody String param) {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         Response response = new Response();
         response.setData(viewServices.listMenuGroupOutletLimit(balance));
         return response;
@@ -809,7 +817,8 @@ public class IndexController {
         @ApiResponse(code = 404, message = "The resource not found")
     }
     )
-    public @ResponseBody Response listItemMenusTipeOrder(@RequestBody String param) {
+    public @ResponseBody
+    Response listItemMenusTipeOrder(@RequestBody String param) {
         Gson gsn = new Gson();
         Response res = new Response();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
@@ -818,7 +827,6 @@ public class IndexController {
         return res;
     }
 
-    
     ////// new method by Dani 15-Feb-2024
     @RequestMapping(value = "/item-menus-limit", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk melihat menu limit", response = Object.class)
@@ -827,7 +835,8 @@ public class IndexController {
         @ApiResponse(code = 404, message = "The resource not found")
     }
     )
-    public @ResponseBody Response listItemMenusLimit(@RequestBody String param) {
+    public @ResponseBody
+    Response listItemMenusLimit(@RequestBody String param) {
         Gson gsn = new Gson();
         Response res = new Response();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
@@ -844,7 +853,8 @@ public class IndexController {
         @ApiResponse(code = 404, message = "The resource not found")
     }
     )
-    public @ResponseBody Response listItemMenusSet(@RequestBody String param) {
+    public @ResponseBody
+    Response listItemMenusSet(@RequestBody String param) {
         Gson gsn = new Gson();
         Response res = new Response();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
@@ -1314,15 +1324,9 @@ public class IndexController {
         @ApiResponse(code = 404, message = "The resource not found"),}
     )
     public @ResponseBody
-    Response listGlobal(@RequestBody String param) throws IOException, Exception {
-        Gson gsn = new Gson();
-        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
-        }.getType());
-
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-
+    Response listGlobal(@RequestBody Map<String, Object> param) throws IOException, Exception {
         Response res = new Response();
-        res.setData(viewServices.listGlobal(balance));
+        res.setData(viewServices.listGlobal(param));
         return res;
     }
 
@@ -2772,9 +2776,10 @@ public class IndexController {
             d.put("message", "Process End of Day Failed");
             data.add(d);
             res.setData(data);
+            fileLoggerUtil.logActivity("/process-eod", "End Of Day", "PROCESS", balance.getOrDefault("actUser", "SYSTEM"), balance.getOrDefault("actName", "SYSTEM"), Boolean.FALSE, "", d);
             return res;
         }
-        
+
         try {
             processServices.insertTStockCard(balance);
             processServices.insertTEodHist(balance);
@@ -2783,6 +2788,7 @@ public class IndexController {
             processServices.checkMCounterNextMonth(balance);
             processServices.increaseTransDateMOutlet(balance);
             d.put("success", true);
+            fileLoggerUtil.logActivity("/process-eod", "End Of Day", "PROCESS", balance.getOrDefault("actUser", "SYSTEM"), balance.getOrDefault("actName", "SYSTEM"), Boolean.TRUE, "", d);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             System.err.println("Error End of Day: " + e.getMessage());
@@ -2791,6 +2797,7 @@ public class IndexController {
             d.put("message", "Process End of Day Failed: " + e.getMessage());
             data.add(d);
             res.setData(data);
+            fileLoggerUtil.logActivity("/process-eod", "End Of Day", "PROCESS", balance.getOrDefault("actUser", "SYSTEM"), balance.getOrDefault("actName", "SYSTEM"), Boolean.FALSE, "", d);
             return res;
         }
         data.add(d);
@@ -2852,7 +2859,7 @@ public class IndexController {
     )
 
     public @ResponseBody
-    Map <String, Object> listMpcsProduction(@RequestBody String param) throws Exception {
+    Map<String, Object> listMpcsProduction(@RequestBody String param) throws Exception {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
@@ -3420,7 +3427,7 @@ public class IndexController {
         rm.setMessage(b ? "Absensi berhasil." : "Periksa kembali password anda.");
         return rm;
     }
-    
+
     ///////////////new method Management Fryer from aditya 29-01-2024////////////////////////////
     //INSERT MANAGEMENT FRYER===============================================================================================
     @RequestMapping(value = "/insert-mpcs-management-fryer", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -3435,7 +3442,7 @@ public class IndexController {
         JsonObject balance = gsn.fromJson(param, JsonObject.class);
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         ResponseMessage rm = new ResponseMessage();
-        
+
         try {
             processServices.insertMpcsManagementFryer(balance);
             rm.setSuccess(true);
@@ -3451,6 +3458,7 @@ public class IndexController {
 
         return rm;
     }
+
     ///////////////done 
     ///////////////new method list fryer from aditya 30-01-2024////////////////////////////
     @RequestMapping(value = "/list-fryer", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -3469,6 +3477,7 @@ public class IndexController {
         res.setData(viewServices.listFryer(balance));
         return res;
     }
+
     ///////////////done
     ///////////////new method list fryer from aditya 30-01-2024////////////////////////////
     @RequestMapping(value = "/list-management-fryer", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -3488,7 +3497,7 @@ public class IndexController {
         return res;
     }
     ///////////////done
-    
+
     ///////////////new method list fryer from aditya 30-01-2024////////////////////////////
     @RequestMapping(value = "/list-mpcs-management-fryer", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view Fryer", response = Object.class)
@@ -3507,7 +3516,7 @@ public class IndexController {
         return res;
     }
     ///////////////done
-    
+
     // =============== New Method From Lukas 17-10-2023 ===============
     // =============== Method Copy Data Local All / Selected / Single ===============
     @RequestMapping(value = "/copy-all", method = RequestMethod.POST)
@@ -3523,9 +3532,9 @@ public class IndexController {
         try {
             for (String table : listTable) {
                 Map prm = new HashMap();
-                prm.put("tableName",table);
-                prm.put("dateUpd",dateUpd);
-                prm.put("timeUpd",timeUpd);
+                prm.put("tableName", table);
+                prm.put("dateUpd", dateUpd);
+                prm.put("timeUpd", timeUpd);
                 if (processServices.insertDataLocal(prm) == false) {
                     Date dateError = new Date();
                     listError.add(table);
@@ -3570,9 +3579,9 @@ public class IndexController {
                     Map prm = new HashMap();
                     TableAlias ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M, "alias", table).get();
                     String tableName = ta.getTable();
-                    prm.put("tableName",tableName);
-                    prm.put("dateUpd",dateUpd);
-                    prm.put("timeUpd",timeUpd);
+                    prm.put("tableName", tableName);
+                    prm.put("dateUpd", dateUpd);
+                    prm.put("timeUpd", timeUpd);
                     if (processServices.insertDataLocal(prm) == false) {
                         Date dateError = new Date();
                         listError.add(table);
@@ -3607,10 +3616,10 @@ public class IndexController {
         TableAlias ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M, "alias", alias).get();
         String tableName = ta.getTable();
         String dateUpd = (String) param.get("dateUpd");
-        param.put("trx",0);
-        param.put("tableName",tableName);
-        param.put("aliasName",ta.getAlias());
-        if(!param.containsKey("remark") || param.get("remark").toString().isBlank()){
+        param.put("trx", 0);
+        param.put("tableName", tableName);
+        param.put("aliasName", ta.getAlias());
+        if (!param.containsKey("remark") || param.get("remark").toString().isBlank()) {
             param.put("remark", "SINGLE");
         }
         ResponseMessage rm = new ResponseMessage();
@@ -3630,7 +3639,7 @@ public class IndexController {
         }
         return rm;
     }
-    
+
     // ========= METHOD TRANSFER DATA TO MASTER =========
     @RequestMapping(value = "/transfer-data-all", method = RequestMethod.POST)
     public @ResponseBody
@@ -3638,7 +3647,7 @@ public class IndexController {
         ResponseMessage rm = new ResponseMessage();
         List<TableAlias> allActiveTable = tableAliasUtil.searchByColumn(TableAliasUtil.TABLE_ALIAS_T, "process", true);
         List<String> listTable = allActiveTable.stream().map(TableAlias::getTable).toList();
-        
+
         String outletId = param.get("outletId") != null ? (String) param.get("outletId") : null;
         String dateCopy = (String) param.get("date");
         if (dateCopy == null || "".equals(dateCopy)) {
@@ -3671,7 +3680,7 @@ public class IndexController {
         }
         return rm;
     }
-    
+
     @RequestMapping(value = "/transfer-data-selected", method = RequestMethod.POST)
     public @ResponseBody
     ResponseMessage transferDataSelected(@RequestBody Map<String, Object> param) throws IOException, Exception {
@@ -3716,20 +3725,20 @@ public class IndexController {
         }
         return rm;
     }
-    
+
     @RequestMapping(value = "/transfer-data-single", method = RequestMethod.POST)
     public @ResponseBody
     ResponseMessage transferDataSingle(@RequestBody Map<String, Object> param) throws IOException, Exception {
         String aliasName = (String) param.get("tableName");
-        
+
         TableAlias ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_T, "alias", aliasName).get();
         String tableName = ta.getTable();
         String dateUpd = (String) param.get("dateUpd");
-        param.put("trx",1);
-        param.put("outletId",param.get("outletCode").toString());
-        param.put("tableName",tableName);
-        param.put("aliasName",ta.getAlias());
-        if(!param.containsKey("remark") || param.get("remark").toString().isBlank()){
+        param.put("trx", 1);
+        param.put("outletId", param.get("outletCode").toString());
+        param.put("tableName", tableName);
+        param.put("aliasName", ta.getAlias());
+        if (!param.containsKey("remark") || param.get("remark").toString().isBlank()) {
             param.put("remark", "SINGLE");
         }
         ResponseMessage rm = new ResponseMessage();
@@ -3753,25 +3762,40 @@ public class IndexController {
         return rm;
     }
     // =============== End Method From Lukas 17-10-2023 ===============
-    
 
     // =============== New Method From M Joko - 1 Feb 2024 ===============
     @RequestMapping(value = "/list-log", method = RequestMethod.POST)
     public @ResponseBody
     ResponseMessage listLogger(@RequestBody Map<String, Object> param) throws IOException, Exception {
-        String moduleName = (String) param.get("moduleName");
+        String module = (String) param.get("module");
         ResponseMessage rm = new ResponseMessage();
         try {
             List<String> listLogs = viewServices.listLogger(param);
             rm.setSuccess(true);
-            rm.setMessage("Successfuly get list " + moduleName);
-            rm.setItem(listLogs);
+            rm.setMessage("Successfuly get list " + module);
+            if (module.equalsIgnoreCase("ActivityLog") && param.containsKey("log")) {
+                List<Map<String, Object>> listMap = new ArrayList();
+                ObjectMapper objectMapper = new ObjectMapper();
+                for (String json : listLogs) {
+                    try {
+                        Map<String, Object> map = objectMapper.readValue(json, Map.class);
+                        listMap.add(map);
+                    } catch (IOException e) {
+                        System.err.println(e.getMessage());
+                    }
+                }
+                rm.setItem(listMap);
+                rm.setMessage("Successfuly get list " + module + ": " + (String) param.get("log"));
+            } else {
+                rm.setItem(listLogs);
+            }
         } catch (Exception e) {
             rm.setSuccess(false);
-            rm.setMessage(moduleName + " Failed: " + e.getMessage());
+            rm.setMessage(module + " Failed: " + e.getMessage());
         }
         return rm;
     }
+
     @RequestMapping(value = "/mpcs-production-list-fryer", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List Fryer pada menu MPCS production tambah pemasakan by Fathur", response = Object.class)
     @ApiResponses(value = {
@@ -3811,7 +3835,7 @@ public class IndexController {
         }
         return res;
     }
-    
+
     //============== New Method From M Joko 1-2-2024 ================
     @ApiOperation(value = "List Transfer Data by M Joko", response = Object.class)
     @ApiResponses(value = {
@@ -3824,7 +3848,7 @@ public class IndexController {
         String typeTable = param.getOrDefault("type", "ALL").toString();
         Boolean isTerimaMaster = "TERIMA DATA MASTER".equals(param.get("type"));
         List<String> listTable = new ArrayList();
-        if(isTerimaMaster){
+        if (isTerimaMaster) {
             List<TableAlias> allActiveTable = tableAliasUtil.searchByColumn(TableAliasUtil.TABLE_ALIAS_M, "process", true);
             listTable = allActiveTable.stream().map(TableAlias::getTable).toList();
             System.err.println("testTableM :" + listTable.size());
@@ -3854,7 +3878,7 @@ public class IndexController {
         res.setData(viewServices.listWarehouseFSD(balance));
         return res;
     }
-    
+
     //============== New Method From M Joko 5-2-2024 ================
     @ApiOperation(value = "Get List And Process Backup Database by M Joko", response = Object.class)
     @ApiResponses(value = {
@@ -3866,7 +3890,7 @@ public class IndexController {
     ResponseMessage processBackupDb(@RequestBody Map<String, Object> param) throws IOException, Exception {
         return processServices.processBackupDb(param);
     }
-    
+
     //============== New Method From M Joko 13-2-2024 ================
     @ApiOperation(value = "Update Status Master Recipe by M Joko", response = Object.class)
     @ApiResponses(value = {
@@ -3891,7 +3915,7 @@ public class IndexController {
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
         ResponseMessage rm = new ResponseMessage();
-        try {   
+        try {
             processServices.removeEmptyOrder(balance);
             rm.setMessage("Success");
             rm.setSuccess(true);
@@ -3960,7 +3984,7 @@ public class IndexController {
         return res;
 
     }
-    
+
     @RequestMapping(value = "/order-detail-temporary-list", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get order detail temporary list by Fathur 23 Feb 24", response = Object.class)
     @ApiResponses(value = {
@@ -3973,7 +3997,7 @@ public class IndexController {
         Map<String, String> logan = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
         Response res = new Response();
-        
+
         try {
             List<Map<String, Object>> list = new ArrayList<>();
             list = viewServices.orderDetailTemporaryList(logan);
@@ -3981,10 +4005,11 @@ public class IndexController {
             res.setRecordsTotal(list.size());
         } catch (Exception e) {
             throw new Error(e.getMessage());
-        }   
+        }
         return res;
 
     }
+
     ///// adit list outlet detail 21 Feb 2024 
     @RequestMapping(value = "/list-outlet-detail", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view supplier", response = Object.class)
@@ -4005,7 +4030,7 @@ public class IndexController {
         return res;
 
     }
-    
+
     ///// adit list outlet detail group 21 Feb 2024 
     @RequestMapping(value = "/list-outlet-detail-group", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view supplier", response = Object.class)
@@ -4026,7 +4051,7 @@ public class IndexController {
         return res;
 
     }
-    
+
     ///// adit list outlet detail Type Order group 21 Feb 2024 
     @RequestMapping(value = "/list-outlet-detail-type-order", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view supplier", response = Object.class)
@@ -4047,7 +4072,7 @@ public class IndexController {
         return res;
 
     }
-    
+
     ///// adit Update outlet detail 21 Feb 2024 
     @RequestMapping(value = "/update-outlet", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk update mpcs", response = Object.class)

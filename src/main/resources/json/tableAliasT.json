@@ -1467,5 +1467,18 @@
         "process": "FALSE",
         "dateUpd": "26-Feb-2024",
         "timeUpd": "114545"
+    },
+    {
+        "data": "T",
+        "table": "T_MPCS_MANAGEMENT",
+        "alias": "Data Management MPCS",
+        "primaryKeys": "OUTLET_CODE,FRYER_NO,FRYER_TYPE",
+        "dateColumn": "DATE_UPD",
+        "hasOutletCode": "TRUE",
+        "emptyFirst": "FALSE",
+        "active": "TRUE",
+        "process": "TRUE",
+        "dateUpd": "26-Feb-2024",
+        "timeUpd": "114545"
     }
 ]
