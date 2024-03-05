@@ -3556,7 +3556,7 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> listReceivingAll(Map<String, String> balance) {
         String getCity = getCity(balance.get("outletCode"));
-
+        
         String qry = "SELECT H.ROWID, H.OUTLET_CODE, H.STATUS, H.ORDER_NO, H.ORDER_TYPE, H.CD_SUPPLIER, TO_CHAR(H.ORDER_DATE, 'DD-Mon-YY') AS ORDER_DATE, "
                 + " CASE WHEN H.ORDER_TO = '3' THEN 'Gudang' WHEN H.ORDER_TO = '2' THEN 'Outlet' WHEN H.ORDER_TO = '1' THEN 'Canvasing' ELSE 'Supplier' END as ORDER_TO, "
                 + " case when G.DESCRIPTION is null and  m.outlet_name is null then s.supplier_name  "
@@ -3572,7 +3572,7 @@ public class ViewDoaImpl implements ViewDao {
                 + " WHERE H.STATUS = '0' "
                 + " AND ( K.STATUS_KIRIM = 'S' OR H.ORDER_TO IN ('0', '1'))"
                 + " AND H.OUTLET_CODE = :outletCode  "
-                + " ORDER BY H.STATUS ASC, H.DATE_UPD DESC, H.TIME_UPD DESC";
+                + " ORDER BY CASE WHEN H.ORDER_TO = '2'THEN 0 ELSE 1 END ASC, H.STATUS ASC, H.DATE_UPD DESC, H.TIME_UPD DESC";
 
         Map prm = new HashMap();
         prm.put("outletCode", balance.get("outletCode"));
