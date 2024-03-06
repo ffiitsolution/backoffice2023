@@ -3661,7 +3661,7 @@ public class ViewDoaImpl implements ViewDao {
         prm.put("outletCode", balance.get("outletCode"));
 
         String qry = "select to_char(to_date(c.TIME_MPCS, 'hh24miss'), 'hh24:mi') as TIME_MPCS, c.QTY_PROD, c.QTY_ACC_PROD, c.QTY_ACC_PROD, NVL(c.DESC_PROD, ' ') AS DESC_PROD, c.PROD_BY, "
-                + "(to_char(c.DATE_UPD, 'YYYY-MM-dd') || ' ' || to_char(to_date(c.TIME_MPCS, 'hh24miss'), 'hh24:mi:ss')) AS DATE_UPD "
+                + "(to_char(c.DATE_UPD, 'YYYY-MM-dd') || ' ' || to_char(to_date(c.TIME_MPCS, 'hh24miss'), 'hh24:mi:ss')) AS DATE_UPD, SEQ_MPCS "
                 + "from t_summ_mpcs c "
                 + "where c.date_mpcs = :dateMpcs "
                 + "AND c.MPCS_GROUP = :mpcsGroup";
@@ -3674,6 +3674,7 @@ public class ViewDoaImpl implements ViewDao {
             rt.put("descProd", rs.getString("DESC_PROD"));
             rt.put("prodBy", rs.getString("PROD_BY"));
             rt.put("dateUpd", rs.getString("DATE_UPD"));
+            rt.put("seqMpcs", rs.getString("SEQ_MPCS"));
             return rt;
         });
         if (list.size() > 0) {
@@ -3689,15 +3690,13 @@ public class ViewDoaImpl implements ViewDao {
 
         String qry = "SELECT HIST_SEQ, MPCS_GROUP, RECIPE_CODE, SEQ_MPCS, QUANTITY, TIME_UPD, DATE_UPD "
                 + "FROM T_MPCS_HIST WHERE MPCS_GROUP = :mpcsGroup AND MPCS_DATE = :dateMpcs "
-                + "AND TIME_UPD <= replace(:maxTime, '.' , '')||'00' "
-                + "AND TIME_UPD >= replace(:minTime, '.' , '')||'00' "
+                + "AND SEQ_MPCS = :seqMpcs "
                 + "AND (FRYER_TYPE <> 'D' or FRYER_TYPE IS NULL) ORDER BY TIME_UPD ASC ";
 
         Map prm = new HashMap();
         prm.put("mpcsGroup", balance.get("mpcsGroup"));
         prm.put("dateMpcs", balance.get("dateMpcs"));
-        prm.put("maxTime", balance.get("maxTime"));
-        prm.put("minTime", balance.get("minTime"));
+        prm.put("seqMpcs", balance.get("seqMpcs"));
 
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override

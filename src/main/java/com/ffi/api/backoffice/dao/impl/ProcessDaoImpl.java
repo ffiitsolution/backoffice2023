@@ -3011,6 +3011,7 @@ public class ProcessDaoImpl implements ProcessDao {
     // Insert MPCS Production - Fathur 8 Jan 2024 //
     // Update for integration to stock card 17 Jan 2024 //
     // Update for fryer type S calculation based on oil usage 20 Feb 2024 //
+    // Update Seq MPCS prevent error when insert after 23:30 //
     @Transactional
     @Override
     public boolean insertMpcsProduction(Map<String, String> params) {
@@ -3034,17 +3035,31 @@ public class ProcessDaoImpl implements ProcessDao {
             if (prm.get("fryerType").equals("S")) {
                 String oilItemCode = "06-1002";
                 String updateFryer = "Update M_MPCS_DETAIL "
-                        + " SET FRYER_TYPE_CNT = (FRYER_TYPE_CNT + (SELECT (QTY_STOCK * :qtyMpcs) as total FROM M_RECIPE_DETAIL where RECIPE_CODE = :recipeCode AND ITEM_CODE = '" + oilItemCode + "' )) "
+                        + " SET FRYER_TYPE_CNT = (FRYER_TYPE_CNT + (SELECT (QTY_STOCK * :qtyMpcs) as total FROM M_RECIPE_DETAIL where RECIPE_CODE = :recipeCode AND ITEM_CODE = '" + oilItemCode + "' )), "
+                        + " DATE_UPD = :dateUpd, "
+                        + " TIME_UPD = :timeUpd "
+                        + " USER_UPD = :userUpd "
                         + " WHERE OUTLET_CODE = :outletCode AND FRYER_TYPE = :fryerType and FRYER_TYPE_SEQ = :fryerTypeSeq ";
                 jdbcTemplate.update(updateFryer, prm);
             } else {
                 String updateFryer = "Update M_MPCS_DETAIL "
-                        + " SET FRYER_TYPE_CNT = (FRYER_TYPE_CNT + (SELECT (sum(QTY_STOCK) * :qtyMpcs) FROM m_recipe_product WHERE RECIPE_CODE = :recipeCode)) "
+                        + " SET FRYER_TYPE_CNT = (FRYER_TYPE_CNT + (SELECT (sum(QTY_STOCK) * :qtyMpcs) FROM m_recipe_product WHERE RECIPE_CODE = :recipeCode)), "
+                        + " DATE_UPD = :dateUpd, "
+                        + " TIME_UPD = :timeUpd, "
+                        + " USER_UPD = :userUpd "
                         + " WHERE OUTLET_CODE = :outletCode AND FRYER_TYPE = :fryerType and FRYER_TYPE_SEQ = :fryerTypeSeq ";
                 jdbcTemplate.update(updateFryer, prm);
             }
         }
 
+        String getMpcsSeqQuery = "SELECT CASE WHEN :timeUpd > '233000' THEN 1 ELSE tsm.SEQ_MPCS END AS SEQ_MPCS "
+            + "FROM T_SUMM_MPCS tsm " 
+            + "WHERE DATE_MPCS = :mpcsDate "
+            + "AND MPCS_GROUP = :mpcsGroup "
+            + "AND ((:timeUpd <= '233000' AND TIME_MPCS > :timeUpd) OR (:timeUpd >= '233000')) "
+            + "AND ROWNUM = 1 ";
+        Integer selectedSeqMpcsProduction = jdbcTemplate.queryForObject(getMpcsSeqQuery, prm, Integer.class);
+        
         String insertProductionQuery = "UPDATE T_SUMM_MPCS SET "
                 + "QTY_PROD = (QTY_PROD + (SELECT (sum(QTY_STOCK) * :qtyMpcs) FROM m_recipe_product WHERE RECIPE_CODE = :recipeCode)), "
                 + "DESC_PROD = :remark, "
@@ -3053,8 +3068,7 @@ public class ProcessDaoImpl implements ProcessDao {
                 + "TIME_UPD = :timeUpd, "
                 + "DATE_UPD = :dateUpd "
                 + "WHERE DATE_MPCS = :mpcsDate AND MPCS_GROUP = :mpcsGroup "
-                + "AND SEQ_MPCS = (SELECT tsm.SEQ_MPCS FROM T_SUMM_MPCS tsm WHERE DATE_MPCS = :mpcsDate AND MPCS_GROUP = :mpcsGroup "
-                + "AND TIME_MPCS > :timeUpd AND ROWNUM = 1) ";
+                + "AND SEQ_MPCS = "+selectedSeqMpcsProduction;
         jdbcTemplate.update(insertProductionQuery, prm);
 
         String updateQuantityAccQuery = "MERGE INTO T_SUMM_MPCS tsm "
@@ -3074,9 +3088,7 @@ public class ProcessDaoImpl implements ProcessDao {
         jdbcTemplate.update(updateQuantityAccQuery, prm);
 
         String insertHistoryQuery = "INSERT INTO T_MPCS_HIST (HIST_SEQ,HIST_TYPE,OUTLET_CODE,MPCS_DATE,MPCS_GROUP,RECIPE_CODE,FRYER_TYPE,FRYER_TYPE_SEQ,SEQ_MPCS,QUANTITY,USER_UPD,DATE_UPD,TIME_UPD) "
-                + "VALUES ((SELECT (NVL(MAX(tmh.HIST_SEQ), 0) + 1)  FROM T_MPCS_HIST tmh),'C',:outletCode, :mpcsDate,:mpcsGroup,:recipeCode, :fryerType, :fryerTypeSeq, (SELECT tsm.SEQ_MPCS FROM T_SUMM_MPCS tsm WHERE DATE_MPCS = :mpcsDate AND MPCS_GROUP = :mpcsGroup "
-                + "AND TIME_MPCS > :timeUpd "
-                + "AND ROWNUM = 1),:qtyMpcs,:userUpd, :dateUpd, :timeUpd) ";
+                + "VALUES ((SELECT (NVL(MAX(tmh.HIST_SEQ), 0) + 1) FROM T_MPCS_HIST tmh),'C',:outletCode, :mpcsDate, :mpcsGroup, :recipeCode, :fryerType, :fryerTypeSeq, "+selectedSeqMpcsProduction+", :qtyMpcs,:userUpd, :dateUpd, :timeUpd) ";
         jdbcTemplate.update(insertHistoryQuery, prm);
 
         String insertMpcsDetailQuery = "INSERT INTO T_MPCS_DETAIL (OUTLET_CODE,DATE_MPCS,TIME_MPCS,RECIPE_CODE,TYPE_MPCS,ITEM_CODE,QTY1,UOM1,QTY2,UOM2,STATUS,USER_UPD,DATE_UPD,TIME_UPD) ("
@@ -3110,7 +3122,6 @@ public class ProcessDaoImpl implements ProcessDao {
             if (newParam.get("isProduct").equals("Y")) {
                 updateInsertStockCard_in(newParam);
             } else {
-                System.out.print("newParam " + newParam);
                 updateInsertStockCard_out(newParam);
             }
         }
@@ -3241,7 +3252,6 @@ public class ProcessDaoImpl implements ProcessDao {
 
         String timeValidationQuery = "SELECT CASE WHEN TO_TIMESTAMP(TO_CHAR(SYSDATE, 'YYYYMMDD') || '" + selectedProductionTime + "', 'YYYYMMDDHH24MISS') + INTERVAL '" + maxMinutesvalidation + "' MINUTE >= SYSDATE THEN 'Y' ELSE 'N' END AS ALLOW_DELETE FROM dual ";
         String allowDelete = jdbcTemplate.queryForObject(timeValidationQuery, prm, String.class);
-        System.out.println("allowDelete: " + allowDelete);
 
         if (allowDelete.equals("N")) {
             rm.setSuccess(false);
