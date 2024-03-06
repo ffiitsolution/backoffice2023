@@ -2131,7 +2131,7 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("phone", param.get("phone"));
 
         if (!param.get("outletBrand").toString().equalsIgnoreCase("TACOBELL")) {
-            if (param.get("brand").toString().equalsIgnoreCase("SEMUA")) {
+            if (param.get("brand").toString().equalsIgnoreCase("SEMUA") || param.get("brand").toString().equalsIgnoreCase("0")) {
                 hashMap.put("brand", "Semua");
                 hashMap.put("brand1", "KFC");
                 hashMap.put("brand2", "BB");
@@ -2198,6 +2198,7 @@ public class ReportDaoImpl implements ReportDao {
                 hashMap.put("shift", shiftCode.toString());
             }
         }
+
         if (param.get("detail").equals(0.0)) {
             ClassPathResource classPathResource = new ClassPathResource(param.get("outletBrand").toString().equalsIgnoreCase("TACOBELL") ? "report/ReportSummarySalesbyItemCodeTaco.jrxml" : "report/ReportSummarySalesbyItemCode.jrxml");
             JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
