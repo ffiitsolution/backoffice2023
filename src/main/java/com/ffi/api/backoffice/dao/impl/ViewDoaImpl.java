@@ -969,7 +969,9 @@ public class ViewDoaImpl implements ViewDao {
                 + "mmi.taxable, "
                 + "mmi.menu_set, "
                 + "mmi.auto_show_modifier, "
-                + "mmi.brd_flag "
+                + "mmi.brd_flag, "
+                + "mc.color_code, "
+                + "mc.r_value ||',' || g_value || ',' || b_value as rgb_code "
                 + "from m_menu_item mmi join m_global mg on mmi.menu_item_code = mg.code "
                 + "join m_color mc on mmi.color_code = mc.color_code "
                 + "join m_outlet_price mop on mmi.outlet_code = mop.outlet_code "
@@ -998,6 +1000,8 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("taxable", rs.getString("taxable"));
                 rt.put("menuSet", rs.getString("menu_set"));
                 rt.put("autoShowModifier", rs.getString("auto_show_modifier"));
+                rt.put("colorCode", rs.getString("color_code"));
+                rt.put("rgbCode", rs.getString("rgb_code"));
                 rt.put("brdFlag", rs.getString("brd_flag"));
                 return rt;
             }
@@ -1021,7 +1025,7 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listItemMenusSet(Map<String, String> ref) {
-        String query = "SELECT * FROM M_MENU_SET mms WHERE MMS.MENU_SET_CODE = :menuSetCode ORDER BY SEQ ASC";
+        String query = "SELECT MMS.STATUS, MMS.MENU_SET_ITEM_CODE, MMS.SEQ , MG.DESCRIPTION, MMS.QTY , MMS.MODIFIER_GROUP_CODE  FROM M_MENU_SET mms LEFT JOIN M_GLOBAL mg ON mg.COND = 'ITEM' AND MG.CODE  = MMS.MENU_SET_ITEM_CODE  WHERE MMS.MENU_SET_CODE = :menuSetCode ORDER BY SEQ ASC";
         return jdbcTemplate.query(query, ref, new DynamicRowMapper());
     }
 
