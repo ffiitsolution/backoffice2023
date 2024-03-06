@@ -2041,7 +2041,7 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("outletName", param.get("outletName"));
 
         if (!param.get("outletBrand").toString().equalsIgnoreCase("TACOBELL")) {
-            if (param.get("brand").toString().equalsIgnoreCase("SEMUA")) {
+            if (param.get("brand").toString().equalsIgnoreCase("SEMUA") || param.get("brand").toString().equalsIgnoreCase("0")) {
                 hashMap.put("brand", "Semua");
                 hashMap.put("brand1", "KFC");
                 hashMap.put("brand2", "BB");
