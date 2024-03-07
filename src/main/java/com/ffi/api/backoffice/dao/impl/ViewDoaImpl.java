@@ -3582,7 +3582,7 @@ public class ViewDoaImpl implements ViewDao {
                 + " WHERE H.STATUS = '0' "
                 + " AND ( K.STATUS_KIRIM = 'S' OR H.ORDER_TO IN ('0', '1'))"
                 + " AND H.OUTLET_CODE = :outletCode  "
-                + " ORDER BY CASE WHEN H.ORDER_TO = '2'THEN 0 ELSE 1 END ASC, H.STATUS ASC, H.DATE_UPD DESC, H.TIME_UPD DESC";
+                + " ORDER BY CASE WHEN H.ORDER_TO = '2' THEN 0 WHEN H.ORDER_TO = '3' THEN 1 WHEN H.ORDER_TO IN ('0','1') THEN 2 ELSE 3 END ASC, H.STATUS ASC, H.DATE_UPD DESC, H.TIME_UPD DESC";
 
         Map prm = new HashMap();
         prm.put("outletCode", balance.get("outletCode"));
