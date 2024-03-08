@@ -61,6 +61,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.messaging.MessagingException;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -3053,13 +3054,13 @@ public class ProcessDaoImpl implements ProcessDao {
         }
 
         String getMpcsSeqQuery = "SELECT CASE WHEN :timeUpd > '233000' THEN 1 ELSE tsm.SEQ_MPCS END AS SEQ_MPCS "
-            + "FROM T_SUMM_MPCS tsm " 
-            + "WHERE DATE_MPCS = :mpcsDate "
-            + "AND MPCS_GROUP = :mpcsGroup "
-            + "AND ((:timeUpd <= '233000' AND TIME_MPCS > :timeUpd) OR (:timeUpd >= '233000')) "
-            + "AND ROWNUM = 1 ";
+                + "FROM T_SUMM_MPCS tsm "
+                + "WHERE DATE_MPCS = :mpcsDate "
+                + "AND MPCS_GROUP = :mpcsGroup "
+                + "AND ((:timeUpd <= '233000' AND TIME_MPCS > :timeUpd) OR (:timeUpd >= '233000')) "
+                + "AND ROWNUM = 1 ";
         Integer selectedSeqMpcsProduction = jdbcTemplate.queryForObject(getMpcsSeqQuery, prm, Integer.class);
-        
+
         String insertProductionQuery = "UPDATE T_SUMM_MPCS SET "
                 + "QTY_PROD = (QTY_PROD + (SELECT (sum(QTY_STOCK) * :qtyMpcs) FROM m_recipe_product WHERE RECIPE_CODE = :recipeCode)), "
                 + "DESC_PROD = :remark, "
@@ -3068,7 +3069,7 @@ public class ProcessDaoImpl implements ProcessDao {
                 + "TIME_UPD = :timeUpd, "
                 + "DATE_UPD = :dateUpd "
                 + "WHERE DATE_MPCS = :mpcsDate AND MPCS_GROUP = :mpcsGroup "
-                + "AND SEQ_MPCS = "+selectedSeqMpcsProduction;
+                + "AND SEQ_MPCS = " + selectedSeqMpcsProduction;
         jdbcTemplate.update(insertProductionQuery, prm);
 
         String updateQuantityAccQuery = "MERGE INTO T_SUMM_MPCS tsm "
@@ -3088,7 +3089,7 @@ public class ProcessDaoImpl implements ProcessDao {
         jdbcTemplate.update(updateQuantityAccQuery, prm);
 
         String insertHistoryQuery = "INSERT INTO T_MPCS_HIST (HIST_SEQ,HIST_TYPE,OUTLET_CODE,MPCS_DATE,MPCS_GROUP,RECIPE_CODE,FRYER_TYPE,FRYER_TYPE_SEQ,SEQ_MPCS,QUANTITY,USER_UPD,DATE_UPD,TIME_UPD) "
-                + "VALUES ((SELECT (NVL(MAX(tmh.HIST_SEQ), 0) + 1) FROM T_MPCS_HIST tmh),'C',:outletCode, :mpcsDate, :mpcsGroup, :recipeCode, :fryerType, :fryerTypeSeq, "+selectedSeqMpcsProduction+", :qtyMpcs,:userUpd, :dateUpd, :timeUpd) ";
+                + "VALUES ((SELECT (NVL(MAX(tmh.HIST_SEQ), 0) + 1) FROM T_MPCS_HIST tmh),'C',:outletCode, :mpcsDate, :mpcsGroup, :recipeCode, :fryerType, :fryerTypeSeq, " + selectedSeqMpcsProduction + ", :qtyMpcs,:userUpd, :dateUpd, :timeUpd) ";
         jdbcTemplate.update(insertHistoryQuery, prm);
 
         String insertMpcsDetailQuery = "INSERT INTO T_MPCS_DETAIL (OUTLET_CODE,DATE_MPCS,TIME_MPCS,RECIPE_CODE,TYPE_MPCS,ITEM_CODE,QTY1,UOM1,QTY2,UOM2,STATUS,USER_UPD,DATE_UPD,TIME_UPD) ("
@@ -3648,19 +3649,19 @@ public class ProcessDaoImpl implements ProcessDao {
                     String result = content.toString();
                     map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
                     }.getType());
-                    List<Map<String, Object>> listItem = (List<Map<String, Object>>) map1.get("item");
-                    // if (listItem != null && !listItem.isEmpty()) {
-                        Map<String, Object> mapq = new HashMap();
-                        // Rubah nama tabel ke alias nya
-                        Optional<TableAlias> tbl = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M, "table", tableName);
-                        String aliasedTableName = tableName;
-                        if (tbl.isPresent()) {
-                            aliasedTableName = tbl.get().getAlias();
-                        }
-                        mapq.put(aliasedTableName, listItem);
-                        list.add(mapq);
-                        System.err.println("listTransferData " + aliasedTableName + ":" + listItem.size());
-                    // }
+                    List<Map<String, Object>> listItem = new ArrayList();
+                    if (map1.containsKey("item") && map1.get("item") != null) {
+                        listItem = (List<Map<String, Object>>) map1.get("item");
+                    }
+                    Map<String, Object> mapq = new HashMap();
+                    Optional<TableAlias> tbl = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M, "table", tableName);
+                    String aliasedTableName = tableName;
+                    if (tbl.isPresent()) {
+                        aliasedTableName = tbl.get().getAlias();
+                    }
+                    mapq.put(aliasedTableName, listItem);
+                    list.add(mapq);
+                    System.err.println("listTransferData " + aliasedTableName + ":" + listItem.size());
                 }
                 rm.setItem(list);
                 rm.setSuccess(true);
@@ -3671,24 +3672,24 @@ public class ProcessDaoImpl implements ProcessDao {
                 } else {
                     rm.setMessage("Failed get list: " + ex.getMessage());
                 }
-
-                Logger.getLogger(ProcessDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else if ("KIRIM DATA TRANSAKSI".equals(mapping.get("type"))) {
             for (String table : tables) {
-                String conditionText = conditionTextTransfer(table, date);
-                String query = "SELECT * FROM " + table + conditionText;
                 Map prm = new HashMap();
-                List<Map<String, Object>> listItem = jdbcTemplate.query(query, prm, (ResultSet rs, int index) -> convertObject(rs));
-                if (listItem != null && !listItem.isEmpty()) {
-                    Map<String, Object> mapq = new HashMap();
-                    // Rubah nama tabel ke alias nya
-                    Optional<TableAlias> ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_T, "table", table);
-                    TableAlias tableAlias = ta.get();
+                Map<String, Object> mapq = new HashMap();
+                Optional<TableAlias> ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_T, "table", table);
+                TableAlias tableAlias = ta.get();
+                try {
+                    String conditionText = conditionTextTransfer(table, date);
+                    String query = "SELECT * FROM " + table + conditionText;
+                    List<Map<String, Object>> listItem = jdbcTemplate.query(query, prm, (ResultSet rs, int index) -> convertObject(rs));
                     mapq.put(tableAlias.getAlias(), listItem);
-                    list.add(mapq);
-                    messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Cek Data Transaksi: " + tableAlias.getAlias() + " - " + listItem.size() + " row");
+                    messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Cek Data: " + tableAlias.getAlias() + " - " + listItem.size() + " row");
+                } catch (DataAccessException | MessagingException e) {
+                    mapq.put(tableAlias.getAlias(), new ArrayList());
+                    messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Cek Gagal: " + tableAlias.getAlias() + ": " + e.getMessage());
                 }
+                list.add(mapq);
             }
             rm.setItem(list);
             rm.setSuccess(true);
@@ -3720,31 +3721,22 @@ public class ProcessDaoImpl implements ProcessDao {
             // Start Get Data API Server
             CloseableHttpClient client = HttpClients.createDefault();
             String url = urlMaster + "/get-data";
-
             System.out.println("URL Get : " + url);
-            FileLoggerUtil.log("terimaDataMaster", ("URL Get : " + url), "SYSTEM");
-
             HttpGet getData = new HttpGet(url);
-
             URI uri = new URIBuilder(getData.getURI()).addParameter("param", tableName).addParameter("date", dateUpd).build();
             getData.setURI(uri);
-
             CloseableHttpResponse response = client.execute(getData);
-
             BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
             StringBuilder content = new StringBuilder();
             String line;
             while (null != (line = br.readLine())) {
                 content.append(line);
             }
-
             String result = content.toString();
-
 //            System.out.println("Result: " + result);
             Map<String, Object> map1;
             map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
             }.getType());
-
             // End Get Data API Server
             List<Map<String, Object>> listItem = (List<Map<String, Object>>) map1.get("item");
             if (listItem == null) {
@@ -3759,7 +3751,6 @@ public class ProcessDaoImpl implements ProcessDao {
             Date failedApp = new Date();
             System.out.println("FAILED COPY DATA " + tableName + " At " + failedApp.toString() + ": " + e.getMessage());
             messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Gagal Terima Data: " + aliasName);
-
             return false;
         }
     }
@@ -3946,13 +3937,13 @@ public class ProcessDaoImpl implements ProcessDao {
         Map map1 = new HashMap();
 
         try {
-            System.out.println("Start Transfer Data " + tableName + " At " + startApp.toString());
 
             // todo: cek column name
             String conditionText = conditionTextTransfer(tableName, dateUpd);
 
             String query = "SELECT * FROM " + tableName + conditionText;
             List<Map<String, Object>> list = jdbcTemplate.query(query, param, (ResultSet rs, int index) -> convertObject(rs));
+            System.out.println("Start Transfer Data " + tableName + ": " + list.size());
 
             // START API to Send Master
             CloseableHttpClient client = HttpClients.createDefault();
@@ -3986,23 +3977,37 @@ public class ProcessDaoImpl implements ProcessDao {
             }.getType());
             // END API to Send Master
             List lst = (List) map1.get("item");
-            if (!lst.isEmpty()) {
-                double total = 0;
+            double total = 0;
+            boolean success = false;
+            if (!lst.isEmpty() && lst.get(0) instanceof String) {
+                total = 0;
+                success = false;
+                map1.put("errors", map1);
+            } else if (!lst.isEmpty() && lst.get(0) instanceof Object) {
                 if (lst.get(0) != null) {
-                    total = (double) lst.get(0);
+                    Map<String, Object> resp = (Map<String, Object>) lst.get(0);
+                    if(resp.containsKey("total")){
+                        total = (double) resp.get("total");
+                        success = true;
+                    } else {
+                        total = 0;
+                        success = false;
+                    }
                 }
-                String status = total == list.size() ? "UPDATED" : (total == 0 && !list.isEmpty() ? "NOT UPDATED" : total + " OF " + list.size());
-                param.put("totalRow", total);
-                param.put("status", status);
-                saveToQueryKirimTerimaData(param);
-                messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Selesai Kirim Data: " + aliasName + " " + total + " row");
-                fileLoggerUtil.logActivity("-", "Kirim Terima Data", "KIRIM", param.getOrDefault("actUser", "SYSTEM").toString(), param.getOrDefault("actName", "SYSTEM").toString(), "Selesai Kirim Data: " + aliasName + " " + total + " row", Boolean.TRUE, "", param);
+            } else {
+                
             }
+            String status = total == list.size() ? "UPDATED" : (total == 0 && !list.isEmpty() ? "NOT UPDATED" : total + " OF " + list.size());
+            param.put("totalRow", total);
+            param.put("status", status);
+            saveToQueryKirimTerimaData(param);
+            messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Selesai Kirim Data: " + aliasName + " " + total + " row");
+            fileLoggerUtil.logActivity("-", "Kirim Terima Data", "KIRIM", param.getOrDefault("actUser", "SYSTEM").toString(), param.getOrDefault("actName", "SYSTEM").toString(), "Selesai Kirim Data: " + aliasName + " " + total + " row", success, "", param);
         } catch (JsonSyntaxException | IOException | UnsupportedOperationException | DataAccessException e) {
             Date failedApp = new Date();
-            if(e.getMessage().contains("Connection timed out")){
+            if (e.getMessage().contains("Connection timed out")) {
                 map1.put("error", "Koneksi ke HQ terputus.");
-            } else if(e.getMessage().contains("No route to host")){
+            } else if (e.getMessage().contains("No route to host")) {
                 map1.put("error", "Tidak ada koneksi ke HQ.");
             } else {
                 map1.put("error", e.getMessage());
@@ -4222,7 +4227,7 @@ public class ProcessDaoImpl implements ProcessDao {
                         rm.setSuccess(true);
                         if (logFileToDelete.exists() && logFileToDelete.isFile()) {
                             logFileToDelete.delete();
-                        fileLoggerUtil.logActivity("/backup-database", "Backup Local Database", "DELETE", param.getOrDefault("actUser", "SYSTEM").toString(), param.getOrDefault("actName", "SYSTEM").toString(), fileName, Boolean.TRUE, "", param);
+                            fileLoggerUtil.logActivity("/backup-database", "Backup Local Database", "DELETE", param.getOrDefault("actUser", "SYSTEM").toString(), param.getOrDefault("actName", "SYSTEM").toString(), fileName, Boolean.TRUE, "", param);
                         }
                     } else {
                         System.err.println("Failed to delete backup: " + fileName);

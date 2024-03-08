@@ -44,6 +44,7 @@ public class RequestBodyFilter implements Filter {
     // sesuaikan kondisi endpoint dan param, simpan ke file logger
     private void logActivity(String ep, Map<String, Object> param) {
         if (checkValidParam(param.get("actUser")) && checkValidParam(param.get("actName")) && checkValidParam(param.get("actUrl"))) {
+            param.put("actEndpoint",ep);
             String staffCode = param.getOrDefault("actUser", "").toString();
             String staffName = param.getOrDefault("actName", "").toString();
             String outletCode = param.getOrDefault("actOutlet", "").toString();

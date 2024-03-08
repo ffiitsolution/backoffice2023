@@ -3649,6 +3649,7 @@ public class IndexController {
     @RequestMapping(value = "/transfer-data-all", method = RequestMethod.POST)
     public @ResponseBody
     ResponseMessage transferDataAll(@RequestBody Map<String, Object> param) throws IOException, Exception {
+        long startTime = System.currentTimeMillis();
         ResponseMessage rm = new ResponseMessage();
         List<TableAlias> allActiveTable = tableAliasUtil.searchByColumn(TableAliasUtil.TABLE_ALIAS_T, "process", true);
         String outletId = param.get("outletId") != null ? (String) param.get("outletId") : null;
@@ -3665,17 +3666,18 @@ public class IndexController {
                 String aliasName = table.getAlias();
                 param.put("trx", 1);
                 param.put("outletId", outletId);
+                param.put("outletCode", outletId);
                 param.put("tableName", tableName);
                 param.put("aliasName", aliasName);
                 Map map1 = processServices.sendDataLocal(param);
                 if (map1.containsKey("success")) {
                     boolean status = (boolean) map1.get("success");
                     if (!status) {
-                        listError.add(map1.get("message").toString());
+                        listError.add(aliasName + ": " + map1.get("message").toString());
                     }
                 }
                 if (map1.containsKey("error")) {
-                    listError.add(map1.get("error").toString());
+                    listError.add(aliasName + ": " + map1.get("error").toString());
                 }
             }
             if (listError.isEmpty()) {
@@ -3686,11 +3688,13 @@ public class IndexController {
                 rm.setMessage("Some Table Failed");
                 rm.setItem(listError);
             }
-            System.out.println("Copy All Table End");
         } catch (MessagingException e) {
             rm.setSuccess(false);
             rm.setMessage("Insert Failed: " + e.getMessage());
         }
+        double elapsedTimeSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
+        System.err.println("transferDataAll process in: " + elapsedTimeSeconds + " seconds");
+        messagingTemplate.convertAndSend("/topic", "Kirim Data Transaksi: " + elapsedTimeSeconds + " detik");
         return rm;
     }
 
