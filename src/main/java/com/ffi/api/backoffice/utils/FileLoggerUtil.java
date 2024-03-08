@@ -19,6 +19,7 @@ public class FileLoggerUtil {
     public final String SUCCESS = "SUCCESS";
     public final String FAILED = "FAILED";
     private static final String LOG_FOLDER_PATH = "logs/";
+    private static String currentOutletCode = "";
     private static String currentUserCode = "";
     private static String currentModule = "";
 
@@ -61,13 +62,16 @@ public class FileLoggerUtil {
         }
     }
 
-    public synchronized void logActivity(String url, String module, String action, String userCode, String userName, Boolean success, String query, Map<String, Object> params) {
+    public synchronized void logActivity(String url, String module, String action, String userCode, String userName, String remark, Boolean success, String query, Map<String, Object> params) {
         currentUserCode = userCode;
         try {
-            String fileName = generateFileName("yyyy-MM");
+            if(params.containsKey("actOutlet") && !params.get("actOutlet").toString().isBlank()){
+                currentOutletCode = params.get("actOutlet").toString();
+            }
+            String fileName = currentOutletCode + "_" + generateFileName("yyyy-MM");
             String filePath = getModuleFolderPath(ACTIVITY_LOG) + fileName;
             try ( FileWriter fileWriter = new FileWriter(filePath, true)) {
-                String logString = createActivityLogEntry(url, module, action, userCode, userName, success, query, params);
+                String logString = createActivityLogEntry(url, module, action, userCode, userName, remark, success, query, params);
                 fileWriter.write(logString + "\n");
             }
         } catch (IOException e) {
@@ -170,7 +174,11 @@ public class FileLoggerUtil {
                 + "\", \"message\": \"" + message + "\" }";
     }
 
-    private static String createActivityLogEntry(String url, String module, String action, String staffCode, String staffName, Boolean success, String query, Map<String, Object> params) {
+    private static String createActivityLogEntry(String url, String module, String action, String staffCode, String staffName, String remark, Boolean success, String query, Map<String, Object> params) {
+        params.remove("actUser");
+        params.remove("actName");
+        params.remove("actUrl");
+        params.remove("actOutlet");
         Map map = new HashMap();
         map.put("dateUpd", getCurrentTimestamp("dd-MMM-yyyy"));
         map.put("time", getCurrentTimestamp("HHmmss"));
@@ -179,6 +187,7 @@ public class FileLoggerUtil {
         map.put("action", action);
         map.put("staffCode", staffCode);
         map.put("staffName", staffName);
+        map.put("remark", remark);
         map.put("success", success);
         map.put("query", query);
         map.put("params", params);

@@ -46,9 +46,10 @@ public class RequestBodyFilter implements Filter {
         if (checkValidParam(param.get("actUser")) && checkValidParam(param.get("actName")) && checkValidParam(param.get("actUrl"))) {
             String staffCode = param.getOrDefault("actUser", "").toString();
             String staffName = param.getOrDefault("actName", "").toString();
+            String outletCode = param.getOrDefault("actOutlet", "").toString();
             String url = param.getOrDefault("actUrl", "").toString();
             String query = "SELECT * FROM M_LEVEL_AKSES_DETAIL WHERE URL = :actUrl";
-            String module = "";
+            String module = "-";
             Map<String, Object> obj;
             List<Map<String, Object>> list = jdbcTemplate.query(query, param, new DynamicRowMapper());
             if (!list.isEmpty()) {
@@ -60,7 +61,7 @@ public class RequestBodyFilter implements Filter {
                 case "option1" -> {
                 }
                 default ->
-                    fileLoggerUtil.logActivity(url, module, VIEW, staffCode, staffName, true, "", param);
+                    fileLoggerUtil.logActivity(url, module, VIEW, staffCode, staffName, "", true, ep, param);
             }
 
         }

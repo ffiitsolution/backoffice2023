@@ -3108,11 +3108,7 @@ public class ViewDoaImpl implements ViewDao {
             prm.put("limit", "1001");
         }
         qry += " order by a.status asc, a.date_upd desc, a.time_upd desc) where rownum < :limit";
-
-        System.err.println("balance : " + balance);
-        System.err.println("status : " + balance.get("status"));
-        System.err.println("isValidParamKey : " + isValidParamKey(balance.get("status")));
-        System.err.println("p : " + prm);
+        System.err.println("qry: " + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, (ResultSet rs, int i) -> {
             Map<String, Object> rt = new HashMap<>();
             rt.put("outletCode", rs.getString("OUTLET_CODE"));

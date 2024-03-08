@@ -3627,8 +3627,6 @@ public class ProcessDaoImpl implements ProcessDao {
         List<Map<String, Object>> list = new ArrayList();
         String date = mapping.get("date").toString();
         List<String> tables = (List<String>) mapping.getOrDefault("listTable", new ArrayList<String>());
-        System.out.println("listTransferData type: " + mapping.get("type"));
-        System.out.println("listTransferData tables: " + tables.size());
         if ("TERIMA DATA MASTER".equals(mapping.get("type"))) {
             try {
                 for (String tableName : tables) {
@@ -3651,7 +3649,7 @@ public class ProcessDaoImpl implements ProcessDao {
                     map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
                     }.getType());
                     List<Map<String, Object>> listItem = (List<Map<String, Object>>) map1.get("item");
-                    if (listItem != null && !listItem.isEmpty()) {
+                    // if (listItem != null && !listItem.isEmpty()) {
                         Map<String, Object> mapq = new HashMap();
                         // Rubah nama tabel ke alias nya
                         Optional<TableAlias> tbl = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M, "table", tableName);
@@ -3662,7 +3660,7 @@ public class ProcessDaoImpl implements ProcessDao {
                         mapq.put(aliasedTableName, listItem);
                         list.add(mapq);
                         System.err.println("listTransferData " + aliasedTableName + ":" + listItem.size());
-                    }
+                    // }
                 }
                 rm.setItem(list);
                 rm.setSuccess(true);
@@ -3998,18 +3996,26 @@ public class ProcessDaoImpl implements ProcessDao {
                 param.put("status", status);
                 saveToQueryKirimTerimaData(param);
                 messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Selesai Kirim Data: " + aliasName + " " + total + " row");
+                fileLoggerUtil.logActivity("-", "Kirim Terima Data", "KIRIM", param.getOrDefault("actUser", "SYSTEM").toString(), param.getOrDefault("actName", "SYSTEM").toString(), "Selesai Kirim Data: " + aliasName + " " + total + " row", Boolean.TRUE, "", param);
             }
         } catch (JsonSyntaxException | IOException | UnsupportedOperationException | DataAccessException e) {
             Date failedApp = new Date();
+            if(e.getMessage().contains("Connection timed out")){
+                map1.put("error", "Koneksi ke HQ terputus.");
+            } else if(e.getMessage().contains("No route to host")){
+                map1.put("error", "Tidak ada koneksi ke HQ.");
+            } else {
+                map1.put("error", e.getMessage());
+            }
             System.out.println("FAILED SEND DATA " + tableName + " At " + failedApp.toString() + " " + e.getMessage());
             messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Gagal Kirim Data: " + aliasName);
+            fileLoggerUtil.logActivity("-", "Kirim Terima Data", "KIRIM", param.getOrDefault("actUser", "SYSTEM").toString(), param.getOrDefault("actName", "SYSTEM").toString(), "Gagal Kirim Data: " + aliasName + ": " + e.getMessage(), Boolean.FALSE, "", param);
 
         }
         return map1;
     }
 
     public String conditionTextTransfer(String tableName, String date) {
-        // todo27
         Optional<TableAlias> ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_T, "table", tableName);
         TableAlias tableAlias = ta.get();
         return " WHERE " + tableAlias.getDateColumn() + " = '" + date + "' ";
@@ -4120,6 +4126,7 @@ public class ProcessDaoImpl implements ProcessDao {
         String backupDirectoryName = "BOFFI_BACKUP_DIRECTORY";
         if (param.containsKey("process") && param.get("process").equals(true)) {
             // proses backup
+            fileLoggerUtil.logActivity("/backup-database", "Backup Local Database", "BACKUP", param.getOrDefault("actUser", "SYSTEM").toString(), param.getOrDefault("actName", "SYSTEM").toString(), "Start", Boolean.TRUE, "", param);
             long startTime = System.currentTimeMillis();
             try {
                 String currentWorkingDirectory = new File(".").getCanonicalPath();
@@ -4197,6 +4204,7 @@ public class ProcessDaoImpl implements ProcessDao {
             }
             double elapsedTimeSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
             messagingTemplate.convertAndSend("/topic/backup-db", "Progress 100% dalam " + elapsedTimeSeconds + " detik");
+            fileLoggerUtil.logActivity("/backup-database", "Backup Local Database", "BACKUP", param.getOrDefault("actUser", "SYSTEM").toString(), param.getOrDefault("actName", "SYSTEM").toString(), elapsedTimeSeconds + " detik", Boolean.TRUE, "", param);
             System.err.println("processBackupDb process in: " + elapsedTimeSeconds + " seconds");
         } else if (param.containsKey("delete") && param.get("delete").toString().length() > 0) {
             // fungsi hapus backup dan log di parameter delete
@@ -4214,6 +4222,7 @@ public class ProcessDaoImpl implements ProcessDao {
                         rm.setSuccess(true);
                         if (logFileToDelete.exists() && logFileToDelete.isFile()) {
                             logFileToDelete.delete();
+                        fileLoggerUtil.logActivity("/backup-database", "Backup Local Database", "DELETE", param.getOrDefault("actUser", "SYSTEM").toString(), param.getOrDefault("actName", "SYSTEM").toString(), fileName, Boolean.TRUE, "", param);
                         }
                     } else {
                         System.err.println("Failed to delete backup: " + fileName);
@@ -4275,6 +4284,7 @@ public class ProcessDaoImpl implements ProcessDao {
                 rm.setMessage("Error while getting the list of backup files: " + e.getMessage());
             }
         }
+        fileLoggerUtil.logActivity("/backup-database", "Backup Local Database", "VIEW", param.getOrDefault("actUser", "SYSTEM").toString(), param.getOrDefault("actName", "SYSTEM").toString(), rm.getMessage(), rm.isSuccess(), "", param);
         return rm;
     }
 
