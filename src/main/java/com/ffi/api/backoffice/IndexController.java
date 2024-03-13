@@ -3678,7 +3678,13 @@ public class IndexController {
                     }
                 }
                 if (map1.containsKey("error")) {
-                    listError.add(aliasName + ": " + map1.get("error").toString());
+                    String error = map1.get("error").toString();
+                    if(error.contains("Connection refused")){
+                        listError.add(aliasName + ": No connection to HQ.");
+                        break;
+                    } else {
+                        listError.add(aliasName + ": " + error);
+                    }
                 }
             }
             if (listError.isEmpty()) {
