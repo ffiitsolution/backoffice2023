@@ -17,6 +17,7 @@ import com.ffi.api.backoffice.utils.TableAliasUtil;
 import com.ffi.paging.ResponseMessage;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
@@ -4509,19 +4510,27 @@ public class ProcessDaoImpl implements ProcessDao {
     }
     
     ///////// integration from pettycash to boffi aditya 08-03-2024 
-     @Override
-    public void insertPettyCashToBoffi(JsonObject param) {
+    @Override
+    public Integer insertPettyCashToBoffi(JsonArray paramsArray) {
+        Integer s = 0;
+       for (JsonElement element : paramsArray) {
+        if (element.isJsonObject()) {
+            JsonObject param = element.getAsJsonObject();
+
+            Map<String, Object> prm = new HashMap<>();
+            prm.put("outletCode", param.getAsJsonPrimitive("outletCode").getAsString());
+            prm.put("itemCode", param.getAsJsonPrimitive("itemCode").getAsString());
+            prm.put("qtyIn", param.getAsJsonPrimitive("totalQty").getAsBigDecimal());
+            prm.put("userUpd", param.getAsJsonPrimitive("userUpd").getAsString());
+            prm.put("remark", param.getAsJsonPrimitive("remark").getAsString());
         
-        Map<String, Object> prm = new HashMap<>();
-            prm.put("outletCode", param.get("outletCode"));
-            prm.put("itemCode", param.get("itemCode"));
-            prm.put("qtyIn", param.get("totalQty"));
-            prm.put("userUpd", param.get("userUpd"));
-        
-        String qryInsertUpdateStockCardDetail = "MERGE INTO t_stock_card_detail dst USING ( SELECT :outletCode AS outlet_code, (SELECT trans_date FROM m_outlet WHERE outlet_code = :outletCode) AS trans_date, :itemCode AS item_code, 'OPM' AS cd_trans, :qtyIn AS quantity_in, 0 AS quantity, :userUpd AS user_upd, SYSDATE AS date_upd, TO_CHAR(SYSDATE, 'HH24MISS') AS time_upd FROM dual ) src ON ( dst.outlet_code = src.outlet_code AND dst.cd_trans = src.cd_trans AND dst.trans_date = src.trans_date AND dst.item_code = src.item_code ) WHEN MATCHED THEN UPDATE SET dst.quantity_in = dst.quantity_in + src.quantity_in, dst.user_upd = src.user_upd, dst.date_upd = src.date_upd, dst.time_upd = src.time_upd WHEN NOT MATCHED THEN INSERT ( outlet_code, trans_date, item_code, cd_trans, quantity_in, quantity, user_upd, date_upd, time_upd ) VALUES ( src.outlet_code, src.trans_date, src.item_code, src.cd_trans, src.quantity_in, src.quantity, src.user_upd, src.date_upd, src.time_upd )";
-            jdbcTemplate.update(qryInsertUpdateStockCardDetail, prm);
+        String qryInsertUpdateStockCardDetail = "MERGE INTO t_stock_card_detail dst USING ( SELECT :outletCode AS outlet_code, (SELECT TO_CHAR(trans_date, 'DD-MON-YYYY') FROM m_outlet WHERE outlet_code = :outletCode) AS trans_date, :itemCode AS item_code, 'OPM' AS cd_trans, :qtyIn AS quantity_in, 0 AS quantity, :userUpd AS user_upd, TO_CHAR(SYSDATE, 'DD-MON-YYYY') AS date_upd, TO_CHAR(SYSDATE, 'HH24MISS') AS time_upd FROM dual ) src ON ( dst.outlet_code = src.outlet_code AND dst.cd_trans = src.cd_trans AND dst.trans_date = src.trans_date AND dst.item_code = src.item_code ) WHEN MATCHED THEN UPDATE SET dst.quantity_in = dst.quantity_in + src.quantity_in, dst.user_upd = src.user_upd, dst.date_upd = src.date_upd, dst.time_upd = src.time_upd WHEN NOT MATCHED THEN INSERT ( outlet_code, trans_date, item_code, cd_trans, quantity_in, quantity, user_upd, date_upd, time_upd ) VALUES ( src.outlet_code, src.trans_date, src.item_code, src.cd_trans, src.quantity_in, src.quantity, src.user_upd, src.date_upd, src.time_upd)";
+            s += jdbcTemplate.update(qryInsertUpdateStockCardDetail, prm);
             
-        String qryInsertUpdateStockCard = "MERGE INTO t_stock_card tgt USING ( SELECT :outletCode AS OUTLET_CODE, (SELECT trans_date FROM m_outlet WHERE outlet_code = :outletCode) AS TRANS_DATE, :itemCode AS ITEM_CODE, NVL(:qtyIn, 0) AS QTY_IN FROM dual ) src ON (tgt.OUTLET_CODE = src.OUTLET_CODE AND tgt.TRANS_DATE = src.TRANS_DATE AND tgt.ITEM_CODE = src.ITEM_CODE) WHEN MATCHED THEN UPDATE SET tgt.QTY_IN = tgt.QTY_IN + src.QTY_IN WHEN NOT MATCHED THEN INSERT ( OUTLET_CODE, TRANS_DATE, ITEM_CODE, QTY_OUT, ITEM_COST, QTY_BEGINNING, QTY_IN, REMARK, USER_UPD, DATE_UPD, TIME_UPD ) VALUES ( src.OUTLET_CODE, src.TRANS_DATE, src.ITEM_CODE, 0, 0, 0, src.QTY_IN, 'OPM', :userUpd, SYSDATE , TO_CHAR(SYSDATE, 'HH24MISS') )";
-            jdbcTemplate.update(qryInsertUpdateStockCard, prm);
+        String qryInsertUpdateStockCard = "MERGE INTO t_stock_card tgt USING ( SELECT :outletCode AS OUTLET_CODE, (SELECT TO_CHAR(trans_date, 'DD-MON-YYYY') FROM m_outlet WHERE outlet_code = :outletCode) AS TRANS_DATE, :itemCode AS ITEM_CODE, NVL(:qtyIn, 0) AS QTY_IN, :remark AS REMARK, :userUpd AS USER_UPD, TO_CHAR(SYSDATE, 'DD-MON-YYYY') AS DATE_UPD, TO_CHAR(SYSDATE, 'HH24MISS') AS TIME_UPD FROM dual ) src ON ( tgt.OUTLET_CODE = src.OUTLET_CODE AND tgt.TRANS_DATE = src.TRANS_DATE AND tgt.ITEM_CODE = src.ITEM_CODE ) WHEN MATCHED THEN UPDATE SET tgt.QTY_IN = tgt.QTY_IN + src.QTY_IN, tgt.USER_UPD = src.USER_UPD, tgt.DATE_UPD = src.DATE_UPD, tgt.TIME_UPD = src.TIME_UPD, tgt.REMARK = src.REMARK WHEN NOT MATCHED THEN INSERT ( OUTLET_CODE, TRANS_DATE, ITEM_CODE, QTY_OUT, ITEM_COST, QTY_BEGINNING, QTY_IN, REMARK, USER_UPD, DATE_UPD, TIME_UPD ) VALUES ( src.OUTLET_CODE, src.TRANS_DATE, src.ITEM_CODE, 0, 0, 0, src.QTY_IN, src.REMARK, :userUpd, SYSDATE, TO_CHAR(SYSDATE, 'HH24MISS') )";
+            s += jdbcTemplate.update(qryInsertUpdateStockCard, prm);
         }        
+       }
+       return s;
+    }
 }

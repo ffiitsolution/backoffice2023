@@ -8,6 +8,7 @@ import com.ffi.api.backoffice.dao.ProcessDao;
 import com.ffi.api.backoffice.model.DetailOpname;
 import com.ffi.api.backoffice.model.HeaderOpname;
 import com.ffi.paging.ResponseMessage;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import java.io.IOException;
@@ -361,8 +362,8 @@ public class ProcessServices {
     }
     
     ///////// integration from pettycash to boffi aditya 08-03-2024 
-    public void insertPettyCashToBoffi(JsonObject param) {
-        dao.insertPettyCashToBoffi(param);
+    public Integer insertPettyCashToBoffi(JsonArray paramArray) {
+        return dao.insertPettyCashToBoffi(paramArray);
     }
     
     ///////// done aditya 08-03-2024

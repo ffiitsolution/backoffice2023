@@ -20,6 +20,7 @@ import com.ffi.paging.ResponseMessage;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -4156,20 +4157,20 @@ public class IndexController {
     )
     public @ResponseBody
     ResponseMessage insertPettyCashToBoffi(@RequestBody String param) throws IOException, Exception {
-        Gson gsn = new Gson();
-        JsonObject balance = gsn.fromJson(param, JsonObject.class);
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        ResponseMessage rm = new ResponseMessage();
+         ResponseMessage rm = new ResponseMessage();
+         Gson gson = new Gson();
+         
             try {
-                processServices.insertPettyCashToBoffi(balance);
+                JsonArray paramArray = gson.fromJson(param, JsonArray.class);
+                Integer updated = processServices.insertPettyCashToBoffi(paramArray);
                 rm.setSuccess(true);
-                rm.setMessage("Insert integration Petty Cash to Boffi Successfuly");
-            } catch (Exception e) {
+                rm.setMessage("Insert integration Petty Cash to Boffi Successfuly: " + updated);
+                rm.setItem(new ArrayList());
+            } catch (JsonSyntaxException e) {
                 rm.setSuccess(false);
                 rm.setMessage("Insert integration Petty Cash to Boffi Failed: " + e.getMessage());
                 System.err.println(e);
             }
-            rm.setItem(list);
         return rm;
     }
     
