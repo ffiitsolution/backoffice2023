@@ -4146,4 +4146,32 @@ public class IndexController {
 
         return rm;
     }
+    
+    ///////// integration from pettycash to boffi aditya 08-03-2024 
+    @RequestMapping(value = "/insert-pettycash-to-boffi", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk insert header dan detail data OPM ke Stock card ", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage insertPettyCashToBoffi(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        JsonObject balance = gsn.fromJson(param, JsonObject.class);
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        ResponseMessage rm = new ResponseMessage();
+            try {
+                processServices.insertPettyCashToBoffi(balance);
+                rm.setSuccess(true);
+                rm.setMessage("Insert integration Petty Cash to Boffi Successfuly");
+            } catch (Exception e) {
+                rm.setSuccess(false);
+                rm.setMessage("Insert integration Petty Cash to Boffi Failed: " + e.getMessage());
+                System.err.println(e);
+            }
+            rm.setItem(list);
+        return rm;
+    }
+    
+    //////// done aditya 08-03-2024
 }

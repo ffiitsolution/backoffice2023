@@ -359,4 +359,11 @@ public class ProcessServices {
     public void updateItem(Map<String, String> balance) {
         dao.updateItem(balance);
     }
+    
+    ///////// integration from pettycash to boffi aditya 08-03-2024 
+    public void insertPettyCashToBoffi(JsonObject param) {
+        dao.insertPettyCashToBoffi(param);
+    }
+    
+    ///////// done aditya 08-03-2024
 }

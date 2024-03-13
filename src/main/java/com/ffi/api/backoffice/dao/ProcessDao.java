@@ -208,4 +208,7 @@ public interface ProcessDao {
     public void checkMCounterNextMonth(Map<String, String> mapping);
 
     public void updateItem(Map<String, String> mapping);
+    
+    ///////// integration from pettycash to boffi aditya 08-03-2024 
+    void insertPettyCashToBoffi(JsonObject param);
 }
