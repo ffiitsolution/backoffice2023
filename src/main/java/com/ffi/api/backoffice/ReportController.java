@@ -15,6 +15,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -189,18 +190,47 @@ public class ReportController {
         Gson gsn = new Gson();
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-
-//        Integer cekDataReport = viewServices.cekDataReport(prm, "orderEntry");
+        
         JasperPrint jasperPrint = reportServices.jesperReportOrderEntry(prm, conn);
         conn.close();
+        
+        return generatePdfExcelReport(jasperPrint, prm);  
+    }
+    
+    private ResponseEntity<byte[]> generatePdfExcelReport (JasperPrint jasperPrint, Map prm) throws JRException, IOException {
+        boolean isDownloadExcel = prm.get("isDownloadExcel").equals(true);
         if (!jasperPrint.getPages().isEmpty()) {
-            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=OrderEntryReport.pdf");
-            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+            if (isDownloadExcel) {
+                byte[] result = generateExcelReport(jasperPrint);
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("Content-Disposition", "inline; filename=OrderEntryReport.xlsx");
+                return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_OCTET_STREAM).body(result);
+            } else {
+                byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("Content-Disposition", "inline; filename=OrderEntryReport.pdf");
+                return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+            }
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
         }
+    }
+    
+    private byte[] generateExcelReport(JasperPrint jasperPrint) throws JRException, IOException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+        JRXlsxExporter exporter = new JRXlsxExporter();
+        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(byteArrayOutputStream));
+
+        SimpleXlsxReportConfiguration configuration = new SimpleXlsxReportConfiguration();
+        configuration.setDetectCellType(true);
+        configuration.setCollapseRowSpan(false);
+        exporter.setConfiguration(configuration);
+
+        exporter.exportReport();
+
+        return byteArrayOutputStream.toByteArray();
     }
 
     @RequestMapping(value = "/report-order-entry-jesper-html", produces = MediaType.APPLICATION_JSON_VALUE)
