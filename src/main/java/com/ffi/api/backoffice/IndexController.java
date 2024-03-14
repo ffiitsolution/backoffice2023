@@ -19,7 +19,9 @@ import com.ffi.paging.Response;
 import com.ffi.paging.ResponseMessage;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import io.swagger.annotations.ApiOperation;
@@ -88,7 +90,15 @@ public class IndexController {
         map.put("output", "welcome");
         return map;
     }
-
+    
+    @RequestMapping(value = "/ping")
+    public @ResponseBody
+    Map<String, Object> ping() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("output", "Connection is Successfully");
+        return map;
+    }
+    
     @MessageMapping("/hello")
     @SendTo("/topic/greetings")
     public ResponseMessage greeting(String message) throws Exception {
@@ -4161,24 +4171,33 @@ public class IndexController {
         @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 404, message = "The resource not found"),}
     )
-    public @ResponseBody
-    ResponseMessage insertPettyCashToBoffi(@RequestBody String param) throws IOException, Exception {
-         ResponseMessage rm = new ResponseMessage();
-         Gson gson = new Gson();
-         
-            try {
-                JsonArray paramArray = gson.fromJson(param, JsonArray.class);
-                Integer updated = processServices.insertPettyCashToBoffi(paramArray);
-                rm.setSuccess(true);
-                rm.setMessage("Insert integration Petty Cash to Boffi Successfuly: " + updated);
-                rm.setItem(new ArrayList());
-            } catch (JsonSyntaxException e) {
-                rm.setSuccess(false);
-                rm.setMessage("Insert integration Petty Cash to Boffi Failed: " + e.getMessage());
-                System.err.println(e);
-            }
-        return rm;
+    public @ResponseBody ResponseMessage insertPettyCashToBoffi(@RequestBody String param) throws IOException, Exception {
+    ResponseMessage rm = new ResponseMessage();
+    Gson gson = new Gson();
+    
+    try {
+        // Check if the JSON is an object or an array
+        JsonElement jsonElement = JsonParser.parseString(param);
+        if (jsonElement.isJsonObject()) {
+            // Handle if it's an object
+            rm.setSuccess(false);
+            rm.setMessage("Insert integration Petty Cash to Boffi Failed: JSON must be an array, but an object was provided.");
+        } else if (jsonElement.isJsonArray()) {
+            // Handle if it's an array
+            JsonArray paramArray = jsonElement.getAsJsonArray();
+            Integer updated = processServices.insertPettyCashToBoffi(paramArray);
+            rm.setSuccess(true);
+            rm.setMessage("Insert integration Petty Cash to Boffi Successfuly: " + updated);
+            rm.setItem(new ArrayList());
+        }
+    } catch (JsonSyntaxException e) {
+        rm.setSuccess(false);
+        rm.setMessage("Insert integration Petty Cash to Boffi Failed: " + e.getMessage());
+        System.err.println(e);
     }
+    return rm;
+}
+
     
     //////// done aditya 08-03-2024
 }
