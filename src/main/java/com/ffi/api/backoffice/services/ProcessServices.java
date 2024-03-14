@@ -362,9 +362,9 @@ public class ProcessServices {
     }
     
     ///////// integration from pettycash to boffi aditya 08-03-2024 
-    public Integer insertPettyCashToBoffi(JsonArray paramArray) {
-        return dao.insertPettyCashToBoffi(paramArray);
+  
+    public void insertPettyCashToBoffi(Map<String, String> balance) {
+        dao.insertPettyCashToBoffi(balance);
     }
-    
     ///////// done aditya 08-03-2024
 }

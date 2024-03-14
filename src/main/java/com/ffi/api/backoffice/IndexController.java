@@ -4172,32 +4172,39 @@ public class IndexController {
         @ApiResponse(code = 404, message = "The resource not found"),}
     )
     public @ResponseBody ResponseMessage insertPettyCashToBoffi(@RequestBody String param) throws IOException, Exception {
-    ResponseMessage rm = new ResponseMessage();
-    Gson gson = new Gson();
-    
-    try {
-        // Check if the JSON is an object or an array
-        JsonElement jsonElement = JsonParser.parseString(param);
-        if (jsonElement.isJsonObject()) {
-            // Handle if it's an object
-            rm.setSuccess(false);
-            rm.setMessage("Insert integration Petty Cash to Boffi Failed: JSON must be an array, but an object was provided.");
-        } else if (jsonElement.isJsonArray()) {
-            // Handle if it's an array
-            JsonArray paramArray = jsonElement.getAsJsonArray();
-            Integer updated = processServices.insertPettyCashToBoffi(paramArray);
-            rm.setSuccess(true);
-            rm.setMessage("Insert integration Petty Cash to Boffi Successfuly: " + updated);
-            rm.setItem(new ArrayList());
-        }
-    } catch (JsonSyntaxException e) {
+        ResponseMessage rm = new ResponseMessage();
         rm.setSuccess(false);
-        rm.setMessage("Insert integration Petty Cash to Boffi Failed: " + e.getMessage());
-        System.err.println(e);
+        rm.setItem(new ArrayList());
+        Gson gsn = new Gson();
+        Map<String, Object> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        
+        Map<String, String> headerParam = new HashMap<String, String>();
+        headerParam.put("outletCode", balance.get("outletCode").toString());
+        headerParam.put("userUpd", balance.get("userUpd").toString()); 
+        List items = (List) balance.get("items");
+        List errors = new ArrayList();
+        for (int i = 0; i < items.size(); i++) {
+            Map<String, Object> itemx = (Map<String, Object>) items.get(i);
+            headerParam.put("itemCode", itemx.get("itemCode").toString());  
+            headerParam.put("totalQty", itemx.get("totalQty").toString()); 
+            headerParam.put("remark", itemx.get("remark").toString()); 
+            try {
+                processServices.insertPettyCashToBoffi(headerParam);
+                System.out.println("Success Insert Detail ke-" + i);
+            } catch (Exception e) {
+                errors.add(e.getMessage());
+                System.out.println("Exception: " + e);
+            }
+        }
+        if(errors.isEmpty()){
+            rm.setSuccess(true);
+            rm.setMessage("Success");
+        } else {
+            rm.setItem(errors);
+            rm.setMessage("Failed");
+        }
+        return rm;
     }
-    return rm;
-}
-
-    
     //////// done aditya 08-03-2024
 }

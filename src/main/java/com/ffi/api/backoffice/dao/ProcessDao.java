@@ -210,6 +210,6 @@ public interface ProcessDao {
 
     public void updateItem(Map<String, String> mapping);
     
-    ///////// integration from pettycash to boffi aditya 08-03-2024 
-    public Integer insertPettyCashToBoffi(JsonArray paramArray);
+    ///////// integration from pettycash to boffi aditya 08-03-2024     
+    public void insertPettyCashToBoffi(Map<String, String> mapping);
 }
