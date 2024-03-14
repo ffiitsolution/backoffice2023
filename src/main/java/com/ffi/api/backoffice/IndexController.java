@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.ffi.api.backoffice;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,6 +24,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -37,16 +34,23 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import net.sf.jasperreports.engine.JRException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.MessagingException;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -4207,4 +4211,27 @@ public class IndexController {
         return rm;
     }
     //////// done aditya 08-03-2024
+    
+
+    //////////// New method to Get PDF File - M Joko 14-Feb-2024 ////////////
+    @PostMapping("/get-file-pdf")
+    public ResponseEntity<byte[]> getPdf(@RequestBody Map<String, Object> requestBody, HttpServletResponse response) {
+        try {
+            String fileId = (String) requestBody.get("fileId");
+            String pdfUrl = "";
+            if(fileId.equalsIgnoreCase("module-boffi")){
+                pdfUrl = "http://192.168.10.28/backoffice/assets/pdf/Modul_Back_Office_New_Version_2024_V1.pdf";
+            }
+            CloseableHttpClient httpClient = HttpClients.createDefault();
+            HttpGet httpGet = new HttpGet(pdfUrl);
+            InputStream inputStream = httpClient.execute(httpGet).getEntity().getContent();
+            byte[] pdfContent = inputStream.readAllBytes();
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + fileId + ".pdf\"");
+            return ResponseEntity.ok().body(pdfContent);
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

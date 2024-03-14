@@ -276,5 +276,8 @@ public class ReportServices {
     public JasperPrint jesperReportTransaksiHd(Map<String, Object> param, Connection connection) throws JRException, IOException {
         return dao.jesperReportTransaksiHd(param, connection);
     }
+    public JasperPrint jasperReportCashPull(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        return dao.jasperReportCashPull(param, connection);
+    }
 
 }
