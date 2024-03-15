@@ -16,12 +16,13 @@
 	<parameter name="query2" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["1 = 1"]]></defaultValueExpression>
 	</parameter>
-		<parameter name="query3" class="java.lang.String" isForPrompting="false">
+	<parameter name="query3" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[" WHERE 1 = 1"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="outletBrand" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
+	<parameter name="isDownloadCsv" class="java.lang.Boolean"/>
 	<queryString>
 		<![CDATA[SELECT * FROM (SELECT
 	a.OUTLET_CODE,
@@ -246,28 +247,28 @@ ORDER BY
 				<textFieldExpression><![CDATA[$F{OUTLET_NAME}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="65" y="21" width="200" height="11" uuid="cc480b68-68a2-443f-8bf2-1c1945555575"/>
+				<reportElement x="65" y="22" width="200" height="11" uuid="cc480b68-68a2-443f-8bf2-1c1945555575"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{ADDRESS_1}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="0" y="56" width="586" height="18" uuid="979d11b6-4453-48cc-9a16-5902665bc3cc"/>
+				<reportElement x="0" y="57" width="586" height="18" uuid="979d11b6-4453-48cc-9a16-5902665bc3cc"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="11" isBold="true"/>
 				</textElement>
 				<text><![CDATA[INVENTORY MOVEMENT]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="92" width="39" height="15" uuid="6e25febd-dbe8-4d60-ad32-d70352c23d2b"/>
+				<reportElement x="0" y="92" width="38" height="15" uuid="6e25febd-dbe8-4d60-ad32-d70352c23d2b"/>
 				<textElement>
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Item]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="38" y="92" width="233" height="15" uuid="c3876a0b-3364-471d-b305-3dad5823f144"/>
+				<reportElement x="38" y="92" width="214" height="15" uuid="c3876a0b-3364-471d-b305-3dad5823f144"/>
 				<textElement>
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -315,7 +316,7 @@ ORDER BY
 				<reportElement x="0" y="108" width="586" height="1" uuid="11bdebf2-6510-496d-9eb4-36b085d3f145"/>
 			</line>
 			<textField>
-				<reportElement x="64" y="78" width="347" height="11" uuid="f2468062-21d1-434b-9171-09ca9c5654a7"/>
+				<reportElement x="50" y="78" width="347" height="11" uuid="f2468062-21d1-434b-9171-09ca9c5654a7"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -323,7 +324,7 @@ ORDER BY
 + " - " + new SimpleDateFormat("dd-MMM-yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{toDate}))]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="1" y="78" width="64" height="11" uuid="c5ec79f3-ee5a-424e-b241-9a0540add804"/>
+				<reportElement x="1" y="78" width="49" height="11" uuid="c5ec79f3-ee5a-424e-b241-9a0540add804"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -341,77 +342,77 @@ ORDER BY
 				<text><![CDATA[Adjustment]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="65" y="31" width="200" height="11" isPrintWhenDetailOverflows="true" uuid="3a428dd5-ec16-4b28-93fd-a788fe102feb"/>
+				<reportElement x="65" y="33" width="200" height="11" isPrintWhenDetailOverflows="true" uuid="3a428dd5-ec16-4b28-93fd-a788fe102feb"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{ADDRESS_2}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="65" y="41" width="200" height="11" uuid="1b1bc806-3dea-4245-9a72-de2b609d45fa"/>
+				<reportElement x="65" y="44" width="200" height="11" uuid="1b1bc806-3dea-4245-9a72-de2b609d45fa"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Phone : " + $F{PHONE}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="449" y="31" width="66" height="11" uuid="fbde8e00-6899-4de9-b919-dfd6047f62da"/>
+				<reportElement x="449" y="33" width="55" height="11" uuid="fbde8e00-6899-4de9-b919-dfd6047f62da"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Jam Cetak]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="514" y="1" width="114" height="11" uuid="c986816a-675b-42ea-ab4a-2638865064ac"/>
+				<reportElement x="504" y="0" width="114" height="11" uuid="c986816a-675b-42ea-ab4a-2638865064ac"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="449" y="1" width="66" height="11" uuid="a931282e-1e24-4527-a5d2-b9dfefdbdce3"/>
+				<reportElement x="449" y="0" width="55" height="11" uuid="a931282e-1e24-4527-a5d2-b9dfefdbdce3"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Halaman]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="449" y="11" width="66" height="11" uuid="861c2d70-f855-49cb-8100-866e126a35ff"/>
+				<reportElement x="449" y="11" width="55" height="11" uuid="861c2d70-f855-49cb-8100-866e126a35ff"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[User Cetak]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="514" y="11" width="114" height="11" uuid="e1ea97fd-1adc-4778-bc48-9465b89643b9"/>
+				<reportElement x="504" y="11" width="114" height="11" uuid="e1ea97fd-1adc-4778-bc48-9465b89643b9"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + $P{user}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="514" y="31" width="114" height="11" uuid="e2d3f41f-b9e0-4330-b760-11f67b007ae3"/>
+				<reportElement x="504" y="33" width="114" height="11" uuid="e2d3f41f-b9e0-4330-b760-11f67b007ae3"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="514" y="21" width="114" height="11" uuid="3e080122-a7a4-48a6-a039-313a4e8fbcc7"/>
+				<reportElement x="504" y="22" width="114" height="11" uuid="3e080122-a7a4-48a6-a039-313a4e8fbcc7"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="449" y="21" width="66" height="11" uuid="1d8af797-f192-40dd-81ec-425d64d36201"/>
+				<reportElement x="449" y="22" width="55" height="11" uuid="1d8af797-f192-40dd-81ec-425d64d36201"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Tanggal Cetak]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="449" y="78" width="66" height="11" uuid="79e092b0-bd22-460e-82d1-bc6c96d0d048"/>
+				<reportElement x="449" y="78" width="65" height="11" uuid="79e092b0-bd22-460e-82d1-bc6c96d0d048"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -429,21 +430,21 @@ ORDER BY
 	<detail>
 		<band height="20" splitType="Stretch">
 			<textField textAdjust="StretchHeight">
-				<reportElement x="0" y="0" width="39" height="15" uuid="96a05c70-4b29-4b3e-b439-5bf4318b77ec"/>
+				<reportElement x="0" y="0" width="38" height="15" uuid="96a05c70-4b29-4b3e-b439-5bf4318b77ec"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{ITEM_CODE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{isDownloadCsv}.equals(true) ? "'" + $F{ITEM_CODE} : $F{ITEM_CODE}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight">
-				<reportElement x="38" y="0" width="233" height="15" uuid="df41de09-c5ec-46d6-858b-c6c770d1cd15"/>
+				<reportElement x="38" y="0" width="214" height="15" uuid="df41de09-c5ec-46d6-858b-c6c770d1cd15"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="252" y="0" width="72" height="15" uuid="5ee23171-51d7-4bfc-9d5f-0913c886a1b3"/>
+				<reportElement x="252" y="0" width="56" height="15" uuid="5ee23171-51d7-4bfc-9d5f-0913c886a1b3"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>

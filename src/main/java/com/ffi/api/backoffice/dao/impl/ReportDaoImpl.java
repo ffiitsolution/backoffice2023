@@ -619,7 +619,7 @@ public class ReportDaoImpl implements ReportDao {
 
     @Override
     public JasperPrint jasperReportReturnOrder(Map<String, Object> param, Connection connection) throws IOException, JRException {
-        Map<String, Object> hashMap = new HashMap<String, Object>();
+        Map<String, Object> hashMap = new HashMap<>();
 
         hashMap.put("city", "X_" + param.get("city"));
         hashMap.put("fromDate", param.get("fromDate"));
@@ -627,6 +627,8 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("user", param.get("user"));
+        hashMap.put("isDownloadCsv", param.get("isDownloadCsv"));
+
         if (param.get("detail").equals(1.0)) {
             hashMap.put("detail", 1);
         } else {
@@ -720,12 +722,14 @@ public class ReportDaoImpl implements ReportDao {
 
     @Override
     public JasperPrint jesperReportItem(Map<String, Object> param, Connection connection) throws IOException, JRException {
-        Map<String, Object> hashMap = new HashMap<String, Object>();
+        Map<String, Object> hashMap = new HashMap<>();
         String itemCategory = "Semua";
 
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("user", param.get("user"));
         hashMap.put("jenisGudang", param.get("jenisGudang"));
+        hashMap.put("isDownloadCsv", param.get("isDownloadCsv"));
+        
         if (param.get("status").equals("Semua")) {
             hashMap.put("status", "Semua");
             hashMap.put("status1", "I");
@@ -810,7 +814,7 @@ public class ReportDaoImpl implements ReportDao {
     ///////////////NEW METHOD REPORT BY PASCA 24 July 2023////
     @Override
     public JasperPrint jasperReportStock(Map<String, Object> param, Connection connection) throws IOException, JRException {
-        Map<String, Object> hashMap = new HashMap<String, Object>();
+        Map<String, Object> hashMap = new HashMap<>();
         hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("fromDate", param.get("fromDate"));
@@ -819,6 +823,8 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("item", param.get("item"));
         hashMap.put("user", param.get("user"));
         hashMap.put("typePrint", (param.get("typePrint").equals(1.0) ? "Item yang ada mutasi stok" : "Semua item"));
+        hashMap.put("isDownloadCsv", param.get("isDownloadCsv"));
+        
         if (param.get("item").equals("Semua")){
             hashMap.put("itemName", "Semua");
         } else {
@@ -871,7 +877,7 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("address1", param.get("address1"));
         hashMap.put("address2", param.get("address2"));
         hashMap.put("phone", param.get("phone"));
-
+        hashMap.put("isDownloadCsv", param.get("isDownloadCsv"));
 
         if (param.get("status").equals("Active")) {
             hashMap.put("status", "A");
@@ -895,7 +901,8 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("toDate", param.get("toDate"));
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("department", param.get("department"));
-
+        hashMap.put("isDownloadCsv", param.get("isDownloadCsv")); 
+        
         if (param.get("typeReport").equals("Rekap")) {
             hashMap.put("title", "Rekap");
             hashMap.put("detail", 0);
@@ -2853,6 +2860,7 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("fromDate", param.get("fromDate"));
         hashMap.put("toDate", param.get("toDate"));
         hashMap.put("user", param.get("user"));
+        hashMap.put("isDownloadCsv", param.get("isDownloadCsv"));
 
         if (param.get("rangeData").equals(1.0)) {
             hashMap.put("query1", "QTY_BEGINNING <> 0");
@@ -3298,7 +3306,7 @@ public class ReportDaoImpl implements ReportDao {
     ///////////////NEW METHOD REPORT PRODUCTION by Sifa 11 Januari 2024////
     @Override
     public JasperPrint jasperReportProduction(Map<String, Object> param, Connection connection) throws IOException, JRException {
-        Map<String, Object> hashMap = new HashMap<String, Object>();
+        Map<String, Object> hashMap = new HashMap<>();
 
         hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("fromDate", param.get("fromDate"));
@@ -3307,6 +3315,7 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("mpcsGroup", param.get("mpcsGroup"));
         hashMap.put("user", param.get("user"));
         hashMap.put("detail", param.get("detail"));
+        hashMap.put("isDownloadCsv", param.get("isDownloadCsv"));
         
         String reportPath;
         if ("Jam Aktual".equals(param.get("detail"))) {

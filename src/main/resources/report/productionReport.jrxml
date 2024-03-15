@@ -27,6 +27,8 @@
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<parameter name="detail" class="java.lang.String"/>
+	<parameter name="isDownloadCsv" class="java.lang.Boolean"/>
+	<parameter name="Parameter1" class="java.lang.String"/>
 	<queryString language="SQL">
 		<![CDATA[SELECT 
 	tsm.DATE_MPCS,
@@ -502,7 +504,7 @@ ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$F{PRODUCT_ITEM_CODE}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$P{isDownloadCsv}.equals(true) ? "'" + $F{PRODUCT_ITEM_CODE} : $F{PRODUCT_ITEM_CODE}]]></textFieldExpression>
 				</textField>
 				<textField>
 					<reportElement x="308" y="16" width="70" height="12" uuid="9698108c-61e5-451e-a3c2-4bf35bbc8ed1">
@@ -889,7 +891,7 @@ ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{RECIPE_ITEM_CODE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{isDownloadCsv}.equals(true) ? "'" + $F{RECIPE_ITEM_CODE} : $F{RECIPE_ITEM_CODE}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="308" y="0" width="70" height="12" uuid="cf986d87-1374-4df9-9d48-bff4ff7cac9c">

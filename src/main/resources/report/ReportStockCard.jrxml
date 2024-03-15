@@ -923,7 +923,9 @@ FROM
 					<textFieldExpression><![CDATA[new DecimalFormat("###,###,##0.0000").format($V{TOTALOUT})]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="327" y="194" width="70" height="16" uuid="ca0c3775-b9ae-4d00-8684-50116f0e94e5"/>
+					<reportElement x="327" y="195" width="70" height="15" uuid="ca0c3775-b9ae-4d00-8684-50116f0e94e5">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
 					<textElement textAlignment="Right"/>
 					<textFieldExpression><![CDATA[new DecimalFormat("###,###,##0.0000").format($V{TOTALIN})]]></textFieldExpression>
 				</textField>
@@ -943,7 +945,7 @@ FROM
 					<textFieldExpression><![CDATA[new DecimalFormat("###,###,##0.0000").format($V{SALESIN})]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="402" y="44" width="70" height="16" uuid="337e9834-e202-44b2-9e6c-527c3450b3ce"/>
+					<reportElement x="402" y="45" width="70" height="15" uuid="337e9834-e202-44b2-9e6c-527c3450b3ce"/>
 					<textElement textAlignment="Right"/>
 					<textFieldExpression><![CDATA[new DecimalFormat("###,###,##0.0000").format($V{SALESOUT})]]></textFieldExpression>
 				</textField>
@@ -1008,7 +1010,7 @@ FROM
 					<textFieldExpression><![CDATA[new DecimalFormat("###,###,##0.0000").format($V{LOVOUT})]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="402" y="166" width="70" height="15" uuid="b3f9887c-fc0b-4be6-9d24-536a7c981186"/>
+					<reportElement x="402" y="165" width="70" height="15" uuid="b3f9887c-fc0b-4be6-9d24-536a7c981186"/>
 					<textElement textAlignment="Right"/>
 					<textFieldExpression><![CDATA[new DecimalFormat("###,###,##0.0000").format($V{RTROUT})]]></textFieldExpression>
 				</textField>
@@ -1023,7 +1025,7 @@ FROM
 					<textFieldExpression><![CDATA[new DecimalFormat("###,###,##0.0000").format($V{SOPIN})]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="402" y="181" width="70" height="15" uuid="5506301b-8948-4abc-8d34-d7c06549e29b"/>
+					<reportElement x="402" y="180" width="70" height="15" uuid="5506301b-8948-4abc-8d34-d7c06549e29b"/>
 					<textElement textAlignment="Right"/>
 					<textFieldExpression><![CDATA[new DecimalFormat("###,###,##0.0000").format($V{SOPOUT})]]></textFieldExpression>
 				</textField>
