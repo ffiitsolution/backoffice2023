@@ -757,7 +757,7 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listMpcsHeader(Map<String, String> param) {
-        String qry = "SELECT b.OUTLET_CODE, a.MPCS_GROUP, b.DESCRIPTION, CASE WHEN b.FRYER_TYPE = ' ' THEN ' ' ELSE b.FRYER_TYPE || ' - '  || c.DESCRIPTION END AS FRYER_TYPE, b.QTY_CONV, a.STATUS "
+        String qry = "SELECT b.OUTLET_CODE, a.MPCS_GROUP, b.DESCRIPTION, CASE WHEN b.FRYER_TYPE = ' ' THEN ' ' ELSE b.FRYER_TYPE || ' - '  || c.DESCRIPTION END AS FRYER_TYPE, b.QTY_CONV, b.STATUS "
                 + "FROM M_RECIPE_HEADER a "
                 + "LEFT JOIN M_MPCS_HEADER b ON a.MPCS_GROUP = b.MPCS_GROUP "
                 + "LEFT JOIN M_GLOBAL c "
@@ -772,14 +772,14 @@ public class ViewDoaImpl implements ViewDao {
         var statusParam = param.get("status");
         if ("A".equals(statusParam)) {
             qry += " AND a.STATUS = 'A' ";
-        }
-        if ("I".equals(statusParam)) {
+        } else if ("I".equals(statusParam)) {
             qry += " AND a.STATUS = 'I' ";
         } else {
             qry += " AND a.STATUS IN ('A', 'I' )";
         }
 
         qry += " ORDER BY a.status ASC, a.MPCS_GROUP ASC ";
+        System.out.println("listMpcsHeader" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {

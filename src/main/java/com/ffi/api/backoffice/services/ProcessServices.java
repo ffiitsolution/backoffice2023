@@ -56,6 +56,10 @@ public class ProcessServices {
     public void updateFrayer(Map<String, String> balance) {
         dao.updateFrayer(balance);
     }
+    
+    public void updateMpcs(Map<String, String> balance) {
+        dao.updateMpcs(balance);
+    }
     ///////////////////////done
     ///////////////new method from asep 16-mar-2023 //////////////  
 

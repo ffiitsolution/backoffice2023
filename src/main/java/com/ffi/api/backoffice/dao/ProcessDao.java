@@ -36,6 +36,8 @@ public interface ProcessDao {
     /////////////done
     ///////////////new method from dona 06-03-2023////////////////////////////
     public void updateFrayer(Map<String, String> mapping);
+    
+    public void updateMpcs(Map<String, String> mapping);
 
     /////////////done
     ///////////////new method from asep 16-mar-2023 ////////////// 

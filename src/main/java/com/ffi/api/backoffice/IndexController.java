@@ -4210,6 +4210,35 @@ public class IndexController {
         }
         return rm;
     }
+    
+    @RequestMapping(value = "/update-mpcs", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk update mpcs", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage updateMpcs(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        ResponseMessage rm = new ResponseMessage();
+        try {
+            processServices.updateMpcs(balance);
+            rm.setSuccess(true);
+            rm.setMessage("Update Success Successfuly");
+
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Update Failed Successfuly: " + e.getMessage());
+        }
+
+        rm.setItem(list);
+
+        return rm;
+    }
     //////// done aditya 08-03-2024
     
 

@@ -4520,5 +4520,17 @@ public class ProcessDaoImpl implements ProcessDao {
             
         String qryInsertUpdateStockCard = "MERGE INTO t_stock_card tgt USING ( SELECT :outletCode AS OUTLET_CODE, (SELECT TO_CHAR(trans_date, 'DD-MON-YYYY') FROM m_outlet WHERE outlet_code = :outletCode) AS TRANS_DATE, :itemCode AS ITEM_CODE, NVL(:qtyIn, 0) AS QTY_IN, :remark AS REMARK, :userUpd AS USER_UPD, TO_CHAR(SYSDATE, 'DD-MON-YYYY') AS DATE_UPD, TO_CHAR(SYSDATE, 'HH24MISS') AS TIME_UPD FROM dual ) src ON ( tgt.OUTLET_CODE = src.OUTLET_CODE AND tgt.TRANS_DATE = src.TRANS_DATE AND tgt.ITEM_CODE = src.ITEM_CODE ) WHEN MATCHED THEN UPDATE SET tgt.QTY_IN = tgt.QTY_IN + src.QTY_IN, tgt.USER_UPD = src.USER_UPD, tgt.DATE_UPD = src.DATE_UPD, tgt.TIME_UPD = src.TIME_UPD, tgt.REMARK = src.REMARK WHEN NOT MATCHED THEN INSERT ( OUTLET_CODE, TRANS_DATE, ITEM_CODE, QTY_OUT, ITEM_COST, QTY_BEGINNING, QTY_IN, REMARK, USER_UPD, DATE_UPD, TIME_UPD ) VALUES ( src.OUTLET_CODE, src.TRANS_DATE, src.ITEM_CODE, 0, 0, 0, src.QTY_IN, src.REMARK, :userUpd, SYSDATE, TO_CHAR(SYSDATE, 'HH24MISS') )";
            jdbcTemplate.update(qryInsertUpdateStockCard, param);
-        }         
+        }
+    
+    
+    @Override
+    public void updateMpcs(Map<String, String> balance) {
+        String qy = "UPDATE M_MPCS_HEADER SET FRYER_TYPE = :fryerType, STATUS = :status, USER_UPD = :userUpd, DATE_UPD = :dateUpd, TIME_UPD = :timeUpd WHERE OUTLET_CODE = :outletCode AND MPCS_GROUP = :mpcsGroup";
+        
+        balance.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        balance.put("timeUpd", LocalDateTime.now().format(timeFormatter));
+        jdbcTemplate.update(qy, balance);
+    }
+    
+    //////////////// done aditya 14/03/2024
 }
