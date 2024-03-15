@@ -510,7 +510,7 @@ ORDER BY DATA.ITEM_CODE]]>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{FLAG_MENU}.equals("ADD") ? new DecimalFormat("#,##0.00").format($F{AMT_COST}) : ""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{FLAG_MENU}.equals("ADD")  ? $F{AMT_COST} : 0)]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="420" y="2" width="30" height="18" uuid="78b61e2f-3bb0-441d-900d-5a618afc594d"/>
@@ -531,21 +531,21 @@ ORDER BY DATA.ITEM_CODE]]>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{FLAG_MENU}.equals("ADD") ? new DecimalFormat("#,##0").format($F{QTY_EI}.add($F{QTY_TA})) : ""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0").format($F{FLAG_MENU}.equals("ADD") ? $F{QTY_EI}.add($F{QTY_TA}) : 0)]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="339" y="2" width="31" height="18" uuid="2c81f2c5-f990-45af-b052-697c09e07ce5"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{FLAG_MENU}.equals("ALA") ? new DecimalFormat("#,##0").format($F{QTY_TA}.add($F{QTY_EI})) : ""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0").format($F{FLAG_MENU}.equals("ALA") ? $F{QTY_TA}.add($F{QTY_EI}) : 0)]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight">
 				<reportElement x="370" y="2" width="50" height="18" uuid="250a615f-3ff9-4ef4-be5a-3e50e4d6b273"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{FLAG_MENU}.equals("ALA") ? new DecimalFormat("#,##0.00").format($F{AMT_COST}) : ""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{FLAG_MENU}.equals("ALA")  ? $F{AMT_COST} : 0)]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight">
 				<reportElement x="450" y="2" width="43" height="18" uuid="560635f3-6de2-4807-a996-81688292558b"/>
