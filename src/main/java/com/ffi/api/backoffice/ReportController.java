@@ -1558,4 +1558,55 @@ public class ReportController {
 
     }
     ///////////////////////////////// done Pasca 16-02-2024 ///////////////////////////////////////
+
+
+    ////////////////// new Report Usage by Dani 14 Mar 2024
+    @CrossOrigin
+    @RequestMapping(value = "/report-usage-food-beverage-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Menampilkan Report Usage Food & Beverage", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
+    public ResponseEntity<byte[]> jasperReportUsageFoodBeverage(@RequestBody String param) throws SQLException, JRException, IOException {
+        JasperPrint jasperPrint;
+        try (Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass)) {
+            Gson gsn = new Gson();
+            Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+            }.getType());
+            jasperPrint = reportServices.jesperReportUsageFoodBeverage(prm, conn);
+        }
+        if (!jasperPrint.getPages().isEmpty()) {
+            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "inline; filename=salesByMenuDetail.pdf");
+            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
+    }
+
+    ////////////////// new Report Usage by Dani 14 Mar 2024
+    @CrossOrigin
+    @RequestMapping(value = "/report-usage-cd-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Menampilkan Report Usage CD", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
+    public ResponseEntity<byte[]> jasperReportUsageCD(@RequestBody String param) throws SQLException, JRException, IOException {
+        JasperPrint jasperPrint;
+        try (Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass)) {
+            Gson gsn = new Gson();
+            Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+            }.getType());
+            jasperPrint = reportServices.jesperReportUsageCD(prm, conn);
+        }
+        if (!jasperPrint.getPages().isEmpty()) {
+            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "inline; filename=salesByMenuDetail.pdf");
+            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
+    }
 }

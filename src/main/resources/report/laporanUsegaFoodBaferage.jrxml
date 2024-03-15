@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="laporanRecapPaymentMethod" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="552a7890-4ce0-4e74-ab73-0edbf3b3bc88">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="laporanRecapPaymentMethod" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="552a7890-4ce0-4e74-ab73-0edbf3b3bc88">
 	<property name="ireport.zoom" value="1.771561000000001"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
 	<parameter name="fromDate" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
@@ -17,100 +26,15 @@
 	<parameter name="outletBrand" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
-	<parameter name="cashierCode" class="java.lang.String">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
-	<parameter name="posCode" class="java.lang.String">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
-	<parameter name="orderType" class="java.lang.String">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
-	<parameter name="shiftCode" class="java.lang.String">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
-	<parameter name="cashierCode1" class="java.lang.String">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
-	<parameter name="cashierCode2" class="java.lang.String">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
-	<parameter name="shiftCode1" class="java.lang.String">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
-	<parameter name="shiftCode2" class="java.lang.String">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
-	<parameter name="posCode1" class="java.lang.String">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
-	<parameter name="posCode2" class="java.lang.String">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
-	<parameter name="orderType1" class="java.lang.String">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
-	<parameter name="orderType2" class="java.lang.String">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
 	<queryString>
-		<![CDATA[SELECT
-	DATA.*,
-	otl.OUTLET_NAME AS OUTLET_CODE_NAME,
-	otl.ADDRESS_1 AS OUTLET_CODE_ADDR_1,
-	otl.ADDRESS_2 AS OUTLET_CODE_ADDR_2,
-		otl.PHONE AS OUTLET_CODE_PHONE
-FROM
-	(
-	SELECT
-		a.OUTLET_CODE,
-		A.TRANS_DATE AS TRANS_DATE,
-		A.ORDER_TYPE,
-		C.DESCRIPTION AS ORDER_TYPE_DESC,
-		B.PAYMENT_METHOD_CODE,
-		D.DESCRIPTION AS PAYMENT_METHOD_CODE_DESC,
-		COUNT(*) AS COUNT_PAYMENT,
-		SUM(B.PAYMENT_USED) AS TOTAL_PAYMENT
-	FROM
-		T_POS_BILL A
-	JOIN T_POS_BILL_PAYMENT B ON
-		A.BILL_NO = B.BILL_NO
-	LEFT JOIN M_GLOBAL C ON
-		C.COND = 'ORDER_TYPE'
-		AND A.ORDER_TYPE = C.CODE
-	LEFT JOIN M_GLOBAL D ON
-		D.COND = 'PAY_CARD'
-		AND B.PAYMENT_METHOD_CODE = D.CODE
-	WHERE
-		A.TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
-		AND A.OUTLET_CODE = $P{outletCode}
-		AND A.POS_CODE BETWEEN $P{posCode1} AND $P{posCode2}
-        AND A.CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2} AND A.SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
-        AND (A.DELIVERY_STATUS IN (' ','CLS') OR A.DELIVERY_STATUS IS NULL) and A.order_type 
-        IN (SELECT CODE FROM M_GLOBAL WHERE DESCRIPTION = 'GRPTP' AND COND BETWEEN  
-         $P{orderType1} AND $P{orderType2}) 
-	GROUP BY
-		a.OUTLET_CODE,
-		A.TRANS_DATE,
-		A.ORDER_TYPE,
-		C.DESCRIPTION,
-		B.PAYMENT_METHOD_CODE,
-		D.DESCRIPTION) DATA
-LEFT JOIN M_OUTLET otl ON
-	DATA.OUTLET_CODE = otl.outlet_code ORDER BY DATA.TRANS_DATE ASC, DATA.PAYMENT_METHOD_CODE ASC]]>
+		<![CDATA[]]>
 	</queryString>
 	<field name="OUTLET_CODE_NAME" class="java.lang.String"/>
 	<field name="OUTLET_CODE_ADDR_1" class="java.lang.String"/>
 	<field name="OUTLET_CODE_ADDR_2" class="java.lang.String"/>
 	<field name="OUTLET_CODE_PHONE" class="java.lang.String"/>
 	<field name="OUTLET_CODE" class="java.lang.String"/>
-	<field name="TRANS_DATE" class="java.sql.Date"/>
-	<field name="ORDER_TYPE" class="java.lang.String"/>
-	<field name="ORDER_TYPE_DESC" class="java.lang.String"/>
-	<field name="PAYMENT_METHOD_CODE" class="java.lang.String"/>
-	<field name="PAYMENT_METHOD_CODE_DESC" class="java.lang.String"/>
-	<field name="TOTAL_PAYMENT" class="java.math.BigDecimal"/>
-	<field name="COUNT_PAYMENT" class="java.math.BigDecimal"/>
+	<field name="ITEM_CODE" class="java.lang.String"/>
 	<variable name="sum_total_payment" class="java.math.BigDecimal" calculation="Sum">
 		<variableExpression><![CDATA[$F{TOTAL_PAYMENT}]]></variableExpression>
 		<initialValueExpression><![CDATA[BigDecimal.ZERO]]></initialValueExpression>
@@ -121,11 +45,11 @@ LEFT JOIN M_OUTLET otl ON
 	<title>
 		<band height="91" splitType="Stretch">
 			<staticText>
-				<reportElement x="150" y="52" width="221" height="20" uuid="da160f17-0bc5-42af-8577-77798dce43ba"/>
+				<reportElement x="230" y="52" width="310" height="20" uuid="da160f17-0bc5-42af-8577-77798dce43ba"/>
 				<textElement textAlignment="Center">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<text><![CDATA[USAGE FOOD & BAFERAGE]]></text>
+				<text><![CDATA[LAPORAN PEMAKAIAN FOOD & BAVERAGE]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="69" y="80" width="270" height="11" uuid="34f91b86-0682-4936-ae12-7b11d0400946"/>
@@ -142,7 +66,7 @@ LEFT JOIN M_OUTLET otl ON
 				<text><![CDATA[Periode]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="424" y="2" width="142" height="11" uuid="f6c0714a-cff2-41e3-8158-78eb61f1af2c"/>
+				<reportElement x="650" y="1" width="142" height="11" uuid="f6c0714a-cff2-41e3-8158-78eb61f1af2c"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -156,21 +80,21 @@ LEFT JOIN M_OUTLET otl ON
 				<textFieldExpression><![CDATA[$F{OUTLET_CODE_ADDR_2}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="424" y="22" width="142" height="11" uuid="039b49ad-9e28-4128-bd0c-0b85a121c6dd"/>
+				<reportElement x="650" y="21" width="142" height="11" uuid="039b49ad-9e28-4128-bd0c-0b85a121c6dd"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="362" y="2" width="84" height="11" uuid="1fa1564d-62db-4263-863c-b903c67dae12"/>
+				<reportElement x="588" y="1" width="84" height="11" uuid="1fa1564d-62db-4263-863c-b903c67dae12"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Halaman]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="362" y="12" width="84" height="11" uuid="127a6e82-4b44-4b86-b7d2-b7443f69f6c0"/>
+				<reportElement x="588" y="11" width="84" height="11" uuid="127a6e82-4b44-4b86-b7d2-b7443f69f6c0"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -191,7 +115,7 @@ LEFT JOIN M_OUTLET otl ON
 				<textFieldExpression><![CDATA[$F{OUTLET_CODE_NAME}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="362" y="22" width="84" height="11" uuid="d52c6298-6058-4418-af1c-23eacd6ab4a7"/>
+				<reportElement x="588" y="21" width="84" height="11" uuid="d52c6298-6058-4418-af1c-23eacd6ab4a7"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -205,7 +129,7 @@ LEFT JOIN M_OUTLET otl ON
 				<textFieldExpression><![CDATA[$F{OUTLET_CODE_ADDR_1}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="424" y="32" width="142" height="11" uuid="ba02dab3-912c-4db0-9ca8-d1f88a4648d5"/>
+				<reportElement x="650" y="31" width="142" height="11" uuid="ba02dab3-912c-4db0-9ca8-d1f88a4648d5"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -219,7 +143,7 @@ LEFT JOIN M_OUTLET otl ON
 				<text><![CDATA[PT. Fastfood Indonesia, Tbk]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="362" y="32" width="84" height="11" uuid="8949d45d-024c-481c-84c2-9a9f12e2d572"/>
+				<reportElement x="588" y="31" width="84" height="11" uuid="8949d45d-024c-481c-84c2-9a9f12e2d572"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -230,7 +154,7 @@ LEFT JOIN M_OUTLET otl ON
 				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
 			</image>
 			<textField>
-				<reportElement x="424" y="12" width="142" height="11" uuid="9091df76-b31c-4d12-b61c-02ff55fe9fd5"/>
+				<reportElement x="650" y="11" width="142" height="11" uuid="9091df76-b31c-4d12-b61c-02ff55fe9fd5"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -242,27 +166,27 @@ LEFT JOIN M_OUTLET otl ON
 		<band height="26" splitType="Stretch">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<line direction="BottomUp">
-				<reportElement x="8" y="23" width="537" height="1" uuid="7fb07890-6073-45c5-ba2c-28aebc168a13">
+				<reportElement x="8" y="24" width="792" height="1" uuid="7fb07890-6073-45c5-ba2c-28aebc168a13">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 				</reportElement>
 			</line>
 			<staticText>
-				<reportElement x="85" y="10" width="154" height="11" uuid="f6a15573-46df-43d8-b82b-af97d740d0f6"/>
+				<reportElement x="85" y="10" width="174" height="11" uuid="f6a15573-46df-43d8-b82b-af97d740d0f6"/>
 				<textElement textAlignment="Left">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Order Type]]></text>
+				<text><![CDATA[Description]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="245" y="10" width="126" height="11" uuid="2fbcdbe4-5206-4fd6-ace1-2cb237dd722f"/>
+				<reportElement x="264" y="10" width="84" height="11" uuid="2fbcdbe4-5206-4fd6-ace1-2cb237dd722f"/>
 				<textElement textAlignment="Left">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Payment Method]]></text>
+				<text><![CDATA[Convension]]></text>
 			</staticText>
 			<line direction="BottomUp">
-				<reportElement x="8" y="7" width="537" height="1" uuid="d4575c87-0ff4-40f4-ac65-43e9389fae06">
+				<reportElement x="8" y="8" width="792" height="1" uuid="d4575c87-0ff4-40f4-ac65-43e9389fae06">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 				</reportElement>
@@ -272,21 +196,63 @@ LEFT JOIN M_OUTLET otl ON
 				<textElement textAlignment="Center">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Trans Date]]></text>
+				<text><![CDATA[Item]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="424" y="10" width="120" height="11" uuid="9a8b4edc-bb33-4a97-b844-94d577dc0a77"/>
+				<reportElement x="355" y="10" width="52" height="11" uuid="e2ca7ce5-3cc9-4962-bdef-a24d6713a9f2"/>
 				<textElement textAlignment="Right">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Total Payment]]></text>
+				<text><![CDATA[Sales]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="377" y="10" width="42" height="11" uuid="e2ca7ce5-3cc9-4962-bdef-a24d6713a9f2"/>
+				<reportElement x="411" y="10" width="52" height="11" uuid="d5fee8f5-b4e2-47ac-995b-e3dc248daf63"/>
 				<textElement textAlignment="Right">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[qty]]></text>
+				<text><![CDATA[Free Meal]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="466" y="10" width="52" height="11" uuid="ea91d73f-3279-41b2-9975-95f24cddbaf2"/>
+				<textElement textAlignment="Right">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Production]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="521" y="10" width="52" height="11" uuid="0080b4a3-9ddf-4f57-a6eb-6568fdbd0ee4"/>
+				<textElement textAlignment="Right">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Wastage]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="576" y="10" width="52" height="11" uuid="870c78c6-7ccb-4ac8-8078-aed7f7919adb"/>
+				<textElement textAlignment="Right">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Left Over]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="631" y="10" width="52" height="11" uuid="77ca46a0-0b97-43ac-bcc8-878b7acaf577"/>
+				<textElement textAlignment="Right">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Usage]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="686" y="10" width="52" height="11" uuid="34418685-7f99-4e32-aad4-b376e2cbc611"/>
+				<textElement textAlignment="Right">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Item Cost]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="741" y="10" width="52" height="11" uuid="951035f0-9c07-49a2-89e9-c548ad99515c"/>
+				<textElement textAlignment="Right">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Cost]]></text>
 			</staticText>
 		</band>
 	</pageHeader>
@@ -300,28 +266,70 @@ LEFT JOIN M_OUTLET otl ON
 				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($F{TRANS_DATE})]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="85" y="2" width="154" height="18" uuid="c9915e64-adc8-4446-b7a8-a790c55f4edd"/>
+				<reportElement x="85" y="2" width="174" height="18" uuid="c9915e64-adc8-4446-b7a8-a790c55f4edd"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{ORDER_TYPE_DESC}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="245" y="2" width="126" height="18" uuid="87514a50-65d8-4451-87bc-73862564317d"/>
+				<reportElement x="264" y="2" width="84" height="18" uuid="87514a50-65d8-4451-87bc-73862564317d"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{PAYMENT_METHOD_CODE}.equals("CSH") ? "CASH" : $F{PAYMENT_METHOD_CODE}.equals("VCR") ? "VOUCHER" : $F{PAYMENT_METHOD_CODE_DESC}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="424" y="2" width="121" height="18" uuid="d648c5b8-c227-40b6-a6b9-fb52a07b7373"/>
+				<reportElement x="355" y="2" width="52" height="18" uuid="b004ab7a-deea-4824-b349-6a74903d1e57"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{TOTAL_PAYMENT})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0").format($F{COUNT_PAYMENT})]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="376" y="2" width="42" height="18" uuid="b004ab7a-deea-4824-b349-6a74903d1e57"/>
+				<reportElement x="411" y="2" width="52" height="18" uuid="3237718a-f908-450c-8e44-5938c1c6a67b"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0").format($F{COUNT_PAYMENT})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="466" y="2" width="52" height="18" uuid="78b61e2f-3bb0-441d-900d-5a618afc594d"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0").format($F{COUNT_PAYMENT})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="521" y="2" width="52" height="18" uuid="35d3ab64-5770-4593-8780-aefb5a63ae19"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0").format($F{COUNT_PAYMENT})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="576" y="2" width="52" height="18" uuid="532e0c1a-1ecd-46b7-b524-fa3625205e7c"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0").format($F{COUNT_PAYMENT})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="631" y="2" width="52" height="18" uuid="da2fa79a-0d83-4459-bfee-9429dbf6684c"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0").format($F{COUNT_PAYMENT})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="686" y="2" width="52" height="18" uuid="c69cd113-9150-4115-9daa-c68c83bf57ad"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0").format($F{COUNT_PAYMENT})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="741" y="2" width="52" height="18" uuid="2e26ebae-7ce0-4697-8289-c37427aed56f"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
@@ -338,7 +346,7 @@ LEFT JOIN M_OUTLET otl ON
 	<summary>
 		<band height="54" splitType="Stretch">
 			<line direction="BottomUp">
-				<reportElement x="8" y="7" width="537" height="1" uuid="2ea6f2a5-ac73-4245-8b45-807fc86ab842">
+				<reportElement x="8" y="8" width="792" height="1" uuid="2ea6f2a5-ac73-4245-8b45-807fc86ab842">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 				</reportElement>
@@ -351,7 +359,7 @@ LEFT JOIN M_OUTLET otl ON
 				<text><![CDATA[Sub Total :]]></text>
 			</staticText>
 			<line direction="BottomUp">
-				<reportElement x="8" y="31" width="537" height="1" uuid="0fe8b027-07da-4f27-a25b-01f28752c95d">
+				<reportElement x="8" y="32" width="792" height="1" uuid="0fe8b027-07da-4f27-a25b-01f28752c95d">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 				</reportElement>
@@ -364,7 +372,7 @@ LEFT JOIN M_OUTLET otl ON
 				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{sum_total_payment})]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="444" y="40" width="100" height="14" uuid="25b1920b-8dd8-4523-9ed8-0674a396acbc"/>
+				<reportElement x="701" y="40" width="100" height="14" uuid="25b1920b-8dd8-4523-9ed8-0674a396acbc"/>
 				<textElement textAlignment="Right">
 					<font isBold="true" isItalic="true"/>
 				</textElement>

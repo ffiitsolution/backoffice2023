@@ -970,6 +970,7 @@ public class ViewDoaImpl implements ViewDao {
                 + "mmi.menu_set, "
                 + "mmi.auto_show_modifier, "
                 + "mmi.brd_flag, "
+                + "mmi.call_group_code, "
                 + "mc.color_code, "
                 + "mc.r_value ||',' || g_value || ',' || b_value as rgb_code "
                 + "from m_menu_item mmi join m_global mg on mmi.menu_item_code = mg.code "
@@ -1003,6 +1004,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("colorCode", rs.getString("color_code"));
                 rt.put("rgbCode", rs.getString("rgb_code"));
                 rt.put("brdFlag", rs.getString("brd_flag"));
+                rt.put("callGroupCode", rs.getString("call_group_code"));
                 return rt;
             }
         });
@@ -1535,7 +1537,7 @@ public class ViewDoaImpl implements ViewDao {
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new DynamicRowMapper());
         // jika kosong/belum ada, atau total bukan 17 (INV) bukan 20 (POS), hapus dan insert baru
         // set: total report valid
-        int TOTAL_INVENTORY = 17;
+        int TOTAL_INVENTORY = 18;
         int TOTAL_POS = 20;
         int size = list.size();
         if (size == TOTAL_POS || size == TOTAL_INVENTORY || size == (TOTAL_INVENTORY + TOTAL_POS)) {
@@ -1616,7 +1618,9 @@ public class ViewDoaImpl implements ViewDao {
                UNION ALL
                SELECT 'PROGRAM', 'INV0016', 'Actual Stock Opname', 16, 'INV', 'R', 'A', 'REPORT' FROM dual
                UNION ALL
-               SELECT 'PROGRAM', 'INV0017', 'Laporan Product Efficiency', 17, 'INV', 'R', 'A', 'REPORT' FROM dual
+               SELECT 'PROGRAM', 'INV0017', 'Laporan Product Efficiency', 17, 'INV', 'R', 'A', 'REPORT' FROM dual 
+               UNION ALL 
+               SELECT 'PROGRAM', 'INV0018', 'Laporan Pemakaian Food Baferage & CD', 18, 'INV', 'R', 'A', 'REPORT' FROM dual               
                 """;
         System.err.println("insert New Menu report");
         try {

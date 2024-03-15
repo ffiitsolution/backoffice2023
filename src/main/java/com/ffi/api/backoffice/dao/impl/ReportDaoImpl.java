@@ -3690,4 +3690,30 @@ public class ReportDaoImpl implements ReportDao {
         return null;
     }
     /////////////////////// done adit 30-01-2024
+
+
+    /////// new method generate report Usage Food & Beverage by Dani 14 Mar 2024
+    @Override
+    public JasperPrint jesperReportUsageFoodBeverage(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        ClassPathResource classPathResource = new ClassPathResource("report/laporanUsageFoodBaferage.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, param, connection);
+    }
+
+    /////// new method generate report Usage CD by Dani 14 Mar 2024
+    @Override
+    public JasperPrint jesperReportUsageCD(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        String onlyStockQuery = "";
+        Boolean onlyStock = (Boolean) param.get("onlyStock");
+        if (onlyStock == true) {
+            onlyStockQuery = " B.AMOUNT <> 0 ";
+        } else {
+            onlyStockQuery = " 1 = 1 ";
+        }
+        param.put("onlyStockQuery", onlyStockQuery);
+        System.out.println(param);
+        ClassPathResource classPathResource = new ClassPathResource("report/laporanUsageCD.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, param, connection);
+    }
 }
