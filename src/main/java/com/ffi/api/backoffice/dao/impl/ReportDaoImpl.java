@@ -3711,7 +3711,6 @@ public class ReportDaoImpl implements ReportDao {
             onlyStockQuery = " 1 = 1 ";
         }
         param.put("onlyStockQuery", onlyStockQuery);
-        System.out.println(param);
         ClassPathResource classPathResource = new ClassPathResource("report/laporanUsageCD.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, param, connection);
