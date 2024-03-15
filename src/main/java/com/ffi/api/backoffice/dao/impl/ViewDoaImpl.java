@@ -3584,7 +3584,7 @@ public class ViewDoaImpl implements ViewDao {
                 + " LEFT JOIN m_supplier S "
                 + "               on H.cd_supplier = S.cd_supplier "
                 + " WHERE H.STATUS = '0' "
-                + " AND ( K.STATUS_KIRIM = 'S' OR H.ORDER_TO IN ('0', '1'))"
+                + " AND ( K.STATUS_KIRIM = 'S' OR H.ORDER_TO IN ('0', '1') OR (H.ORDER_TO = '3' AND H.ORDER_TYPE = '4'))"
                 + " AND H.OUTLET_CODE = :outletCode  "
                 + " ORDER BY CASE WHEN H.ORDER_TO = '2' THEN 0 WHEN H.ORDER_TO = '3' THEN 1 WHEN H.ORDER_TO IN ('0','1') THEN 2 ELSE 3 END ASC, H.STATUS ASC, H.DATE_UPD DESC, H.TIME_UPD DESC";
 
