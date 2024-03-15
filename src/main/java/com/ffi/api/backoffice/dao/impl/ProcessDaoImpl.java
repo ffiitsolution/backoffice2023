@@ -17,6 +17,7 @@ import com.ffi.api.backoffice.utils.TableAliasUtil;
 import com.ffi.paging.ResponseMessage;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
@@ -61,6 +62,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.messaging.MessagingException;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -95,6 +97,9 @@ public class ProcessDaoImpl implements ProcessDao {
 
     @Value("${endpoint.warehouse}")
     private String urlWarehouse;
+    
+    @Value("${endpoint.pettyCash}")
+    private String urlPettyCash;
 
     @Value("${endpoint.master}")
     private String urlMaster;
@@ -3053,13 +3058,13 @@ public class ProcessDaoImpl implements ProcessDao {
         }
 
         String getMpcsSeqQuery = "SELECT CASE WHEN :timeUpd > '233000' THEN 1 ELSE tsm.SEQ_MPCS END AS SEQ_MPCS "
-            + "FROM T_SUMM_MPCS tsm " 
-            + "WHERE DATE_MPCS = :mpcsDate "
-            + "AND MPCS_GROUP = :mpcsGroup "
-            + "AND ((:timeUpd <= '233000' AND TIME_MPCS > :timeUpd) OR (:timeUpd >= '233000')) "
-            + "AND ROWNUM = 1 ";
+                + "FROM T_SUMM_MPCS tsm "
+                + "WHERE DATE_MPCS = :mpcsDate "
+                + "AND MPCS_GROUP = :mpcsGroup "
+                + "AND ((:timeUpd <= '233000' AND TIME_MPCS > :timeUpd) OR (:timeUpd >= '233000')) "
+                + "AND ROWNUM = 1 ";
         Integer selectedSeqMpcsProduction = jdbcTemplate.queryForObject(getMpcsSeqQuery, prm, Integer.class);
-        
+
         String insertProductionQuery = "UPDATE T_SUMM_MPCS SET "
                 + "QTY_PROD = (QTY_PROD + (SELECT (sum(QTY_STOCK) * :qtyMpcs) FROM m_recipe_product WHERE RECIPE_CODE = :recipeCode)), "
                 + "DESC_PROD = :remark, "
@@ -3068,7 +3073,7 @@ public class ProcessDaoImpl implements ProcessDao {
                 + "TIME_UPD = :timeUpd, "
                 + "DATE_UPD = :dateUpd "
                 + "WHERE DATE_MPCS = :mpcsDate AND MPCS_GROUP = :mpcsGroup "
-                + "AND SEQ_MPCS = "+selectedSeqMpcsProduction;
+                + "AND SEQ_MPCS = " + selectedSeqMpcsProduction;
         jdbcTemplate.update(insertProductionQuery, prm);
 
         String updateQuantityAccQuery = "MERGE INTO T_SUMM_MPCS tsm "
@@ -3088,7 +3093,7 @@ public class ProcessDaoImpl implements ProcessDao {
         jdbcTemplate.update(updateQuantityAccQuery, prm);
 
         String insertHistoryQuery = "INSERT INTO T_MPCS_HIST (HIST_SEQ,HIST_TYPE,OUTLET_CODE,MPCS_DATE,MPCS_GROUP,RECIPE_CODE,FRYER_TYPE,FRYER_TYPE_SEQ,SEQ_MPCS,QUANTITY,USER_UPD,DATE_UPD,TIME_UPD) "
-                + "VALUES ((SELECT (NVL(MAX(tmh.HIST_SEQ), 0) + 1) FROM T_MPCS_HIST tmh),'C',:outletCode, :mpcsDate, :mpcsGroup, :recipeCode, :fryerType, :fryerTypeSeq, "+selectedSeqMpcsProduction+", :qtyMpcs,:userUpd, :dateUpd, :timeUpd) ";
+                + "VALUES ((SELECT (NVL(MAX(tmh.HIST_SEQ), 0) + 1) FROM T_MPCS_HIST tmh),'C',:outletCode, :mpcsDate, :mpcsGroup, :recipeCode, :fryerType, :fryerTypeSeq, " + selectedSeqMpcsProduction + ", :qtyMpcs,:userUpd, :dateUpd, :timeUpd) ";
         jdbcTemplate.update(insertHistoryQuery, prm);
 
         String insertMpcsDetailQuery = "INSERT INTO T_MPCS_DETAIL (OUTLET_CODE,DATE_MPCS,TIME_MPCS,RECIPE_CODE,TYPE_MPCS,ITEM_CODE,QTY1,UOM1,QTY2,UOM2,STATUS,USER_UPD,DATE_UPD,TIME_UPD) ("
@@ -3627,8 +3632,6 @@ public class ProcessDaoImpl implements ProcessDao {
         List<Map<String, Object>> list = new ArrayList();
         String date = mapping.get("date").toString();
         List<String> tables = (List<String>) mapping.getOrDefault("listTable", new ArrayList<String>());
-        System.out.println("listTransferData type: " + mapping.get("type"));
-        System.out.println("listTransferData tables: " + tables.size());
         if ("TERIMA DATA MASTER".equals(mapping.get("type"))) {
             try {
                 for (String tableName : tables) {
@@ -3650,19 +3653,19 @@ public class ProcessDaoImpl implements ProcessDao {
                     String result = content.toString();
                     map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
                     }.getType());
-                    List<Map<String, Object>> listItem = (List<Map<String, Object>>) map1.get("item");
-                    if (listItem != null && !listItem.isEmpty()) {
-                        Map<String, Object> mapq = new HashMap();
-                        // Rubah nama tabel ke alias nya
-                        Optional<TableAlias> tbl = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M, "table", tableName);
-                        String aliasedTableName = tableName;
-                        if (tbl.isPresent()) {
-                            aliasedTableName = tbl.get().getAlias();
-                        }
-                        mapq.put(aliasedTableName, listItem);
-                        list.add(mapq);
-                        System.err.println("listTransferData " + aliasedTableName + ":" + listItem.size());
+                    List<Map<String, Object>> listItem = new ArrayList();
+                    if (map1.containsKey("item") && map1.get("item") != null) {
+                        listItem = (List<Map<String, Object>>) map1.get("item");
                     }
+                    Map<String, Object> mapq = new HashMap();
+                    Optional<TableAlias> tbl = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M, "table", tableName);
+                    String aliasedTableName = tableName;
+                    if (tbl.isPresent()) {
+                        aliasedTableName = tbl.get().getAlias();
+                    }
+                    mapq.put(aliasedTableName, listItem);
+                    list.add(mapq);
+                    System.err.println("listTransferData " + aliasedTableName + ":" + listItem.size());
                 }
                 rm.setItem(list);
                 rm.setSuccess(true);
@@ -3673,24 +3676,24 @@ public class ProcessDaoImpl implements ProcessDao {
                 } else {
                     rm.setMessage("Failed get list: " + ex.getMessage());
                 }
-
-                Logger.getLogger(ProcessDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else if ("KIRIM DATA TRANSAKSI".equals(mapping.get("type"))) {
             for (String table : tables) {
-                String conditionText = conditionTextTransfer(table, date);
-                String query = "SELECT * FROM " + table + conditionText;
                 Map prm = new HashMap();
-                List<Map<String, Object>> listItem = jdbcTemplate.query(query, prm, (ResultSet rs, int index) -> convertObject(rs));
-                if (listItem != null && !listItem.isEmpty()) {
-                    Map<String, Object> mapq = new HashMap();
-                    // Rubah nama tabel ke alias nya
-                    Optional<TableAlias> ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_T, "table", table);
-                    TableAlias tableAlias = ta.get();
+                Map<String, Object> mapq = new HashMap();
+                Optional<TableAlias> ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_T, "table", table);
+                TableAlias tableAlias = ta.get();
+                try {
+                    String conditionText = conditionTextTransfer(table, date);
+                    String query = "SELECT * FROM " + table + conditionText;
+                    List<Map<String, Object>> listItem = jdbcTemplate.query(query, prm, (ResultSet rs, int index) -> convertObject(rs));
                     mapq.put(tableAlias.getAlias(), listItem);
-                    list.add(mapq);
-                    messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Cek Data Transaksi: " + tableAlias.getAlias() + " - " + listItem.size() + " row");
+                    messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Cek Data: " + tableAlias.getAlias() + " - " + listItem.size() + " row");
+                } catch (DataAccessException | MessagingException e) {
+                    mapq.put(tableAlias.getAlias(), new ArrayList());
+                    messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Cek Gagal: " + tableAlias.getAlias() + ": " + e.getMessage());
                 }
+                list.add(mapq);
             }
             rm.setItem(list);
             rm.setSuccess(true);
@@ -3722,31 +3725,22 @@ public class ProcessDaoImpl implements ProcessDao {
             // Start Get Data API Server
             CloseableHttpClient client = HttpClients.createDefault();
             String url = urlMaster + "/get-data";
-
             System.out.println("URL Get : " + url);
-            FileLoggerUtil.log("terimaDataMaster", ("URL Get : " + url), "SYSTEM");
-
             HttpGet getData = new HttpGet(url);
-
             URI uri = new URIBuilder(getData.getURI()).addParameter("param", tableName).addParameter("date", dateUpd).build();
             getData.setURI(uri);
-
             CloseableHttpResponse response = client.execute(getData);
-
             BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
             StringBuilder content = new StringBuilder();
             String line;
             while (null != (line = br.readLine())) {
                 content.append(line);
             }
-
             String result = content.toString();
-
 //            System.out.println("Result: " + result);
             Map<String, Object> map1;
             map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
             }.getType());
-
             // End Get Data API Server
             List<Map<String, Object>> listItem = (List<Map<String, Object>>) map1.get("item");
             if (listItem == null) {
@@ -3761,7 +3755,6 @@ public class ProcessDaoImpl implements ProcessDao {
             Date failedApp = new Date();
             System.out.println("FAILED COPY DATA " + tableName + " At " + failedApp.toString() + ": " + e.getMessage());
             messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Gagal Terima Data: " + aliasName);
-
             return false;
         }
     }
@@ -3948,13 +3941,13 @@ public class ProcessDaoImpl implements ProcessDao {
         Map map1 = new HashMap();
 
         try {
-            System.out.println("Start Transfer Data " + tableName + " At " + startApp.toString());
 
             // todo: cek column name
             String conditionText = conditionTextTransfer(tableName, dateUpd);
 
             String query = "SELECT * FROM " + tableName + conditionText;
             List<Map<String, Object>> list = jdbcTemplate.query(query, param, (ResultSet rs, int index) -> convertObject(rs));
+            System.out.println("Start Transfer Data " + tableName + ": " + list.size());
 
             // START API to Send Master
             CloseableHttpClient client = HttpClients.createDefault();
@@ -3988,28 +3981,50 @@ public class ProcessDaoImpl implements ProcessDao {
             }.getType());
             // END API to Send Master
             List lst = (List) map1.get("item");
-            if (!lst.isEmpty()) {
-                double total = 0;
+            double total = 0;
+            boolean success = false;
+            if (!lst.isEmpty() && lst.get(0) instanceof String) {
+                total = 0;
+                success = false;
+                map1.put("errors", map1);
+            } else if (!lst.isEmpty() && lst.get(0) instanceof Object) {
                 if (lst.get(0) != null) {
-                    total = (double) lst.get(0);
+                    Map<String, Object> resp = (Map<String, Object>) lst.get(0);
+                    if(resp.containsKey("total")){
+                        total = (double) resp.get("total");
+                        success = true;
+                    } else {
+                        total = 0;
+                        success = false;
+                    }
                 }
-                String status = total == list.size() ? "UPDATED" : (total == 0 && !list.isEmpty() ? "NOT UPDATED" : total + " OF " + list.size());
-                param.put("totalRow", total);
-                param.put("status", status);
-                saveToQueryKirimTerimaData(param);
-                messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Selesai Kirim Data: " + aliasName + " " + total + " row");
+            } else {
+                
             }
+            String status = total == list.size() ? "UPDATED" : (total == 0 && !list.isEmpty() ? "NOT UPDATED" : total + " OF " + list.size());
+            param.put("totalRow", total);
+            param.put("status", status);
+            saveToQueryKirimTerimaData(param);
+            messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Selesai Kirim Data: " + aliasName + " " + total + " row");
+            fileLoggerUtil.logActivity("-", "Kirim Terima Data", "KIRIM", param.getOrDefault("actUser", "SYSTEM").toString(), param.getOrDefault("actName", "SYSTEM").toString(), "Selesai Kirim Data: " + aliasName + " " + total + " row", success, "", param);
         } catch (JsonSyntaxException | IOException | UnsupportedOperationException | DataAccessException e) {
             Date failedApp = new Date();
+            if (e.getMessage().contains("Connection timed out")) {
+                map1.put("error", "Koneksi ke HQ terputus.");
+            } else if (e.getMessage().contains("No route to host")) {
+                map1.put("error", "Tidak ada koneksi ke HQ.");
+            } else {
+                map1.put("error", e.getMessage());
+            }
             System.out.println("FAILED SEND DATA " + tableName + " At " + failedApp.toString() + " " + e.getMessage());
             messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Gagal Kirim Data: " + aliasName);
+            fileLoggerUtil.logActivity("-", "Kirim Terima Data", "KIRIM", param.getOrDefault("actUser", "SYSTEM").toString(), param.getOrDefault("actName", "SYSTEM").toString(), "Gagal Kirim Data: " + aliasName + ": " + e.getMessage(), Boolean.FALSE, "", param);
 
         }
         return map1;
     }
 
     public String conditionTextTransfer(String tableName, String date) {
-        // todo27
         Optional<TableAlias> ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_T, "table", tableName);
         TableAlias tableAlias = ta.get();
         return " WHERE " + tableAlias.getDateColumn() + " = '" + date + "' ";
@@ -4023,19 +4038,14 @@ public class ProcessDaoImpl implements ProcessDao {
             String columnName = rsmd.getColumnName(i + 1);
             Object columnValue = result.getObject(i + 1);
             switch (columnName) {
-                // ---- Start Need to Discuss ----                
-//                case "DATE_UPD" -> {
-//                    resultReturn.put(rsmd.getColumnName(i + 1), dateNow);
-//                }
-//                case "TIME_UPD" -> {
-//                    resultReturn.put(rsmd.getColumnName(i + 1), timeStamp);
-//                }
-                // ---- End Need to Discuss ----
-
-                // todo: set all date column to format dd-MMM-yyyy
+                // set all date column to format dd-MMM-yyyy
                 case "ASSEMBLY_END_TIME", "ASSEMBLY_START_TIME", "BILL_DATE", "BOOK_DATE", "BUCKET_DATE", "CC_DATE", "DATE_1", "DATE_2", "DATE_3", "DATE_4", "DATE_5", "DATE_6", "DATE_ABSEN", "DATE_CREATE", "DATE_DEL", "DATE_END", "DATE_EOD", "DATE_MPCS", "DATE_OF_BIRTH", "DATE_SEND", "DATE_START", "DATE_TRANS", "DATE_UPD", "DELIVERY_DATE", "DISPATCH_END_TIME", "DISPATCH_START_TIME", "DT_DUE", "DT_EXPIRED", "EFFECTIVE_DATE", "EMPLOY_DATE", "END_DATE", "END_OF_DAY", "EVENT_DATE", "FINISH_DATE", "FINISH_TIME", "HOLIDAY_DATE", "KEY_3", "LAST_ORDER", "LAST_RECEIVE", "LAST_RETURN", "LAST_SALES", "LAST_TRANSFER_IN", "LAST_TRANSFER_OUT", "LOG_DATE", "MPCS_DATE", "OPNAME_DATE", "ORDER_DATE", "PAYMENT_DATE", "PERIODE", "PICKUP_END_TIME", "PICKUP_START_TIME", "RECV_DATE", "RESIGN_DATE", "RETURN_DATE", "START_DATE", "START_OF_DAY", "START_TIME", "SUGGEST_DATE", "SUPPLY_END_TIME", "SUPPLY_QUEUE_START_TIME", "SUPPLY_START_TIME", "TANGGAL", "TANGGAL_CREATE", "TANGGAL_MODAL", "TANGGAL_PESAN_TERAKHIR", "TANGGAL_SETOR", "TANGGAL_TARIK", "TANGGAL_TRANS", "TANGGAL_TRANSAKSI", "TD", "TGL_CREATE", "TGL_KIRIM", "TGL_MODAL", "TGL_PESAN_TERAKHIR", "TGL_RETURN", "TGL_SETOR", "TGL_TERIMA", "TGL_TRANSAKSI", "TMPFLD2", "TMPFLD9", "TMP_DATE_UPD", "TMP_TRANS_DATE", "TRANSFER_DATE", "TRANS_DATE", "VIEW_DATE_UPD", "VIEW_TRANS_DATE", "WASTAGE_DATE" -> {
-                    String dateData = new SimpleDateFormat("dd-MMM-yyyy").format(columnValue);
-                    resultReturn.put(columnName, dateData);
+                    if (columnValue instanceof Date) {
+                        String dateData = new SimpleDateFormat("dd-MMM-yyyy").format(columnValue);
+                        resultReturn.put(columnName, dateData);
+                    } else {
+                        resultReturn.put(columnName, columnValue);
+                    }
                 }
                 case "SEQ_MPCS", "QTY_ACC_REJECT", "QTY_ACC_VARIANCE", "ENDING_QTY", "PURCHASE_QTY", "RECEIVE_QTY", "TOT_RECORD", "TOT_ML", "TOT_MP", "ITEM_DETAIL_SEQ", "TOTAL_CHARGE", "LOG_SEQ", "AMT_TAX", "PAYMENT_USED", "CASH_BANK", "PENGAJUAN2", "NO_SEQ", "AMT_TRANS", "EI_AMOUNT", "TA_QTY", "TA_AMOUNT", "TTD", "DELTIMEM", "BEGINING_K", "ENDING_QTY_K", "BEGINING", "QTYTRANS", "TOTAL_CLAIM", "TOTAL_PENJUALAN_FNB", "COUNT_TRANS_AMOUNT", "MIN_SALES", "RND_LIMIT", "MAX_SHIFT", "ID_NO", "TAKE_AWAY", "DISC_PERCENT", "CNT", "POSTED", "QTY_BEGINING", "FML", "DLV", "JUMLAH_DETAILS", "BIAYA_ANTAR", "SETOR_TRANSAKSI", "DISC_25_NILAI", "DISC_50_TRANSAKSI", "DISC_100_TRANSAKSI", "REFUND_NILAI", "JUMLAH_CUSTOMER", "QUANTITY_EAT_EI", "AMT_ENDSHIFT", "QTY_PROD", "QTY_ACC_PROD", "PRD_QTY", "AMT_COST", "TARGET", "PERIOD_YEAR", "TOTAL_CUSTOMER", "TOTAL_PAYMENT", "TRANS_AMOUNT", "TOTAL_TAX_CHARGE", "TOTAL_DP_PAID", "TOTAL_IN", "AMT_OUT", "DEBET_AMT", "TOTAL_QTY_STOCK", "QTY1", "AMT_SALES_HDR", "QTY_SALES", "QTY_USED", "QTY_PERC", "AMT_TA", "INTIMESTOREM", "PEMBAGI", "QTY_K_IN", "RETURN_SUPP", "TOT_AMT_PAID", "PPN_CD", "AMT_CD", "TAXABLE", "DEL_LIMIT", "RND_FACT", "MAX_BILLS", "MIN_ITEMS", "FRYER_TYPE_SEQ_CNT", "MODIFIER_GROUP6_MAX_QTY", "KODE_TERMINAL", "FREE_MAGNETIC", "SALDOAWAL", "STOCKIN", "SLS2", "DEL", "PRD", "RCV", "STO", "DISCOUNT_PERSEN", "TAX_BRUTTO_AMOUNT", "KUPON_NILAI_DIGUNAKAN", "OVERALL_HARGA_SATUAN", "Total CASH", "AMT_SETOR", "WASTAGE_ID", "ITEM_COST", "RETURN_ID", "TOTAL_PRICE", "CREDIT_AMT", "ORDER_ID", "TRANSFER_ID", "AMT_SALES_DTL", "PLU_QTY", "QTY_EI", "AMT_EI", "NILAI", "SORT", "RCV_SUPPLIER", "TRANSFER_IN_OUTLET", "LEFT_OFER_OUT", "ENDING", "MULTIPLY", "QTYTA", "FLD10", "FLD6", "FLD7", "TOT_CD", "TICKET_AVG", "PPN", "TOTPAYMENTAMOUNT", "TOTPAYMENTUSE", "DISC_AMT", "DEL_CHARGE", "DP_MIN", "MODIFIER_GROUP1_MIN_QTY", "MODIFIER_GROUP2_MIN_QTY", "MODIFIER_GROUP4_MAX_QTY", "MODIFIER_GROUP5_MAX_QTY", "MODIFIER_GROUP6_MIN_QTY", "ACCESSW", "CURRENT_STOCK", "TRANSFER_OUT", "KEY_4", "MONTH", "COUNTER_NO", "G_VALUE", "NILAI_TAX", "JML_DETAIL", "NILAI_SETOR", "NILAI_REFUND", "DISKON_NILAI", "TRX", "LOV3", "PRD4", "WAS", "DIFF", "PEMBAYARAN", "DISCOUNT_PERCENT", "STATUS", "TAX_NETT_AMOUNT", "DISC_25_TRANSAKSI", "DISC_50_NILAI", "ERROR_NILAI", "JUMLAH_TRANSAKSI", "OVERALL_TOTAL_HARGA", "AMT_MODAL", "DINE_NILAI", "QTY_ACC_SOLD", "QTY_ACC_WASTAGE", "QTY_IN", "IN_QTY", "ADJUSTMENT_QTY", "NO_OF_PRINT", "QTY_1", "ITEM_QTY", "TOTAL_DISCOUNT", "TOTAL_TAX", "PAY_SEQ", "QTY_STOCK", "QTY_FREEZE", "TOTAL", "BEGINING_B", "RCV_GUDANG", "QTYEI", "TMPFLD6", "SUM_AMOUNT", "KUPON_DIGUNAKAN_Q", "DONASI", "TAX_CHARGE_BILL", "GROSS_SALES", "AMOUNT_BY_STATUS", "PROCESS", "VALUE", "COST", "CAT_ITEMS", "REF_TIME", "MAX_DISC_PERCENT", "TAX_CHARGE", "MODIFIER_GROUP1_MAX_QTY", "MODIFIER_GROUP3_MIN_QTY", "RECEIVE", "QTY_STOCK_T", "DRAWER", "MODAL", "TOTAL_HEADER", "TOTAL_DETAIL", "STA", "FML5", "SLS", "EI_TA", "MODAL_NILAI", "SETOR_NILAI", "DISC_75_TRANSAKSI", "DISC_100_NILAI", "ERROR_TRANSAKSI", "KUPON_QUANTITY", "TOTAL_HARGA_EI", "DINE_PERSEN", "TOTAL_PERSEN", "DS", "AMT_REFUND", "QTY_PROJ_CONV", "QTY_PROJ", "QTY_VARIANCE", "ITEM_SEQ", "QTY_PURCHASE", "QTY_2", "DAY_SEQ", "TOTAL_SALES", "TOTAL_CANCEL", "DONATE_AMOUNT", "PENGAJUAN1", "QTY", "AMT_CUSTOMER", "DELTIMES", "JUMLAH", "QTY_K_OUT", "REFUND", "PRODUKSI", "ADJUSTMENT", "FLD11", "FLD3", "SUM_COUNT", "TRANSAKSI", "DISCOUNT", "TOTAL_PENDAPATAN", "ROUNDING_BILL", "DAY_OF_WEEK", "ENABLED_MENU", "TRANS_CODE", "FRYER_TYPE_RESET", "MODIFIER_GROUP5_MIN_QTY", "MODIFIER_GROUP7_MAX_QTY", "ACCESSR", "CONV_WAREHOUSE", "ON_ORDER", "RETURN", "DISC_NILAI", "HARGA_SATUAN", "BIAYA_DELIVERY", "RET6", "NOMOR_POS", "JML_TRANS", "SALDO_CASH_DRAWER", "DISC_200_TRANSAKSI", "DISC_200_NILAI", "BCA_QUANTITY", "OVERALL_QUANTITY", "AWAY_PERSEN", "COUNT_BILL", "QUANTITY", "QTY_SOLD", "OUT_QTY", "BEGINNING_QTY", "QUANTITY_IN", "QTY_BONUS", "TOTAL_AMOUNT", "TOTAL_ROUNDING", "TOTAL_OUT", "QTY_PURCH", "ENDING_AMT", "UNIT_PRICE", "PENGAJUAN3", "HIST_SEQ", "PRICE", "LEVELING", "INTIMESTORES", "DOORTIMES", "GROUPES", "QTY_B_IN", "ENDING_QTY_B", "PETTY_C", "LEFT_OVER_IN", "RETURN_GUDANG", "TMPFLD4", "CUST_AVERAGE", "CHARGE_BILL", "COUNT_DISC", "MAX_CHANGE", "CANCEL_FEE", "TIME_OUT", "MIN_PULL_TRX", "FRYER_TYPE_CNT_PREV", "MODIFIER_GROUP2_MAX_QTY", "MODIFIER_GROUP3_MAX_QTY", "MODIFIER_GROUP4_MIN_QTY", "CONV_STOCK", "ORDER_FREQ", "R_VALUE", "B_VALUE", "NILAI_VOUCHER", "NILAI_BCA_DEBIT", "CUSTOMER_COUNT", "KODE_PLU", "DISKON_PERSEN", "TOTAL_KEMBALIAN", "KODE_MAP", "NOMOR", "DEL1", "WAS9", "STO11", "LOV", "DISCOUNT_NILAI", "NILAI_BCA_DEBIT_CARD", "NO_TRANS", "KUPON_NILAI_TERPAKAI", "MODAL_TRANSAKSI", "VOID_TRANSAKSI", "HARGA_SATUAN_EI", "DINE_QTY", "AMT_SALES", "TOTALSTOCK", "NOMINAL", "QTY_REJECT", "QTY_WASTAGE", "QTY_ACC_ONHAND", "QTY_OUT", "TRANSFER_OUT_QTY", "FILE_NO", "PERIOD_MONTH", "TOTAL_EXCESS", "TOTAL_REPRINT", "TOTAL_REFUND", "TOTAL_DONATION", "BEGINNING_AMT", "CD_TEMPLATE", "SEQ", "AMT_DISC", "AMT_PERC", "QTY_B_OUT", "SALES_OUT", "TRANSFER_OUT_OUTLET", "FLD2", "TOT_TRN_PAID", "TOTALBILL", "CUSTOMER", "TAX", "TOTAL_BY_STATUS", "DONE", "FLAG_CHOICE", "MAX_PULL_VALUE", "REFUND_TIME_LIMIT", "QTY_CONV", "LEVEL_MENU", "MAX_STOCK", "TRANSFER_IN", "SALES", "KEMBALI", "NILAI_PENJUALAN", "NILAI_MODAL", "SETOR_END_SHIFT", "SALES_QUERY", "REPRINT", "RCV7", "DLV8", "RET", "WFP", "CASH_I_NILAI", "TAX_AMOUNT", "TOTAL_NILAI_TRANSAKSI", "AWAY_QTY", "AMT_DP", "TOTAL_NILAI", "QTY_ACC_PROJ", "QTY_ONHAND", "TRANSFER_IN_QTY", "SEQ_NO", "QTY_BEGINNING", "FILE_SIZE", "MP", "QTY_WAREHOUSE", "TOTAL_QTY", "AMOUNT", "TOTAL_ITEM", "PERCENTAGE", "TOTAL_CHANGE", "TRANS_SEQ", "PAYMENT_AMOUNT", "DONATE_SEQ", "DP_SEQ", "TOTAL_ESTIMATE_PAYMENT", "AMT_IN", "PENGAJUAN4", "COST_FREEZE", "QTY2", "COST_OPNAME", "SERVICE_CHARGE", "EI_QTY", "QTY_TA", "TTM", "DOORTIMEM", "PRODUKSI_IN", "WASTE_OUT", "TMPFLD5", "FLD4", "FLD5", "KUPON_DIGUNAKAN_A", "KUPON_TERPAKAI", "TOTAL_PENJUALAN", "TTL_BILL_JOINT", "SUM_TRANS_AMOUNT", "CASH_BALANCE", "MAX_DISC_AMOUNT", "FRYER_TYPE_CNT", "MODIFIER_GROUP7_MIN_QTY", "MIN_STOCK", "QTY_STOCK_E", "YEAR", "SUB_TOTAL_HARGA", "TOTAL_HARGA", "PERCENT_PPN", "SETOR", "CML", "JUMLAH_PESAN", "TOTAL_NILAI_PESAN", "STOCKOUT", "SALDOAKHIR", "LOC10", "LOC", "DISC_75_NILAI", "VOID_NILAI", "REFUND_TRANSAKSI", "BCA_NILAI", "QUANTITY_EAT_TA", "TOTAL_HARGA_TA", "HARGA_SATUAN_TA", "AMT_CATERING", "TYPE" -> {
 
@@ -4120,6 +4130,7 @@ public class ProcessDaoImpl implements ProcessDao {
         String backupDirectoryName = "BOFFI_BACKUP_DIRECTORY";
         if (param.containsKey("process") && param.get("process").equals(true)) {
             // proses backup
+            fileLoggerUtil.logActivity("/backup-database", "Backup Local Database", "BACKUP", param.getOrDefault("actUser", "SYSTEM").toString(), param.getOrDefault("actName", "SYSTEM").toString(), "Start", Boolean.TRUE, "", param);
             long startTime = System.currentTimeMillis();
             try {
                 String currentWorkingDirectory = new File(".").getCanonicalPath();
@@ -4197,6 +4208,7 @@ public class ProcessDaoImpl implements ProcessDao {
             }
             double elapsedTimeSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
             messagingTemplate.convertAndSend("/topic/backup-db", "Progress 100% dalam " + elapsedTimeSeconds + " detik");
+            fileLoggerUtil.logActivity("/backup-database", "Backup Local Database", "BACKUP", param.getOrDefault("actUser", "SYSTEM").toString(), param.getOrDefault("actName", "SYSTEM").toString(), elapsedTimeSeconds + " detik", Boolean.TRUE, "", param);
             System.err.println("processBackupDb process in: " + elapsedTimeSeconds + " seconds");
         } else if (param.containsKey("delete") && param.get("delete").toString().length() > 0) {
             // fungsi hapus backup dan log di parameter delete
@@ -4214,6 +4226,7 @@ public class ProcessDaoImpl implements ProcessDao {
                         rm.setSuccess(true);
                         if (logFileToDelete.exists() && logFileToDelete.isFile()) {
                             logFileToDelete.delete();
+                            fileLoggerUtil.logActivity("/backup-database", "Backup Local Database", "DELETE", param.getOrDefault("actUser", "SYSTEM").toString(), param.getOrDefault("actName", "SYSTEM").toString(), fileName, Boolean.TRUE, "", param);
                         }
                     } else {
                         System.err.println("Failed to delete backup: " + fileName);
@@ -4275,6 +4288,7 @@ public class ProcessDaoImpl implements ProcessDao {
                 rm.setMessage("Error while getting the list of backup files: " + e.getMessage());
             }
         }
+        fileLoggerUtil.logActivity("/backup-database", "Backup Local Database", "VIEW", param.getOrDefault("actUser", "SYSTEM").toString(), param.getOrDefault("actName", "SYSTEM").toString(), rm.getMessage(), rm.isSuccess(), "", param);
         return rm;
     }
 
@@ -4489,4 +4503,22 @@ public class ProcessDaoImpl implements ProcessDao {
         jdbcTemplate.update(itemQry, param);
         jdbcTemplate.update(costQry, costParam);
     }
+    
+    ///////// integration from pettycash to boffi aditya 08-03-2024 
+    @Override
+    public void insertPettyCashToBoffi(Map<String, String> balance) { 
+        
+        Map param = new HashMap();
+        param.put("userUpd", balance.get("userUpd"));
+        param.put("outletCode", balance.get("outletCode"));
+        param.put("itemCode", balance.get("itemCode"));
+        param.put("qtyIn", balance.get("totalQty"));
+        param.put("remark", balance.get("remark"));
+        
+        String qryInsertUpdateStockCardDetail = "MERGE INTO t_stock_card_detail dst USING ( SELECT :outletCode AS outlet_code, (SELECT TO_CHAR(trans_date, 'DD-MON-YYYY') FROM m_outlet WHERE outlet_code = :outletCode) AS trans_date, :itemCode AS item_code, 'RCV' AS cd_trans, :qtyIn AS quantity_in, 0 AS quantity, :userUpd AS user_upd, TO_CHAR(SYSDATE, 'DD-MON-YYYY') AS date_upd, TO_CHAR(SYSDATE, 'HH24MISS') AS time_upd FROM dual ) src ON ( dst.outlet_code = src.outlet_code AND dst.cd_trans = src.cd_trans AND dst.trans_date = src.trans_date AND dst.item_code = src.item_code ) WHEN MATCHED THEN UPDATE SET dst.quantity_in = dst.quantity_in + src.quantity_in, dst.user_upd = src.user_upd, dst.date_upd = src.date_upd, dst.time_upd = src.time_upd WHEN NOT MATCHED THEN INSERT ( outlet_code, trans_date, item_code, cd_trans, quantity_in, quantity, user_upd, date_upd, time_upd ) VALUES ( src.outlet_code, src.trans_date, src.item_code, src.cd_trans, src.quantity_in, src.quantity, src.user_upd, src.date_upd, src.time_upd)";
+            jdbcTemplate.update(qryInsertUpdateStockCardDetail, param);
+            
+        String qryInsertUpdateStockCard = "MERGE INTO t_stock_card tgt USING ( SELECT :outletCode AS OUTLET_CODE, (SELECT TO_CHAR(trans_date, 'DD-MON-YYYY') FROM m_outlet WHERE outlet_code = :outletCode) AS TRANS_DATE, :itemCode AS ITEM_CODE, NVL(:qtyIn, 0) AS QTY_IN, :remark AS REMARK, :userUpd AS USER_UPD, TO_CHAR(SYSDATE, 'DD-MON-YYYY') AS DATE_UPD, TO_CHAR(SYSDATE, 'HH24MISS') AS TIME_UPD FROM dual ) src ON ( tgt.OUTLET_CODE = src.OUTLET_CODE AND tgt.TRANS_DATE = src.TRANS_DATE AND tgt.ITEM_CODE = src.ITEM_CODE ) WHEN MATCHED THEN UPDATE SET tgt.QTY_IN = tgt.QTY_IN + src.QTY_IN, tgt.USER_UPD = src.USER_UPD, tgt.DATE_UPD = src.DATE_UPD, tgt.TIME_UPD = src.TIME_UPD, tgt.REMARK = src.REMARK WHEN NOT MATCHED THEN INSERT ( OUTLET_CODE, TRANS_DATE, ITEM_CODE, QTY_OUT, ITEM_COST, QTY_BEGINNING, QTY_IN, REMARK, USER_UPD, DATE_UPD, TIME_UPD ) VALUES ( src.OUTLET_CODE, src.TRANS_DATE, src.ITEM_CODE, 0, 0, 0, src.QTY_IN, src.REMARK, :userUpd, SYSDATE, TO_CHAR(SYSDATE, 'HH24MISS') )";
+           jdbcTemplate.update(qryInsertUpdateStockCard, param);
+        }         
 }

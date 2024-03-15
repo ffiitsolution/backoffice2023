@@ -8,6 +8,7 @@ import com.ffi.api.backoffice.dao.ProcessDao;
 import com.ffi.api.backoffice.model.DetailOpname;
 import com.ffi.api.backoffice.model.HeaderOpname;
 import com.ffi.paging.ResponseMessage;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import java.io.IOException;
@@ -359,4 +360,11 @@ public class ProcessServices {
     public void updateItem(Map<String, String> balance) {
         dao.updateItem(balance);
     }
+    
+    ///////// integration from pettycash to boffi aditya 08-03-2024 
+  
+    public void insertPettyCashToBoffi(Map<String, String> balance) {
+        dao.insertPettyCashToBoffi(balance);
+    }
+    ///////// done aditya 08-03-2024
 }

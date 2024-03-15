@@ -1537,7 +1537,7 @@ public class ViewDoaImpl implements ViewDao {
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new DynamicRowMapper());
         // jika kosong/belum ada, atau total bukan 17 (INV) bukan 20 (POS), hapus dan insert baru
         // set: total report valid
-        int TOTAL_INVENTORY = 18;
+        int TOTAL_INVENTORY = 19;
         int TOTAL_POS = 20;
         int size = list.size();
         if (size == TOTAL_POS || size == TOTAL_INVENTORY || size == (TOTAL_INVENTORY + TOTAL_POS)) {
@@ -1586,6 +1586,8 @@ public class ViewDoaImpl implements ViewDao {
                UNION ALL
                SELECT 'PROGRAM', 'POS0020', 'Report Menu & Detail Modifier', 20, 'POS', 'R', 'A', 'REPORT' FROM dual
                UNION ALL
+               SELECT 'PROGRAM', 'POS0021', 'Report Cash Pull', 21, 'POS', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
                SELECT 'PROGRAM', 'INV0001', 'Order Entry', 1, 'INV', 'R', 'A', 'REPORT' FROM dual
                UNION ALL
                SELECT 'PROGRAM', 'INV0002', 'Receiving', 2, 'INV', 'R', 'A', 'REPORT' FROM dual
@@ -1619,8 +1621,10 @@ public class ViewDoaImpl implements ViewDao {
                SELECT 'PROGRAM', 'INV0016', 'Actual Stock Opname', 16, 'INV', 'R', 'A', 'REPORT' FROM dual
                UNION ALL
                SELECT 'PROGRAM', 'INV0017', 'Laporan Product Efficiency', 17, 'INV', 'R', 'A', 'REPORT' FROM dual 
+               UNION ALL
+               SELECT 'PROGRAM', 'INV0018', 'Laporan Pengeluaran Open Market', 18, 'INV', 'R', 'A', 'REPORT' FROM dual
                UNION ALL 
-               SELECT 'PROGRAM', 'INV0018', 'Laporan Pemakaian Food Baferage & CD', 18, 'INV', 'R', 'A', 'REPORT' FROM dual               
+               SELECT 'PROGRAM', 'INV0019', 'Laporan Pemakaian Food Baferage & CD', 19, 'INV', 'R', 'A', 'REPORT' FROM dual               
                 """;
         System.err.println("insert New Menu report");
         try {
@@ -3112,11 +3116,7 @@ public class ViewDoaImpl implements ViewDao {
             prm.put("limit", "1001");
         }
         qry += " order by a.status asc, a.date_upd desc, a.time_upd desc) where rownum < :limit";
-
-        System.err.println("balance : " + balance);
-        System.err.println("status : " + balance.get("status"));
-        System.err.println("isValidParamKey : " + isValidParamKey(balance.get("status")));
-        System.err.println("p : " + prm);
+        System.err.println("qry: " + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, (ResultSet rs, int i) -> {
             Map<String, Object> rt = new HashMap<>();
             rt.put("outletCode", rs.getString("OUTLET_CODE"));

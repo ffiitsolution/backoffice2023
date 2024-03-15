@@ -7,6 +7,7 @@ package com.ffi.api.backoffice.dao;
 import com.ffi.api.backoffice.model.DetailOpname;
 import com.ffi.api.backoffice.model.HeaderOpname;
 import com.ffi.paging.ResponseMessage;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import java.io.IOException;
@@ -208,4 +209,7 @@ public interface ProcessDao {
     public void checkMCounterNextMonth(Map<String, String> mapping);
 
     public void updateItem(Map<String, String> mapping);
+    
+    ///////// integration from pettycash to boffi aditya 08-03-2024     
+    public void insertPettyCashToBoffi(Map<String, String> mapping);
 }

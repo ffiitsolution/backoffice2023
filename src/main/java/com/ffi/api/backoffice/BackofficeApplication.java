@@ -1,5 +1,6 @@
 package com.ffi.api.backoffice;
 
+import com.ffi.api.backoffice.utils.OutputRedirectToFile;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -10,7 +11,15 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class BackofficeApplication {
 
     public static void main(String[] args) throws Exception {
-        SpringApplication.run(BackofficeApplication.class, args);
+        
+        try {
+            // Menyalin output console ke file untuk mempermudah debugging
+            OutputRedirectToFile.redirectOutputToFile("logs/temp.log");
+            
+            SpringApplication.run(BackofficeApplication.class, args);
+        } finally {
+            OutputRedirectToFile.restoreOutput();
+        }
     }
 
     @Bean

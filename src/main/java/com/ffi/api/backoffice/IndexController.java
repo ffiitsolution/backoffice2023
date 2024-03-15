@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.ffi.api.backoffice;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,12 +15,16 @@ import com.ffi.paging.Response;
 import com.ffi.paging.ResponseMessage;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -34,16 +34,23 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import net.sf.jasperreports.engine.JRException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.MessagingException;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -87,7 +94,15 @@ public class IndexController {
         map.put("output", "welcome");
         return map;
     }
-
+    
+    @RequestMapping(value = "/ping")
+    public @ResponseBody
+    Map<String, Object> ping() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("output", "Connection is Successfully");
+        return map;
+    }
+    
     @MessageMapping("/hello")
     @SendTo("/topic/greetings")
     public ResponseMessage greeting(String message) throws Exception {
@@ -111,6 +126,8 @@ public class IndexController {
         Gson gsn = new Gson();
         ParameterLogin balance = gsn.fromJson(param, new TypeToken<ParameterLogin>() {
         }.getType());
+        Map<String, Object> balanced = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
         Map<String, Object> map = new LinkedHashMap<String, Object>();
         List<Map<String, Object>> list = new ArrayList<>();
         ResponseMessage rm = new ResponseMessage();
@@ -126,7 +143,7 @@ public class IndexController {
                     rm.setSuccess(true);
                     rm.setMessage("Login Success");
                     rm.setItem(list);
-                    fileLoggerUtil.logActivity("/login", "Login", "Login", balance.getUserName(), param, Boolean.TRUE, "", map);
+                    fileLoggerUtil.logActivity("/login", "Login", "Login", balance.getUserName(), balance.getUserName(), "", Boolean.TRUE, "", balanced);
                 } else {
                     rm.setSuccess(false);
                     rm.setMessage("Login failed, User is INACTIVE");
@@ -134,7 +151,7 @@ public class IndexController {
             } else {
                 rm.setSuccess(false);
                 rm.setMessage("User and Password not match.");
-                fileLoggerUtil.logActivity("/login", "Login", "Login", balance.getUserName(), param, Boolean.FALSE, "", map);
+                fileLoggerUtil.logActivity("/login", "Login", "Login", balance.getUserName(), balance.getUserName(), "", Boolean.FALSE, "", balanced);
             }
         } catch (Exception e) {
             rm.setSuccess(false);
@@ -2720,6 +2737,9 @@ public class IndexController {
         Map<String, Object> d = new HashMap();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
+        Map<String, Object> prms = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        fileLoggerUtil.logActivity("/process-eod", "End Of Day", "PROCESS", balance.getOrDefault("actUser", "SYSTEM"), balance.getOrDefault("actName", "SYSTEM"), "Start", Boolean.TRUE, "", prms);
         if (!balance.containsKey("outletCode") && !balance.containsKey("userUpd")) {
             errors.add("Missing columns: outletCode, userUpd");
             d.put("errors", errors);
@@ -2776,7 +2796,7 @@ public class IndexController {
             d.put("message", "Process End of Day Failed");
             data.add(d);
             res.setData(data);
-            fileLoggerUtil.logActivity("/process-eod", "End Of Day", "PROCESS", balance.getOrDefault("actUser", "SYSTEM"), balance.getOrDefault("actName", "SYSTEM"), Boolean.FALSE, "", d);
+            fileLoggerUtil.logActivity("/process-eod", "End Of Day", "PROCESS", balance.getOrDefault("actUser", "SYSTEM"), balance.getOrDefault("actName", "SYSTEM"), "", Boolean.FALSE, "", prms);
             return res;
         }
 
@@ -2788,7 +2808,6 @@ public class IndexController {
             processServices.checkMCounterNextMonth(balance);
             processServices.increaseTransDateMOutlet(balance);
             d.put("success", true);
-            fileLoggerUtil.logActivity("/process-eod", "End Of Day", "PROCESS", balance.getOrDefault("actUser", "SYSTEM"), balance.getOrDefault("actName", "SYSTEM"), Boolean.TRUE, "", d);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             System.err.println("Error End of Day: " + e.getMessage());
@@ -2797,14 +2816,15 @@ public class IndexController {
             d.put("message", "Process End of Day Failed: " + e.getMessage());
             data.add(d);
             res.setData(data);
-            fileLoggerUtil.logActivity("/process-eod", "End Of Day", "PROCESS", balance.getOrDefault("actUser", "SYSTEM"), balance.getOrDefault("actName", "SYSTEM"), Boolean.FALSE, "", d);
+            fileLoggerUtil.logActivity("/process-eod", "End Of Day", "PROCESS", balance.getOrDefault("actUser", "SYSTEM"), balance.getOrDefault("actName", "SYSTEM"), "", Boolean.FALSE, "", prms);
             return res;
         }
         data.add(d);
         res.setData(data);
         double elapsedTimeSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
-        System.err.println("Finished End of Day Process after total: " + elapsedTimeSeconds + " seconds");
         messagingTemplate.convertAndSend("/topic", "Selesai End Of Day: " + elapsedTimeSeconds + " detik");
+        System.err.println("Finished End of Day Process after total: " + elapsedTimeSeconds + " seconds");
+        fileLoggerUtil.logActivity("/process-eod", "End Of Day", "PROCESS", balance.getOrDefault("actUser", "SYSTEM"), balance.getOrDefault("actName", "SYSTEM"), elapsedTimeSeconds + " detik", Boolean.TRUE, "", prms);
         res.setDraw((int) elapsedTimeSeconds);
         return res;
     }
@@ -3644,40 +3664,58 @@ public class IndexController {
     @RequestMapping(value = "/transfer-data-all", method = RequestMethod.POST)
     public @ResponseBody
     ResponseMessage transferDataAll(@RequestBody Map<String, Object> param) throws IOException, Exception {
+        long startTime = System.currentTimeMillis();
         ResponseMessage rm = new ResponseMessage();
         List<TableAlias> allActiveTable = tableAliasUtil.searchByColumn(TableAliasUtil.TABLE_ALIAS_T, "process", true);
-        List<String> listTable = allActiveTable.stream().map(TableAlias::getTable).toList();
-
         String outletId = param.get("outletId") != null ? (String) param.get("outletId") : null;
-        String dateCopy = (String) param.get("date");
-        if (dateCopy == null || "".equals(dateCopy)) {
-            dateCopy = new SimpleDateFormat("dd-MMM-yyyy").format(Calendar.getInstance().getTime());
+        String dateUpd = (String) param.get("dateUpd");
+        String timeUpd = (String) param.get("timeUpd");
+        if (!param.containsKey("remark") || param.get("remark").toString().isBlank()) {
+            param.put("remark", "MANUAL");
         }
-        System.out.println("Copy All Table Start At " + dateCopy);
+        System.out.println("Copy All " + allActiveTable.size() + " Table Start At " + dateUpd);
         List<String> listError = new ArrayList<>();
         try {
-            for (String table : listTable) {
-//                if (processServices.sendDataLocal(param) == false) {
-//                    Date dateError = new Date();
-//                    listError.add(table);
-//                    System.out.println("Error Insert Table " + table + " At " + dateError);
-//                }
+            for (TableAlias table : allActiveTable) {
+                String tableName = table.getTable();
+                String aliasName = table.getAlias();
+                param.put("trx", 1);
+                param.put("outletId", outletId);
+                param.put("outletCode", outletId);
+                param.put("tableName", tableName);
+                param.put("aliasName", aliasName);
+                Map map1 = processServices.sendDataLocal(param);
+                if (map1.containsKey("success")) {
+                    boolean status = (boolean) map1.get("success");
+                    if (!status) {
+                        listError.add(aliasName + ": " + map1.get("message").toString());
+                    }
+                }
+                if (map1.containsKey("error")) {
+                    String error = map1.get("error").toString();
+                    if(error.contains("Connection refused")){
+                        listError.add(aliasName + ": No connection to HQ.");
+                        break;
+                    } else {
+                        listError.add(aliasName + ": " + error);
+                    }
+                }
             }
-
             if (listError.isEmpty()) {
                 rm.setSuccess(true);
-                rm.setMessage("Copy " + listTable.size() + " Table for " + dateCopy + " Successfuly");
+                rm.setMessage("Copy " + allActiveTable.size() + " Table for " + dateUpd + " Successfuly");
             } else {
                 rm.setSuccess(false);
                 rm.setMessage("Some Table Failed");
                 rm.setItem(listError);
             }
-            System.out.println("Copy All Table End");
-        } catch (Exception e) {
+        } catch (MessagingException e) {
             rm.setSuccess(false);
             rm.setMessage("Insert Failed: " + e.getMessage());
-
         }
+        double elapsedTimeSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
+        System.err.println("transferDataAll process in: " + elapsedTimeSeconds + " seconds");
+        messagingTemplate.convertAndSend("/topic", "Kirim Data Transaksi: " + elapsedTimeSeconds + " detik");
         return rm;
     }
 
@@ -3730,7 +3768,6 @@ public class IndexController {
     public @ResponseBody
     ResponseMessage transferDataSingle(@RequestBody Map<String, Object> param) throws IOException, Exception {
         String aliasName = (String) param.get("tableName");
-
         TableAlias ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_T, "alias", aliasName).get();
         String tableName = ta.getTable();
         String dateUpd = (String) param.get("dateUpd");
@@ -4129,5 +4166,72 @@ public class IndexController {
         rm.setItem(list);
 
         return rm;
+    }
+    
+    ///////// integration from pettycash to boffi aditya 08-03-2024 
+    @RequestMapping(value = "/insert-pettycash-to-boffi", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk insert header dan detail data OPM ke Stock card ", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody ResponseMessage insertPettyCashToBoffi(@RequestBody String param) throws IOException, Exception {
+        ResponseMessage rm = new ResponseMessage();
+        rm.setSuccess(false);
+        rm.setItem(new ArrayList());
+        Gson gsn = new Gson();
+        Map<String, Object> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        
+        Map<String, String> headerParam = new HashMap<String, String>();
+        headerParam.put("outletCode", balance.get("outletCode").toString());
+        headerParam.put("userUpd", balance.get("userUpd").toString()); 
+        List items = (List) balance.get("items");
+        List errors = new ArrayList();
+        for (int i = 0; i < items.size(); i++) {
+            Map<String, Object> itemx = (Map<String, Object>) items.get(i);
+            headerParam.put("itemCode", itemx.get("itemCode").toString());  
+            headerParam.put("totalQty", itemx.get("totalQty").toString()); 
+            headerParam.put("remark", itemx.get("remark").toString()); 
+            try {
+                processServices.insertPettyCashToBoffi(headerParam);
+                System.out.println("Success Insert Detail ke-" + i);
+            } catch (Exception e) {
+                errors.add(e.getMessage());
+                System.out.println("Exception: " + e);
+            }
+        }
+        if(errors.isEmpty()){
+            rm.setSuccess(true);
+            rm.setMessage("Success");
+        } else {
+            rm.setItem(errors);
+            rm.setMessage("Failed");
+        }
+        return rm;
+    }
+    //////// done aditya 08-03-2024
+    
+
+    //////////// New method to Get PDF File - M Joko 14-Feb-2024 ////////////
+    @PostMapping("/get-file-pdf")
+    public ResponseEntity<byte[]> getPdf(@RequestBody Map<String, Object> requestBody, HttpServletResponse response) {
+        try {
+            String fileId = (String) requestBody.get("fileId");
+            String pdfUrl = "";
+            if(fileId.equalsIgnoreCase("module-boffi")){
+                pdfUrl = "http://192.168.10.28/backoffice/assets/pdf/Modul_Back_Office_New_Version_2024_V1.pdf";
+            }
+            CloseableHttpClient httpClient = HttpClients.createDefault();
+            HttpGet httpGet = new HttpGet(pdfUrl);
+            InputStream inputStream = httpClient.execute(httpGet).getEntity().getContent();
+            byte[] pdfContent = inputStream.readAllBytes();
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + fileId + ".pdf\"");
+            return ResponseEntity.ok().body(pdfContent);
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

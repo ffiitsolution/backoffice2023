@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.ffi.api.backoffice;
 
 import com.ffi.api.backoffice.services.ProcessServices;
@@ -15,14 +11,13 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +30,6 @@ import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
@@ -189,18 +183,47 @@ public class ReportController {
         Gson gsn = new Gson();
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-
-//        Integer cekDataReport = viewServices.cekDataReport(prm, "orderEntry");
+        
         JasperPrint jasperPrint = reportServices.jesperReportOrderEntry(prm, conn);
         conn.close();
+        
+        return generatePdfExcelReport(jasperPrint, prm);  
+    }
+    
+    private ResponseEntity<byte[]> generatePdfExcelReport (JasperPrint jasperPrint, Map prm) throws JRException, IOException {
+        boolean isDownloadExcel = prm.get("isDownloadExcel").equals(true);
         if (!jasperPrint.getPages().isEmpty()) {
-            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=OrderEntryReport.pdf");
-            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+            if (isDownloadExcel) {
+                byte[] result = generateExcelReport(jasperPrint);
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("Content-Disposition", "inline; filename=OrderEntryReport.xlsx");
+                return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_OCTET_STREAM).body(result);
+            } else {
+                byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("Content-Disposition", "inline; filename=OrderEntryReport.pdf");
+                return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+            }
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
         }
+    }
+    
+    private byte[] generateExcelReport(JasperPrint jasperPrint) throws JRException, IOException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+        JRXlsxExporter exporter = new JRXlsxExporter();
+        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(byteArrayOutputStream));
+
+        SimpleXlsxReportConfiguration configuration = new SimpleXlsxReportConfiguration();
+        configuration.setDetectCellType(true);
+        configuration.setCollapseRowSpan(false);
+        exporter.setConfiguration(configuration);
+
+        exporter.exportReport();
+
+        return byteArrayOutputStream.toByteArray();
     }
 
     @RequestMapping(value = "/report-order-entry-jesper-html", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -1558,6 +1581,31 @@ public class ReportController {
 
     }
     ///////////////////////////////// done Pasca 16-02-2024 ///////////////////////////////////////
+
+    ///////////////NEW METHOD REPORT BY M Joko - 3 Maret 2024////
+    @CrossOrigin
+    @RequestMapping(value = "/report-cash-pull-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Menampilkan report Cash Pull", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
+    public ResponseEntity<byte[]> jasperReportCashPull(@RequestBody String param) throws SQLException, JRException, IOException {
+        Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
+        Gson gsn = new Gson();
+        Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        JasperPrint jasperPrint = reportServices.jasperReportCashPull(prm, conn);
+        conn.close();
+
+        if (!jasperPrint.getPages().isEmpty()) {
+            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "inline; filename=cashPull.pdf");
+            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
+    }
 
 
     ////////////////// new Report Usage by Dani 14 Mar 2024

@@ -276,6 +276,9 @@ public class ReportServices {
     public JasperPrint jesperReportTransaksiHd(Map<String, Object> param, Connection connection) throws JRException, IOException {
         return dao.jesperReportTransaksiHd(param, connection);
     }
+    public JasperPrint jasperReportCashPull(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        return dao.jasperReportCashPull(param, connection);
+    }
     ////////////// new method report usage food & beverage by Dani 14 Mar 2024
     public JasperPrint jesperReportUsageFoodBeverage(Map<String, Object> param, Connection connection) throws JRException, IOException {
         return dao.jesperReportUsageFoodBeverage(param, connection);

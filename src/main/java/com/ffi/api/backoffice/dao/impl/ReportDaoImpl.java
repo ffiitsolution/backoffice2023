@@ -1265,6 +1265,12 @@ public class ReportDaoImpl implements ReportDao {
             query = "SELECT DISTINCT TA.STAFF_ID AS STAFF_CODE, ms.STAFF_FULL_NAME AS STAFF_NAME FROM T_ABSENSI ta JOIN M_STAFF ms ON TA.STAFF_ID = ms.STAFF_CODE WHERE ta.DATE_ABSEN BETWEEN :fromDate AND :toDate"; 
             hashMap.put("fromDate", param.get("fromDate"));
             hashMap.put("toDate", param.get("toDate"));
+        } else if (param.get("typeReport").equals("Report Cash Pull") && param.get("typeParam").equals("Pos")) {
+            query = "SELECT DISTINCT a.POS_CODE, mp.POS_DESCRIPTION FROM T_POS_DAY_TRANS a LEFT JOIN M_POS mp ON a.POS_CODE = mp.POS_CODE WHERE a.TRANS_DATE = :transDate ORDER BY a.POS_CODE";
+            hashMap.put("transDate", param.get("date"));
+        } else if (param.get("typeReport").equals("Report Cash Pull") && param.get("typeParam").equals("Shift")) {
+            query = "SELECT DISTINCT a.SHIFT_CODE, mg.DESCRIPTION AS SHIFT_NAME FROM T_POS_DAY_TRANS a LEFT JOIN M_GLOBAL mg ON mg.COND = 'SHIFT' AND mg.CODE = a.SHIFT_CODE WHERE a.TRANS_DATE = :transDate ORDER BY a.SHIFT_CODE";
+            hashMap.put("transDate", param.get("date"));
         }
 
         assert query != null;
@@ -1375,6 +1381,12 @@ public class ReportDaoImpl implements ReportDao {
                 } else if (param.get("typeReport").equals("time-management") && param.get("typeParam").equals("Staff")) {
                     rt.put("staffCode", rs.getString("STAFF_CODE"));
                     rt.put("staffName", rs.getString("STAFF_NAME"));
+                } else if (param.get("typeReport").equals("Report Cash Pull") && param.get("typeParam").equals("Pos")) {
+                    rt.put("posCode", rs.getString("POS_CODE"));
+                    rt.put("posDescription", rs.getString("POS_DESCRIPTION"));
+                } else if (param.get("typeReport").equals("Report Cash Pull") && param.get("typeParam").equals("Shift")) {
+                    rt.put("shiftCode", rs.getString("SHIFT_CODE"));
+                    rt.put("shiftName", rs.getString("SHIFT_NAME"));
                 }
                 return rt;
             }
@@ -3690,6 +3702,14 @@ public class ReportDaoImpl implements ReportDao {
         return null;
     }
     /////////////////////// done adit 30-01-2024
+    
+     @Override
+    public JasperPrint jasperReportCashPull(Map<String, Object> param, Connection connection) throws IOException, JRException {
+        param.put("transDate", param.get("date"));
+        ClassPathResource classPathResource = new ClassPathResource("report/reportCashPull.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, param, connection);
+    }
 
 
     /////// new method generate report Usage Food & Beverage by Dani 14 Mar 2024
