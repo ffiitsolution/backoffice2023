@@ -1572,4 +1572,29 @@ public class ReportController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
         }
     }
+
+    /// report POS action by M Joko 18/3/24
+    @CrossOrigin
+    @RequestMapping(value = "/report-pos-action-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Menampilkan report pos action", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
+    public ResponseEntity<byte[]> jesperReportPosAction(@RequestBody String param) throws SQLException, JRException, IOException {
+        Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
+        Gson gsn = new Gson();
+        Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        JasperPrint jasperPrint = reportServices.jasperReportposAction(prm, conn);
+        conn.close();
+        if (!jasperPrint.getPages().isEmpty()) {
+            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "inline; filename=posAction.pdf");
+            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+        }
+    }
 }

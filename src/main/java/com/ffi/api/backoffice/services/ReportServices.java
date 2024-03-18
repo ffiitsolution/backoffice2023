@@ -288,4 +288,8 @@ public class ReportServices {
         return dao.jesperReportUsageCD(param, connection);
     }
 
+    public JasperPrint jasperReportposAction(Map<String, Object> param, Connection connection) throws  JRException, IOException {
+        return dao.jasperReportposAction(param, connection);
+    }
+
 }
