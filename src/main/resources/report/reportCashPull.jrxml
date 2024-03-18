@@ -10,7 +10,8 @@
 	<parameter name="shiftCode" class="java.lang.String"/>
 	<parameter name="outletBrand" class="java.lang.String"/>
 	<queryString language="SQL">
-		<![CDATA[SELECT CASE
+		<![CDATA[SELECT 
+    CASE
         WHEN ROWNUM = 1 THEN 'I'
         WHEN ROWNUM = 2 THEN 'II'
         WHEN ROWNUM = 3 THEN 'III'
@@ -33,30 +34,44 @@
         WHEN ROWNUM = 20 THEN 'XX'
         ELSE ' '
     END AS roman_num,
-b.* FROM (SELECT 
-NVL(mg2.DESCRIPTION, ' ') AS REV_DESC,
-a.POS_CODE,
-NVL(mg.DESCRIPTION , a.SHIFT_CODE) AS SHIFT_NAME,
-a.SHIFT_CODE,
-ABS(a.TRANS_AMOUNT) AS TRANS_AMOUNT,
-a.TRANS_CODE,
-(SELECT TRANS_AMOUNT FROM T_POS_DAY_TRANS WHERE TRANS_DATE = $P{transDate} 
-AND POS_CODE = $P{posCode} AND SHIFT_CODE = $P{shiftCode} AND TRANS_CODE = 'OPF') AS MODAL,
-TO_CHAR(a.TRANS_DATE, 'DD / MM / YYYY') AS TRANS_DATE, 
-SUBSTR(a.TIME_UPD, 1, 2) || ':' || SUBSTR(a.TIME_UPD, 3, 2) || ':' || SUBSTR(a.TIME_UPD, 5, 2) AS C_TIME_UPD,
-NVL(ms.STAFF_NAME,a.CASHIER_CODE) AS CASHIER_NAME,
-NVL(mps.STAFF_NAME,a.MANAGER_CODE) AS MANAGER_NAME,
-a.TRANS_SEQ
-FROM T_POS_DAY_TRANS a 
-LEFT JOIN M_POS_STAFF ms ON ms.STAFF_POS_CODE  = a.CASHIER_CODE
-LEFT JOIN M_POS_STAFF mps ON mps.STAFF_POS_CODE = a.MANAGER_CODE 
-LEFT JOIN M_GLOBAL mg ON mg.COND = 'SHIFT' AND mg.CODE = a.SHIFT_CODE
-LEFT JOIN M_GLOBAL mg2 ON mg2.COND = 'ISO_RPT' AND mg2.CODE = 'CPF'
-WHERE a.TRANS_DATE = $P{transDate}
-AND a.POS_CODE = $P{posCode} 
-AND a.SHIFT_CODE = $P{shiftCode}
-AND a.TRANS_CODE IN('PRS', 'TLO')
-ORDER BY a.TRANS_CODE, a.TRANS_SEQ) b]]>
+    b.*, 
+    c.*
+FROM 
+    (SELECT 
+        NVL(mg2.DESCRIPTION, ' ') AS REV_DESC,
+        a.POS_CODE,
+        NVL(mg.DESCRIPTION , a.SHIFT_CODE) AS SHIFT_NAME,
+        a.SHIFT_CODE,
+        ABS(a.TRANS_AMOUNT) AS TRANS_AMOUNT,
+        a.TRANS_CODE,
+        TO_CHAR(a.TRANS_DATE, 'DD / MM / YYYY') AS TRANS_DATE, 
+        SUBSTR(a.TIME_UPD, 1, 2) || ':' || SUBSTR(a.TIME_UPD, 3, 2) || ':' || SUBSTR(a.TIME_UPD, 5, 2) AS C_TIME_UPD,
+        NVL(ms.STAFF_NAME,a.CASHIER_CODE) AS CASHIER_NAME,
+        NVL(mps.STAFF_NAME,a.MANAGER_CODE) AS MANAGER_NAME,
+        a.TRANS_SEQ,
+        (SELECT NVL(SUM(TRANS_AMOUNT),0) AS TRANS_AMOUNT FROM T_POS_DAY_TRANS WHERE 
+        TRANS_DATE = $P{transDate} AND POS_CODE = $P{posCode} 
+        AND SHIFT_CODE = $P{shiftCode} AND TRANS_CODE = 'OPF') AS MODAL
+    FROM T_POS_DAY_TRANS a 
+    LEFT JOIN M_POS_STAFF ms ON ms.STAFF_POS_CODE  = a.CASHIER_CODE
+    LEFT JOIN M_POS_STAFF mps ON mps.STAFF_POS_CODE = a.MANAGER_CODE 
+    LEFT JOIN M_GLOBAL mg ON mg.COND = 'SHIFT' AND mg.CODE = a.SHIFT_CODE
+    LEFT JOIN M_GLOBAL mg2 ON mg2.COND = 'ISO_RPT' AND mg2.CODE = 'CPF'
+    WHERE 
+        a.TRANS_DATE = $P{transDate}
+        AND a.POS_CODE = $P{posCode} 
+        AND a.SHIFT_CODE = $P{shiftCode}
+        AND a.TRANS_CODE IN('PRS', 'TLO')
+    ORDER BY a.TRANS_SEQ ) b
+JOIN 
+    (SELECT COUNT(*) AS MODAL_COUNT 
+    FROM T_POS_DAY_TRANS 
+    WHERE 
+        TRANS_DATE = $P{transDate}
+        AND POS_CODE = $P{posCode} 
+        AND SHIFT_CODE = $P{shiftCode}
+        AND TRANS_CODE = 'OPF'
+    ) c ON 1=1]]>
 	</queryString>
 	<field name="ROMAN_NUM" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="ROMAN_NUM"/>
@@ -86,10 +101,6 @@ ORDER BY a.TRANS_CODE, a.TRANS_SEQ) b]]>
 		<property name="com.jaspersoft.studio.field.name" value="TRANS_CODE"/>
 		<property name="com.jaspersoft.studio.field.label" value="TRANS_CODE"/>
 	</field>
-	<field name="MODAL" class="java.math.BigDecimal">
-		<property name="com.jaspersoft.studio.field.name" value="MODAL"/>
-		<property name="com.jaspersoft.studio.field.label" value="MODAL"/>
-	</field>
 	<field name="TRANS_DATE" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="TRANS_DATE"/>
 		<property name="com.jaspersoft.studio.field.label" value="TRANS_DATE"/>
@@ -109,6 +120,14 @@ ORDER BY a.TRANS_CODE, a.TRANS_SEQ) b]]>
 	<field name="TRANS_SEQ" class="java.math.BigDecimal">
 		<property name="com.jaspersoft.studio.field.name" value="TRANS_SEQ"/>
 		<property name="com.jaspersoft.studio.field.label" value="TRANS_SEQ"/>
+	</field>
+	<field name="MODAL" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="MODAL"/>
+		<property name="com.jaspersoft.studio.field.label" value="MODAL"/>
+	</field>
+	<field name="MODAL_COUNT" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="MODAL_COUNT"/>
+		<property name="com.jaspersoft.studio.field.label" value="MODAL_COUNT"/>
 	</field>
 	<variable name="total_trans_amount" class="java.math.BigDecimal" calculation="Sum">
 		<variableExpression><![CDATA[$F{TRANS_AMOUNT}]]></variableExpression>
@@ -551,11 +570,20 @@ XX - 003
 DISINI]]></text>
 			</staticText>
 			<textField pattern="#,##0.##" isBlankWhenNull="true">
-				<reportElement x="90" y="91" width="80" height="13" uuid="0fdb29a3-395c-4815-980c-1ea3666b9dbf"/>
+				<reportElement x="90" y="91" width="60" height="13" uuid="0fdb29a3-395c-4815-980c-1ea3666b9dbf"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{MODAL}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.##" isBlankWhenNull="true">
+				<reportElement x="150" y="91" width="20" height="13" uuid="1b8e7488-2d80-4fdb-a01f-01937e32d1a7">
+					<printWhenExpression><![CDATA[$F{MODAL_COUNT}.intValue() > 1]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["("+$F{MODAL_COUNT}+"x)"]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>

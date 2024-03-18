@@ -2,13 +2,13 @@
 <!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="orderEntry" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isSummaryNewPage="true" uuid="0793d68f-3216-428e-b721-e2ccbd5a3839">
 	<property name="ireport.zoom" value="1.7715610000000013"/>
-	<property name="net.sf.jasperreports.export.xls.one.page.per.sheet" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.one.page.per.sheet" value="false"/>
 	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
 	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.columns" value="true"/>
 	<property name="net.sf.jasperreports.export.xls.white.page.background" value="false"/>
-	<property name="net.sf.jasperreports.export.xls.detect.cell.type" value="false"/>
+	<property name="net.sf.jasperreports.export.xls.detect.cell.type" value="true"/>
 	<property name="net.sf.jasperreports.export.xls.ignore.graphics" value="false"/>
-	<property name="net.sf.jasperreports.page.break.no.pagination" value="false"/>
+	<property name="net.sf.jasperreports.page.break.no.pagination" value="true"/>
 	<property name="net.sf.jasperreports.export.xls.sheet.names.all" value="Data/Footnotes"/>
 	<property name="net.sf.jasperreports.export.xls.freeze.row" value="3"/>
 	<property name="net.sf.jasperreports.print.keep.full.text" value="true"/>
@@ -412,7 +412,9 @@ ORDER BY
 				<textFieldExpression><![CDATA[": " + $P{typeOrder}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="60" y="0" width="112" height="11" uuid="8dd3fb25-735a-466c-841b-450ce1b61c8b"/>
+				<reportElement x="60" y="0" width="112" height="11" uuid="8dd3fb25-735a-466c-841b-450ce1b61c8b">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
 				<textElement>
 					<font size="8"/>
 				</textElement>

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="laporanActualReport" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="65db9392-07bc-483d-89ef-9cd6b98bce0c">
 	<property name="ireport.zoom" value="1.6105100000000008"/>
 	<property name="ireport.x" value="0"/>
@@ -98,11 +99,16 @@ ORDER BY a.RECIPE_CODE ASC, TO_DATE(a.TIME_UPD, 'HH24MISS') ASC]]>
 	<pageHeader>
 		<band height="150" splitType="Stretch">
 			<staticText>
-				<reportElement x="57" y="3" width="150" height="14" uuid="285f864f-09ac-4338-b70e-8f898fa55003"/>
+				<reportElement x="57" y="4" width="150" height="11" uuid="285f864f-09ac-4338-b70e-8f898fa55003">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="8"/>
+				</textElement>
 				<text><![CDATA[PT Fastfood Indonesia, Tbk]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="65" width="555" height="20" uuid="0e97c75e-9c37-4f33-849b-c1666c3b718a"/>
+				<reportElement x="0" y="67" width="555" height="20" uuid="0e97c75e-9c37-4f33-849b-c1666c3b718a"/>
 				<textElement textAlignment="Center">
 					<font size="12" isBold="true"/>
 				</textElement>
@@ -113,7 +119,7 @@ ORDER BY a.RECIPE_CODE ASC, TO_DATE(a.TIME_UPD, 'HH24MISS') ASC]]>
 				<text><![CDATA[Periode]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="3" y="103" width="86" height="15" uuid="7e95c748-d894-4e44-a60c-aaf6a766ba63"/>
+				<reportElement x="3" y="104" width="86" height="15" uuid="7e95c748-d894-4e44-a60c-aaf6a766ba63"/>
 				<text><![CDATA[Jam Pemasakan]]></text>
 			</staticText>
 			<textField>
@@ -121,7 +127,7 @@ ORDER BY a.RECIPE_CODE ASC, TO_DATE(a.TIME_UPD, 'HH24MISS') ASC]]>
 				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{date}))]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="89" y="103" width="153" height="15" uuid="83eec233-8ff4-4f9b-8fea-e017aea9d59e"/>
+				<reportElement x="89" y="104" width="153" height="15" uuid="83eec233-8ff4-4f9b-8fea-e017aea9d59e"/>
 				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("HH:mm:ss").format(new SimpleDateFormat("HHmmss").parse($P{time1})) + " - " + new SimpleDateFormat("HH:mm:ss").format(new SimpleDateFormat("HHmmss").parse($P{time2}))]]></textFieldExpression>
 			</textField>
 			<staticText>
@@ -173,35 +179,35 @@ ORDER BY a.RECIPE_CODE ASC, TO_DATE(a.TIME_UPD, 'HH24MISS') ASC]]>
 				<reportElement x="0" y="123" width="555" height="1" uuid="dc0e190b-8695-43bc-b862-f27c697da4dd"/>
 			</line>
 			<textField>
-				<reportElement x="57" y="17" width="165" height="11" uuid="ea82f1c2-6db1-4244-9a02-cc573c3e65a9"/>
+				<reportElement x="57" y="15" width="165" height="11" uuid="ea82f1c2-6db1-4244-9a02-cc573c3e65a9"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{OUTLET_NAME}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="57" y="28" width="165" height="11" uuid="533b1f24-2623-4947-ae30-f953e33967e5"/>
+				<reportElement x="57" y="26" width="165" height="11" uuid="533b1f24-2623-4947-ae30-f953e33967e5"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{ADDRESS_1}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="57" y="39" width="165" height="11" uuid="cb049fcc-68c4-4bc3-bc31-aaa9a9db50ac"/>
+				<reportElement x="57" y="37" width="165" height="11" uuid="cb049fcc-68c4-4bc3-bc31-aaa9a9db50ac"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{ADDRESS_2}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="57" y="50" width="165" height="11" uuid="02509b41-54e7-4a1e-a48b-40b898acf571"/>
+				<reportElement x="57" y="48" width="165" height="11" uuid="02509b41-54e7-4a1e-a48b-40b898acf571"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Phone : " + $F{PHONE}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="430" y="0" width="64" height="11" uuid="f39297ea-a65c-4b14-8ef4-d4e9fa2c6b81">
+				<reportElement x="430" y="4" width="64" height="11" uuid="f39297ea-a65c-4b14-8ef4-d4e9fa2c6b81">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -210,7 +216,7 @@ ORDER BY a.RECIPE_CODE ASC, TO_DATE(a.TIME_UPD, 'HH24MISS') ASC]]>
 				<text><![CDATA[Halaman]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="430" y="11" width="64" height="11" uuid="7b929d8b-697c-4d92-9316-a6950f1dd44c">
+				<reportElement x="430" y="15" width="64" height="11" uuid="7b929d8b-697c-4d92-9316-a6950f1dd44c">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -219,7 +225,7 @@ ORDER BY a.RECIPE_CODE ASC, TO_DATE(a.TIME_UPD, 'HH24MISS') ASC]]>
 				<text><![CDATA[User Cetak]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="430" y="22" width="64" height="11" uuid="b3975e52-fae9-4d73-a42c-d36d35ede816">
+				<reportElement x="430" y="26" width="64" height="11" uuid="b3975e52-fae9-4d73-a42c-d36d35ede816">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -228,7 +234,7 @@ ORDER BY a.RECIPE_CODE ASC, TO_DATE(a.TIME_UPD, 'HH24MISS') ASC]]>
 				<text><![CDATA[Tanggal Cetak]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="430" y="33" width="64" height="11" uuid="be0d0e67-379e-4b6b-98f3-b4016bdfb88a">
+				<reportElement x="430" y="37" width="64" height="11" uuid="be0d0e67-379e-4b6b-98f3-b4016bdfb88a">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -237,7 +243,7 @@ ORDER BY a.RECIPE_CODE ASC, TO_DATE(a.TIME_UPD, 'HH24MISS') ASC]]>
 				<text><![CDATA[Jam Cetak]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="504" y="33" width="50" height="11" uuid="2daf968e-7a51-4eea-966d-44cc0536fb6b">
+				<reportElement x="504" y="37" width="50" height="11" uuid="2daf968e-7a51-4eea-966d-44cc0536fb6b">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement>
@@ -246,7 +252,7 @@ ORDER BY a.RECIPE_CODE ASC, TO_DATE(a.TIME_UPD, 'HH24MISS') ASC]]>
 				<textFieldExpression><![CDATA[new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="494" y="33" width="10" height="11" uuid="fc6e1c56-3f1a-4d79-a09b-c79c98004580">
+				<reportElement x="494" y="37" width="10" height="11" uuid="fc6e1c56-3f1a-4d79-a09b-c79c98004580">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -255,7 +261,7 @@ ORDER BY a.RECIPE_CODE ASC, TO_DATE(a.TIME_UPD, 'HH24MISS') ASC]]>
 				<text><![CDATA[:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="494" y="22" width="10" height="11" uuid="d68f3bb0-6bc4-464f-89d7-1a531c821eff">
+				<reportElement x="494" y="26" width="10" height="11" uuid="d68f3bb0-6bc4-464f-89d7-1a531c821eff">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -264,7 +270,7 @@ ORDER BY a.RECIPE_CODE ASC, TO_DATE(a.TIME_UPD, 'HH24MISS') ASC]]>
 				<text><![CDATA[:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="504" y="22" width="50" height="11" uuid="f6211259-9fda-4c84-8365-e0c1d1751585">
+				<reportElement x="504" y="26" width="50" height="11" uuid="f6211259-9fda-4c84-8365-e0c1d1751585">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement>
@@ -273,7 +279,7 @@ ORDER BY a.RECIPE_CODE ASC, TO_DATE(a.TIME_UPD, 'HH24MISS') ASC]]>
 				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="504" y="11" width="50" height="11" uuid="1bbd05b2-2b57-4752-938a-0208025d8673">
+				<reportElement x="504" y="15" width="50" height="11" uuid="1bbd05b2-2b57-4752-938a-0208025d8673">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement>
@@ -282,7 +288,7 @@ ORDER BY a.RECIPE_CODE ASC, TO_DATE(a.TIME_UPD, 'HH24MISS') ASC]]>
 				<textFieldExpression><![CDATA[$P{user}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="494" y="11" width="10" height="11" uuid="6861276e-d767-4eb8-9a2f-4a600317829d">
+				<reportElement x="494" y="15" width="10" height="11" uuid="6861276e-d767-4eb8-9a2f-4a600317829d">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -291,7 +297,7 @@ ORDER BY a.RECIPE_CODE ASC, TO_DATE(a.TIME_UPD, 'HH24MISS') ASC]]>
 				<text><![CDATA[:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="494" y="0" width="10" height="11" uuid="fa1ead59-3653-4783-9191-f798d09bc43f">
+				<reportElement x="494" y="4" width="10" height="11" uuid="fa1ead59-3653-4783-9191-f798d09bc43f">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -300,7 +306,7 @@ ORDER BY a.RECIPE_CODE ASC, TO_DATE(a.TIME_UPD, 'HH24MISS') ASC]]>
 				<text><![CDATA[:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="504" y="0" width="50" height="11" uuid="f3e13b6e-ee6f-4832-80e4-489a54e9ddc0">
+				<reportElement x="504" y="4" width="50" height="11" uuid="f3e13b6e-ee6f-4832-80e4-489a54e9ddc0">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Top">

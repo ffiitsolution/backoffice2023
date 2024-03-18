@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="freeMeal" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="374d3280-e8d9-4a43-8811-5bfeed6fc65e">
 	<property name="ireport.zoom" value="1.6105100000000114"/>
 	<property name="ireport.x" value="0"/>
@@ -22,6 +23,7 @@
 	<parameter name="outletBrand" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
+	<parameter name="isDownloadCsv" class="java.lang.Boolean"/>
 	<queryString>
 		<![CDATA[SELECT a.DELIVERY_DATE, a.OUTLET_TO, a.REMARK,
 a.REQUEST_NO, a.DELIVERY_NO, b.ITEM_CODE, c.ITEM_DESCRIPTION,
@@ -165,7 +167,7 @@ ORDER BY a.DELIVERY_DATE, b.ITEM_CODE ASC]]>
 					<textElement textAlignment="Center">
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$F{ITEM_CODE}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$P{isDownloadCsv}.equals(true) ? "'" + $F{ITEM_CODE} : $F{ITEM_CODE}]]></textFieldExpression>
 				</textField>
 				<textField>
 					<reportElement x="162" y="0" width="181" height="15" uuid="f6440af2-89cb-4d94-bcd4-711301d4c04d"/>
@@ -390,7 +392,7 @@ ORDER BY a.DELIVERY_DATE, b.ITEM_CODE ASC]]>
 				<textFieldExpression><![CDATA[$F{OUTLET_NAME}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="69" y="40" width="200" height="11" uuid="1975fdf9-e65b-4dec-8cb2-b6d70ebfd0a5"/>
+				<reportElement x="68" y="40" width="200" height="11" uuid="1975fdf9-e65b-4dec-8cb2-b6d70ebfd0a5"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
