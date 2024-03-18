@@ -3725,10 +3725,13 @@ public class ReportDaoImpl implements ReportDao {
     public JasperPrint jesperReportUsageCD(Map<String, Object> param, Connection connection) throws JRException, IOException {
         String onlyStockQuery = "";
         Boolean onlyStock = (Boolean) param.get("onlyStock");
-        if (onlyStock == true) {
-            onlyStockQuery = " B.AMOUNT <> 0 ";
+        if (onlyStock == false) {
+            onlyStockQuery = " UNION ALL "
+            + "SELECT M.ITEM_CODE AS ITEM_CODE, 0 AS QTY_EI, 0 AS AMT_EI, 0 AS QTY_TA, 0 AS AMT_TA , 0 QTY_PERC, "
+            + " 0 AS AMT_PERC, 'ADD' AS FLAG_MENU FROM M_MENU_ITEM Q JOIN M_GROUP_ITEM M ON "
+            + "Q.MENU_ITEM_CODE = M.GROUP_ITEM_CODE AND M.STATUS = 'A' WHERE Q.MENU_GROUP_CODE = 'G07'";
         } else {
-            onlyStockQuery = " 1 = 1 ";
+            onlyStockQuery = " ";
         }
         param.put("onlyStockQuery", onlyStockQuery);
         ClassPathResource classPathResource = new ClassPathResource("report/laporanUsageCD.jrxml");
