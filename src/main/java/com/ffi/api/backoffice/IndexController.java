@@ -15,10 +15,7 @@ import com.ffi.paging.Response;
 import com.ffi.paging.ResponseMessage;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -27,6 +24,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -41,6 +40,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -49,6 +49,7 @@ import org.springframework.messaging.MessagingException;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -85,6 +86,12 @@ public class IndexController {
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
+    @Value("${app.outletCode}")
+    private String _OutletCode;
+
+    @Value("${endpoint.master}")
+    private String _UrlMaster;
+    
 //    @Autowired
 //    TransServices transServices;
     @RequestMapping(value = "/halo")
@@ -3557,38 +3564,45 @@ public class IndexController {
     public @ResponseBody
     ResponseMessage copyAll(@RequestBody Map<String, Object> param) throws IOException, Exception {
         ResponseMessage rm = new ResponseMessage();
-        List<TableAlias> allActiveTable = tableAliasUtil.searchByColumn(TableAliasUtil.TABLE_ALIAS_M, "process", true);
-        List<String> listTable = allActiveTable.stream().map(TableAlias::getTable).toList();
-        String dateUpd = (String) param.get("dateUpd");
-        String timeUpd = (String) param.get("timeUpd");
-        System.out.println("Copy All Table Start At " + dateUpd);
-        List<String> listError = new ArrayList<>();
-        try {
-            for (String table : listTable) {
-                Map prm = new HashMap();
-                prm.put("tableName", table);
-                prm.put("dateUpd", dateUpd);
-                prm.put("timeUpd", timeUpd);
-                if (processServices.insertDataLocal(prm) == false) {
-                    Date dateError = new Date();
-                    listError.add(table);
-                    System.out.println("Error Insert Table " + table + " At " + dateError);
-                }
-            }
-
-            if (listError.isEmpty()) {
-                rm.setSuccess(true);
-                rm.setMessage("Copy " + listTable.size() + " Table for " + dateUpd + " Successfuly");
-            } else {
-                rm.setSuccess(false);
-                rm.setMessage("Some Table Failed");
-                rm.setItem(listError);
-            }
-            System.out.println("Copy All Table End");
-        } catch (Exception e) {
+        if(_UrlMaster.isBlank()){
+            System.out.println("scheduledKirimTerimaData: URL MasterHQ belum diatur di properties");
             rm.setSuccess(false);
-            rm.setMessage("Insert Failed: " + e.getMessage());
+            rm.setMessage("URL MasterHQ belum diatur di properties");
+            messagingTemplate.convertAndSend("/topic", "Error: URL MasterHQ belum diatur di properties");
+        } else {
+            List<TableAlias> allActiveTable = tableAliasUtil.searchByColumn(TableAliasUtil.TABLE_ALIAS_M, "process", true);
+            List<String> listTable = allActiveTable.stream().map(TableAlias::getTable).toList();
+            String dateUpd = (String) param.get("dateUpd");
+            String timeUpd = (String) param.get("timeUpd");
+            System.out.println("Copy All Table Start At " + dateUpd);
+            List<String> listError = new ArrayList<>();
+            try {
+                for (String table : listTable) {
+                    Map prm = new HashMap();
+                    prm.put("tableName", table);
+                    prm.put("dateUpd", dateUpd);
+                    prm.put("timeUpd", timeUpd);
+                    if (processServices.insertDataLocal(prm) == false) {
+                        Date dateError = new Date();
+                        listError.add(table);
+                        System.out.println("Error Insert Table " + table + " At " + dateError);
+                    }
+                }
 
+                if (listError.isEmpty()) {
+                    rm.setSuccess(true);
+                    rm.setMessage("Copy " + listTable.size() + " Table for " + dateUpd + " Successfuly");
+                } else {
+                    rm.setSuccess(false);
+                    rm.setMessage("Some Table Failed");
+                    rm.setItem(listError);
+                }
+                System.out.println("Copy All Table End");
+            } catch (Exception e) {
+                rm.setSuccess(false);
+                rm.setMessage("Insert Failed: " + e.getMessage());
+
+            }
         }
         return rm;
     }
@@ -3645,31 +3659,38 @@ public class IndexController {
     @RequestMapping(value = "/copy-single", method = RequestMethod.POST)
     public @ResponseBody
     ResponseMessage copyPaste(@RequestBody Map<String, Object> param) throws IOException, Exception {
-        String alias = (String) param.get("tableName");
-        messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Proses di " + alias);
-        TableAlias ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M, "alias", alias).get();
-        String tableName = ta.getTable();
-        String dateUpd = (String) param.get("dateUpd");
-        param.put("trx", 0);
-        param.put("tableName", tableName);
-        param.put("aliasName", ta.getAlias());
-        if (!param.containsKey("remark") || param.get("remark").toString().isBlank()) {
-            param.put("remark", "SINGLE");
-        }
         ResponseMessage rm = new ResponseMessage();
-        try {
-            if (processServices.insertDataLocal(param)) {
-                rm.setSuccess(true);
-                rm.setMessage("Insert " + tableName + " for " + dateUpd + " Successfuly");
-            } else {
-                rm.setSuccess(false);
-                rm.setMessage("Insert Failed. Please Check Log Insert");
-            }
-            System.out.println("Copy Table " + tableName + " End");
-        } catch (Exception e) {
+        if(_UrlMaster.isBlank()){
+            System.out.println("scheduledKirimTerimaData: URL MasterHQ belum diatur di properties");
             rm.setSuccess(false);
-            rm.setMessage("Insert Failed: " + e.getMessage());
-            System.err.println("Copy Table " + tableName + " Failed: " + e.getMessage());
+            rm.setMessage("URL MasterHQ belum diatur di properties");
+            messagingTemplate.convertAndSend("/topic", "Error: URL MasterHQ belum diatur di properties");
+        } else {
+            String alias = (String) param.get("tableName");
+            messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Proses di " + alias);
+            TableAlias ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_M, "alias", alias).get();
+            String tableName = ta.getTable();
+            String dateUpd = (String) param.get("dateUpd");
+            param.put("trx", 0);
+            param.put("tableName", tableName);
+            param.put("aliasName", ta.getAlias());
+            if (!param.containsKey("remark") || param.get("remark").toString().isBlank()) {
+                param.put("remark", "SINGLE");
+            }
+            try {
+                if (processServices.insertDataLocal(param)) {
+                    rm.setSuccess(true);
+                    rm.setMessage("Insert " + tableName + " for " + dateUpd + " Successfuly");
+                } else {
+                    rm.setSuccess(false);
+                    rm.setMessage("Insert Failed. Please Check Log Insert");
+                }
+                System.out.println("Copy Table " + tableName + " End");
+            } catch (Exception e) {
+                rm.setSuccess(false);
+                rm.setMessage("Insert Failed: " + e.getMessage());
+                System.err.println("Copy Table " + tableName + " Failed: " + e.getMessage());
+            }
         }
         return rm;
     }
@@ -3678,58 +3699,65 @@ public class IndexController {
     @RequestMapping(value = "/transfer-data-all", method = RequestMethod.POST)
     public @ResponseBody
     ResponseMessage transferDataAll(@RequestBody Map<String, Object> param) throws IOException, Exception {
-        long startTime = System.currentTimeMillis();
         ResponseMessage rm = new ResponseMessage();
-        List<TableAlias> allActiveTable = tableAliasUtil.searchByColumn(TableAliasUtil.TABLE_ALIAS_T, "process", true);
-        String outletId = param.get("outletId") != null ? (String) param.get("outletId") : null;
-        String dateUpd = (String) param.get("dateUpd");
-        String timeUpd = (String) param.get("timeUpd");
-        if (!param.containsKey("remark") || param.get("remark").toString().isBlank()) {
-            param.put("remark", "MANUAL");
-        }
-        System.out.println("Copy All " + allActiveTable.size() + " Table Start At " + dateUpd);
-        List<String> listError = new ArrayList<>();
-        try {
-            for (TableAlias table : allActiveTable) {
-                String tableName = table.getTable();
-                String aliasName = table.getAlias();
-                param.put("trx", 1);
-                param.put("outletId", outletId);
-                param.put("outletCode", outletId);
-                param.put("tableName", tableName);
-                param.put("aliasName", aliasName);
-                Map map1 = processServices.sendDataLocal(param);
-                if (map1.containsKey("success")) {
-                    boolean status = (boolean) map1.get("success");
-                    if (!status) {
-                        listError.add(aliasName + ": " + map1.get("message").toString());
-                    }
-                }
-                if (map1.containsKey("error")) {
-                    String error = map1.get("error").toString();
-                    if(error.contains("Connection refused")){
-                        listError.add(aliasName + ": No connection to HQ.");
-                        break;
-                    } else {
-                        listError.add(aliasName + ": " + error);
-                    }
-                }
-            }
-            if (listError.isEmpty()) {
-                rm.setSuccess(true);
-                rm.setMessage("Copy " + allActiveTable.size() + " Table for " + dateUpd + " Successfuly");
-            } else {
-                rm.setSuccess(false);
-                rm.setMessage("Some Table Failed");
-                rm.setItem(listError);
-            }
-        } catch (MessagingException e) {
+        if(_UrlMaster.isBlank()){
+            System.out.println("scheduledKirimTerimaData: URL MasterHQ belum diatur di properties");
             rm.setSuccess(false);
-            rm.setMessage("Insert Failed: " + e.getMessage());
+            rm.setMessage("URL MasterHQ belum diatur di properties");
+            messagingTemplate.convertAndSend("/topic", "Error: URL MasterHQ belum diatur di properties");
+        } else {
+            long startTime = System.currentTimeMillis();
+            List<TableAlias> allActiveTable = tableAliasUtil.searchByColumn(TableAliasUtil.TABLE_ALIAS_T, "process", true);
+            String outletId = param.get("outletId") != null ? (String) param.get("outletId") : null;
+            String dateUpd = (String) param.get("dateUpd");
+            String timeUpd = (String) param.get("timeUpd");
+            if (!param.containsKey("remark") || param.get("remark").toString().isBlank()) {
+                param.put("remark", "MANUAL");
+            }
+            System.out.println("Send All " + allActiveTable.size() + " Table Start At " + dateUpd);
+            List<String> listError = new ArrayList<>();
+            try {
+                for (TableAlias table : allActiveTable) {
+                    String tableName = table.getTable();
+                    String aliasName = table.getAlias();
+                    param.put("trx", 1);
+                    param.put("outletId", outletId);
+                    param.put("outletCode", outletId);
+                    param.put("tableName", tableName);
+                    param.put("aliasName", aliasName);
+                    Map map1 = processServices.sendDataLocal(param);
+                    if (map1.containsKey("success")) {
+                        boolean status = (boolean) map1.get("success");
+                        if (!status) {
+                            listError.add(aliasName + ": " + map1.get("message").toString());
+                        }
+                    }
+                    if (map1.containsKey("error")) {
+                        String error = map1.get("error").toString();
+                        if (error.contains("Connection refused")) {
+                            listError.add(aliasName + ": No connection to HQ.");
+                            break;
+                        } else {
+                            listError.add(aliasName + ": " + error);
+                        }
+                    }
+                }
+                if (listError.isEmpty()) {
+                    rm.setSuccess(true);
+                    rm.setMessage("Send " + allActiveTable.size() + " Table for " + dateUpd + " Successfuly");
+                } else {
+                    rm.setSuccess(false);
+                    rm.setMessage("Some Table Failed");
+                    rm.setItem(listError);
+                }
+            } catch (MessagingException e) {
+                rm.setSuccess(false);
+                rm.setMessage("Insert Failed: " + e.getMessage());
+            }
+            double elapsedTimeSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
+            System.err.println("transferDataAll process in: " + elapsedTimeSeconds + " seconds");
+            messagingTemplate.convertAndSend("/topic", "Kirim Data Transaksi: " + elapsedTimeSeconds + " detik");
         }
-        double elapsedTimeSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
-        System.err.println("transferDataAll process in: " + elapsedTimeSeconds + " seconds");
-        messagingTemplate.convertAndSend("/topic", "Kirim Data Transaksi: " + elapsedTimeSeconds + " detik");
         return rm;
     }
 
@@ -3737,21 +3765,27 @@ public class IndexController {
     public @ResponseBody
     ResponseMessage transferDataSelected(@RequestBody Map<String, Object> param) throws IOException, Exception {
         ResponseMessage rm = new ResponseMessage();
-        List<String> nameTable = (List<String>) param.get("listTable");
-        String outletId = param.get("outletId") != null ? (String) param.get("outletId") : null;
-        String dateCopy = (String) param.get("date");
-        if (dateCopy == null || "".equals(dateCopy)) {
-            dateCopy = new SimpleDateFormat("dd-MMM-yyyy").format(Calendar.getInstance().getTime());
-        }
+        if(_UrlMaster.isBlank()){
+            System.out.println("scheduledKirimTerimaData: URL MasterHQ belum diatur di properties");
+            rm.setSuccess(false);
+            rm.setMessage("URL MasterHQ belum diatur di properties");
+            messagingTemplate.convertAndSend("/topic", "Error: URL MasterHQ belum diatur di properties");
+        } else {
+            List<String> nameTable = (List<String>) param.get("listTable");
+            String outletId = param.get("outletId") != null ? (String) param.get("outletId") : null;
+            String dateCopy = (String) param.get("date");
+            if (dateCopy == null || "".equals(dateCopy)) {
+                dateCopy = new SimpleDateFormat("dd-MMM-yyyy").format(Calendar.getInstance().getTime());
+            }
 
-        System.out.println("Transfer Data Selected Table Start at " + dateCopy);
-        List<String> listError = new ArrayList<>();
-        try {
-            if (nameTable.isEmpty()) {
-                rm.setSuccess(false);
-                rm.setMessage("Please Choose Table First");
-            } else {
-                for (String table : nameTable) {
+            System.out.println("Transfer Data Selected Table Start at " + dateCopy);
+            List<String> listError = new ArrayList<>();
+            try {
+                if (nameTable.isEmpty()) {
+                    rm.setSuccess(false);
+                    rm.setMessage("Please Choose Table First");
+                } else {
+                    for (String table : nameTable) {
 //                    if (processServices.sendDataLocal(param) == false) {
 //                        Date dateError = new Date();
 //                        listError.add(table);
@@ -3759,21 +3793,22 @@ public class IndexController {
 //                    } else {
 //                        System.out.println("Done Transfer Table " + table);
 //                    }
-                }
+                    }
 
-                if (listError.isEmpty()) {
-                    rm.setSuccess(true);
-                    rm.setMessage("Copy " + nameTable.size() + " Table for " + dateCopy + " Successfuly");
-                } else {
-                    rm.setSuccess(false);
-                    rm.setMessage("Some Table Failed");
-                    rm.setItem(listError);
+                    if (listError.isEmpty()) {
+                        rm.setSuccess(true);
+                        rm.setMessage("Copy " + nameTable.size() + " Table for " + dateCopy + " Successfuly");
+                    } else {
+                        rm.setSuccess(false);
+                        rm.setMessage("Some Table Failed");
+                        rm.setItem(listError);
+                    }
                 }
+                System.out.println("Transfer Selected Table End");
+            } catch (Exception e) {
+                rm.setSuccess(false);
+                rm.setMessage("Transfer Failed: " + e.getMessage());
             }
-            System.out.println("Transfer Selected Table End");
-        } catch (Exception e) {
-            rm.setSuccess(false);
-            rm.setMessage("Transfer Failed: " + e.getMessage());
         }
         return rm;
     }
@@ -3781,34 +3816,41 @@ public class IndexController {
     @RequestMapping(value = "/transfer-data-single", method = RequestMethod.POST)
     public @ResponseBody
     ResponseMessage transferDataSingle(@RequestBody Map<String, Object> param) throws IOException, Exception {
-        String aliasName = (String) param.get("tableName");
-        TableAlias ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_T, "alias", aliasName).get();
-        String tableName = ta.getTable();
-        String dateUpd = (String) param.get("dateUpd");
-        param.put("trx", 1);
-        param.put("outletId", param.get("outletCode").toString());
-        param.put("tableName", tableName);
-        param.put("aliasName", ta.getAlias());
-        if (!param.containsKey("remark") || param.get("remark").toString().isBlank()) {
-            param.put("remark", "SINGLE");
-        }
         ResponseMessage rm = new ResponseMessage();
-        rm.setSuccess(false);
-        try {
-            Map map1 = processServices.sendDataLocal(param);
-            boolean status = (boolean) map1.get("success");
-            List list = (List) map1.get("item");
-            if (status) {
-                messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Success Kirim Data: " + aliasName);
-                rm.setSuccess(true);
-                rm.setItem(list);
-                rm.setMessage("Success Kirim Data: " + aliasName);
-            } else {
-                rm.setMessage("Failed Kirim Data: " + aliasName);
-                messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Failed Kirim Data: " + aliasName);
+        if(_UrlMaster.isBlank()){
+            System.out.println("scheduledKirimTerimaData: URL MasterHQ belum diatur di properties");
+            rm.setSuccess(false);
+            rm.setMessage("URL MasterHQ belum diatur di properties");
+            messagingTemplate.convertAndSend("/topic", "Error: URL MasterHQ belum diatur di properties");
+        } else {
+            String aliasName = (String) param.get("tableName");
+            TableAlias ta = tableAliasUtil.firstByColumn(TableAliasUtil.TABLE_ALIAS_T, "alias", aliasName).get();
+            String tableName = ta.getTable();
+            String dateUpd = (String) param.get("dateUpd");
+            param.put("trx", 1);
+            param.put("outletId", param.get("outletCode").toString());
+            param.put("tableName", tableName);
+            param.put("aliasName", ta.getAlias());
+            if (!param.containsKey("remark") || param.get("remark").toString().isBlank()) {
+                param.put("remark", "SINGLE");
             }
-        } catch (MessagingException e) {
-            rm.setMessage("Transfer Failed: " + e.getMessage());
+            rm.setSuccess(false);
+            try {
+                Map map1 = processServices.sendDataLocal(param);
+                boolean status = (boolean) map1.get("success");
+                List list = (List) map1.get("item");
+                if (status) {
+                    messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Success Kirim Data: " + aliasName);
+                    rm.setSuccess(true);
+                    rm.setItem(list);
+                    rm.setMessage("Success Kirim Data: " + aliasName);
+                } else {
+                    rm.setMessage("Failed Kirim Data: " + aliasName);
+                    messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Failed Kirim Data: " + aliasName);
+                }
+            } catch (MessagingException e) {
+                rm.setMessage("Transfer Failed: " + e.getMessage());
+            }
         }
         return rm;
     }
@@ -4277,4 +4319,50 @@ public class IndexController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    // schedule untuk Kirim Terima Data otomatis setiap sekian menit
+    // @Scheduled(cron = "0 */30 * * * *") // dijalankan setiap 30 menit
+    @Scheduled(cron = "0 0/15 0-23 * * *") // dijalankan setiap 7.00, 7.15, 7.30, 7.45, 8.00, 8.15 dst
+    public void scheduledKirimTerimaData() {
+        if(_OutletCode.isBlank()){
+            messagingTemplate.convertAndSend("/topic", "Kode Outlet belum diatur di properties");
+        } else {
+            messagingTemplate.convertAndSend("/topic", "Memulai Kirim Data Transaksi Terjadwal");
+            System.out.println("Executing scheduledKirimTerimaData... " + _OutletCode);
+            try {
+                Map<String, Object> param = new HashMap();
+                LocalDateTime currentDateTime = LocalDateTime.now();
+                String dateUpd = currentDateTime.format(DateTimeFormatter.ofPattern("d MMM yyyy"));
+                String timeUpd = currentDateTime.format(DateTimeFormatter.ofPattern("HHmmss"));
+                param.put("dateUpd", dateUpd);
+                param.put("timeUpd", timeUpd);
+                param.put("userUpd", "SYSTEM");
+                param.put("outletCode", _OutletCode);
+                param.put("outletId", _OutletCode);
+                transferDataAll(param);
+            } catch (Exception ex) {
+                System.err.println("Failed Executing scheduledKirimTerimaData: " + ex.getMessage());
+            }
+        }
+    }
+    
+    ///////////////new method from aditya 19-03-2024////////////////////////////
+    @RequestMapping(value = "/list-level", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view List Level", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listLevel(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, Object> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        Response res = new Response();
+        res.setData(viewServices.listLevel(balance));
+        return res;
+    }
+    
+    /////////////////// end aditya 19 Mar 2024
 }

@@ -65,6 +65,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.messaging.MessagingException;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 /**
  *
@@ -97,7 +98,7 @@ public class ProcessDaoImpl implements ProcessDao {
 
     @Value("${endpoint.warehouse}")
     private String urlWarehouse;
-    
+
     @Value("${endpoint.pettyCash}")
     private String urlPettyCash;
 
@@ -3886,22 +3887,27 @@ public class ProcessDaoImpl implements ProcessDao {
             prm.put("processStatus", "N");
             prm.put("receiveStatus", "Y");
         }
+        //    System.out.println("saveToQueryKirimTerimaData prm: " + prm);
         String qryHeader = """
                 INSERT INTO M_OUTLET_FTP_HIST
                     (TRX_CODE, DATA_CODE, REGION_CODE, AREA_CODE, PARENT_OUTLET, OUTLET_CODE, TRANS_DATE, OUTLET_CHOICE, PROCESS_STATUS, RECEIVE_STATUS, USER_UPD, DATE_UPD, TIME_UPD, CITY)
-                           SELECT :trxCode, :dataCode, mo.REGION_CODE, mo.AREA_CODE, mod2.PARENT_OUTLET, :outletCode, :dateUpd, 'Y', :processStatus, :receiveStatus, :userUpd, :dateUpd, :timeUpd, mo.CITY
-                FROM M_OUTLET mo
-                LEFT JOIN M_OUTLET_DETAIL mod2 ON mod2.CHILD_OUTLET = mo.OUTLET_CODE
-                WHERE mo.OUTLET_CODE = :outletCode
+                SELECT 
+                    :trxCode, :dataCode, mo.REGION_CODE, mo.AREA_CODE, NVL(mod2.PARENT_OUTLET, :outletCode), :outletCode, :dateUpd, 'Y', :processStatus, :receiveStatus, :userUpd, :dateUpd, :timeUpd, mo.CITY
+                FROM 
+                    M_OUTLET mo
+                LEFT JOIN 
+                    M_OUTLET_DETAIL mod2 ON mod2.CHILD_OUTLET = :outletCode
+                WHERE OUTLET_CODE = :outletCode
                 AND NOT EXISTS (
                     SELECT 1
-                    FROM M_OUTLET_FTP_HIST
-                    WHERE TRANS_DATE = :dateUpd
-                    AND DATE_UPD = :dateUpd
-                    AND TIME_UPD = :timeUpd
-                    AND OUTLET_CODE = :outletCode
-                    AND TRX_CODE = :trxCode
-                    AND DATA_CODE = :dataCode
+                    FROM M_OUTLET_FTP_HIST hist
+                    WHERE hist.TRX_CODE = :trxCode
+                    AND hist.DATA_CODE = :dataCode
+                    AND hist.AREA_CODE = mo.AREA_CODE
+                    AND hist.OUTLET_CODE = :outletCode
+                    AND hist.TRANS_DATE = :dateUpd
+                    AND hist.TIME_UPD = :timeUpd
+                    AND hist.USER_UPD = :userUpd
                 )
                            """;
         String qryDetail = """
@@ -3916,8 +3922,14 @@ public class ProcessDaoImpl implements ProcessDao {
                     AND DESCRIPTION = :tableName
                 )
                            """;
-        jdbcTemplate.update(qryHeader, prm);
-        jdbcTemplate.update(qryDetail, prm);
+        try {
+            Integer header = jdbcTemplate.update(qryHeader, prm);
+            Integer detail = jdbcTemplate.update(qryDetail, prm);
+            System.out.println("saveToQueryKirimTerimaData result: " + header + " | " + detail);
+        } catch (DataAccessException e) {
+            System.out.println("saveToQueryKirimTerimaData Failed: " + e.getMessage());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+        }
     }
 
     // ======= New Method Send Data From Local to Server (Table with name "T_") =========
@@ -3989,9 +4001,9 @@ public class ProcessDaoImpl implements ProcessDao {
                 map1.put("errors", map1);
             } else if (!lst.isEmpty() && lst.get(0) instanceof Object) {
                 if (lst.get(0) != null) {
-                    Map<String, Object> resp = (Map<String, Object>) lst.get(0);
-                    if(resp.containsKey("total")){
-                        total = (double) resp.get("total");
+                    Object resp = lst.get(0);
+                    if (resp instanceof Double) {
+                        total = (double) resp;
                         success = true;
                     } else {
                         total = 0;
@@ -3999,7 +4011,7 @@ public class ProcessDaoImpl implements ProcessDao {
                     }
                 }
             } else {
-                
+
             }
             String status = total == list.size() ? "UPDATED" : (total == 0 && !list.isEmpty() ? "NOT UPDATED" : total + " OF " + list.size());
             param.put("totalRow", total);
@@ -4007,7 +4019,7 @@ public class ProcessDaoImpl implements ProcessDao {
             saveToQueryKirimTerimaData(param);
             messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Selesai Kirim Data: " + aliasName + " " + total + " row");
             fileLoggerUtil.logActivity("-", "Kirim Terima Data", "KIRIM", param.getOrDefault("actUser", "SYSTEM").toString(), param.getOrDefault("actName", "SYSTEM").toString(), "Selesai Kirim Data: " + aliasName + " " + total + " row", success, "", param);
-        } catch (JsonSyntaxException | IOException | UnsupportedOperationException | DataAccessException e) {
+        } catch (JsonSyntaxException | IOException | UnsupportedOperationException | DataAccessException | MessagingException e) {
             Date failedApp = new Date();
             if (e.getMessage().contains("Connection timed out")) {
                 map1.put("error", "Koneksi ke HQ terputus.");
@@ -4016,7 +4028,10 @@ public class ProcessDaoImpl implements ProcessDao {
             } else {
                 map1.put("error", e.getMessage());
             }
-            System.out.println("FAILED SEND DATA " + tableName + " At " + failedApp.toString() + " " + e.getMessage());
+            param.put("totalRow", 0);
+            param.put("status", "FAILED");
+            saveToQueryKirimTerimaData(param);
+            System.out.println("sendDataLocal FAILED: " + tableName + " At " + failedApp.toString() + ": " + e.getMessage());
             messagingTemplate.convertAndSend("/topic/kirim-terima-data", "Gagal Kirim Data: " + aliasName);
             fileLoggerUtil.logActivity("-", "Kirim Terima Data", "KIRIM", param.getOrDefault("actUser", "SYSTEM").toString(), param.getOrDefault("actName", "SYSTEM").toString(), "Gagal Kirim Data: " + aliasName + ": " + e.getMessage(), Boolean.FALSE, "", param);
 
@@ -4503,34 +4518,33 @@ public class ProcessDaoImpl implements ProcessDao {
         jdbcTemplate.update(itemQry, param);
         jdbcTemplate.update(costQry, costParam);
     }
-    
+
     ///////// integration from pettycash to boffi aditya 08-03-2024 
     @Override
-    public void insertPettyCashToBoffi(Map<String, String> balance) { 
-        
+    public void insertPettyCashToBoffi(Map<String, String> balance) {
+
         Map param = new HashMap();
         param.put("userUpd", balance.get("userUpd"));
         param.put("outletCode", balance.get("outletCode"));
         param.put("itemCode", balance.get("itemCode"));
         param.put("qtyIn", balance.get("totalQty"));
         param.put("remark", balance.get("remark"));
-        
+
         String qryInsertUpdateStockCardDetail = "MERGE INTO t_stock_card_detail dst USING ( SELECT :outletCode AS outlet_code, (SELECT TO_CHAR(trans_date, 'DD-MON-YYYY') FROM m_outlet WHERE outlet_code = :outletCode) AS trans_date, :itemCode AS item_code, 'RCV' AS cd_trans, :qtyIn AS quantity_in, 0 AS quantity, :userUpd AS user_upd, TO_CHAR(SYSDATE, 'DD-MON-YYYY') AS date_upd, TO_CHAR(SYSDATE, 'HH24MISS') AS time_upd FROM dual ) src ON ( dst.outlet_code = src.outlet_code AND dst.cd_trans = src.cd_trans AND dst.trans_date = src.trans_date AND dst.item_code = src.item_code ) WHEN MATCHED THEN UPDATE SET dst.quantity_in = dst.quantity_in + src.quantity_in, dst.user_upd = src.user_upd, dst.date_upd = src.date_upd, dst.time_upd = src.time_upd WHEN NOT MATCHED THEN INSERT ( outlet_code, trans_date, item_code, cd_trans, quantity_in, quantity, user_upd, date_upd, time_upd ) VALUES ( src.outlet_code, src.trans_date, src.item_code, src.cd_trans, src.quantity_in, src.quantity, src.user_upd, src.date_upd, src.time_upd)";
-            jdbcTemplate.update(qryInsertUpdateStockCardDetail, param);
-            
+        jdbcTemplate.update(qryInsertUpdateStockCardDetail, param);
+
         String qryInsertUpdateStockCard = "MERGE INTO t_stock_card tgt USING ( SELECT :outletCode AS OUTLET_CODE, (SELECT TO_CHAR(trans_date, 'DD-MON-YYYY') FROM m_outlet WHERE outlet_code = :outletCode) AS TRANS_DATE, :itemCode AS ITEM_CODE, NVL(:qtyIn, 0) AS QTY_IN, :remark AS REMARK, :userUpd AS USER_UPD, TO_CHAR(SYSDATE, 'DD-MON-YYYY') AS DATE_UPD, TO_CHAR(SYSDATE, 'HH24MISS') AS TIME_UPD FROM dual ) src ON ( tgt.OUTLET_CODE = src.OUTLET_CODE AND tgt.TRANS_DATE = src.TRANS_DATE AND tgt.ITEM_CODE = src.ITEM_CODE ) WHEN MATCHED THEN UPDATE SET tgt.QTY_IN = tgt.QTY_IN + src.QTY_IN, tgt.USER_UPD = src.USER_UPD, tgt.DATE_UPD = src.DATE_UPD, tgt.TIME_UPD = src.TIME_UPD, tgt.REMARK = src.REMARK WHEN NOT MATCHED THEN INSERT ( OUTLET_CODE, TRANS_DATE, ITEM_CODE, QTY_OUT, ITEM_COST, QTY_BEGINNING, QTY_IN, REMARK, USER_UPD, DATE_UPD, TIME_UPD ) VALUES ( src.OUTLET_CODE, src.TRANS_DATE, src.ITEM_CODE, 0, 0, 0, src.QTY_IN, src.REMARK, :userUpd, SYSDATE, TO_CHAR(SYSDATE, 'HH24MISS') )";
-           jdbcTemplate.update(qryInsertUpdateStockCard, param);
-        }
-    
-    
+        jdbcTemplate.update(qryInsertUpdateStockCard, param);
+    }
+
     @Override
     public void updateMpcs(Map<String, String> balance) {
         String qy = "UPDATE M_MPCS_HEADER SET FRYER_TYPE = :fryerType, STATUS = :status, USER_UPD = :userUpd, DATE_UPD = :dateUpd, TIME_UPD = :timeUpd WHERE OUTLET_CODE = :outletCode AND MPCS_GROUP = :mpcsGroup";
-        
+
         balance.put("dateUpd", LocalDateTime.now().format(dateFormatter));
         balance.put("timeUpd", LocalDateTime.now().format(timeFormatter));
         jdbcTemplate.update(qy, balance);
     }
-    
+
     //////////////// done aditya 14/03/2024
 }

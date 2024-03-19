@@ -615,4 +615,9 @@ public class ViewServices {
     public List<Map<String, Object>> orderDetailTemporaryList(Map<String, String> ref) {
         return viewDao.orderDetailTemporaryList(ref);
     }
+    
+    // Get level list by adit 19 Mar 24 //
+    public List<Map<String, Object>> listLevel(Map<String, Object> ref) {
+        return viewDao.listLevel(ref);
+    }
 }

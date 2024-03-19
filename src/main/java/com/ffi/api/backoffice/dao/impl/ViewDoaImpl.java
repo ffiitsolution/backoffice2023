@@ -1730,26 +1730,32 @@ public class ViewDoaImpl implements ViewDao {
             // WHERE CLOUSE USING BETWEEN TRANS_DATE AND ONE MONTH BEFORE TRANSDATE by Dani
             where = " and ORDER_DATE >= TO_DATE('" + beforeTransDate.format(format) + "', 'YYYY-MM-DD') AND ORDER_DATE <= TO_DATE('" + localDate.format(format) + "', 'YYYY-MM-DD') ";
         }
+        // If user do filter by gudang then show order entry gudang list with online and offline order type
+        if (balance.get("orderTo").equals("3") && balance.get("orderType").equals("0")) {
+            where += " AND H.ORDER_TYPE IN ('0', '6') "; // 0 = Gudang Online, 6 = Gudang Offline
+        } else {
+            where += " AND H.ORDER_TYPE LIKE :orderType ";
+        }
         if (!balance.get("status").equals("1")) {
             status = "H.STATUS LIKE :status AND H.STATUS != '1' ";
         } else {
             status = " H.STATUS LIKE :status ";
         }
         String qry = "SELECT H.*, K.jam_kirim, case when G.DESCRIPTION is null and  m.outlet_name is null then s.supplier_name  "
-                + "                when G.DESCRIPTION is null and s.supplier_name  is null then m.outlet_name else "
-                + "               g.description end as NAMA_GUDANG, "
-                + "               case when K.status_kirim = 'S' then 'Sudah' "
+                + "     when G.DESCRIPTION is null and s.supplier_name  is null then m.outlet_name else "
+                + "     g.description end as NAMA_GUDANG, "
+                + " case when K.status_kirim = 'S' then 'Sudah' "
                 + " when h.order_to IN ('0', '1') then 'Offline' "
+                + " when h.order_type = '6' then 'Offline' "
                 + " else 'Belum' end as STATUS_KIRIM, (select cp_email from m_supplier where cd_supplier = h.cd_supplier) as CP_EMAIL_SUPPLIER"
-                + " FROM T_ORDER_HEADER H "
-                + " LEFT JOIN M_GLOBAL G ON G.CODE = H.CD_SUPPLIER AND G.COND = 'X_" + getCity + "' AND G.STATUS = 'A' "
-                + " left join m_outlet M "
+                + "     FROM T_ORDER_HEADER H "
+                + "     LEFT JOIN M_GLOBAL G ON G.CODE = H.CD_SUPPLIER AND G.COND = 'X_" + getCity + "' AND G.STATUS = 'A' "
+                + "     left join m_outlet M "
                 + "               on H.cd_supplier=m.outlet_code "
                 + "               left join m_supplier S "
                 + "               on h.cd_supplier=s.cd_supplier "
                 + " LEFT JOIN HIST_KIRIM K ON K.NO_ORDER = H.ORDER_NO "
                 + "WHERE " + status + " "
-                + "AND H.ORDER_TYPE LIKE :orderType "
                 + "AND H.OUTLET_CODE = :outletCode "
                 + "AND H.Order_to LIKE :orderTo " + where + " "
                 + "AND CASE WHEN G.DESCRIPTION is null and  m.outlet_name is null then s.supplier_name "
@@ -4921,30 +4927,40 @@ public class ViewDoaImpl implements ViewDao {
         param.put("orderTo", balance.get("orderTo"));
         param.put("orderType", balance.get("orderType"));
         String viewQuery = "";
-        if (balance.get("orderTo").equals("3")) { // order ke gudang
-            if (balance.get("orderType").equals("4")) { // order ke Gudang FSD
+        
+        String ORDER_TO_SUPPLIER_IN = "0";
+        String ORDER_TO_SUPPLIER_EX = "1";
+        String ORDER_TO_OUTLET = "2";
+        String ORDER_TO_GUDANG = "3";
+        
+        String ORDER_TYPE_GUDANG_ONLINE = "0";
+        String ORDER_TYPE_GUDANG_OFFLINE = "6";
+        String ORDER_TYPE_SUPPLIER = "1";
+        final String ORDER_TYPE_FSD = "4";
+        final String ORDER_TYPE_SDD = "5";
+        
+        if (balance.get("orderTo").equals(ORDER_TO_GUDANG)) {
+            if (balance.get("orderType").equals(ORDER_TYPE_FSD)) {
                 viewQuery = "SELECT :outletCode as OUTLET_CODE, :orderNo as ORDER_NO, ITEM_CODE, ITEM_DESCRIPTION, 0 as JUMLAH_BESAR, UOM_WAREHOUSE AS SATUAN_BESAR, 0 AS JUMLAH_KECIL, UOM_PURCHASE AS SATUAN_KECIL, 0 AS TOTAL_QTY, UOM_STOCK, CONV_STOCK, (CONV_WAREHOUSE * CONV_STOCK) AS UOM_WAREHOUSE "
-                        + "FROM m_item WHERE CD_WAREHOUSE = :cdSupplier AND STATUS = 'A' ";
-            } else { // order ke gudang
+                    + "FROM m_item WHERE CD_WAREHOUSE = :cdSupplier AND STATUS = 'A' ";
+            } else { // ORDER_TYPE_GUDANG_ONLINE OR ORDER_TYPE_GUDANG_OFFLINE
                 viewQuery = "SELECT :outletCode as OUTLET_CODE, :orderNo as ORDER_NO, ITEM_CODE, ITEM_DESCRIPTION, 0 as JUMLAH_BESAR, UOM_WAREHOUSE AS SATUAN_BESAR, 0 AS JUMLAH_KECIL, UOM_PURCHASE AS SATUAN_KECIL, 0 AS TOTAL_QTY, UOM_STOCK, CONV_STOCK, (CONV_WAREHOUSE * CONV_STOCK) AS UOM_WAREHOUSE "
-                        + "FROM m_item WHERE CD_WAREHOUSE = LPAD(:valueSupplier,5,0) AND STATUS = 'A' ";
+                    + "FROM m_item WHERE CD_WAREHOUSE = LPAD(:valueSupplier,5,0) AND STATUS = 'A' ";
             }
         }
-        if (balance.get("orderTo").equals("2")) { // order ke outlet
+        if (balance.get("orderTo").equals(ORDER_TO_OUTLET)) {
             viewQuery = "SELECT :outletCode as OUTLET_CODE, :orderNo as ORDER_NO, ITEM_CODE, ITEM_DESCRIPTION, 0 as JUMLAH_BESAR, UOM_PURCHASE AS SATUAN_BESAR, 0 AS JUMLAH_KECIL, UOM_STOCK AS SATUAN_KECIL, 0 AS TOTAL_QTY, UOM_STOCK, CONV_STOCK, CONV_STOCK AS UOM_WAREHOUSE "
-                    + "FROM m_item WHERE SUBSTR(ITEM_CODE,1,1) != 'X' AND STATUS = 'A' AND FLAG_MATERIAL = 'Y' AND FLAG_STOCK = 'Y' ";
+                + "FROM m_item WHERE SUBSTR(ITEM_CODE,1,1) != 'X' AND STATUS = 'A' AND FLAG_MATERIAL = 'Y' AND FLAG_STOCK = 'Y' ";
         }
-        if (balance.get("orderTo").equals("0") || balance.get("orderTo").equals("1")) { // order ke supplier
+        if (balance.get("orderTo").equals(ORDER_TO_SUPPLIER_IN) || balance.get("orderTo").equals(ORDER_TO_SUPPLIER_EX)) {
             viewQuery = switch (balance.get("orderType")) {
-                // Order Entry Vendor Supplier FSD
-                case "4" ->
+                case ORDER_TYPE_FSD ->
                     "SELECT :outletCode as OUTLET_CODE, :orderNo as ORDER_NO, ITEM_CODE, ITEM_DESCRIPTION, 0 as JUMLAH_BESAR, UOM_WAREHOUSE AS SATUAN_BESAR, 0 AS JUMLAH_KECIL, UOM_PURCHASE AS SATUAN_KECIL, 0 AS TOTAL_QTY, UOM_STOCK, CONV_STOCK, (CONV_WAREHOUSE * CONV_STOCK) AS UOM_WAREHOUSE "
                     + "FROM M_ITEM a WHERE a.STATUS = 'A' AND ITEM_CODE IN (SELECT item_code FROM M_ITEM_SUPPLIER mis2 WHERE CD_SUPPLIER = :cdSupplier) ";
-                // Order Entry SSD
-                case "5" ->
+                case ORDER_TYPE_SDD ->
                     "SELECT :outletCode as OUTLET_CODE, :orderNo as ORDER_NO, ITEM_CODE, ITEM_DESCRIPTION, 0 as JUMLAH_BESAR, UOM_WAREHOUSE AS SATUAN_BESAR, 0 AS JUMLAH_KECIL, UOM_PURCHASE AS SATUAN_KECIL, 0 AS TOTAL_QTY, UOM_STOCK, CONV_STOCK, (CONV_WAREHOUSE * CONV_STOCK) AS UOM_WAREHOUSE "
                     + "FROM M_ITEM a where a.STATUS = 'A' AND ITEM_CODE IN (SELECT item_code FROM M_ITEM_SUPPLIER mis2 WHERE CD_SUPPLIER = :cdSupplier) ";
-                // order ke supplier orderType = 1
+                // ORDER_TYPE_SUPPLIER
                 default ->
                     "SELECT :outletCode as OUTLET_CODE, :orderNo as ORDER_NO, ITEM_CODE, ITEM_DESCRIPTION, 0 as JUMLAH_BESAR, UOM_WAREHOUSE AS SATUAN_BESAR, 0 AS JUMLAH_KECIL, UOM_PURCHASE AS SATUAN_KECIL, 0 AS TOTAL_QTY, UOM_STOCK, CONV_STOCK, (CONV_WAREHOUSE * CONV_STOCK) AS UOM_WAREHOUSE "
                     + "FROM M_ITEM a WHERE a.STATUS = 'A' AND ITEM_CODE IN (SELECT item_code FROM M_ITEM_SUPPLIER mis2 WHERE CD_SUPPLIER = :cdSupplier) ";
@@ -4970,4 +4986,30 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
+    
+    ////////// new method view list master level 1 - 4 aditya 19 Mar 2024
+    @Override
+    public List<Map<String, Object>> listLevel(Map<String, Object> balance) {
+        String level = (String) balance.get("level");
+    String qry;
+    
+    switch (level) {
+        case "1" -> qry = "SELECT CD_LEVEL_1, DESC_LEVEL_1 FROM M_LEVEL_1";
+        case "2" -> qry = "SELECT CD_LEVEL_2, DESC_LEVEL_2 FROM M_LEVEL_2";
+        case "3" -> qry = "SELECT CD_LEVEL_3, DESC_LEVEL_3 FROM M_LEVEL_3";
+        case "4" -> qry = "SELECT CD_LEVEL_4, DESC_LEVEL_4 FROM M_LEVEL_4";
+        default -> // Handle invalid level
+            throw new IllegalArgumentException("Invalid level: " + level);
+    }
+
+    List<Map<String, Object>> list = jdbcTemplate.query(qry, (ResultSet rs, int i) -> {
+        Map<String, Object> rt = new HashMap<>();
+        rt.put("cdLevel", rs.getString(1)); // Change index based on query
+        rt.put("descLevel", rs.getString(2)); // Change index based on query
+        return rt;
+    });
+    return list;
+    }
+    
+    /////// done aditya 19 mar 24
 }

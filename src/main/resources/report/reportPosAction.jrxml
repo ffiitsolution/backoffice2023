@@ -51,6 +51,7 @@
 	<parameter name="outletBrand" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
+	<parameter name="status" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT
 	NVL(s.STAFF_NAME, '-') AS CASHIER,
@@ -73,6 +74,7 @@ WHERE
     TRUNC(t.DATE_UPD) BETWEEN TO_DATE($P{fromDate}, 'DD MON RR') AND TO_DATE($P{toDate}, 'DD MON RR')
 	AND t.pos_code BETWEEN $P{posCode1} AND $P{posCode2}
 	AND t.cashier_code BETWEEN $P{cashierCode1} AND $P{cashierCode2} 
+    AND ($P{status} = 'ALL' OR t.ORDER_STATUS = $P{status})
 ORDER BY t.BILL_NO, t.DATE_UPD]]>
 	</queryString>
 	<field name="CASHIER" class="java.lang.String">
@@ -397,14 +399,18 @@ ORDER BY t.BILL_NO, t.DATE_UPD]]>
 				<textFieldExpression><![CDATA[": " + $P{cashierCode}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="5" y="110" width="90" height="11" uuid="fbd3ce0f-a226-4956-a6ff-957bb09f4f6f"/>
+				<reportElement x="5" y="110" width="90" height="11" uuid="fbd3ce0f-a226-4956-a6ff-957bb09f4f6f">
+					<printWhenExpression><![CDATA[false]]></printWhenExpression>
+				</reportElement>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Tipe Report]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="94" y="110" width="270" height="11" uuid="f1555ba8-ab71-4e01-8834-cde5e43b3bbf"/>
+				<reportElement x="94" y="110" width="270" height="11" uuid="f1555ba8-ab71-4e01-8834-cde5e43b3bbf">
+					<printWhenExpression><![CDATA[false]]></printWhenExpression>
+				</reportElement>
 				<textElement>
 					<font size="8"/>
 				</textElement>

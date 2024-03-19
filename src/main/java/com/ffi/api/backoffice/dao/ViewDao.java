@@ -19,7 +19,7 @@ public interface ViewDao {
     ///////////////new method from dona 28-02-2023////////////////////////////
 
     List<Map<String, Object>> listSupplier(Map<String, Object> ref);
-
+    
     /////////////////////////////done
     ///////////////new method from dona 03-03-2023////////////////////////////
     List<Map<String, Object>> listItemSupplier(Map<String, String> ref);
@@ -359,5 +359,8 @@ public interface ViewDao {
     
     // Get order detail temporary list by Fathur 23 Feb 24
     List<Map<String, Object>> orderDetailTemporaryList(Map<String, String> ref);
+    
+    // Get level master list by aditya 19 Mar 24
+    List<Map<String, Object>> listLevel(Map<String, Object> ref);
     
 }
