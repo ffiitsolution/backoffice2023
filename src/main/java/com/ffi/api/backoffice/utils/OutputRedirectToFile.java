@@ -5,8 +5,8 @@ package com.ffi.api.backoffice.utils;
  * @author USER
  *
  * added by M Joko - 7/3/24 digunakan untuk menulis error yg tampil di console
- * ke file untuk mempermudah debugging.
- * File log akan kosong kembali setelah TRUNCATE_AFTER_DAYS hari
+ * ke file untuk mempermudah debugging. File log akan kosong kembali setelah
+ * TRUNCATE_AFTER_DAYS hari
  *
  *
  */
@@ -30,18 +30,19 @@ public class OutputRedirectToFile {
     public static void redirectOutputToFile(String filePath) {
         try {
             File file = new File(filePath);
-            // Check if the file exists
             boolean fileExists = file.exists();
             fileOut = new PrintStream(new FileOutputStream(file, true));
             fileErr = new PrintStream(new FileOutputStream(file, true));
 
-            // If file doesn't exist or needs truncation, truncate it
             if (!fileExists || needsTruncation(filePath)) {
                 truncateLogFile(filePath);
             }
 
-            System.setOut(new PrintStream(new CombinedOutputStream(originalOut, fileOut)));
-            System.setErr(new PrintStream(new CombinedOutputStream(originalErr, fileErr)));
+            PrintStream customOut = new PrintStream(new CombinedOutputStream(originalOut, fileOut));
+            PrintStream customErr = new PrintStream(new CombinedOutputStream(originalErr, fileErr));
+
+            System.setOut(customOut);
+            System.setErr(customErr);
         } catch (FileNotFoundException e) {
             System.err.println("Error occurred while redirecting output to file: " + e.getMessage());
         } catch (SecurityException e) {
@@ -63,6 +64,7 @@ public class OutputRedirectToFile {
     }
 
     private static class CombinedOutputStream extends OutputStream {
+
         private OutputStream out1;
         private OutputStream out2;
 
@@ -105,9 +107,19 @@ public class OutputRedirectToFile {
 
     private static void truncateLogFile(String filePath) {
         try {
+            if (fileOut != null) {
+                fileOut.close();
+            }
+            if (fileErr != null) {
+                fileErr.close();
+            }
+
             Files.deleteIfExists(Paths.get(filePath));
             Files.createFile(Paths.get(filePath));
             System.out.println("Log file truncated.");
+
+            fileOut = new PrintStream(new FileOutputStream(filePath, true));
+            fileErr = new PrintStream(new FileOutputStream(filePath, true));
         } catch (IOException e) {
             System.err.println("Error occurred while truncating log file: " + e.getMessage());
         }

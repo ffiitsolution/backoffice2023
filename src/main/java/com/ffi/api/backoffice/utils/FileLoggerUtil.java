@@ -10,10 +10,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component()
 public class FileLoggerUtil {
+    
+    @Value("${app.outletCode}")
+    private String _OutletCode;
 
     public final String ACTIVITY_LOG = "ActivityLog";
     public final String SUCCESS = "SUCCESS";
@@ -64,6 +68,7 @@ public class FileLoggerUtil {
 
     public synchronized void logActivity(String url, String module, String action, String userCode, String userName, String remark, Boolean success, String query, Map<String, Object> params) {
         currentUserCode = userCode;
+        currentOutletCode = _OutletCode;
         try {
             if(params.containsKey("actOutlet") && !params.get("actOutlet").toString().isBlank()){
                 currentOutletCode = params.get("actOutlet").toString();

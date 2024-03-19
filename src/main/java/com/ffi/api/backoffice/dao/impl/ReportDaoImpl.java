@@ -3773,6 +3773,7 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("fromDate", param.get("fromDate"));
         hashMap.put("toDate", param.get("toDate"));
         hashMap.put("userUpd", param.get("userUpd"));
+        hashMap.put("status", param.get("status"));
         hashMap.put("detail", param.containsKey("detail") ? param.get("detail").toString() : "0");
 
         List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
@@ -3834,7 +3835,6 @@ public class ReportDaoImpl implements ReportDao {
 
         System.err.println("jasperReportposAction prm :" + hashMap);
         ClassPathResource classPathResource = new ClassPathResource("report/reportPosAction.jrxml");
-//        ClassPathResource classPathResource = new ClassPathResource(hashMap.get("canceled").toString().equalsIgnoreCase("Order") ? "report/salesVoidOrder.jrxml" : "report/salesVoidItem.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }
