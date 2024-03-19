@@ -3586,7 +3586,7 @@ public class ViewDoaImpl implements ViewDao {
                 + " LEFT JOIN m_supplier S "
                 + "               on H.cd_supplier = S.cd_supplier "
                 + " WHERE H.STATUS = '0' "
-                + " AND ( K.STATUS_KIRIM = 'S' OR H.ORDER_TO IN ('0', '1') OR (H.ORDER_TO = '3' AND H.ORDER_TYPE = '4'))"
+                + " AND ( K.STATUS_KIRIM = 'S' OR H.ORDER_TO IN ('0', '1') OR (H.ORDER_TO = '3' AND H.ORDER_TYPE = '4') OR H.ORDER_TYPE = '6')"
                 + " AND H.OUTLET_CODE = :outletCode  "
                 + " ORDER BY CASE WHEN H.ORDER_TO = '2' THEN 0 WHEN H.ORDER_TO = '3' THEN 1 WHEN H.ORDER_TO IN ('0','1') THEN 2 ELSE 3 END ASC, H.STATUS ASC, H.DATE_UPD DESC, H.TIME_UPD DESC";
 
@@ -3896,6 +3896,29 @@ public class ViewDoaImpl implements ViewDao {
                 return row;
             }
         });
+    }
+
+    ///////// NEW METHOD generate Delivery Outlet Freemeal - Dani 19 Mar 2024
+    public Map<String, String> generateDeliveryOrderFreemeal(Map<String, Object> mapping) {
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String transDate = getTransDate((String) mapping.get("outletCode")).toLowerCase();
+        LocalDate localDate = LocalDate.parse(transDate, format);
+        mapping.put("year", localDate.getYear());
+        mapping.put("month", localDate.getMonthValue());
+        String query = "SELECT COUNT(*) FROM M_COUNTER WHERE YEAR =:year AND MONTH = :month AND TRANS_TYPE= 'DLV'";
+        Integer countQuery = jdbcTemplate.queryForObject(query, mapping, Integer.class);
+        if (countQuery == 0) {
+            jdbcTemplate.update("INSERT INTO M_COUNTER " + 
+                                "(OUTLET_CODE, TRANS_TYPE, YEAR, MONTH, COUNTER_NO)" + 
+                                "VALUES(:outletCode, 'DLV', :year, :month, 0)", mapping);
+        }
+        String querySelect = "SELECT COUNTER_NO FROM M_COUNTER WHERE YEAR = :year AND MONTH = :month AND TRANS_TYPE = 'DLV'";
+        Integer counter = jdbcTemplate.queryForObject(querySelect, mapping, Integer.class);
+        
+        Map<String, String> map = new HashMap<>();
+        String hoCode = (String) mapping.get("hoCode");
+        map.put("generated", hoCode + (""+mapping.get("year")).substring(2) + String.format("%02d", mapping.get("month")) + String.format("%04d", counter + 1));
+        return map;
     }
 
     ///////// NEW METHOD get HO Outlet List - Dani 22 Des 2023

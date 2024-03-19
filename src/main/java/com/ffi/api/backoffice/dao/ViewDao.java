@@ -278,6 +278,9 @@ public interface ViewDao {
     //////////// NEW METHOD list delivery Order header 20 Des 2023
     public List<Map<String, Object>> listDeliveryOrderHdr(Map<String, String> mapping);
 
+    /////////// NEW METHOD generate Delivery Outlet Freemeal - Dani 19 Mar 2024
+    public Map<String, String> generateDeliveryOrderFreemeal(Map<String, Object> mapping);
+
     ///////// NEW METHOD get HO Outlet List - Dani 22 Des 2023
     public List<Map<String, Object>> listOutletHo(Map<String, String> mapping);
 

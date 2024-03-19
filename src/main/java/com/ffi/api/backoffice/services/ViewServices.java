@@ -494,6 +494,10 @@ public class ViewServices {
         return viewDao.listDeliveryOrderHdr(mapping);
     }
 
+    public Map<String, String> generateDeliveryOrderFreemeal(Map<String, Object> mapping) {
+        return viewDao.generateDeliveryOrderFreemeal(mapping);
+    }
+
     ///////// NEW METHOD get HO Outlet List - Dani 22 Des 2023
     public List<Map<String, Object>> listOutletHo(Map<String, String> ref) {
         return viewDao.listOutletHo(ref);

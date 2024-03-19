@@ -3023,6 +3023,20 @@ public class IndexController {
         return rm;
     }
 
+    @RequestMapping(value = "/generate-delivery-order-freemeal", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "query list delivery order", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Map<String, String> generateDeliveryOrderFreemeal(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, Object> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        return this.viewServices.generateDeliveryOrderFreemeal(balance);
+    }
+
     // query list m_outlet HO By Dani 18 Des 2023
     @RequestMapping(value = "/list-outlet-ho", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view supplier", response = Object.class)
