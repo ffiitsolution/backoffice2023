@@ -4331,4 +4331,24 @@ public class IndexController {
             }
         }
     }
+    
+    ///////////////new method from aditya 19-03-2024////////////////////////////
+    @RequestMapping(value = "/list-level", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view List Level", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    Response listLevel(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, Object> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        Response res = new Response();
+        res.setData(viewServices.listLevel(balance));
+        return res;
+    }
+    
+    /////////////////// end aditya 19 Mar 2024
 }

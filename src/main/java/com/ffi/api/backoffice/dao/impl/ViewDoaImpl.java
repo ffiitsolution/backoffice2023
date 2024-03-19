@@ -4963,4 +4963,30 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
+    
+    ////////// new method view list master level 1 - 4 aditya 19 Mar 2024
+    @Override
+    public List<Map<String, Object>> listLevel(Map<String, Object> balance) {
+        String level = (String) balance.get("level");
+    String qry;
+    
+    switch (level) {
+        case "1" -> qry = "SELECT CD_LEVEL_1, DESC_LEVEL_1 FROM M_LEVEL_1";
+        case "2" -> qry = "SELECT CD_LEVEL_2, DESC_LEVEL_2 FROM M_LEVEL_2";
+        case "3" -> qry = "SELECT CD_LEVEL_3, DESC_LEVEL_3 FROM M_LEVEL_3";
+        case "4" -> qry = "SELECT CD_LEVEL_4, DESC_LEVEL_4 FROM M_LEVEL_4";
+        default -> // Handle invalid level
+            throw new IllegalArgumentException("Invalid level: " + level);
+    }
+
+    List<Map<String, Object>> list = jdbcTemplate.query(qry, (ResultSet rs, int i) -> {
+        Map<String, Object> rt = new HashMap<>();
+        rt.put("cdLevel", rs.getString(1)); // Change index based on query
+        rt.put("descLevel", rs.getString(2)); // Change index based on query
+        return rt;
+    });
+    return list;
+    }
+    
+    /////// done aditya 19 mar 24
 }
