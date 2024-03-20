@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reportSelectedItemByDetail" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="319e0893-24b1-4845-972e-e4b4ac9d0117">
 	<property name="ireport.zoom" value="2.3579476910000063"/>
 	<property name="ireport.x" value="0"/>
@@ -90,56 +91,56 @@ ORDER BY
 				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
 			</image>
 			<textField>
-				<reportElement x="494" y="20" width="114" height="11" uuid="ab1ec567-1d6d-487d-9809-56a5e7c5a09b"/>
+				<reportElement x="479" y="20" width="71" height="11" uuid="ab1ec567-1d6d-487d-9809-56a5e7c5a09b"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="494" y="30" width="114" height="11" uuid="d13187e8-ac81-4d9f-a16b-150cbe21694c"/>
+				<reportElement x="479" y="30" width="71" height="11" uuid="d13187e8-ac81-4d9f-a16b-150cbe21694c"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="429" y="30" width="66" height="11" uuid="4af8306a-c321-4442-bb55-23db14771be6"/>
+				<reportElement x="414" y="30" width="66" height="11" uuid="4af8306a-c321-4442-bb55-23db14771be6"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Jam Cetak]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="494" y="0" width="114" height="11" uuid="8341179c-8f35-40f8-97ba-fad77d094662"/>
+				<reportElement x="479" y="0" width="71" height="11" uuid="8341179c-8f35-40f8-97ba-fad77d094662"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="494" y="10" width="114" height="11" uuid="38eac019-34d0-41f2-85f3-106a4c083b96"/>
+				<reportElement x="479" y="10" width="71" height="11" uuid="38eac019-34d0-41f2-85f3-106a4c083b96"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + $P{user}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="429" y="0" width="66" height="11" uuid="8a18b32c-1c7e-4cab-ba05-932fbe3dff51"/>
+				<reportElement x="414" y="0" width="66" height="11" uuid="8a18b32c-1c7e-4cab-ba05-932fbe3dff51"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Halaman]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="429" y="20" width="66" height="11" uuid="aff22085-c732-4956-b8a3-a872fad04e0c"/>
+				<reportElement x="414" y="20" width="66" height="11" uuid="aff22085-c732-4956-b8a3-a872fad04e0c"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Tanggal Cetak]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="429" y="10" width="66" height="11" uuid="f21ac775-057c-4810-9bc6-27e72ec2b81d"/>
+				<reportElement x="414" y="10" width="66" height="11" uuid="f21ac775-057c-4810-9bc6-27e72ec2b81d"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -195,7 +196,7 @@ ORDER BY
 				<text><![CDATA[Periode]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="33" y="87" width="287" height="15" uuid="01b94f5a-f650-4db2-9d0a-b012f084fdbe"/>
+				<reportElement x="33" y="85" width="287" height="15" uuid="01b94f5a-f650-4db2-9d0a-b012f084fdbe"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>

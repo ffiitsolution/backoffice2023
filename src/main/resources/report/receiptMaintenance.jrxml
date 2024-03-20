@@ -126,7 +126,7 @@
 				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
 			</image>
 			<staticText>
-				<reportElement x="2" y="49" width="552" height="19" uuid="5d69faee-18dc-438d-92db-d0b6246f78b1"/>
+				<reportElement x="2" y="52" width="552" height="19" uuid="5d69faee-18dc-438d-92db-d0b6246f78b1"/>
 				<textElement textAlignment="Center">
 					<font size="12" isBold="true"/>
 				</textElement>
@@ -196,56 +196,56 @@
 				<textFieldExpression><![CDATA[$F{ADDRESS_2}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="455" y="22" width="119" height="11" uuid="57070a4b-0f23-4ed2-92ca-1ac59fc013f7"/>
+				<reportElement x="455" y="20" width="119" height="11" uuid="57070a4b-0f23-4ed2-92ca-1ac59fc013f7"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="372" y="2" width="84" height="11" uuid="1865ce2e-fb77-4bda-91a8-60d6e6b863a6"/>
+				<reportElement x="372" y="0" width="84" height="11" uuid="1865ce2e-fb77-4bda-91a8-60d6e6b863a6"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Halaman]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="372" y="32" width="84" height="11" uuid="fcf1819a-8e4d-4a54-8f4d-29643a40ac7e"/>
+				<reportElement x="372" y="30" width="84" height="11" uuid="fcf1819a-8e4d-4a54-8f4d-29643a40ac7e"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Jam Cetak]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="372" y="12" width="84" height="11" uuid="654aca40-7be0-4acb-a9a3-6b827d409ff2"/>
+				<reportElement x="372" y="10" width="84" height="11" uuid="654aca40-7be0-4acb-a9a3-6b827d409ff2"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[User Cetak]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="455" y="12" width="119" height="11" uuid="55187021-c193-415b-8506-19aecdb6451b"/>
+				<reportElement x="455" y="10" width="119" height="11" uuid="55187021-c193-415b-8506-19aecdb6451b"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + $F{PRINT_NAME}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="372" y="22" width="84" height="11" uuid="cf19222b-61e1-4549-979c-655b2638b27d"/>
+				<reportElement x="372" y="20" width="84" height="11" uuid="cf19222b-61e1-4549-979c-655b2638b27d"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Tanggal Cetak]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="455" y="32" width="119" height="11" uuid="47251fee-6fab-4efb-b066-b921a2fb3e0d"/>
+				<reportElement x="455" y="30" width="119" height="11" uuid="47251fee-6fab-4efb-b066-b921a2fb3e0d"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="455" y="2" width="119" height="11" uuid="c8d14e66-165a-476b-b511-fc41f9a55e0e"/>
+				<reportElement x="455" y="0" width="119" height="11" uuid="c8d14e66-165a-476b-b511-fc41f9a55e0e"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>

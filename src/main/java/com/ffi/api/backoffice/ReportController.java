@@ -453,11 +453,8 @@ public class ReportController {
 
         JasperPrint jasperPrint = reportServices.jasperReportSalesByTime(prm, conn);
         conn.close();
-        byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=salesByTime.pdf");
-
-        return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        
+        return generatePdfCsvReport(jasperPrint, prm, "SalesByTime");
     }
 
     @RequestMapping(value = "/list-param-report", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -523,11 +520,8 @@ public class ReportController {
 
         JasperPrint jasperPrint = reportServices.jasperReportSalesByDateNew(prm, conn);
         conn.close();
-        byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=salesDate.pdf");
-
-        return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        
+        return generatePdfCsvReport(jasperPrint, prm, "SalesByDate");
     }
     /////////////////////////////////DONE///////////////////////////////////////
 
@@ -546,14 +540,8 @@ public class ReportController {
         JasperPrint jasperPrint = reportServices.jasperReportSalesByItem(prm, conn);
         conn.close();
 
-        if (!jasperPrint.getPages().isEmpty()) {
-            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=salesByItem.pdf");
-            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
-        }
+        return generatePdfCsvReport(jasperPrint, prm, "SalesByItem");
+
     }
 
     @CrossOrigin
@@ -569,14 +557,8 @@ public class ReportController {
             Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
             }.getType());
             jasperPrint = reportServices.jasperReportMenuVsDetail(prm, conn);
-        }
-        if (!jasperPrint.getPages().isEmpty()) {
-            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=salesByMenuDetail.pdf");
-            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
+            
+            return generatePdfCsvReport(jasperPrint, prm, "SalesByMenuDetail");
         }
     }
 
@@ -596,14 +578,8 @@ public class ReportController {
 
         JasperPrint jasperPrint = reportServices.jasperReportSummarySalesByItemCode(prm, conn);
         conn.close();
-        if (!jasperPrint.getPages().isEmpty()) {
-            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=summarySalesByItemCode.pdf");
-            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
-        }
+        
+        return generatePdfCsvReport(jasperPrint, prm, "SummarySalesByItemCode");
     }
 
     /////////////////////////////////DONE///////////////////////////////////////
@@ -649,17 +625,11 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-//        Integer cekDataReport = viewServices.cekDataReport(prm, "transaksiKasir");
         JasperPrint jasperPrint = reportServices.jasperReportTransaksiKasir(prm, conn);
         conn.close();
-        if (!jasperPrint.getPages().isEmpty()) {
-            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=transaksiKasir.pdf");
-            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
-        }
+        
+        return generatePdfCsvReport(jasperPrint, prm, "TransaksiKasir");
+
     }
 
     @CrossOrigin
@@ -674,17 +644,11 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        Integer cekDataReport = viewServices.cekDataReport(prm, "ReceiptMaintenance");
-        if (cekDataReport > 0) {
-            JasperPrint jasperPrint = reportServices.jasperReportReceiptMaintenance(prm, conn);
-            conn.close();
-            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=ReceiptMaintenance.pdf");
-            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
-        }
+        JasperPrint jasperPrint = reportServices.jasperReportReceiptMaintenance(prm, conn);
+        conn.close();
+            
+        return generatePdfCsvReport(jasperPrint, prm, "ReceiptMaintenance");
+
     }
 
     @CrossOrigin
@@ -698,18 +662,10 @@ public class ReportController {
         Gson gsn = new Gson();
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
+        
+        JasperPrint jasperPrint = reportServices.jasperReportSalesMixDepartment(prm, conn);
+        return generatePdfCsvReport(jasperPrint, prm, "ReportSalesMixByDepartment");
 
-        Integer cekDataReport = viewServices.cekDataReport(prm, "salesMixDepartment");
-        if (cekDataReport > 0) {
-            JasperPrint jasperPrint = reportServices.jasperReportSalesMixDepartment(prm, conn);
-            conn.close();
-            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=ReportSalesMixByDepartment.pdf");
-            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
-        }
     }
 
     @CrossOrigin
@@ -790,18 +746,14 @@ public class ReportController {
         Gson gsn = new Gson();
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-
-//        Integer cekDataReport = viewServices.cekDataReport(prm, "TransactionByPaymentType");
-        JasperPrint jasperPrint = reportServices.jasperReportTransactionByPaymentType(prm, conn);
-        conn.close();
-        if (!jasperPrint.getPages().isEmpty()) {
-            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=TransactionByPaymentType.pdf");
-            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
-        }
+//        JasperPrint jasperPrint = null;
+//        try {
+            JasperPrint jasperPrint = reportServices.jasperReportTransactionByPaymentType(prm, conn);
+            conn.close();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+        return generatePdfCsvReport(jasperPrint, prm, "TransactionByPaymentType");
     }
 
     @CrossOrigin
@@ -816,17 +768,11 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-//        Integer cekDataReport = viewServices.cekDataReport(prm, "pemakaianBySales");
         JasperPrint jasperPrint = reportServices.jasperReportPemakaianBySales(prm, conn);
         conn.close();
-        if (!jasperPrint.getPages().isEmpty()) {
-            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=PemakaianBySales.pdf");
-            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
-        }
+        
+        return generatePdfCsvReport(jasperPrint, prm, "PemakaianBySales");
+
     }
 
     @CrossOrigin
@@ -1036,17 +982,11 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-//        Integer cekDataReport = viewServices.cekDataReport(prm, "itemSelectedByTime");
         JasperPrint jasperPrint = reportServices.jasperReportItemSelectedByTime(prm, conn);
         conn.close();
-        if (!jasperPrint.getPages().isEmpty()) {
-            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=itemSelectedByTime.pdf");
-            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
-        }
+        
+        return generatePdfCsvReport(jasperPrint, prm, "ItemSelectedByTime");
+
     }
 
     /// report sales void by M Joko 29/12/23
@@ -1064,14 +1004,9 @@ public class ReportController {
 
         JasperPrint jasperPrint = reportServices.jasperReportSalesVoid(prm, conn);
         conn.close();
-        if (!jasperPrint.getPages().isEmpty()) {
-            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=salesVoid.pdf");
-            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
-        }
+        
+        return generatePdfCsvReport(jasperPrint, prm, "SalesVoid");
+
     }
 
     //////////////// New Method Report Item Selected By Product by M Joko 10 Januari 2024
@@ -1089,14 +1024,8 @@ public class ReportController {
 
         JasperPrint jasperPrint = reportServices.jasperReportItemSelectedByProduct(prm, conn);
         conn.close();
-        if (!jasperPrint.getPages().isEmpty()) {
-            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=itemSelectedByProduct.pdf");
-            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
-        }
+        
+        return generatePdfCsvReport(jasperPrint, prm, "itemSelectedByProduct");
     }
 
     ///////////////NEW METHOD REPORT daftar menu by Rafi 29 Desember 2023////
@@ -1152,17 +1081,10 @@ public class ReportController {
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        Integer cekDataReport = viewServices.cekDataReport(prm, "reportRefund");
-        if (cekDataReport > 0) {
-            JasperPrint jasperPrint = reportServices.jasperReportRefund(prm, conn);
-            conn.close();
-            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=RefundReport.pdf");
-            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
-        }
+        JasperPrint jasperPrint = reportServices.jasperReportRefund(prm, conn);
+        conn.close();
+            
+        return generatePdfCsvReport(jasperPrint, prm, "RefundReport");
     }
 
     ///////////////NEW METHOD REPORT +++ by adit 8 Januari 2024////
@@ -1181,14 +1103,8 @@ public class ReportController {
 
         JasperPrint jasperPrint = reportServices.jesperReportaActualStockOpname(prm, conn);
         conn.close();
-        if (!jasperPrint.getPages().isEmpty()) {
-            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=ActualStockOpname.pdf");
-            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
-        }
+        
+        return generatePdfCsvReport(jasperPrint, prm, "ActualStockOpname");
 
     }
 
@@ -1233,15 +1149,8 @@ public class ReportController {
 
         JasperPrint jasperPrint = reportServices.jesperReportPajak(prm, conn);
         conn.close();
-        if (!jasperPrint.getPages().isEmpty()) {
-            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=Pajak.pdf");
-            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
-        }
-
+        
+        return generatePdfCsvReport(jasperPrint, prm, "Pajak");
     }
     ///////////////////////////////// done adit 04-01-2024 ///////////////////////////////////////
 
@@ -1260,14 +1169,9 @@ public class ReportController {
 
         JasperPrint jasperPrint = reportServices.jasperReportProductEfficiency(prm, conn);
         conn.close();
-        if (!jasperPrint.getPages().isEmpty()) {
-            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=productEfficiency.pdf");
-            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
-        }
+        
+        return generatePdfCsvReport(jasperPrint, prm, "ProductEfficiency");
+
     }
 
     ///////////////NEW METHOD REPORT down payment by Dani 9 Januari 2024////
@@ -1291,17 +1195,11 @@ public class ReportController {
         prm.put("customerName", "%" + (customerName != null && customerName.equalsIgnoreCase("All") ? "" : customerName) + "%");
         prm.put("orderType", "%" + (orderType != null && orderType.equalsIgnoreCase("All") ? "" : orderType) + "%");
         prm.put("bookStatus", "%" + (bookStatus != null && bookStatus.equalsIgnoreCase("All") ? "" : bookStatus) + "%");
-        Integer cekDataReport = viewServices.cekDataReport(prm, "DownPayment");
-        if (cekDataReport > 0) {
-            JasperPrint jasperPrint = reportServices.jasperReportDownPayment(prm, conn);
-            conn.close();
-            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=DownPayment.pdf");
-            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error Message".getBytes());
-        }
+        
+        JasperPrint jasperPrint = reportServices.jasperReportDownPayment(prm, conn);
+        conn.close();
+        
+        return generatePdfCsvReport(jasperPrint, prm, "DownPayment");
     }
 
     ///////////////NEW METHOD REPORT SELECTED ITEM BY DETAIL by Rafi 9 Januari 2024////
@@ -1319,15 +1217,8 @@ public class ReportController {
 
         JasperPrint jasperPrint = reportServices.jesperReportSelectedItemByDetail(prm, conn);
         conn.close();
-
-        if (!jasperPrint.getPages().isEmpty()) {
-            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=ReportSelectedItemByDetail.pdf");
-            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
-        }
+        
+        return generatePdfCsvReport(jasperPrint, prm, "ReportSelectedItemByDetail");
     }
 
     ///////////////NEW METHOD REPORT PRODUCTION by Sifa 11 Januari 2024////
@@ -1364,10 +1255,8 @@ public class ReportController {
 
         JasperPrint jasperPrint = reportServices.jasperReportEod(prm, conn);
         conn.close();
-        byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=ReportEOD.pdf");
-        return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
+        return generatePdfCsvReport(jasperPrint, prm, "ReportEOD");
+        
     }
 
     ///////////////NEW METHOD Report Product Efficiency by Pasca 9 Januari 2024////
@@ -1385,14 +1274,9 @@ public class ReportController {
 
         JasperPrint jasperPrint = reportServices.jasperReportItemSalesAnalysis(prm, conn);
         conn.close();
-        if (!jasperPrint.getPages().isEmpty()) {
-            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=itemSalesAnalysis.pdf");
-            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
-        }
+        
+        return generatePdfCsvReport(jasperPrint, prm, "ItemSalesAnalysis");
+
     }
 
     @CrossOrigin
@@ -1428,19 +1312,14 @@ public class ReportController {
     public ResponseEntity<byte[]> jasperReportSalesItembyTime(@RequestBody String param) throws SQLException, JRException, IOException {
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         Gson gsn = new Gson();
+        
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
+        
         JasperPrint jasperPrint = reportServices.jasperReportSalesItembyTime(prm, conn);
         conn.close();
-
-        if (!jasperPrint.getPages().isEmpty()) {
-            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=salesByItem.pdf");
-            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
-        }
+        
+        return generatePdfCsvReport(jasperPrint, prm, "SalesByItem");
     }
 
     ////////////////// new Report MPCS Management Fryer by Aditya 30 Jan 2024
@@ -1509,17 +1388,11 @@ public class ReportController {
         Gson gsn = new Gson();
         Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
+        
         JasperPrint jasperPrint = reportServices.jasperReportCashPull(prm, conn);
         conn.close();
-
-        if (!jasperPrint.getPages().isEmpty()) {
-            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=cashPull.pdf");
-            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
-        }
+        
+        return generatePdfCsvReport(jasperPrint, prm, "CashPull");
     }
 
 

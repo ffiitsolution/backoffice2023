@@ -1977,18 +1977,16 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("fromTime", param.get("fromTime"));
         hashMap.put("toTime", param.get("toTime"));
         hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("isDownloadCsv", param.get("isDownloadCsv"));
 
         String queryOutlet = "SELECT mo.OUTLET_NAME, mo.ADDRESS_1, mo.ADDRESS_2, mo.PHONE FROM M_OUTLET mo WHERE mo.OUTLET_CODE = :outletCode";
 
-        List<Map<String, Object>> list = jdbcTemplate.query(queryOutlet, param, new RowMapper<Map<String, Object>>() {
-            @Override
-            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
-                hashMap.put("outletName", rs.getString("OUTLET_NAME"));
-                hashMap.put("address1", rs.getString("ADDRESS_1"));
-                hashMap.put("address2", rs.getString("ADDRESS_2"));
-                hashMap.put("phone", rs.getString("PHONE"));
-                return null;
-            }
+        List<Map<String, Object>> list = jdbcTemplate.query(queryOutlet, param, (ResultSet rs, int i) -> {
+            hashMap.put("outletName", rs.getString("OUTLET_NAME"));
+            hashMap.put("address1", rs.getString("ADDRESS_1"));
+            hashMap.put("address2", rs.getString("ADDRESS_2"));
+            hashMap.put("phone", rs.getString("PHONE"));
+            return null;
         });
 
         if (!param.get("outletBrand").toString().equalsIgnoreCase("TACOBELL")) {
@@ -2165,6 +2163,7 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("address2", param.get("address2"));
         hashMap.put("outletName", param.get("outletName"));
         hashMap.put("phone", param.get("phone"));
+        hashMap.put("isDownloadCsv", param.get("isDownloadCsv"));
 
         if (!param.get("outletBrand").toString().equalsIgnoreCase("TACOBELL")) {
             if (param.get("brand").toString().equalsIgnoreCase("SEMUA") || param.get("brand").toString().equalsIgnoreCase("0")) {
@@ -2369,7 +2368,7 @@ public class ReportDaoImpl implements ReportDao {
         List<Map<String, Object>> listPos = jdbcTemplate.query(queryPos, new RowMapper<Map<String, Object>>() {
             @Override
             public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
-                Map<String, Object> rt = new HashMap<String, Object>();
+                Map<String, Object> rt = new HashMap<>();
                 rt.put("posCode", rs.getString("POS_CODE"));
                 return rt;
             }
@@ -2738,6 +2737,7 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("billTime1", param.get("fromTime"));
         hashMap.put("billTime2", param.get("toTime"));
         hashMap.put("user", param.get("user"));
+        System.out.println(param);
 
         List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
         StringBuilder posCode = new StringBuilder();
@@ -2796,9 +2796,9 @@ public class ReportDaoImpl implements ReportDao {
             }
         }
 
-        List<Map<String, Object>> listPaymentType = (List<Map<String, Object>>) param.get("PaymentType");
+        List<Map<String, Object>> listPaymentType = (List<Map<String, Object>>) param.get("paymentType");
         StringBuilder paymentType = new StringBuilder();
-        if (listPos.size() == 1) {
+        if (listPaymentType.size() == 1) {
             hashMap.put("paymentType", "Semua");
             hashMap.put("paymentType1", "000");
             hashMap.put("paymentType2", "zzz");
@@ -2817,7 +2817,7 @@ public class ReportDaoImpl implements ReportDao {
 
         List<Map<String, Object>> listPaymentMethod = (List<Map<String, Object>>) param.get("paymentMethod");
         StringBuilder paymentMethod = new StringBuilder();
-        if (listPos.size() == 1) {
+        if (listPaymentMethod.size() == 1) {
             hashMap.put("paymentMethod", "Semua");
             hashMap.put("paymentMethod1", "000");
             hashMap.put("paymentMethod2", "zzz");
@@ -2828,7 +2828,7 @@ public class ReportDaoImpl implements ReportDao {
                     paymentMethod.append(object.get("paymentMethodName1")).append(" s/d ");
                 } else {
                     hashMap.put("paymentMethod2", object.get("paymentMethod2"));
-                    paymentMethod.append(object.get("paymentMethodName1"));
+                    paymentMethod.append(object.get("paymentMethodName2"));
                 }
                 hashMap.put("paymentMethod", paymentMethod.toString());
             }
@@ -2847,6 +2847,7 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("toDate", param.get("toDate"));
         hashMap.put("outletCode", param.get("outletCode"));
         hashMap.put("user", param.get("user"));
+        hashMap.put("isDownloadCsv", param.get("isDownloadCsv"));
 
         ClassPathResource classPathResource = new ClassPathResource("report/PemakaianBySalesReport.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
@@ -3211,6 +3212,7 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("fromDate", param.get("fromDate"));
         hashMap.put("toDate", param.get("toDate"));
         hashMap.put("user", param.get("user"));
+        hashMap.put("isDownloadCsv", param.get("isDownloadCsv"));
 
         ClassPathResource classPathResource = new ClassPathResource("report/reportProductEfficiency.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
@@ -3220,7 +3222,7 @@ public class ReportDaoImpl implements ReportDao {
     /////////////////////// new method report +++ adit 08 Januari 2024
     @Override
     public JasperPrint jesperReportaActualStockOpname(Map<String, Object> param, Connection connection) throws IOException, JRException {
-        Map<String, Object> hashMap = new HashMap<String, Object>();
+        Map<String, Object> hashMap = new HashMap<>();
         hashMap.put("outletBrand", param.get("outletBrand"));
         hashMap.put("fromDate", param.get("fromDate"));
         hashMap.put("toDate", param.get("toDate"));
@@ -3254,7 +3256,7 @@ public class ReportDaoImpl implements ReportDao {
     
             @Override
     public JasperPrint jesperReportPajak(Map<String, Object> param, Connection connection) throws IOException, JRException {
-        Map<String, Object> hashMap = new HashMap<String, Object>();
+        Map<String, Object> hashMap = new HashMap<>();
         hashMap.put("fromDate", param.get("fromDate"));
         hashMap.put("toDate", param.get("toDate"));
         hashMap.put("outletCode", param.get("outletCode"));
@@ -3313,6 +3315,7 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("fromDate", param.get("fromDate"));
         hashMap.put("toDate", param.get("toDate"));
         hashMap.put("userUpd", param.get("userUpd"));
+        hashMap.put("isDownloadCsv", param.get("isDownloadCsv"));
         hashMap.put("detail", param.containsKey("detail") && param.get("detail").equals(true) );
         System.err.println("hashMap: " + hashMap);
         ClassPathResource classPathResource = new ClassPathResource("report/itemSelectedByProduct.jrxml");

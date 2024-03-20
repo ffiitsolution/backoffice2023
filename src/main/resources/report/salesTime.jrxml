@@ -585,7 +585,7 @@ ORDER BY JAM ASC]]>
 				<reportElement x="2" y="133" width="552" height="1" uuid="e6625f22-3157-47e3-8d41-d9ad8ea135d1"/>
 			</line>
 			<staticText>
-				<reportElement x="2" y="52" width="552" height="19" uuid="a99eec76-cc29-4763-922c-589320cb8235"/>
+				<reportElement x="2" y="55" width="552" height="19" uuid="a99eec76-cc29-4763-922c-589320cb8235"/>
 				<textElement textAlignment="Center">
 					<font size="12" isBold="true"/>
 				</textElement>
@@ -819,14 +819,14 @@ ORDER BY JAM ASC]]>
 				<textFieldExpression><![CDATA[$F{ADDRESS_1}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="59" y="32" width="122" height="11" uuid="0d30c8f7-e39f-4163-908c-48d99c7e2829"/>
+				<reportElement x="59" y="33" width="122" height="11" uuid="0d30c8f7-e39f-4163-908c-48d99c7e2829"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{ADDRESS_2}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="59" y="43" width="122" height="11" uuid="20eb3a8e-e69f-4fc6-87f6-ac5d5811d71f"/>
+				<reportElement x="59" y="44" width="122" height="11" uuid="20eb3a8e-e69f-4fc6-87f6-ac5d5811d71f"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
