@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ReportSummarySalesbyItemCode" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6bb117e1-89a2-438b-9004-122ab48111d8">
 	<property name="ireport.zoom" value="1.4641000000000068"/>
 	<property name="ireport.x" value="0"/>
@@ -115,6 +116,7 @@
 	<parameter name="address1" class="java.lang.String"/>
 	<parameter name="address2" class="java.lang.String"/>
 	<parameter name="phone" class="java.lang.String"/>
+	<parameter name="isDownloadCsv" class="java.lang.Boolean"/>
 	<queryString>
 		<![CDATA[SELECT
 	END.*,
@@ -379,14 +381,14 @@ ITEM ASC]]>
 	<pageHeader>
 		<band height="150" splitType="Stretch">
 			<textField>
-				<reportElement x="60" y="11" width="141" height="11" uuid="4c9593ab-6123-447b-be10-cad7a6942c84"/>
+				<reportElement x="59" y="11" width="141" height="11" uuid="4c9593ab-6123-447b-be10-cad7a6942c84"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{outletName}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="60" y="1" width="112" height="11" uuid="4c769eb6-8ce5-4c4f-81a0-a3598f050cc7"/>
+				<reportElement x="59" y="1" width="112" height="11" uuid="4c769eb6-8ce5-4c4f-81a0-a3598f050cc7"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -573,7 +575,7 @@ ITEM ASC]]>
 			</staticText>
 			<componentElement>
 				<reportElement x="1" y="128" width="400" height="22" uuid="decf6d69-cd54-41d1-b50d-95effa386144"/>
-				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
 					<datasetRun subDataset="dataset1" uuid="2f880b91-c5a4-4d57-ae51-bb8c907d739b">
 						<datasetParameter name="outletCode">
 							<datasetParameterExpression><![CDATA[$P{outletCode}]]></datasetParameterExpression>
@@ -681,10 +683,10 @@ ITEM ASC]]>
 		<band height="25" splitType="Stretch">
 			<textField>
 				<reportElement x="7" y="4" width="61" height="20" uuid="cedafe5b-46cc-4c51-8786-1b47276c40df"/>
-				<textFieldExpression><![CDATA[$F{ITEM}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{isDownloadCsv}.equals(true) ? "'" + $F{ITEM} : $F{ITEM}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="71" y="4" width="199" height="20" uuid="0faf240c-d474-44e7-bebe-455d701c4fd8"/>
+				<reportElement x="70" y="4" width="200" height="20" uuid="0faf240c-d474-44e7-bebe-455d701c4fd8"/>
 				<textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">

@@ -15,6 +15,7 @@
 	</parameter>
 	<parameter name="user" class="java.lang.String"/>
 	<parameter name="outletBrand" class="java.lang.String"/>
+	<parameter name="isDownloadCsv" class="java.lang.Boolean"/>
 	<queryString>
 		<![CDATA[SELECT   END.*,M.OUTLET_NAME,M.ADDRESS_1,M.ADDRESS_2, M.PHONE, v.grand_total_unit_cost, p.total_net_sales
     FROM   (SELECT  $P{outletCode} AS OUTLET_CODE, item,
@@ -694,7 +695,7 @@ ORDER BY   ITEM ASC]]>
 				<text><![CDATA[%]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="54" width="555" height="18" uuid="054637d1-cf41-4251-aceb-8cd4520c2bc6"/>
+				<reportElement x="0" y="56" width="555" height="18" uuid="054637d1-cf41-4251-aceb-8cd4520c2bc6"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="11" isBold="true"/>
 				</textElement>
@@ -754,56 +755,56 @@ ORDER BY   ITEM ASC]]>
 				<textFieldExpression><![CDATA["Phone : " + $F{PHONE}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="421" y="30" width="66" height="11" uuid="6cca510f-d0df-4f9d-8a05-a30ca9be216d"/>
+				<reportElement x="421" y="31" width="59" height="11" uuid="6cca510f-d0df-4f9d-8a05-a30ca9be216d"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Jam Cetak]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="486" y="20" width="114" height="11" uuid="258e844f-2566-47b7-bb36-ba4b9ea43cbc"/>
+				<reportElement x="480" y="21" width="70" height="11" uuid="258e844f-2566-47b7-bb36-ba4b9ea43cbc"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="486" y="30" width="114" height="11" uuid="b0a7cfa8-9584-464f-a2e5-1764aa866c90"/>
+				<reportElement x="480" y="31" width="70" height="11" uuid="b0a7cfa8-9584-464f-a2e5-1764aa866c90"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="421" y="0" width="66" height="11" uuid="6db7c404-8b4a-4fad-8957-14785f1d668d"/>
+				<reportElement x="421" y="0" width="59" height="11" uuid="6db7c404-8b4a-4fad-8957-14785f1d668d"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Halaman]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="486" y="10" width="114" height="11" uuid="32bb8415-bbbc-4eb5-80a5-e5156acd4a96"/>
+				<reportElement x="480" y="11" width="70" height="11" uuid="32bb8415-bbbc-4eb5-80a5-e5156acd4a96"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + $P{user}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="486" y="0" width="114" height="11" uuid="479eba70-586d-4e75-9e38-687c68c73280"/>
+				<reportElement x="480" y="0" width="70" height="11" uuid="479eba70-586d-4e75-9e38-687c68c73280"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="421" y="10" width="66" height="11" uuid="1e0e3249-cdba-4968-95e1-d87046ad84aa"/>
+				<reportElement x="421" y="11" width="59" height="11" uuid="1e0e3249-cdba-4968-95e1-d87046ad84aa"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[User Cetak]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="421" y="20" width="66" height="11" uuid="5755339a-f039-4241-8be9-16d44df4175f"/>
+				<reportElement x="421" y="21" width="59" height="11" uuid="5755339a-f039-4241-8be9-16d44df4175f"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -846,7 +847,7 @@ ORDER BY   ITEM ASC]]>
 				<textElement verticalAlignment="Top">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{ITEM}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{isDownloadCsv}.equals(true) ? "'" + $F{ITEM} : $F{ITEM}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="312" y="1" width="32" height="13" uuid="9d984a25-39cd-43bc-abc8-f25f9537c4ff"/>
