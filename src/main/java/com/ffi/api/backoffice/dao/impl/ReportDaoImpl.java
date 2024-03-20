@@ -2798,7 +2798,7 @@ public class ReportDaoImpl implements ReportDao {
 
         List<Map<String, Object>> listPaymentType = (List<Map<String, Object>>) param.get("PaymentType");
         StringBuilder paymentType = new StringBuilder();
-        if (listPos.size() == 1) {
+        if (listPaymentType.size() == 1) {
             hashMap.put("paymentType", "Semua");
             hashMap.put("paymentType1", "000");
             hashMap.put("paymentType2", "zzz");
@@ -2817,7 +2817,7 @@ public class ReportDaoImpl implements ReportDao {
 
         List<Map<String, Object>> listPaymentMethod = (List<Map<String, Object>>) param.get("paymentMethod");
         StringBuilder paymentMethod = new StringBuilder();
-        if (listPos.size() == 1) {
+        if (listPaymentMethod.size() == 1) {
             hashMap.put("paymentMethod", "Semua");
             hashMap.put("paymentMethod1", "000");
             hashMap.put("paymentMethod2", "zzz");
