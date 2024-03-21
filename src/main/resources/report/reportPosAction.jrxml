@@ -246,56 +246,56 @@ ORDER BY t.BILL_NO, t.DATE_UPD]]>
 				<textFieldExpression><![CDATA[$F{ADDRESS_2}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="455" y="22" width="119" height="11" uuid="3f148db7-608d-486e-a8b1-16d11b34a4c3"/>
+				<reportElement x="455" y="20" width="119" height="11" uuid="3f148db7-608d-486e-a8b1-16d11b34a4c3"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="372" y="2" width="84" height="11" uuid="f13316a1-ffad-42f6-ac39-cad93c1374af"/>
+				<reportElement x="372" y="0" width="84" height="11" uuid="f13316a1-ffad-42f6-ac39-cad93c1374af"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Halaman]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="372" y="32" width="84" height="11" uuid="97c73347-6237-48db-a592-dd43da29b39a"/>
+				<reportElement x="372" y="30" width="84" height="11" uuid="97c73347-6237-48db-a592-dd43da29b39a"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Jam Cetak]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="372" y="12" width="84" height="11" uuid="170bf558-ddc8-4af5-8090-fb3135928e1e"/>
+				<reportElement x="372" y="10" width="84" height="11" uuid="170bf558-ddc8-4af5-8090-fb3135928e1e"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[User Cetak]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="455" y="12" width="119" height="11" uuid="b24b80c1-6aae-46d4-8048-8cb347a4c02f"/>
+				<reportElement x="455" y="10" width="119" height="11" uuid="b24b80c1-6aae-46d4-8048-8cb347a4c02f"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + $F{PRINT_NAME}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="372" y="22" width="84" height="11" uuid="0a36322d-e036-4df9-9693-f85fa631b3fb"/>
+				<reportElement x="372" y="20" width="84" height="11" uuid="0a36322d-e036-4df9-9693-f85fa631b3fb"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Tanggal Cetak]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="455" y="32" width="119" height="11" uuid="d755b18f-f159-430e-9d73-773a456afb7f"/>
+				<reportElement x="455" y="30" width="119" height="11" uuid="d755b18f-f159-430e-9d73-773a456afb7f"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="455" y="2" width="119" height="11" uuid="d45bfdb2-a045-40a3-a678-8841f1856bd9"/>
+				<reportElement x="455" y="0" width="119" height="11" uuid="d45bfdb2-a045-40a3-a678-8841f1856bd9"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
