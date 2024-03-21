@@ -1461,13 +1461,8 @@ public class ReportController {
 
         JasperPrint jasperPrint = reportServices.jasperReportposAction(prm, conn);
         conn.close();
-        if (!jasperPrint.getPages().isEmpty()) {
-            byte[] result = JasperExportManager.exportReportToPdf(jasperPrint);
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "inline; filename=posAction.pdf");
-            return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(result);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No Data".getBytes());
-        }
+        
+        return generatePdfCsvReport(jasperPrint, prm, "PosAction");
+
     }
 }
