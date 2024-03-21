@@ -750,7 +750,7 @@ new SimpleDateFormat("dd MMMM yyyy").format($F{TRANS_DATE}) + " :"]]></textField
 				<text><![CDATA[Payment Type]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="75" y="128" width="75" height="20" uuid="51d3de3a-7612-40ec-980f-3e3e612134aa"/>
+				<reportElement x="75" y="128" width="65" height="20" uuid="51d3de3a-7612-40ec-980f-3e3e612134aa"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
