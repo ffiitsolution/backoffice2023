@@ -1628,7 +1628,7 @@ public class ViewDoaImpl implements ViewDao {
                UNION ALL
                SELECT 'PROGRAM', 'INV0018', 'Laporan Pengeluaran Open Market', 18, 'INV', 'R', 'A', 'REPORT' FROM dual
                UNION ALL 
-               SELECT 'PROGRAM', 'INV0019', 'Laporan Pemakaian Food Beverage & CD', 19, 'INV', 'R', 'A', 'REPORT' FROM dual
+               SELECT 'PROGRAM', 'INV0019', 'Laporan Pemakaian FnB & CD', 19, 'INV', 'R', 'A', 'REPORT' FROM dual
                 """;
         System.err.println("insert New Menu report");
         try {
