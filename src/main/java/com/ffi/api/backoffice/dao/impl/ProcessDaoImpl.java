@@ -3990,29 +3990,32 @@ public class ProcessDaoImpl implements ProcessDao {
             }
             String result = content.toString();
             System.err.println("result sendDataLocal:" + result);
-            map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
-            }.getType());
-            // END API to Send Master
-            List lst = (List) map1.get("item");
             double total = 0;
             boolean success = false;
-            if (!lst.isEmpty() && lst.get(0) instanceof String) {
-                total = 0;
-                success = false;
-                map1.put("errors", map1);
-            } else if (!lst.isEmpty() && lst.get(0) instanceof Object) {
-                if (lst.get(0) != null) {
-                    Object resp = lst.get(0);
-                    if (resp instanceof Double) {
-                        total = (double) resp;
-                        success = true;
-                    } else {
-                        total = 0;
-                        success = false;
+            if(result.contains("404")){
+                map1.put("errors", "404 Not found! Please check MasterHQ endpoint.");
+            } else if(result.startsWith("<!doctype")){
+                map1.put("errors", result);
+            } else {
+                map1 = gson.fromJson(result, new TypeToken<Map<String, Object>>() {
+                }.getType());
+                List lst = (List) map1.get("item");
+                if (!lst.isEmpty() && lst.get(0) instanceof String) {
+                    total = 0;
+                    success = false;
+                    map1.put("errors", map1);
+                } else if (!lst.isEmpty() && lst.get(0) instanceof Object) {
+                    if (lst.get(0) != null) {
+                        Object resp = lst.get(0);
+                        if (resp instanceof Double) {
+                            total = (double) resp;
+                            success = true;
+                        } else {
+                            total = 0;
+                            success = false;
+                        }
                     }
                 }
-            } else {
-
             }
             String status = total == list.size() ? "UPDATED" : (total == 0 && !list.isEmpty() ? "NOT UPDATED" : total + " OF " + list.size());
             param.put("totalRow", total);
