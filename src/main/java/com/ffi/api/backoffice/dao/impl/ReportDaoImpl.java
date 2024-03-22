@@ -2931,7 +2931,7 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("IsoRptDesc", " ");
 
 
-        String histKirimQuery = "SELECT SUBSTR(JAM_KIRIM, 1,2) || ':' || SUBSTR(JAM_KIRIM, 3,2) || ':' || SUBSTR(JAM_KIRIM, 5, 2) as jam_kirim, user_kirim FROM hist_kirim  WHERE NO_ORDER = :orderNo AND OUTLET_CODE = :outletCode ";
+        String histKirimQuery = "SELECT SUBSTR(JAM_KIRIM, 1,2) || ':' || SUBSTR(JAM_KIRIM, 3,2) || ':' || SUBSTR(JAM_KIRIM, 5, 2) as jam_kirim, user_kirim FROM hist_kirim WHERE NO_ORDER = :orderNo AND OUTLET_CODE = :outletCode ";
         jdbcTemplate.query(histKirimQuery, hashMap, (ResultSet rs, int i) -> {
             hashMap.put("userKirim", rs.getString("user_kirim"));
             hashMap.put("jamKirim", rs.getString("jam_kirim"));

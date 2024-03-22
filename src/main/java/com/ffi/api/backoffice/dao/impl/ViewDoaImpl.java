@@ -1738,8 +1738,8 @@ public class ViewDoaImpl implements ViewDao {
         } else {
             where += " AND H.ORDER_TYPE LIKE :orderType ";
         }
-        if (!balance.get("status").equals("1")) {
-            status = "H.STATUS LIKE :status AND H.STATUS != '1' ";
+        if (!balance.get("status").equals("1") && !balance.get("status").equals("2")) {
+            status = "H.STATUS LIKE :status AND H.STATUS NOT IN ('1', '2') ";
         } else {
             status = " H.STATUS LIKE :status ";
         }
