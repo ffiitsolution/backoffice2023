@@ -59,7 +59,7 @@
     pb.BILL_NO,
     pb.ORDER_TYPE,
     pb.TOTAL_AMOUNT,
-    CASE WHEN mi.ITEM_DESCRIPTION IS NULL THEN NULL ELSE '- ' || mi.ITEM_DESCRIPTION END AS DESCRIPTION,
+    CASE WHEN mi.ITEM_DESCRIPTION IS NULL THEN NULL ELSE '> ' || mi.ITEM_DESCRIPTION END AS DESCRIPTION,
     bi.AMOUNT,
     bi.ITEM_QTY,
 	CASE 
@@ -229,56 +229,56 @@ ORDER BY
 				<textFieldExpression><![CDATA[$F{ADDRESS_2}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="455" y="22" width="119" height="11" uuid="3f148db7-608d-486e-a8b1-16d11b34a4c3"/>
+				<reportElement x="455" y="20" width="119" height="11" uuid="3f148db7-608d-486e-a8b1-16d11b34a4c3"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="372" y="2" width="84" height="11" uuid="f13316a1-ffad-42f6-ac39-cad93c1374af"/>
+				<reportElement x="372" y="0" width="84" height="11" uuid="f13316a1-ffad-42f6-ac39-cad93c1374af"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Halaman]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="372" y="32" width="84" height="11" uuid="97c73347-6237-48db-a592-dd43da29b39a"/>
+				<reportElement x="372" y="30" width="84" height="11" uuid="97c73347-6237-48db-a592-dd43da29b39a"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Jam Cetak]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="372" y="12" width="84" height="11" uuid="170bf558-ddc8-4af5-8090-fb3135928e1e"/>
+				<reportElement x="372" y="10" width="84" height="11" uuid="170bf558-ddc8-4af5-8090-fb3135928e1e"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[User Cetak]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="455" y="12" width="119" height="11" uuid="b24b80c1-6aae-46d4-8048-8cb347a4c02f"/>
+				<reportElement x="455" y="10" width="119" height="11" uuid="b24b80c1-6aae-46d4-8048-8cb347a4c02f"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + $F{PRINT_NAME}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="372" y="22" width="84" height="11" uuid="0a36322d-e036-4df9-9693-f85fa631b3fb"/>
+				<reportElement x="372" y="20" width="84" height="11" uuid="0a36322d-e036-4df9-9693-f85fa631b3fb"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Tanggal Cetak]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="455" y="32" width="119" height="11" uuid="d755b18f-f159-430e-9d73-773a456afb7f"/>
+				<reportElement x="455" y="30" width="119" height="11" uuid="d755b18f-f159-430e-9d73-773a456afb7f"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="455" y="2" width="119" height="11" uuid="d45bfdb2-a045-40a3-a678-8841f1856bd9"/>
+				<reportElement x="455" y="0" width="119" height="11" uuid="d45bfdb2-a045-40a3-a678-8841f1856bd9"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -303,7 +303,7 @@ ORDER BY
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Date]]></text>
+				<text><![CDATA[Date X]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="0" y="139" width="94" height="30" uuid="6a5b4320-bc50-4b37-8a6d-d92355d1db8d"/>
@@ -433,24 +433,24 @@ ORDER BY
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="17" splitType="Stretch">
+		<band height="16" splitType="Stretch">
 			<printWhenExpression><![CDATA[$P{detail}.toString().equals("1") && !$F{DESCRIPTION}.toString().equals("null")]]></printWhenExpression>
 			<textField>
-				<reportElement x="94" y="0" width="214" height="16" uuid="3b2f6025-6011-4f6f-bba1-b5c0f2efca8f"/>
+				<reportElement x="94" y="0" width="188" height="16" uuid="3b2f6025-6011-4f6f-bba1-b5c0f2efca8f"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{DESCRIPTION}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="430" y="1" width="89" height="15" uuid="bcaf9a3f-6435-4c90-813c-cf707e0b2c93"/>
+				<reportElement x="443" y="0" width="75" height="15" uuid="bcaf9a3f-6435-4c90-813c-cf707e0b2c93"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{AMOUNT})]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="330" y="1" width="100" height="15" uuid="4cecbcd3-e60e-459d-9fc3-d294a3dff916"/>
+				<reportElement x="386" y="0" width="44" height="15" uuid="4cecbcd3-e60e-459d-9fc3-d294a3dff916"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>

@@ -17,6 +17,7 @@
 	</parameter>
 	<parameter name="outletBrand" class="java.lang.String"/>
 	<parameter name="user" class="java.lang.String"/>
+	<parameter name="isDownloadCsv" class="java.lang.Boolean"/>
 	<queryString>
 		<![CDATA[SELECT Q.*, mo.outlet_name, mo.ADDRESS_1, mo.ADDRESS_2, mo.PHONE,
 ROUND((Q.TOT_UCOST / Q.GRAND_TOT_UCOST * 100), 2) AS PERCENT,
@@ -398,7 +399,7 @@ ORDER BY Q.ITEM_CODE]]>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{ITEM_CODE}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{isDownloadCsv}.equals(true) ? "'" + $F{ITEM_CODE} : $F{ITEM_CODE}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="54" y="0" width="176" height="14" uuid="de5ce1e6-b238-47b5-8de1-b9de8c29bf5c"/>

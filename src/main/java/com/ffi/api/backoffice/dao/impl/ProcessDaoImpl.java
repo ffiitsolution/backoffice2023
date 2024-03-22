@@ -3037,13 +3037,13 @@ public class ProcessDaoImpl implements ProcessDao {
         prm.put("fryerType", params.getOrDefault("fryerType", " "));
         prm.put("fryerTypeSeq", params.getOrDefault("fryerTypeSeq", " "));
 
-        if (!prm.get("fryerType").equals(" ") || !prm.get("fryerTypeSeq").equals(" ") || !prm.get("fryerType").equals(null) || !prm.get("fryerTypeSeq").equals(null)) {
+        if (!prm.get("fryerType").equals("") || !prm.get("fryerTypeSeq").equals("")) {
             if (prm.get("fryerType").equals("S")) {
                 String oilItemCode = "06-1002";
                 String updateFryer = "Update M_MPCS_DETAIL "
                         + " SET FRYER_TYPE_CNT = (FRYER_TYPE_CNT + (SELECT (QTY_STOCK * :qtyMpcs) as total FROM M_RECIPE_DETAIL where RECIPE_CODE = :recipeCode AND ITEM_CODE = '" + oilItemCode + "' )), "
                         + " DATE_UPD = :dateUpd, "
-                        + " TIME_UPD = :timeUpd "
+                        + " TIME_UPD = :timeUpd, "
                         + " USER_UPD = :userUpd "
                         + " WHERE OUTLET_CODE = :outletCode AND FRYER_TYPE = :fryerType and FRYER_TYPE_SEQ = :fryerTypeSeq ";
                 jdbcTemplate.update(updateFryer, prm);
@@ -3252,8 +3252,8 @@ public class ProcessDaoImpl implements ProcessDao {
         prm.put("outletCode", params.get("outletCode"));
         prm.put("seqMpcs", params.get("seqMpcs"));
         prm.put("histSeq", params.get("histSeq"));
-        String maxMinutesvalidation = "60";
 
+        String maxMinutesvalidation = "60";
         String selectedProductionTime = jdbcTemplate.queryForObject("SELECT time_upd FROM T_MPCS_HIST WHERE HIST_SEQ = :histSeq", prm, String.class);
 
         String timeValidationQuery = "SELECT CASE WHEN TO_TIMESTAMP(TO_CHAR(SYSDATE, 'YYYYMMDD') || '" + selectedProductionTime + "', 'YYYYMMDDHH24MISS') + INTERVAL '" + maxMinutesvalidation + "' MINUTE >= SYSDATE THEN 'Y' ELSE 'N' END AS ALLOW_DELETE FROM dual ";
@@ -3269,7 +3269,7 @@ public class ProcessDaoImpl implements ProcessDao {
         prm.put("fryerType", params.getOrDefault("fryerType", " "));
         prm.put("fryerTypeSeq", params.getOrDefault("fryerTypeSeq", " "));
 
-        if (!prm.get("fryerType").equals(" ") || !prm.get("fryerTypeSeq").equals(" ") || !prm.get("fryerType").equals(null) || !prm.get("fryerTypeSeq").equals(null)) {
+        if (!prm.get("fryerType").equals("") || !prm.get("fryerTypeSeq").equals("")) {
             if (prm.get("fryerType").equals("S")) {
                 String oilItemCode = "06-1002";
                 String updateFryer = "Update M_MPCS_DETAIL "
@@ -3280,6 +3280,7 @@ public class ProcessDaoImpl implements ProcessDao {
                 String updateFryer = "Update M_MPCS_DETAIL "
                         + " SET FRYER_TYPE_CNT = (FRYER_TYPE_CNT - (SELECT (sum(QTY_STOCK) * :qtyMpcs) FROM m_recipe_product WHERE RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup))) "
                         + " WHERE OUTLET_CODE = :outletCode AND FRYER_TYPE = :fryerType and FRYER_TYPE_SEQ = :fryerTypeSeq ";
+
                 jdbcTemplate.update(updateFryer, prm);
             }
         }

@@ -3706,7 +3706,7 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> mpcsProductionDetail(Map<String, String> balance) {
 
-        String qry = "SELECT HIST_SEQ, MPCS_GROUP, RECIPE_CODE, SEQ_MPCS, QUANTITY, TIME_UPD, DATE_UPD "
+        String qry = "SELECT HIST_SEQ, FRYER_TYPE, FRYER_TYPE_SEQ, MPCS_GROUP, RECIPE_CODE, SEQ_MPCS, QUANTITY, TIME_UPD, DATE_UPD "
                 + "FROM T_MPCS_HIST WHERE MPCS_GROUP = :mpcsGroup AND MPCS_DATE = :dateMpcs "
                 + "AND SEQ_MPCS = :seqMpcs "
                 + "AND (FRYER_TYPE <> 'D' or FRYER_TYPE IS NULL) ORDER BY TIME_UPD ASC ";
@@ -3716,20 +3716,7 @@ public class ViewDoaImpl implements ViewDao {
         prm.put("dateMpcs", balance.get("dateMpcs"));
         prm.put("seqMpcs", balance.get("seqMpcs"));
 
-        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
-            @Override
-            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
-                Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("mpcsGroup", rs.getString("MPCS_GROUP"));
-                rt.put("recipeCode", rs.getString("RECIPE_CODE"));
-                rt.put("seqMpcs", rs.getString("SEQ_MPCS"));
-                rt.put("quantity", rs.getString("QUANTITY"));
-                rt.put("timeUpd", rs.getString("TIME_UPD"));
-                rt.put("dateUpd", rs.getString("DATE_UPD"));
-                rt.put("histSeq", rs.getString("HIST_SEQ"));
-                return rt;
-            }
-        });
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new DynamicRowMapper());
         return list;
     }
     // Done Method List MPCS Production //

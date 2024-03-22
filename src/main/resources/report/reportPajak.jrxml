@@ -340,7 +340,7 @@ ORDER BY a.TRANS_DATE ASC]]>
 				<textFieldExpression><![CDATA["Phone : " + $F{PHONE}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="750" y="1" width="50" height="11" uuid="61c1b8b5-a6b0-48ca-b044-27d266bd2f87">
+				<reportElement x="657" y="0" width="50" height="11" uuid="61c1b8b5-a6b0-48ca-b044-27d266bd2f87">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Top">
@@ -349,7 +349,7 @@ ORDER BY a.TRANS_DATE ASC]]>
 				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="750" y="12" width="50" height="11" uuid="5bef1cee-9fea-4e93-8e67-e1792f29b05e">
+				<reportElement x="657" y="11" width="50" height="11" uuid="5bef1cee-9fea-4e93-8e67-e1792f29b05e">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement>
@@ -358,7 +358,7 @@ ORDER BY a.TRANS_DATE ASC]]>
 				<textFieldExpression><![CDATA[$P{user}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="750" y="23" width="50" height="11" uuid="2ddc87b0-baea-4b3c-836c-f4ff80d9b827">
+				<reportElement x="657" y="22" width="50" height="11" uuid="2ddc87b0-baea-4b3c-836c-f4ff80d9b827">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement>
@@ -367,7 +367,7 @@ ORDER BY a.TRANS_DATE ASC]]>
 				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="750" y="34" width="50" height="11" uuid="b2f43ad1-f107-4146-becd-5e11ff3c2954">
+				<reportElement x="657" y="33" width="50" height="11" uuid="b2f43ad1-f107-4146-becd-5e11ff3c2954">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement>
@@ -376,7 +376,7 @@ ORDER BY a.TRANS_DATE ASC]]>
 				<textFieldExpression><![CDATA[new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="696" y="1" width="44" height="11" uuid="f8de70c7-d3a6-4f83-a77b-a746bdecd487">
+				<reportElement x="603" y="0" width="44" height="11" uuid="f8de70c7-d3a6-4f83-a77b-a746bdecd487">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -385,7 +385,7 @@ ORDER BY a.TRANS_DATE ASC]]>
 				<text><![CDATA[Halaman]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="696" y="12" width="44" height="11" uuid="73d88b97-5044-4ded-9c0b-8a7ad5041e62">
+				<reportElement x="603" y="11" width="44" height="11" uuid="73d88b97-5044-4ded-9c0b-8a7ad5041e62">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -394,7 +394,7 @@ ORDER BY a.TRANS_DATE ASC]]>
 				<text><![CDATA[User Cetak]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="696" y="23" width="44" height="11" uuid="27e5fe7e-6e08-4a69-9108-85c89cfce055">
+				<reportElement x="603" y="22" width="44" height="11" uuid="27e5fe7e-6e08-4a69-9108-85c89cfce055">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -403,7 +403,7 @@ ORDER BY a.TRANS_DATE ASC]]>
 				<text><![CDATA[Tanggal]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="696" y="34" width="44" height="11" uuid="a3c92fb0-2e2f-46e3-9631-51b0e085757c">
+				<reportElement x="603" y="33" width="44" height="11" uuid="a3c92fb0-2e2f-46e3-9631-51b0e085757c">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -412,7 +412,7 @@ ORDER BY a.TRANS_DATE ASC]]>
 				<text><![CDATA[Jam Cetak]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="740" y="1" width="10" height="11" uuid="9765ca89-da11-478e-b64c-7e48521d4e64">
+				<reportElement x="647" y="0" width="10" height="11" uuid="9765ca89-da11-478e-b64c-7e48521d4e64">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -421,7 +421,7 @@ ORDER BY a.TRANS_DATE ASC]]>
 				<text><![CDATA[:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="740" y="12" width="10" height="11" uuid="c2ceb088-8aaf-4f54-b05f-747e6503d945">
+				<reportElement x="647" y="11" width="10" height="11" uuid="c2ceb088-8aaf-4f54-b05f-747e6503d945">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -430,7 +430,7 @@ ORDER BY a.TRANS_DATE ASC]]>
 				<text><![CDATA[:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="740" y="23" width="10" height="11" uuid="02167288-59e7-432b-b9a6-ad172f9d04c5">
+				<reportElement x="647" y="22" width="10" height="11" uuid="02167288-59e7-432b-b9a6-ad172f9d04c5">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -439,7 +439,7 @@ ORDER BY a.TRANS_DATE ASC]]>
 				<text><![CDATA[:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="740" y="34" width="10" height="11" uuid="826cf552-d7fc-405e-8102-590b1ad92a33">
+				<reportElement x="647" y="33" width="10" height="11" uuid="826cf552-d7fc-405e-8102-590b1ad92a33">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">

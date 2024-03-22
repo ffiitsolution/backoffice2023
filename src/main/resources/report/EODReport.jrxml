@@ -1249,7 +1249,7 @@ $P{transDate}
 	<pageHeader>
 		<band height="119" splitType="Stretch">
 			<textField>
-				<reportElement x="60" y="21" width="122" height="11" isPrintWhenDetailOverflows="true" uuid="297f1e9f-6971-452c-99d0-0baba7798a65"/>
+				<reportElement x="60" y="20" width="122" height="11" isPrintWhenDetailOverflows="true" uuid="297f1e9f-6971-452c-99d0-0baba7798a65"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -1263,35 +1263,35 @@ $P{transDate}
 				<text><![CDATA[End Of Day Count]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="460" y="32" width="119" height="11" uuid="d755b18f-f159-430e-9d73-773a456afb7f"/>
+				<reportElement x="440" y="30" width="119" height="11" uuid="d755b18f-f159-430e-9d73-773a456afb7f"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="377" y="32" width="84" height="11" uuid="97c73347-6237-48db-a592-dd43da29b39a"/>
+				<reportElement x="377" y="30" width="63" height="11" uuid="97c73347-6237-48db-a592-dd43da29b39a"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Jam Cetak]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="60" y="41" width="122" height="11" isPrintWhenDetailOverflows="true" uuid="3dd5bce2-246d-4308-9d03-bf5693e9ae03"/>
+				<reportElement x="60" y="40" width="122" height="11" isPrintWhenDetailOverflows="true" uuid="3dd5bce2-246d-4308-9d03-bf5693e9ae03"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Phone : " + $F{OUTLET_CODE_PHONE}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="377" y="12" width="84" height="11" uuid="170bf558-ddc8-4af5-8090-fb3135928e1e"/>
+				<reportElement x="377" y="10" width="63" height="11" uuid="170bf558-ddc8-4af5-8090-fb3135928e1e"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[User Cetak]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="60" y="1" width="112" height="11" uuid="013e94ac-b496-49a1-b08c-86374d2dc450"/>
+				<reportElement x="60" y="0" width="112" height="11" uuid="013e94ac-b496-49a1-b08c-86374d2dc450"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -1312,14 +1312,14 @@ $P{transDate}
 				<textFieldExpression><![CDATA[": " + $P{outletCode}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="460" y="12" width="119" height="11" uuid="b24b80c1-6aae-46d4-8048-8cb347a4c02f"/>
+				<reportElement x="440" y="10" width="119" height="11" uuid="b24b80c1-6aae-46d4-8048-8cb347a4c02f"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + $P{user}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="460" y="2" width="119" height="11" uuid="d45bfdb2-a045-40a3-a678-8841f1856bd9"/>
+				<reportElement x="440" y="0" width="119" height="11" uuid="d45bfdb2-a045-40a3-a678-8841f1856bd9"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -1340,7 +1340,7 @@ $P{transDate}
 				<text><![CDATA[Bussines Date]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="377" y="2" width="84" height="11" uuid="f13316a1-ffad-42f6-ac39-cad93c1374af"/>
+				<reportElement x="377" y="0" width="63" height="11" uuid="f13316a1-ffad-42f6-ac39-cad93c1374af"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -1351,7 +1351,7 @@ $P{transDate}
 				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
 			</image>
 			<textField>
-				<reportElement x="60" y="31" width="122" height="11" isPrintWhenDetailOverflows="true" uuid="437529e3-b03d-4cbb-ac47-54c4f389ec9f"/>
+				<reportElement x="60" y="30" width="122" height="11" isPrintWhenDetailOverflows="true" uuid="437529e3-b03d-4cbb-ac47-54c4f389ec9f"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -1372,21 +1372,21 @@ $P{transDate}
 				<textFieldExpression><![CDATA[": "+ $F{OUTLET_CODE} + " - " + $F{OUTLET_CODE_NAME}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="377" y="22" width="84" height="11" uuid="0a36322d-e036-4df9-9693-f85fa631b3fb"/>
+				<reportElement x="377" y="20" width="63" height="11" uuid="0a36322d-e036-4df9-9693-f85fa631b3fb"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Tanggal Cetak]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="460" y="22" width="119" height="11" uuid="3f148db7-608d-486e-a8b1-16d11b34a4c3"/>
+				<reportElement x="440" y="20" width="119" height="11" uuid="3f148db7-608d-486e-a8b1-16d11b34a4c3"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="60" y="11" width="122" height="11" uuid="dc10479a-d1a9-447d-a601-31f855317c75"/>
+				<reportElement x="60" y="10" width="122" height="11" uuid="dc10479a-d1a9-447d-a601-31f855317c75"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
