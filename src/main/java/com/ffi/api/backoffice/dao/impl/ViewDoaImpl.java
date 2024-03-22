@@ -1538,7 +1538,7 @@ public class ViewDoaImpl implements ViewDao {
         // jika kosong/belum ada, atau total bukan 17 (INV) bukan 20 (POS), hapus dan insert baru
         // set: total report valid
         int TOTAL_INVENTORY = 19;
-        int TOTAL_POS = 22;
+        int TOTAL_POS = 23;
         int size = list.size();
         if (size == TOTAL_POS || size == TOTAL_INVENTORY || size == (TOTAL_INVENTORY + TOTAL_POS)) {
             return list;
@@ -1589,6 +1589,8 @@ public class ViewDoaImpl implements ViewDao {
                SELECT 'PROGRAM', 'POS0021', 'Report Cash Pull', 21, 'POS', 'R', 'A', 'REPORT' FROM dual
                UNION ALL
                SELECT 'PROGRAM', 'POS0022', 'Report POS Action', 22, 'POS', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'POS0023', 'Laporan Pesanan Besar', 23, 'POS', 'R', 'A', 'REPORT' FROM dual
                UNION ALL
                SELECT 'PROGRAM', 'INV0001', 'Order Entry', 1, 'INV', 'R', 'A', 'REPORT' FROM dual
                UNION ALL

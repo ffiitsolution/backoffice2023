@@ -292,4 +292,9 @@ public class ReportServices {
         return dao.jasperReportposAction(param, connection);
     }
 
+    ////////////// new method pesanan besar by Dani 21 Mar 2024
+    public JasperPrint jesperReportPesananBesar(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        return dao.jesperReportPesananBesar(param, connection);
+    }
+
 }

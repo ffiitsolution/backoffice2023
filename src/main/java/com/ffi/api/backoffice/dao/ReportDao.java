@@ -118,4 +118,5 @@ public interface ReportDao {
     JasperPrint jesperReportUsageFoodBeverage(Map<String, Object> param, Connection connection) throws JRException, IOException;
     JasperPrint jesperReportUsageCD(Map<String, Object> param, Connection connection) throws JRException, IOException;
     JasperPrint jasperReportposAction (Map<String, Object> param, Connection connection) throws  JRException,IOException;
+    JasperPrint jesperReportPesananBesar(Map<String, Object> param, Connection connection) throws JRException, IOException;
 }

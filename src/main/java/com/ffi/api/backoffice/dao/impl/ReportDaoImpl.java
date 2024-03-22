@@ -3838,4 +3838,31 @@ public class ReportDaoImpl implements ReportDao {
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }
+
+    /////// new method generate report Usage CD by Dani 14 Mar 2024
+    @Override
+    public JasperPrint jesperReportPesananBesar(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        String query = " B.ORDER_TYPE IN ('BRD', 'CAT', 'BTA') " 
+        + " OR ( B.ORDER_TYPE IN( 'ETA', 'DRT', 'CSP') AND A.ITEM_QTY >= 50) ";
+        String orderType = (String) param.get("orderType");
+        if (orderType != null && orderType.equals("BRD")) {
+            query = " B.ORDER_TYPE = 'BRD' ";
+        } else if (orderType != null && orderType.equals("CAT")) {
+            query = " B.ORDER_TYPE = 'CAT' ";
+        } else if (orderType != null && orderType.equals("BTA")) {
+            query = " B.ORDER_TYPE = 'BTA' ";
+        } else if (orderType != null && orderType.equals("ETA")) {
+            query = " B.ORDER_TYPE = 'ETA' AND A.ITEM_QTY >= 50 ";
+        } else if (orderType != null && orderType.equals("DRT")) {
+            query = " B.ORDER_TYPE = 'DRT' AND A.ITEM_QTY >= 50 ";
+        } else if (orderType != null && orderType.equals("CSP")) {
+            query = " B.ORDER_TYPE = 'CSP' AND A.ITEM_QTY >= 50 ";
+        } 
+        param.put("query1", query);
+        System.out.println(param);
+        ClassPathResource classPathResource = new ClassPathResource("report/laporanPesananBesar.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, param, connection);
+    }
+    
 }
