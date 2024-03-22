@@ -4906,6 +4906,7 @@ public class ViewDoaImpl implements ViewDao {
     }
 
     // Get order detail temporary list by Fathur 23 Feb 24
+    // Update order entry outlet can create an order with QTY BESAR
     @Override
     public List<Map<String, Object>> orderDetailTemporaryList(Map<String, String> balance) {
         Map<String, Object> param = new HashMap();
@@ -4938,7 +4939,7 @@ public class ViewDoaImpl implements ViewDao {
             }
         }
         if (balance.get("orderTo").equals(ORDER_TO_OUTLET)) {
-            viewQuery = "SELECT :outletCode as OUTLET_CODE, :orderNo as ORDER_NO, ITEM_CODE, ITEM_DESCRIPTION, 0 as JUMLAH_BESAR, UOM_PURCHASE AS SATUAN_BESAR, 0 AS JUMLAH_KECIL, UOM_STOCK AS SATUAN_KECIL, 0 AS TOTAL_QTY, UOM_STOCK, CONV_STOCK, CONV_STOCK AS UOM_WAREHOUSE "
+            viewQuery = "SELECT :outletCode as OUTLET_CODE, :orderNo as ORDER_NO, ITEM_CODE, ITEM_DESCRIPTION, 0 as JUMLAH_BESAR, UOM_WAREHOUSE AS SATUAN_BESAR, 0 AS JUMLAH_KECIL, UOM_PURCHASE AS SATUAN_KECIL, 0 AS TOTAL_QTY, UOM_STOCK, CONV_STOCK, (CONV_WAREHOUSE * CONV_STOCK) AS UOM_WAREHOUSE "
                 + "FROM m_item WHERE SUBSTR(ITEM_CODE,1,1) != 'X' AND STATUS = 'A' AND FLAG_MATERIAL = 'Y' AND FLAG_STOCK = 'Y' ";
         }
         if (balance.get("orderTo").equals(ORDER_TO_SUPPLIER_IN) || balance.get("orderTo").equals(ORDER_TO_SUPPLIER_EX)) {
