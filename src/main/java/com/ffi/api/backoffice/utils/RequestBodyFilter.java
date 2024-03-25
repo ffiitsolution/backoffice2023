@@ -733,6 +733,67 @@ public class RequestBodyFilter implements Filter {
                     action = UPDATE;
                     remark = "Update MPCS GROUP";
                 }
+
+                // EOD & QUERY SALES - QUERY BILL CASE
+                case "/list-query-bill" -> {
+                    module = "Eod & Query Sales - Query Bill";
+                    action = VIEW;
+                    remark = "View All List Query Bill And View Te Details";
+                }
+                case "/list-param-report" -> {
+                    module = "Eod & Query Sales - Query Bill";
+                    action = VIEW;
+                    remark = "View All List Query Bill";
+                }
+                case "/list-query-sales"-> {
+                    module = "Eod & Query Sales - Query Sales";
+                    action = VIEW;
+                    remark = "View All List Query Sales";
+                }
+
+                // EOD & QUERY SALES - END OF DAY
+                case "/last-eod" -> {
+                    module = "Eod & Query Sales - End of Day";
+                    action = VIEW;
+                    remark = "View History of Last EOD";
+                }
+                case "/process-eod" -> {
+                    module = "Eod & Query Sales - End of Day";
+                    action = SEND;
+                    remark = "Send Process of EOD";
+                }
+                case "/list-stock-opname" -> {
+                    module = "Eod & Query Sales - End of Day";
+                    action = VIEW;
+                    remark = "View List of All Stock Opname";
+                }
+                case "/backup-database" -> {
+                    module = "Eod & Query Sales - End of Day";
+                    action = CREATE;
+                    remark = "Create Backup Database Of EOD";
+                }
+
+                // EOD & QUERY SALES - KIRIM TERIMA DATA
+                case "/list-transfer-data-history"-> {
+                    module = "Eod & Query Sales - Kirim Terima Data";
+                    action = VIEW;
+                    remark = "View All History Kirim Terima Data";
+                }
+                case "/list-transfer-data" -> {
+                    module = "Eod & Query Sales - Kirim Terima Data";
+                    action = VIEW;
+                    remark = "View All Transfer Data List";
+                }
+                case "/copy-single" -> {
+                    module = "Eod & Query Sales - Kirim Terima Data";
+                    action = SEND;
+                    remark = "Updating Copy Data Single";
+                }
+                case "/transfer-data-single" -> {
+                    module = "Eod & Query Sales - Kirim Terima Data";
+                    action = SEND;
+                    remark = "Updating Transfer Data Single";
+                }
                 default -> {
                     // todo: mapping semua endpoint 
                 }
