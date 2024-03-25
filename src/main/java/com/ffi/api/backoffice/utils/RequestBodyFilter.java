@@ -349,7 +349,7 @@ public class RequestBodyFilter implements Filter {
                 case "/list-master-global" -> {
                     module = "Transaction";
                     action = VIEW;
-                    remark = "Get a List of All Warehouses";
+                    remark = "Get a List of All Master Data";
                 } 
                 case "/list-outlet" -> {
                     module = "Transaction";
@@ -545,6 +545,264 @@ public class RequestBodyFilter implements Filter {
                     module = "Transaction - MPCS";
                     action = CREATE;
                     remark = "Insert Item Into MPCS Management Fryer";
+                }
+
+                // MASTER USER CASE
+                case "/list-staff" -> {
+                    module = "Master - User";
+                    action = VIEW;
+                    remark = "View All Staff List";
+                }
+                case "/list-region" -> {
+                    module = "Master - User";
+                    action = VIEW;
+                    remark = "View All Region List";
+                }
+                case "/list-viewgroupuser" -> {
+                    module = "Master - User";
+                    action = VIEW;
+                    remark = "View All List View Group User";
+                }
+                case "/update-staff" -> {
+                    module = "Master - User";
+                    action = UPDATE;
+                    remark = "Update Data User";
+                }
+                case "/insert-staff" -> {
+                    module = "Master - User";
+                    action = CREATE;
+                    remark = "Add New User";
+                }
+
+                // MASTER GLOBAL CASE 
+                case "/list-cond-global" -> {
+                    module = "Master - Global";
+                    action = VIEW;
+                    remark = "View All Cond Global";
+                }
+
+                // MASTER OUTLET CASE
+                case "/list-type-store" -> {
+                    module = "Master - Outlet";
+                    action = VIEW;
+                    remark = "View All Outlet Types";
+                }
+                case "/list-outlet-detail" -> {
+                    module = "Master - Outlet";
+                    action = VIEW;
+                    remark = "View Outlet Detail Data";
+                }
+                case "/list-outlet-detail-group" -> {
+                    module = "Master - Outlet";
+                    action = VIEW;
+                    remark = "View Outlet Detail Group";
+                }
+                case "/list-outlet-detail-type-order" -> {
+                    module = "Master - Outlet";
+                    action = VIEW;
+                    remark = "View List of All Type Detail Order Outlet";
+                }
+                case "/update-outlet" -> {
+                    module = "Master - Outlet";
+                    action = UPDATE;
+                    remark = "Outlet Data Update";
+                }
+
+                // MASTER MENU CASE
+                case "/list-menu-group" -> {
+                    module = "Master - Menu";
+                    action = VIEW;
+                    remark = "View All List of Menu Group";
+                }
+                case "/list-menu-group-tipe-order" -> {
+                    module = "Master - Menu";
+                    action = VIEW;
+                    remark = "View All List of Menu group Type Order";
+                }
+                case "/item-menus" -> {
+                    module = "Master - Menu";
+                    action = VIEW;
+                    remark = "View All Item Menu";
+                }
+                case "/item-menus-set" -> {
+                    module = "Master - Menu";
+                    action = VIEW;
+                    remark = "View Item Menu Set";
+                }
+                case "/item-menus-tipe-order" -> {
+                    module = "Master - Menu";
+                    action = VIEW;
+                    remark = "View All Type Order Menu";
+                }
+                case "/item-menus-limit" -> {
+                    module = "Master - Menu";
+                    action = VIEW;
+                    remark = "Viewing Menu Item Limitations on Outlets";
+                }
+
+                // MASTER PRICE CASE
+                case "/list-item-price" -> {
+                    module = "Master - Menu";
+                    action = VIEW;
+                    remark = "View All Item Price Lists";
+                }
+
+                // MASTER FRYER TYPE CASE
+                case "/update-frayer" -> {
+                    module = "Master - Fryer Type";
+                    action = UPDATE;
+                    remark = "Update Fryer Type";
+                }
+                case "/insert-fryer" -> {
+                    module = "Master - Fryer Type";
+                    action = CREATE;
+                    remark = "Insert New Fryer";
+                }
+
+                // MASTER GROUP ITEM CASE
+                case "/menu-items" -> { 
+                    module = "Master - Group Item";
+                    action = VIEW;
+                    remark = "View All Menu Item";
+                }
+                case "/group-items" -> {
+                    module = "Master - Group Item";
+                    action = VIEW;
+                    remark = "View All Item Groupings";
+                }
+
+                // MASTER SUPPLIER CASE
+                case "/list-master-city" -> {
+                    module = "Master - Supplier";
+                    action = VIEW;
+                    remark = "View All Master City";
+                }
+                case "/list-position" -> {
+                    module = "Master - Supplier";
+                    action = VIEW;
+                    remark = "View All List Position";
+                }
+                case "/list-master-item-for-supplier" -> {
+                    module = "Master - Supplier";
+                    action = VIEW;
+                    remark = "View Master Item Supplier";
+                }
+                case "/update-supplier" -> {
+                    module = "Master - Supplier";
+                    action = UPDATE;
+                    remark = "Update Master Supplier";
+                }
+                case "/insert-supplier" -> {
+                    module = "Master - Supplier";
+                    action = CREATE;
+                    remark = "Insert New Supplier";
+                }
+                case "/list-supplier-item" -> {
+                    module = "Master - Supplier";
+                    action = VIEW;
+                    remark = "View All Supplier Item Lists";
+                }
+                
+                // MASTER ITEM CASE
+                case "/item-detail" -> {
+                    module = "Master - Item";
+                    action = VIEW;
+                    remark = "View Detail of item";
+                }
+
+                // MASTER RECIPE PRODUCTION CASE
+                case "/recipe-status-update" -> {
+                    module = "Master - Recipe Production";
+                    action = UPDATE;
+                    remark = "Update Recipe Status";
+                }
+                case "/recipe-detail" -> {
+                    module = "Master - Recipe Production";
+                    action = VIEW;
+                    remark = "View Recipe Detail";
+                }
+                case "/recipe-product" -> {
+                    module = "Master - Recipe Production";
+                    action = VIEW;
+                    remark = "View Recipe Product";
+                }
+
+                // MASTER MPCS
+                case "/update-mpcs" -> {
+                    module = "Master - MPCS";
+                    action = UPDATE;
+                    remark = "Update MPCS GROUP";
+                }
+
+                // EOD & QUERY SALES - QUERY BILL CASE
+                case "/list-query-bill" -> {
+                    module = "Eod & Query Sales - Query Bill";
+                    action = VIEW;
+                    remark = "View All List Query Bill And View Te Details";
+                }
+                case "/list-param-report" -> {
+                    module = "Eod & Query Sales - Query Bill";
+                    action = VIEW;
+                    remark = "View All List Query Bill";
+                }
+                case "/list-query-sales"-> {
+                    module = "Eod & Query Sales - Query Sales";
+                    action = VIEW;
+                    remark = "View All List Query Sales";
+                }
+
+                // EOD & QUERY SALES - END OF DAY
+                case "/last-eod" -> {
+                    module = "Eod & Query Sales - End of Day";
+                    action = VIEW;
+                    remark = "View History of Last EOD";
+                }
+                case "/process-eod" -> {
+                    module = "Eod & Query Sales - End of Day";
+                    action = SEND;
+                    remark = "Send Process of EOD";
+                }
+                case "/list-stock-opname" -> {
+                    module = "Eod & Query Sales - End of Day";
+                    action = VIEW;
+                    remark = "View List of All Stock Opname";
+                }
+                case "/backup-database" -> {
+                    module = "Eod & Query Sales - End of Day";
+                    action = CREATE;
+                    remark = "Create Backup Database Of EOD";
+                }
+
+                // EOD & QUERY SALES - KIRIM TERIMA DATA
+                case "/list-transfer-data-history"-> {
+                    module = "Eod & Query Sales - Kirim Terima Data";
+                    action = VIEW;
+                    remark = "View All History Kirim Terima Data";
+                }
+                case "/list-transfer-data" -> {
+                    module = "Eod & Query Sales - Kirim Terima Data";
+                    action = VIEW;
+                    remark = "View All Transfer Data List";
+                }
+                case "/copy-single" -> {
+                    module = "Eod & Query Sales - Kirim Terima Data";
+                    action = SEND;
+                    remark = "Updating Copy Data Single";
+                }
+                case "/transfer-data-single" -> {
+                    module = "Eod & Query Sales - Kirim Terima Data";
+                    action = SEND;
+                    remark = "Updating Transfer Data Single";
+                }
+
+                // TIME MANAGEMENT
+                case "/get-id-absensi" -> {
+                    module = "Time Management - Transaksi";
+                    action = SEND;
+                    remark = "Get an Attendance ID";
+                }
+                case "/" -> {
+
                 }
                 default -> {
                     // todo: mapping semua endpoint 

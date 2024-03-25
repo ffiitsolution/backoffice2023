@@ -1538,7 +1538,7 @@ public class ViewDoaImpl implements ViewDao {
         // jika kosong/belum ada, atau total bukan 17 (INV) bukan 20 (POS), hapus dan insert baru
         // set: total report valid
         int TOTAL_INVENTORY = 19;
-        int TOTAL_POS = 22;
+        int TOTAL_POS = 23;
         int size = list.size();
         if (size == TOTAL_POS || size == TOTAL_INVENTORY || size == (TOTAL_INVENTORY + TOTAL_POS)) {
             return list;
@@ -1590,6 +1590,8 @@ public class ViewDoaImpl implements ViewDao {
                UNION ALL
                SELECT 'PROGRAM', 'POS0022', 'Report POS Action', 22, 'POS', 'R', 'A', 'REPORT' FROM dual
                UNION ALL
+               SELECT 'PROGRAM', 'POS0023', 'Laporan Pesanan Besar', 23, 'POS', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
                SELECT 'PROGRAM', 'INV0001', 'Order Entry', 1, 'INV', 'R', 'A', 'REPORT' FROM dual
                UNION ALL
                SELECT 'PROGRAM', 'INV0002', 'Receiving', 2, 'INV', 'R', 'A', 'REPORT' FROM dual
@@ -1626,7 +1628,7 @@ public class ViewDoaImpl implements ViewDao {
                UNION ALL
                SELECT 'PROGRAM', 'INV0018', 'Laporan Pengeluaran Open Market', 18, 'INV', 'R', 'A', 'REPORT' FROM dual
                UNION ALL 
-               SELECT 'PROGRAM', 'INV0019', 'Laporan Pemakaian Food Beverage & CD', 19, 'INV', 'R', 'A', 'REPORT' FROM dual
+               SELECT 'PROGRAM', 'INV0019', 'Laporan Pemakaian FnB & CD', 19, 'INV', 'R', 'A', 'REPORT' FROM dual
                 """;
         System.err.println("insert New Menu report");
         try {
@@ -1736,8 +1738,8 @@ public class ViewDoaImpl implements ViewDao {
         } else {
             where += " AND H.ORDER_TYPE LIKE :orderType ";
         }
-        if (!balance.get("status").equals("1")) {
-            status = "H.STATUS LIKE :status AND H.STATUS != '1' ";
+        if (!balance.get("status").equals("1") && !balance.get("status").equals("2")) {
+            status = "H.STATUS LIKE :status AND H.STATUS NOT IN ('1', '2') ";
         } else {
             status = " H.STATUS LIKE :status ";
         }
@@ -3704,7 +3706,7 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> mpcsProductionDetail(Map<String, String> balance) {
 
-        String qry = "SELECT HIST_SEQ, MPCS_GROUP, RECIPE_CODE, SEQ_MPCS, QUANTITY, TIME_UPD, DATE_UPD "
+        String qry = "SELECT HIST_SEQ, FRYER_TYPE, FRYER_TYPE_SEQ, MPCS_GROUP, RECIPE_CODE, SEQ_MPCS, QUANTITY, TIME_UPD, DATE_UPD "
                 + "FROM T_MPCS_HIST WHERE MPCS_GROUP = :mpcsGroup AND MPCS_DATE = :dateMpcs "
                 + "AND SEQ_MPCS = :seqMpcs "
                 + "AND (FRYER_TYPE <> 'D' or FRYER_TYPE IS NULL) ORDER BY TIME_UPD ASC ";
@@ -3714,20 +3716,7 @@ public class ViewDoaImpl implements ViewDao {
         prm.put("dateMpcs", balance.get("dateMpcs"));
         prm.put("seqMpcs", balance.get("seqMpcs"));
 
-        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
-            @Override
-            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
-                Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("mpcsGroup", rs.getString("MPCS_GROUP"));
-                rt.put("recipeCode", rs.getString("RECIPE_CODE"));
-                rt.put("seqMpcs", rs.getString("SEQ_MPCS"));
-                rt.put("quantity", rs.getString("QUANTITY"));
-                rt.put("timeUpd", rs.getString("TIME_UPD"));
-                rt.put("dateUpd", rs.getString("DATE_UPD"));
-                rt.put("histSeq", rs.getString("HIST_SEQ"));
-                return rt;
-            }
-        });
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new DynamicRowMapper());
         return list;
     }
     // Done Method List MPCS Production //
@@ -4094,12 +4083,15 @@ public class ViewDoaImpl implements ViewDao {
             JsonArray details = elem.getAsJsonArray("details");
             details.forEach(dtl -> {
                 String itemCode = dtl.getAsJsonObject().getAsJsonPrimitive("itemCode").getAsString();
-                String strq = "SELECT CONV_STOCK, ITEM_DESCRIPTION FROM M_ITEM WHERE ITEM_CODE = :itemCode";
+                String strq = "SELECT CONV_STOCK, CONV_WAREHOUSE REAL_CONV_WAREHOUSE,(CONV_WAREHOUSE * CONV_STOCK) CONV_WAREHOUSE, ITEM_DESCRIPTION, UOM_STOCK FROM M_ITEM WHERE ITEM_CODE = :itemCode";
                 Map<String, String> map = new HashMap<>();
                 map.put("itemCode", itemCode);
                 Map<String, Object> a = jdbcTemplate.queryForObject(strq, map, new DynamicRowMapper());
                 dtl.getAsJsonObject().addProperty("itemDescription", (String) a.get("itemDescription"));
-                dtl.getAsJsonObject().addProperty("convWarehouse", (BigDecimal) a.get("convStock"));
+                dtl.getAsJsonObject().addProperty("uomStock", (String) a.get("uomStock"));
+                dtl.getAsJsonObject().addProperty("convStock", (BigDecimal) a.get("convStock"));
+                dtl.getAsJsonObject().addProperty("convWarehouse", (BigDecimal) a.get("convWarehouse"));
+                dtl.getAsJsonObject().addProperty("realConvWarehouse", (BigDecimal) a.get("realConvWarehouse"));
             });
             list = gson.fromJson(element, new TypeToken<List<Map<String, Object>>>() {
             }.getType());
@@ -4917,6 +4909,7 @@ public class ViewDoaImpl implements ViewDao {
     }
 
     // Get order detail temporary list by Fathur 23 Feb 24
+    // Update order entry outlet can create an order with QTY BESAR
     @Override
     public List<Map<String, Object>> orderDetailTemporaryList(Map<String, String> balance) {
         Map<String, Object> param = new HashMap();
@@ -4949,7 +4942,7 @@ public class ViewDoaImpl implements ViewDao {
             }
         }
         if (balance.get("orderTo").equals(ORDER_TO_OUTLET)) {
-            viewQuery = "SELECT :outletCode as OUTLET_CODE, :orderNo as ORDER_NO, ITEM_CODE, ITEM_DESCRIPTION, 0 as JUMLAH_BESAR, UOM_PURCHASE AS SATUAN_BESAR, 0 AS JUMLAH_KECIL, UOM_STOCK AS SATUAN_KECIL, 0 AS TOTAL_QTY, UOM_STOCK, CONV_STOCK, CONV_STOCK AS UOM_WAREHOUSE "
+            viewQuery = "SELECT :outletCode as OUTLET_CODE, :orderNo as ORDER_NO, ITEM_CODE, ITEM_DESCRIPTION, 0 as JUMLAH_BESAR, UOM_WAREHOUSE AS SATUAN_BESAR, 0 AS JUMLAH_KECIL, UOM_PURCHASE AS SATUAN_KECIL, 0 AS TOTAL_QTY, UOM_STOCK, CONV_STOCK, (CONV_WAREHOUSE * CONV_STOCK) AS UOM_WAREHOUSE "
                 + "FROM m_item WHERE SUBSTR(ITEM_CODE,1,1) != 'X' AND STATUS = 'A' AND FLAG_MATERIAL = 'Y' AND FLAG_STOCK = 'Y' ";
         }
         if (balance.get("orderTo").equals(ORDER_TO_SUPPLIER_IN) || balance.get("orderTo").equals(ORDER_TO_SUPPLIER_EX)) {
