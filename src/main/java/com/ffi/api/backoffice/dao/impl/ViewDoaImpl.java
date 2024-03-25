@@ -4083,12 +4083,15 @@ public class ViewDoaImpl implements ViewDao {
             JsonArray details = elem.getAsJsonArray("details");
             details.forEach(dtl -> {
                 String itemCode = dtl.getAsJsonObject().getAsJsonPrimitive("itemCode").getAsString();
-                String strq = "SELECT CONV_STOCK, ITEM_DESCRIPTION FROM M_ITEM WHERE ITEM_CODE = :itemCode";
+                String strq = "SELECT CONV_STOCK, CONV_WAREHOUSE REAL_CONV_WAREHOUSE,(CONV_WAREHOUSE * CONV_STOCK) CONV_WAREHOUSE, ITEM_DESCRIPTION, UOM_STOCK FROM M_ITEM WHERE ITEM_CODE = :itemCode";
                 Map<String, String> map = new HashMap<>();
                 map.put("itemCode", itemCode);
                 Map<String, Object> a = jdbcTemplate.queryForObject(strq, map, new DynamicRowMapper());
                 dtl.getAsJsonObject().addProperty("itemDescription", (String) a.get("itemDescription"));
-                dtl.getAsJsonObject().addProperty("convWarehouse", (BigDecimal) a.get("convStock"));
+                dtl.getAsJsonObject().addProperty("uomStock", (String) a.get("uomStock"));
+                dtl.getAsJsonObject().addProperty("convStock", (BigDecimal) a.get("convStock"));
+                dtl.getAsJsonObject().addProperty("convWarehouse", (BigDecimal) a.get("convWarehouse"));
+                dtl.getAsJsonObject().addProperty("realConvWarehouse", (BigDecimal) a.get("realConvWarehouse"));
             });
             list = gson.fromJson(element, new TypeToken<List<Map<String, Object>>>() {
             }.getType());
@@ -4750,9 +4753,9 @@ public class ViewDoaImpl implements ViewDao {
                 Map<String, Object> rt = new HashMap<String, Object>();
                 rt.put("code", rs.getString("ITEM_CODE"));
                 rt.put("description", rs.getString("ITEM_DESCRIPTION"));
-                rt.put("satuanBesar", rs.getString("UOM_WAREHOUSE"));
-                rt.put("satuanKecil", rs.getString("UOM_STOCK"));
-                rt.put("satuanBeli", rs.getString("UOM_PURCHASE"));
+                rt.put("uomWarehouse", rs.getString("UOM_WAREHOUSE"));
+                rt.put("uomStock", rs.getString("UOM_STOCK"));
+                rt.put("uomPurchase", rs.getString("UOM_PURCHASE"));
                 rt.put("convWarehouse", rs.getString("CONV_WAREHOUSE"));
                 rt.put("convStock", rs.getString("CONV_STOCK"));
                 rt.put("level1", rs.getString("CD_LEVEL_1"));

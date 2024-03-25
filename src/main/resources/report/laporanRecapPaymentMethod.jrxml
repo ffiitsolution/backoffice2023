@@ -125,7 +125,7 @@ LEFT JOIN M_OUTLET otl ON
 				<textElement textAlignment="Center">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<text><![CDATA[USAGE FOOD & BAFERAGE]]></text>
+				<text><![CDATA[USAGE FOOD & BEVERAGE]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="69" y="80" width="270" height="11" uuid="34f91b86-0682-4936-ae12-7b11d0400946"/>

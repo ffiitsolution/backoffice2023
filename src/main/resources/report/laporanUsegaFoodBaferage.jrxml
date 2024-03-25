@@ -192,7 +192,7 @@ order by item_code]]>
 				<textElement textAlignment="Center">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<text><![CDATA[LAPORAN PEMAKAIAN FOOD & BAVERAGE]]></text>
+				<text><![CDATA[LAPORAN PEMAKAIAN FOOD & BEVERAGE]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="649" y="10" width="142" height="11" uuid="9091df76-b31c-4d12-b61c-02ff55fe9fd5"/>
