@@ -4753,9 +4753,9 @@ public class ViewDoaImpl implements ViewDao {
                 Map<String, Object> rt = new HashMap<String, Object>();
                 rt.put("code", rs.getString("ITEM_CODE"));
                 rt.put("description", rs.getString("ITEM_DESCRIPTION"));
-                rt.put("satuanBesar", rs.getString("UOM_WAREHOUSE"));
-                rt.put("satuanKecil", rs.getString("UOM_STOCK"));
-                rt.put("satuanBeli", rs.getString("UOM_PURCHASE"));
+                rt.put("uomWarehouse", rs.getString("UOM_WAREHOUSE"));
+                rt.put("uomStock", rs.getString("UOM_STOCK"));
+                rt.put("uomPurchase", rs.getString("UOM_PURCHASE"));
                 rt.put("convWarehouse", rs.getString("CONV_WAREHOUSE"));
                 rt.put("convStock", rs.getString("CONV_STOCK"));
                 rt.put("level1", rs.getString("CD_LEVEL_1"));
