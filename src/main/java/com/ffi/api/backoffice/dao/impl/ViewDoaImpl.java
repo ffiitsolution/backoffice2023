@@ -4083,12 +4083,15 @@ public class ViewDoaImpl implements ViewDao {
             JsonArray details = elem.getAsJsonArray("details");
             details.forEach(dtl -> {
                 String itemCode = dtl.getAsJsonObject().getAsJsonPrimitive("itemCode").getAsString();
-                String strq = "SELECT CONV_STOCK, ITEM_DESCRIPTION FROM M_ITEM WHERE ITEM_CODE = :itemCode";
+                String strq = "SELECT CONV_STOCK, CONV_WAREHOUSE REAL_CONV_WAREHOUSE,(CONV_WAREHOUSE * CONV_STOCK) CONV_WAREHOUSE, ITEM_DESCRIPTION, UOM_STOCK FROM M_ITEM WHERE ITEM_CODE = :itemCode";
                 Map<String, String> map = new HashMap<>();
                 map.put("itemCode", itemCode);
                 Map<String, Object> a = jdbcTemplate.queryForObject(strq, map, new DynamicRowMapper());
                 dtl.getAsJsonObject().addProperty("itemDescription", (String) a.get("itemDescription"));
-                dtl.getAsJsonObject().addProperty("convWarehouse", (BigDecimal) a.get("convStock"));
+                dtl.getAsJsonObject().addProperty("uomStock", (String) a.get("uomStock"));
+                dtl.getAsJsonObject().addProperty("convStock", (BigDecimal) a.get("convStock"));
+                dtl.getAsJsonObject().addProperty("convWarehouse", (BigDecimal) a.get("convWarehouse"));
+                dtl.getAsJsonObject().addProperty("realConvWarehouse", (BigDecimal) a.get("realConvWarehouse"));
             });
             list = gson.fromJson(element, new TypeToken<List<Map<String, Object>>>() {
             }.getType());
