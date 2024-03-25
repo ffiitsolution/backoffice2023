@@ -3755,7 +3755,13 @@ public class ReportDaoImpl implements ReportDao {
     /////// new method generate report Usage Food & Beverage by Dani 14 Mar 2024
     @Override
     public JasperPrint jesperReportUsageFoodBeverage(Map<String, Object> param, Connection connection) throws JRException, IOException {
-        ClassPathResource classPathResource = new ClassPathResource("report/laporanUsageFoodBaferage.jrxml");
+        Boolean onlyStock = (Boolean) param.get("onlyStock");
+        String onlyStockQuery = "";
+        if (onlyStock == true) {
+            onlyStockQuery = " (SALES <> 0 OR MEAL <> 0 OR PRODUKSI <> 0 OR WASTAGE <> 0 OR LEFT_OVER <> 0) ";
+            param.put("query1", onlyStockQuery);
+        } 
+        ClassPathResource classPathResource = new ClassPathResource("report/laporanUsegaFoodBaferage.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, param, connection);
     }
@@ -3857,7 +3863,7 @@ public class ReportDaoImpl implements ReportDao {
     @Override
     public JasperPrint jesperReportPesananBesar(Map<String, Object> param, Connection connection) throws JRException, IOException {
         String query = " B.ORDER_TYPE IN ('BRD', 'CAT', 'BTA') " 
-        + " OR ( B.ORDER_TYPE IN( 'ETA', 'DRT', 'CSP') AND A.ITEM_QTY >= 50) ";
+        + " OR ( B.ORDER_TYPE IN( 'ETA', 'DRT', 'CSP') AND A.ITEM_QTY >= 30) ";
         String orderType = (String) param.get("orderType");
         if (orderType != null && orderType.equals("BRD")) {
             query = " B.ORDER_TYPE = 'BRD' ";
@@ -3866,11 +3872,11 @@ public class ReportDaoImpl implements ReportDao {
         } else if (orderType != null && orderType.equals("BTA")) {
             query = " B.ORDER_TYPE = 'BTA' ";
         } else if (orderType != null && orderType.equals("ETA")) {
-            query = " B.ORDER_TYPE = 'ETA' AND A.ITEM_QTY >= 50 ";
+            query = " B.ORDER_TYPE = 'ETA' AND A.ITEM_QTY >= 30 ";
         } else if (orderType != null && orderType.equals("DRT")) {
-            query = " B.ORDER_TYPE = 'DRT' AND A.ITEM_QTY >= 50 ";
+            query = " B.ORDER_TYPE = 'DRT' AND A.ITEM_QTY >= 30 ";
         } else if (orderType != null && orderType.equals("CSP")) {
-            query = " B.ORDER_TYPE = 'CSP' AND A.ITEM_QTY >= 50 ";
+            query = " B.ORDER_TYPE = 'CSP' AND A.ITEM_QTY >= 30 ";
         } 
         param.put("query1", query);
         System.out.println(param);

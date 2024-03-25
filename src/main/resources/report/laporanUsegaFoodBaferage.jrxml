@@ -26,8 +26,37 @@
 	<parameter name="outletBrand" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
+	<parameter name="query1" class="java.lang.String">
+		<defaultValueExpression><![CDATA[" 1=1 "]]></defaultValueExpression>
+	</parameter>
 	<queryString>
-		<![CDATA[]]>
+		<![CDATA[select a.item_code, c.item_description, COALESCE(SALES,0) SALES, COALESCE(MEAL,0) MEAL, COALESCE(PRODUKSI, 0) PRODUKSI, COALESCE(WASTAGE, 0) WASTAGE, COALESCE(LEFT_OVER, 0 ) LEFT_OVER, COALESCE(total_usage, 0) TOTAL_USAGE,COALESCE(b.item_cost, 0) ITEM_COST,(total_usage*COALESCE(b.item_cost, 0)) as total_cost,
+	COALESCE(C.CONV_STOCK, 0) CONV_STOCK,
+	COALESCE(C.UOM_STOCK, '' ) UOM_STOCK, D.OUTLET_CODE,
+	D.OUTLET_NAME AS OUTLET_CODE_NAME,
+	D.ADDRESS_1 AS OUTLET_CODE_ADDR_1,
+	D.ADDRESS_2 AS OUTLET_CODE_ADDR_2,
+	D.PHONE AS OUTLET_CODE_PHONE from (
+select item_code,SUM(SALES) as SALES,SUM(FREE_MEAL) as MEAL,SUM(PRODUKSI) AS PRODUKSI,SUM(WASTAGE) as WASTAGE,SUM(Left_Over)AS LEFT_OVER,(SUM(SALES)+SUM(FREE_MEAL)+SUM(PRODUKSI)+SUM(WASTAGE)+SUM(Left_Over))as TOTAL_USAGE
+from (
+select item_code,case when cd_trans='SLS' then total else 0 end as SALES, case when cd_trans='FML' then total else 0 end as FREE_MEAL, case when cd_trans='PRD' then total else 0 end as PRODUKSI,
+case when cd_trans='WST' then total else 0 end as WASTAGE,case when cd_trans='LOV' then total else 0 end as Left_Over 
+from (
+select item_code, case when cd_Trans = 'DEL'then 'PRD'else cd_Trans end as 
+cd_Trans, sum(quantity_in),sum(quantity),abs(sum(quantity_in)-sum(quantity)) as total from t_stock_card_detail 
+where outlet_code='0316' and trans_date between $P{fromDate} and $P{toDate} 
+group by item_code,case when cd_Trans = 'DEL'then 'PRD'else cd_Trans end 
+order by item_code,case when cd_Trans = 'DEL'then 'PRD'else cd_Trans end
+)
+) group by item_code) a left join m_item_cost b on a.item_code=b.item_code 
+LEFT JOIN m_item c ON a.item_code = c.item_code 
+LEFT JOIN M_OUTLET D ON D.outlet_code = $P{outletCode}
+LEFT JOIN M_MENU_ITEM E ON C.PLU = E.PLU
+LEFT JOIN M_MENU_GROUP F ON E.MENU_GROUP_CODE = F.MENU_GROUP_CODE
+WHERE 
+	(E.MENU_GROUP_CODE IS NULL OR F.MENU_GROUP_CODE <> 'G07') AND
+ (F.STATUS IS NULL OR F.STATUS <> 'I') AND $P!{query1}
+order by item_code]]>
 	</queryString>
 	<field name="OUTLET_CODE_NAME" class="java.lang.String"/>
 	<field name="OUTLET_CODE_ADDR_1" class="java.lang.String"/>
@@ -35,8 +64,23 @@
 	<field name="OUTLET_CODE_PHONE" class="java.lang.String"/>
 	<field name="OUTLET_CODE" class="java.lang.String"/>
 	<field name="ITEM_CODE" class="java.lang.String"/>
-	<variable name="sum_total_payment" class="java.math.BigDecimal" calculation="Sum">
-		<variableExpression><![CDATA[$F{TOTAL_PAYMENT}]]></variableExpression>
+	<field name="ITEM_DESCRIPTION" class="java.lang.String"/>
+	<field name="SALES" class="java.math.BigDecimal"/>
+	<field name="MEAL" class="java.math.BigDecimal"/>
+	<field name="PRODUKSI" class="java.math.BigDecimal"/>
+	<field name="WASTAGE" class="java.math.BigDecimal"/>
+	<field name="LEFT_OVER" class="java.math.BigDecimal"/>
+	<field name="TOTAL_USAGE" class="java.math.BigDecimal"/>
+	<field name="ITEM_COST" class="java.math.BigDecimal"/>
+	<field name="CONV_STOCK" class="java.math.BigDecimal"/>
+	<field name="UOM_STOCK" class="java.lang.String"/>
+	<field name="TOTAL_COST" class="java.math.BigDecimal"/>
+	<variable name="sum_total_sales" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{SALES}]]></variableExpression>
+		<initialValueExpression><![CDATA[BigDecimal.ZERO]]></initialValueExpression>
+	</variable>
+	<variable name="sum_total_cost" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{TOTAL_COST}]]></variableExpression>
 		<initialValueExpression><![CDATA[BigDecimal.ZERO]]></initialValueExpression>
 	</variable>
 	<background>
@@ -257,83 +301,100 @@
 		</band>
 	</pageHeader>
 	<detail>
-		<band height="25" splitType="Stretch">
+		<band height="19" splitType="Stretch">
 			<textField>
-				<reportElement x="8" y="2" width="72" height="18" uuid="039c76a5-c8aa-4bea-96ee-e0a242e68370"/>
+				<reportElement x="8" y="2" width="72" height="12" uuid="039c76a5-c8aa-4bea-96ee-e0a242e68370">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($F{TRANS_DATE})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{ITEM_CODE}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="85" y="2" width="174" height="18" uuid="c9915e64-adc8-4446-b7a8-a790c55f4edd"/>
+				<reportElement x="85" y="2" width="174" height="12" uuid="c9915e64-adc8-4446-b7a8-a790c55f4edd">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{ORDER_TYPE_DESC}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{ITEM_DESCRIPTION}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="264" y="2" width="84" height="18" uuid="87514a50-65d8-4451-87bc-73862564317d"/>
+				<reportElement x="264" y="2" width="39" height="12" uuid="87514a50-65d8-4451-87bc-73862564317d">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{PAYMENT_METHOD_CODE}.equals("CSH") ? "CASH" : $F{PAYMENT_METHOD_CODE}.equals("VCR") ? "VOUCHER" : $F{PAYMENT_METHOD_CODE_DESC}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{CONV_STOCK}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="355" y="2" width="52" height="18" uuid="b004ab7a-deea-4824-b349-6a74903d1e57"/>
+				<reportElement x="355" y="2" width="52" height="12" uuid="b004ab7a-deea-4824-b349-6a74903d1e57">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new DecimalFormat("#,##0").format($F{COUNT_PAYMENT})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{SALES})]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="411" y="2" width="52" height="18" uuid="3237718a-f908-450c-8e44-5938c1c6a67b"/>
+				<reportElement x="411" y="2" width="52" height="12" uuid="3237718a-f908-450c-8e44-5938c1c6a67b"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new DecimalFormat("#,##0").format($F{COUNT_PAYMENT})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{MEAL})]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="466" y="2" width="52" height="18" uuid="78b61e2f-3bb0-441d-900d-5a618afc594d"/>
+				<reportElement x="466" y="2" width="52" height="12" uuid="78b61e2f-3bb0-441d-900d-5a618afc594d"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new DecimalFormat("#,##0").format($F{COUNT_PAYMENT})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{PRODUKSI})]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="521" y="2" width="52" height="18" uuid="35d3ab64-5770-4593-8780-aefb5a63ae19"/>
+				<reportElement x="521" y="2" width="52" height="12" uuid="35d3ab64-5770-4593-8780-aefb5a63ae19"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new DecimalFormat("#,##0").format($F{COUNT_PAYMENT})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{WASTAGE})]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="576" y="2" width="52" height="18" uuid="532e0c1a-1ecd-46b7-b524-fa3625205e7c"/>
+				<reportElement x="576" y="2" width="52" height="12" uuid="532e0c1a-1ecd-46b7-b524-fa3625205e7c"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new DecimalFormat("#,##0").format($F{COUNT_PAYMENT})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{LEFT_OVER})]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="631" y="2" width="52" height="18" uuid="da2fa79a-0d83-4459-bfee-9429dbf6684c"/>
+				<reportElement x="631" y="2" width="52" height="12" uuid="da2fa79a-0d83-4459-bfee-9429dbf6684c"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new DecimalFormat("#,##0").format($F{COUNT_PAYMENT})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{TOTAL_USAGE})]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="686" y="2" width="52" height="18" uuid="c69cd113-9150-4115-9daa-c68c83bf57ad"/>
+				<reportElement x="686" y="2" width="52" height="12" uuid="c69cd113-9150-4115-9daa-c68c83bf57ad"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new DecimalFormat("#,##0").format($F{COUNT_PAYMENT})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{ITEM_COST})]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="741" y="2" width="52" height="18" uuid="2e26ebae-7ce0-4697-8289-c37427aed56f"/>
+				<reportElement x="741" y="2" width="52" height="12" uuid="2e26ebae-7ce0-4697-8289-c37427aed56f"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new DecimalFormat("#,##0").format($F{COUNT_PAYMENT})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($F{TOTAL_COST})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="303" y="2" width="45" height="12" uuid="6e3975d7-a2c3-4f95-a7a6-7131b2e65bb0">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{UOM_STOCK}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
@@ -344,7 +405,7 @@
 		<band splitType="Stretch"/>
 	</pageFooter>
 	<summary>
-		<band height="54" splitType="Stretch">
+		<band height="87" splitType="Stretch">
 			<line direction="BottomUp">
 				<reportElement x="8" y="8" width="792" height="1" uuid="2ea6f2a5-ac73-4245-8b45-807fc86ab842">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -352,31 +413,45 @@
 				</reportElement>
 			</line>
 			<staticText>
-				<reportElement x="268" y="10" width="122" height="11" uuid="e34fcfd0-a6ae-48a3-b5dc-61bbb9557a7a"/>
+				<reportElement x="518" y="10" width="122" height="11" uuid="e34fcfd0-a6ae-48a3-b5dc-61bbb9557a7a"/>
 				<textElement textAlignment="Right">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Sub Total :]]></text>
+				<text><![CDATA[Total Cost :]]></text>
 			</staticText>
 			<line direction="BottomUp">
-				<reportElement x="8" y="32" width="792" height="1" uuid="0fe8b027-07da-4f27-a25b-01f28752c95d">
+				<reportElement x="8" y="60" width="792" height="1" uuid="0fe8b027-07da-4f27-a25b-01f28752c95d">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 				</reportElement>
 			</line>
 			<textField>
-				<reportElement x="400" y="10" width="145" height="18" uuid="83a1f8da-d11a-449b-a678-8d0eb8e7edf0"/>
+				<reportElement x="650" y="10" width="145" height="18" uuid="83a1f8da-d11a-449b-a678-8d0eb8e7edf0"/>
 				<textElement textAlignment="Right" verticalAlignment="Top">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{sum_total_payment})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{sum_total_cost})]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="701" y="40" width="100" height="14" uuid="25b1920b-8dd8-4523-9ed8-0674a396acbc"/>
+				<reportElement x="701" y="68" width="100" height="14" uuid="25b1920b-8dd8-4523-9ed8-0674a396acbc"/>
 				<textElement textAlignment="Right">
 					<font isBold="true" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[-- End Of Report --]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="650" y="28" width="145" height="18" uuid="8459a9ae-4651-4d65-b66a-339c16f8dc2e"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{sum_total_sales})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="518" y="28" width="122" height="11" uuid="a8464541-dcd9-4465-b491-b11942ad3aa7"/>
+				<textElement textAlignment="Right">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Net Sales :]]></text>
 			</staticText>
 		</band>
 	</summary>
