@@ -794,6 +794,16 @@ public class RequestBodyFilter implements Filter {
                     action = SEND;
                     remark = "Updating Transfer Data Single";
                 }
+
+                // TIME MANAGEMENT
+                case "/get-id-absensi" -> {
+                    module = "Time Management - Transaksi";
+                    action = SEND;
+                    remark = "Get an Attendance ID";
+                }
+                case "/" -> {
+
+                }
                 default -> {
                     // todo: mapping semua endpoint 
                 }
