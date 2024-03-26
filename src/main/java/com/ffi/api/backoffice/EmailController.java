@@ -1,5 +1,7 @@
 package com.ffi.api.backoffice;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,10 +11,16 @@ import com.ffi.api.backoffice.services.EmailService;
 import com.ffi.paging.ResponseMessage;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.util.Map;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.mail.MessagingException;
+import net.sf.jasperreports.engine.JRException;
 
 @RestController
 public class EmailController {
@@ -26,19 +34,11 @@ public class EmailController {
         @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 404, message = "The resource not found"),}
     )
-    public ResponseMessage sendEmail(@RequestBody String param) {
+    public ResponseMessage sendEmail(@RequestBody String param) throws MessagingException, JRException, SQLException, IOException {
         Gson gsn = new Gson();
         Map<String, Object> balance = gsn.fromJson(param, new TypeToken<Map<String, String>>() {
         }.getType());
-        ResponseMessage rm = new ResponseMessage();
-        try {
-            emailService.sendEmail(balance);
-            rm.setMessage("Sent Success");
-            rm.setSuccess(true);
-        } catch (Exception e) {
-            rm.setMessage(e.getMessage());
-            rm.setSuccess(false);
-        }
-        return rm;
+        
+        return emailService.sendEmail(balance);
     }
 }
