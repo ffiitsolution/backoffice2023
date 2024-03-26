@@ -674,7 +674,7 @@ ORDER BY menu_item_code ASC]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<text><![CDATA[KODE]]></text>
+				<text><![CDATA[PLU#]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="37" y="139" width="164" height="39" uuid="2662e199-f12e-470a-a479-39c6c9c70ca5"/>
@@ -682,7 +682,7 @@ ORDER BY menu_item_code ASC]]>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<text><![CDATA[ITEM DESCRIPTION]]></text>
+				<text><![CDATA[NAMA PLU#]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="521" y="0" width="61" height="11" uuid="1924327b-1325-442c-94f1-4bee3fb6e08c"/>

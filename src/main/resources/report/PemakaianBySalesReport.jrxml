@@ -868,7 +868,7 @@ ORDER BY   ITEM ASC]]>
 	<summary>
 		<band height="111" splitType="Stretch">
 			<staticText>
-				<reportElement x="5" y="12" width="272" height="57" uuid="74e9f2db-c75c-4dd2-94af-0ae9295dd91b"/>
+				<reportElement x="5" y="12" width="272" height="72" uuid="74e9f2db-c75c-4dd2-94af-0ae9295dd91b"/>
 				<textElement>
 					<font size="9"/>
 				</textElement>
