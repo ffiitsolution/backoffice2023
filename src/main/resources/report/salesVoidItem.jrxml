@@ -49,6 +49,7 @@
 	<parameter name="outletBrand" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
+	<parameter name="voidType" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT
     NVL(mps.STAFF_NAME, '-') AS CASHIER,
@@ -60,7 +61,7 @@
     iv.ITEM_QTY AS QTY,
     NVL(mms.QTY, 1) AS ITEM_QTY,
     iv.AMOUNT,
-    CASE WHEN iv.VOID_TYPE = 'CAN' THEN 'CANCEL' ELSE iv.VOID_TYPE END AS TYPE,
+    CASE WHEN iv.VOID_TYPE = 'CAN' THEN 'CANCEL' WHEN iv.VOID_TYPE = 'VOD' THEN 'VOID' ELSE iv.VOID_TYPE END AS TYPE,
     CASE WHEN $P{fromDate} = $P{toDate} THEN $P{fromDate} ELSE $P{fromDate} || ' - ' || $P{toDate} END AS PERIODE,
     mo.OUTLET_CODE,
     mo.OUTLET_NAME,
@@ -84,7 +85,8 @@ LEFT JOIN
     m_item mmi ON mmi.ITEM_CODE = mms.MENU_SET_ITEM_CODE
 WHERE
     iv.OUTLET_CODE = $P{outletCode} AND
-    iv.VOID_TYPE = 'CAN' AND
+    iv.VOID_TYPE LIKE $P{voidType} AND
+    iv.VOID_TYPE IN ('CAN', 'VOD') AND
     iv.TRANS_DATE BETWEEN TO_DATE($P{fromDate}, 'DD MON RR') AND TO_DATE($P{toDate}, 'DD MON RR')
 	AND iv.pos_code BETWEEN $P{posCode1} AND $P{posCode2}
 	AND iv.cashier_code BETWEEN $P{cashierCode1} AND $P{cashierCode2}
@@ -339,7 +341,7 @@ ORDER BY
 			</staticText>
 			<staticText>
 				<reportElement x="532" y="138" width="42" height="30" uuid="5d002826-8b28-4dfb-8d73-3d2f1ba029ca"/>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Type]]></text>
