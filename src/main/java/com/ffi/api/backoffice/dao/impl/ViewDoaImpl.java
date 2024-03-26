@@ -2319,11 +2319,12 @@ public class ViewDoaImpl implements ViewDao {
                 + "                    JUMLAH_SATUAN_BESAR, "
                 + "                    SATUAN_BESAR, "
                 + "                    JUMLAH_SATUAN_KECIL, "
-                + "                    UOM_PURCHASE, "
+                + "                    SATUAN_KECIL, "
                 + "                    (CONV_WAREHOUSE * CONV_STOCK) CONV_WAREHOUSE, "
+                + "                    CONV_WAREHOUSE REAL_CONV_WAREHOUSE, "
                 + "                    CONV_STOCK, "
-                + "                    (JUMLAH_SATUAN_BESAR * CONV_WAREHOUSE) + JUMLAH_SATUAN_KECIL TOTAL_JUMLAH, "
-                + "                    UOM_STOCK AS TOTAL "
+                + "                    TOTAL, "
+                + "                    TOTAL_JUMLAH "
                 + "                FROM ( "
                 + "                SELECT  "
                 + "                    ITEM_CODE, "
@@ -2331,10 +2332,11 @@ public class ViewDoaImpl implements ViewDao {
                 + "                    0 AS JUMLAH_SATUAN_BESAR, "
                 + "                    UOM_WAREHOUSE AS SATUAN_BESAR, "
                 + "                    0 AS JUMLAH_SATUAN_KECIL, "
-                + "                    UOM_PURCHASE,UOM_STOCK, "
-                + "                    CONV_WAREHOUSE,CONV_STOCK, "
-                + "                    0 TOTAL_JUMLAH, "
-                + "                    UOM_PURCHASE AS TOTAL "
+                + "                    UOM_PURCHASE SATUAN_KECIL, "
+                + "                    UOM_STOCK TOTAL, "
+                + "                    CONV_WAREHOUSE, "
+                + "                    CONV_STOCK, "
+                + "                    0 TOTAL_JUMLAH "
                 + "                FROM M_ITEM WHERE "
                 + "                SUBSTR(ITEM_CODE,1,1) != 'X' "
                 + "                AND STATUS = 'A' "
@@ -2344,24 +2346,7 @@ public class ViewDoaImpl implements ViewDao {
         Map prm = new HashMap();
         prm.put("cdWarehouse", balance.get("cdWarehouse"));
         System.err.println("q :" + qry);
-        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
-            @Override
-            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
-                Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("itemCode", rs.getString("ITEM_CODE"));
-                rt.put("itemDescription", rs.getString("ITEM_DESCRIPTION"));
-                rt.put("jumlahSatuanBesar", rs.getString("JUMLAH_SATUAN_BESAR"));
-                rt.put("satuanBesar", rs.getString("SATUAN_BESAR"));
-                rt.put("jumlahSatuanKecil", rs.getString("JUMLAH_SATUAN_KECIL"));
-                rt.put("uomPurchase", rs.getString("UOM_PURCHASE"));
-                rt.put("convWarehouse", rs.getString("CONV_WAREHOUSE"));
-                rt.put("totalJumlah", rs.getString("TOTAL_JUMLAH"));
-                rt.put("total", rs.getString("TOTAL"));
-                rt.put("convStock", rs.getString("CONV_STOCK"));
-
-                return rt;
-            }
-        });
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new DynamicRowMapper());
         return list;
     }
 
@@ -3967,7 +3952,7 @@ public class ViewDoaImpl implements ViewDao {
         });
 
         String queryDtls = "SELECT B.ITEM_DESCRIPTION, B.CONV_WAREHOUSE, C.OUTLET_NAME AS OUTLET_TO_NAME, A.OUTLET_CODE, A.OUTLET_TO, A.REQUEST_NO, "
-                + " A.DELIVERY_NO, A.ITEM_CODE, A.QTY_PURCH, A.UOM_PURCH, A.QTY_STOCK, A.UOM_STOCK, A.TOTAL_QTY, A.USER_UPD, TO_CHAR(A.DATE_UPD, 'DD-MON-YYYY') AS DATE_UPD, A.TIME_UPD "
+                + " A.DELIVERY_NO, A.ITEM_CODE, A.QTY_PURCH, A.UOM_PURCH, A.QTY_STOCK, A.UOM_STOCK, B.UOM_STOCK AS TOTAL, A.TOTAL_QTY, A.USER_UPD, TO_CHAR(A.DATE_UPD, 'DD-MON-YYYY') AS DATE_UPD, A.TIME_UPD "
                 + " FROM T_DEV_DETAIL A LEFT JOIN M_ITEM B ON A.ITEM_CODE = B.ITEM_CODE LEFT JOIN M_OUTLET C ON A.OUTLET_TO = C.OUTLET_CODE "
                 + " WHERE A.REQUEST_NO =:requestNo AND A.DELIVERY_NO =:deliveryNo AND A.OUTLET_TO = :outletTo ";
         List<Map<String, Object>> dtls = jdbcTemplate.query(queryDtls, dlvr, new RowMapper() {
@@ -3990,6 +3975,7 @@ public class ViewDoaImpl implements ViewDao {
                 map.put("userUpd", rs.getString("USER_UPD"));
                 map.put("dateUpd", rs.getString("DATE_UPD"));
                 map.put("timeUpd", rs.getString("TIME_UPD"));
+                map.put("total", rs.getString("TOTAL"));
                 return map;
             }
         });
