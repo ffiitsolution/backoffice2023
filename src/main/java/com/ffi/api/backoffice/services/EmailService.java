@@ -53,7 +53,7 @@ public class EmailService {
             helper.setTo((String)balance.get("recipient"));
             helper.setText((String)balance.get("body"));
             helper.setSubject((String)balance.get("subject"));
-            helper.addAttachment("Permintaan " + balance.get("supplierName")+ " - "+ balance.get("orderNo"), resource);
+            helper.addAttachment("Permintaan " + balance.get("supplierName")+ " - "+ balance.get("orderNo") + ".pdf", resource);
             mailSender.send(message);
         } catch (MailException e) {
             e.printStackTrace();
