@@ -363,4 +363,7 @@ public interface ViewDao {
     // Get level master list by aditya 19 Mar 24
     List<Map<String, Object>> listLevel(Map<String, Object> ref);
     
+    // Get Report MPCS Monitoring by aditya 22 Mar 24
+    List<Map<String, Object>> listMpcsMonitoring(Map<String, Object> ref);
+    
 }
