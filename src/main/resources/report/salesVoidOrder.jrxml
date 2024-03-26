@@ -49,6 +49,7 @@
 	<parameter name="outletBrand" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
+	<parameter name="voidType" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT
     NVL(mps.STAFF_NAME, '-') AS CASHIER,
@@ -91,6 +92,7 @@ LEFT JOIN
 WHERE
     pb.OUTLET_CODE = $P{outletCode} AND
     pb.DELIVERY_STATUS <> 'CLS' AND
+    pb.DELIVERY_STATUS LIKE $P{voidType} AND
     pb.TRANS_DATE BETWEEN $P{fromDate} AND $P{toDate}
 ORDER BY
     pb.DATE_UPD DESC, pb.TIME_UPD DESC]]>

@@ -3110,10 +3110,28 @@ public class ReportDaoImpl implements ReportDao {
                 hashMap.put("shiftCode", shiftCode.toString());
             }
         }
+        
+        String voidType;
+        if(hashMap.get("canceledType").toString().equalsIgnoreCase("semua")){
+            voidType = "%%";
+        } else if(hashMap.get("canceledType").toString().equalsIgnoreCase("void")){
+            voidType = "%VOD%";
+        } else if(hashMap.get("canceledType").toString().equalsIgnoreCase("cancel")){
+            voidType = "%CAN%";
+        } else if(hashMap.get("canceledType").toString().equalsIgnoreCase("bad order")){
+            voidType = "%BAD%";
+        } else {
+            voidType = hashMap.get("canceledType").toString();
+        }
+        hashMap.put("voidType", voidType);
 
         System.err.println("jasperReportSalesVoid prm :" + hashMap);
-        System.err.println("Order :" + hashMap.get("canceled").toString().equalsIgnoreCase("Order"));
-        ClassPathResource classPathResource = new ClassPathResource(hashMap.get("canceled").toString().equalsIgnoreCase("Order") ? "report/salesVoidOrder.jrxml" : "report/salesVoidItem.jrxml");
+        System.err.println("Order: " + hashMap.get("canceled").toString().equalsIgnoreCase("Order"));
+        String reportFilePath = "report/salesVoidItem.jrxml";
+        if(hashMap.get("canceled").toString().equalsIgnoreCase("order")){
+            reportFilePath = "report/salesVoidOrder.jrxml";
+        }
+        ClassPathResource classPathResource = new ClassPathResource(reportFilePath);
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, hashMap, connection);
     }
