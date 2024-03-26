@@ -35,6 +35,7 @@ public class RequestBodyFilter implements Filter {
     private final String DELETE = "DELETE";
     private final String SEND = "SEND";
     private final String PRINT = "PRINT";
+    private final String CANCEL = "CANCEL";
 
     @Autowired
     private FileLoggerUtil fileLoggerUtil;
@@ -244,7 +245,7 @@ public class RequestBodyFilter implements Filter {
                     action = PRINT;
                     remark = "Delete MPCS Produksi";
                 }
-                case "/report-report-refund-jesper"  -> {
+                case "/report-report-refund-jesper" -> {
                     module = "Report";
                     action = PRINT;
                     remark = "Refund";
@@ -350,7 +351,7 @@ public class RequestBodyFilter implements Filter {
                     module = "Transaction";
                     action = VIEW;
                     remark = "Get a List of All Master Data";
-                } 
+                }
                 case "/list-outlet" -> {
                     module = "Transaction";
                     action = VIEW;
@@ -488,7 +489,7 @@ public class RequestBodyFilter implements Filter {
                     module = "Transaction - Return Order";
                     action = VIEW;
                     remark = "View All List of Supplier and Warehouse";
-                } 
+                }
                 case "/list-item-supplier-gudang-return" -> {
                     module = "Transaction - Return Order";
                     action = VIEW;
@@ -535,12 +536,12 @@ public class RequestBodyFilter implements Filter {
                     module = "Transaction - MPCS";
                     action = VIEW;
                     remark = "View All Recipe production";
-                }   
+                }
                 case "/mpcs-production-product-result" -> {
                     module = "Transaction - MPCS";
                     action = VIEW;
                     remark = "View All Recipe production result";
-                } 
+                }
                 case "/insert-mpcs-management-fryer" -> {
                     module = "Transaction - MPCS";
                     action = CREATE;
@@ -660,7 +661,7 @@ public class RequestBodyFilter implements Filter {
                 }
 
                 // MASTER GROUP ITEM CASE
-                case "/menu-items" -> { 
+                case "/menu-items" -> {
                     module = "Master - Group Item";
                     action = VIEW;
                     remark = "View All Menu Item";
@@ -702,7 +703,7 @@ public class RequestBodyFilter implements Filter {
                     action = VIEW;
                     remark = "View All Supplier Item Lists";
                 }
-                
+
                 // MASTER ITEM CASE
                 case "/item-detail" -> {
                     module = "Master - Item";
@@ -745,7 +746,7 @@ public class RequestBodyFilter implements Filter {
                     action = VIEW;
                     remark = "View All List Query Bill";
                 }
-                case "/list-query-sales"-> {
+                case "/list-query-sales" -> {
                     module = "Eod & Query Sales - Query Sales";
                     action = VIEW;
                     remark = "View All List Query Sales";
@@ -763,9 +764,15 @@ public class RequestBodyFilter implements Filter {
                     remark = "Send Process of EOD";
                 }
                 case "/list-stock-opname" -> {
-                    module = "Eod & Query Sales - End of Day";
-                    action = VIEW;
-                    remark = "View List of All Stock Opname";
+                    if (url.equalsIgnoreCase("/transaction/stock-opname")) {
+                        module = "Transaksi - Stock Opname";
+                        action = VIEW;
+                        remark = "View List of Stock Opname";
+                    } else {
+                        module = "Eod & Query Sales - End of Day";
+                        action = VIEW;
+                        remark = "Check Stock Opname";
+                    }
                 }
                 case "/backup-database" -> {
                     module = "Eod & Query Sales - End of Day";
@@ -774,7 +781,7 @@ public class RequestBodyFilter implements Filter {
                 }
 
                 // EOD & QUERY SALES - KIRIM TERIMA DATA
-                case "/list-transfer-data-history"-> {
+                case "/list-transfer-data-history" -> {
                     module = "Eod & Query Sales - Kirim Terima Data";
                     action = VIEW;
                     remark = "View All History Kirim Terima Data";
@@ -801,9 +808,51 @@ public class RequestBodyFilter implements Filter {
                     action = SEND;
                     remark = "Get an Attendance ID";
                 }
-                case "/" -> {
-
+                case "/insert-absensi" -> {
+                    module = "Time Management - Transaksi";
+                    action = CREATE;
+                    remark = "Attendance Trx";
                 }
+                
+                //// TRANSACTION
+                // STOCK OPNAME
+                case "/insert-opname-header" -> {
+                    module = "Transaction - Stock Opname";
+                    action = CREATE;
+                    remark = "Insert New Stock Opname";
+                }
+                case "/list-edit-item-detail-opname" -> {
+                    module = "Transaction - Stock Opname";
+                    action = UPDATE;
+                    remark = "Edit Stock Opname";
+                }
+                case "/insert-opname-detail" -> {
+                    module = "Transaction - Stock Opname";
+                    action = UPDATE;
+                    remark = "Update Detail Stock Opname";
+                }
+                case "/update-opname-status" -> {
+                    String statusOpname = param.getOrDefault("confirmZero", "0").toString();
+                    switch (statusOpname) {
+                        case "0" -> {
+                            module = "Transaction - Stock Opname";
+                            action = UPDATE;
+                            remark = "Proses Cek Stock Opname";
+                        }
+                        case "2" -> {
+                            module = "Transaction - Stock Opname";
+                            action = CANCEL;
+                            remark = "Batal Stock Opname";
+                        }
+                        default -> {
+                            module = "Transaction - Stock Opname";
+                            action = UPDATE;
+                            remark = "Proses Stock Opname";
+                        }
+                    }
+                }
+                
+                
                 default -> {
                     // todo: mapping semua endpoint 
                 }
