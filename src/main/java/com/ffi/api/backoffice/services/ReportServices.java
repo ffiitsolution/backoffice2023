@@ -297,4 +297,9 @@ public class ReportServices {
         return dao.jesperReportPesananBesar(param, connection);
     }
 
+    /// report POS Summary Laporan Pagi by M Joko 26 Mar 2024
+    public JasperPrint jesperReportSummaryLaporanPagi(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        return dao.jesperReportSummaryLaporanPagi(param, connection);
+    }
+
 }

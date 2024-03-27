@@ -1475,4 +1475,24 @@ public class ReportController {
         return generatePdfCsvReport(jasperPrint, prm, "PesananBesar");
 
     }
+
+    /// report POS Summary Laporan Pagi by M Joko 26 Mar 2024
+    @CrossOrigin
+    @RequestMapping(value = "/report-summary-laporan-pagi-jesper", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Menampilkan report pesanan besar", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found")})
+    public ResponseEntity<byte[]> jesperReportSummaryLaporanPagi(@RequestBody String param) throws SQLException, JRException, IOException {
+        Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
+        Gson gsn = new Gson();
+        Map<String, Object> prm = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        JasperPrint jasperPrint = reportServices.jesperReportSummaryLaporanPagi(prm, conn);
+        conn.close();
+
+        return generatePdfCsvReport(jasperPrint, prm, "PesananBesar");
+
+    }
 }

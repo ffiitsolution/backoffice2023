@@ -1537,8 +1537,8 @@ public class ViewDoaImpl implements ViewDao {
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new DynamicRowMapper());
         // jika kosong/belum ada, atau total bukan 17 (INV) bukan 20 (POS), hapus dan insert baru
         // set: total report valid
+        int TOTAL_POS = 24;
         int TOTAL_INVENTORY = 19;
-        int TOTAL_POS = 23;
         int size = list.size();
         if (size == TOTAL_POS || size == TOTAL_INVENTORY || size == (TOTAL_INVENTORY + TOTAL_POS)) {
             return list;
@@ -1591,6 +1591,8 @@ public class ViewDoaImpl implements ViewDao {
                SELECT 'PROGRAM', 'POS0022', 'Report POS Action', 22, 'POS', 'R', 'A', 'REPORT' FROM dual
                UNION ALL
                SELECT 'PROGRAM', 'POS0023', 'Laporan Pesanan Besar', 23, 'POS', 'R', 'A', 'REPORT' FROM dual
+               UNION ALL
+               SELECT 'PROGRAM', 'POS0024', 'Summary Laporan Pagi', 24, 'POS', 'R', 'A', 'REPORT' FROM dual
                UNION ALL
                SELECT 'PROGRAM', 'INV0001', 'Order Entry', 1, 'INV', 'R', 'A', 'REPORT' FROM dual
                UNION ALL
