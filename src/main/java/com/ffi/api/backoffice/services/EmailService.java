@@ -1,5 +1,6 @@
 package com.ffi.api.backoffice.services;
 
+import com.ffi.paging.ResponseMessage;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -37,10 +38,11 @@ public class EmailService {
     @Value("${spring.datasource.password}")
     private String getOraclePass;
 
-    public void sendEmail(Map<String, Object> balance) throws MessagingException, JRException, SQLException, IOException {
+    public ResponseMessage sendEmail(Map<String, Object> balance) throws MessagingException, JRException, SQLException, IOException {
         MimeMessage message = mailSender.createMimeMessage();
         Connection conn = DriverManager.getConnection(getOracleUrl, getOracleUsername, getOraclePass);
         
+        ResponseMessage rm = new ResponseMessage();
         JasperPrint jasperPrint = reportService.jasperReportOrderEntryTransactions(balance, conn);
         conn.close();
         
@@ -55,8 +57,14 @@ public class EmailService {
             helper.setSubject((String)balance.get("subject"));
             helper.addAttachment("Permintaan " + balance.get("supplierName")+ " - "+ balance.get("orderNo") + ".pdf", resource);
             mailSender.send(message);
+            
+            rm.setMessage("Sent Success");
+            rm.setSuccess(true);
         } catch (MailException e) {
             e.printStackTrace();
+            rm.setMessage(e.getMessage());
+            rm.setSuccess(false);
         }
+        return rm;
     }
 }

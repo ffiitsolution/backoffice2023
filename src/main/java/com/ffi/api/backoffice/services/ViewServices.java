@@ -620,4 +620,9 @@ public class ViewServices {
     public List<Map<String, Object>> listLevel(Map<String, Object> ref) {
         return viewDao.listLevel(ref);
     }
+    
+    // Get level list by adit 19 Mar 24 //
+    public List<Map<String, Object>> listMpcsMonitoring(Map<String, Object> ref) {
+        return viewDao.listMpcsMonitoring(ref);
+    }
 }

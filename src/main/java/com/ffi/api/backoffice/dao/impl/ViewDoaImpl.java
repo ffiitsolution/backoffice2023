@@ -4991,4 +4991,29 @@ public class ViewDoaImpl implements ViewDao {
     }
     
     /////// done aditya 19 mar 24
+    
+    @Override
+     public List<Map<String, Object>> listMpcsMonitoring(Map<String, Object> balance) {
+        String qry = "SELECT z.OUTLET_CODE, z.RECIPE_CODE, z.ITEM_CODE, z.MPCS_GROUP, z.ITEM_DESCRIPTION, z.TIME_MPCS, z.INTERVAL, z.MIN_STOCK, TO_CHAR(TO_DATE(z.TIME_MPCS, 'HH24:MI:SS') + (z.INTERVAL/1440),'HH24:MI') AS EXPIRED, s.SISA FROM ( SELECT a.OUTLET_CODE, b.RECIPE_CODE, e.ITEM_CODE, e.ITEM_DESCRIPTION, a.MPCS_GROUP, TO_CHAR(TO_DATE(a.TIME_UPD, 'HH24MISS'), 'HH24:MI') AS TIME_MPCS , c.VALUE AS INTERVAL, e.MIN_STOCK, ROW_NUMBER() OVER (PARTITION BY a.MPCS_GROUP ORDER BY a.TIME_MPCS DESC) AS rn FROM T_SUMM_MPCS a JOIN M_RECIPE_HEADER b ON a.MPCS_GROUP = b.MPCS_GROUP JOIN M_GLOBAL c ON b.RECIPE_CODE = c.CODE JOIN M_RECIPE_PRODUCT d ON c.CODE = d.RECIPE_CODE JOIN M_ITEM e ON d.PRODUCT_CODE = e.ITEM_CODE WHERE a.QTY_PROD <> 0 AND a.MPCS_GROUP IN ( SELECT b.MPCS_GROUP FROM M_GLOBAL mg LEFT JOIN M_RECIPE_HEADER mrh ON mrh.RECIPE_CODE = mg.CODE LEFT JOIN M_RECIPE_PRODUCT mrp ON mrp.RECIPE_CODE = mrh.RECIPE_CODE LEFT JOIN T_STOCK_CARD tsc ON tsc.ITEM_CODE = mrp.PRODUCT_CODE WHERE mg.CODE LIKE '%COK%' AND mg.STATUS = 'A' AND b.MPCS_GROUP IS NOT NULL AND b.STATUS = 'A' ) AND DATE_MPCS = ( SELECT TRANS_DATE FROM M_OUTLET WHERE OUTLET_CODE = :outletCode ) ) z LEFT JOIN ( SELECT d.OUTLET_CODE, b.MPCS_GROUP, d.ITEM_CODE, (d.QTY_BEGINNING + d.QTY_IN - d.QTY_OUT) AS SISA FROM M_GLOBAL mg LEFT JOIN M_RECIPE_HEADER b ON b.RECIPE_CODE = mg.CODE LEFT JOIN M_RECIPE_PRODUCT c ON c.RECIPE_CODE = b.RECIPE_CODE LEFT JOIN T_STOCK_CARD d ON d.ITEM_CODE = c.PRODUCT_CODE WHERE mg.CODE LIKE '%COK%' AND mg.STATUS = 'A' AND b.MPCS_GROUP IN ( SELECT b.MPCS_GROUP FROM M_GLOBAL mg LEFT JOIN M_RECIPE_HEADER b ON b.RECIPE_CODE = mg.CODE WHERE mg.CODE LIKE '%COK%' AND mg.STATUS = 'A' AND b.MPCS_GROUP IS NOT NULL AND b.STATUS = 'A' ) AND b.STATUS = 'A' AND d.TRANS_DATE = ( SELECT TRANS_DATE FROM M_OUTLET WHERE OUTLET_CODE = :outletCode ) ) s ON z.OUTLET_CODE = s.OUTLET_CODE AND z.MPCS_GROUP = s.MPCS_GROUP AND z.ITEM_CODE = s.ITEM_CODE WHERE z.rn = 1 ORDER BY z.RECIPE_CODE ASC, z.ITEM_CODE ASC, z.MPCS_GROUP ASC";
+        Map prm = new HashMap();
+        prm.put("outletCode", balance.get("outletCode"));
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+                Map<String, Object> rt = new HashMap<String, Object>();
+                rt.put("outletCode", rs.getString("OUTLET_CODE"));
+                rt.put("recipeCode", rs.getString("RECIPE_CODE"));
+                rt.put("itemCode", rs.getString("ITEM_CODE"));
+                rt.put("mpcsGroup", rs.getString("MPCS_GROUP"));
+                rt.put("description", rs.getString("ITEM_DESCRIPTION"));
+                rt.put("jamMasak", rs.getString("TIME_MPCS"));
+                rt.put("interval", rs.getString("INTERVAL"));
+                rt.put("minStock", rs.getString("MIN_STOCK"));
+                rt.put("expired", rs.getString("EXPIRED"));
+                rt.put("onHand", rs.getString("SISA"));
+                return rt;
+            }
+        });
+        return list;
+    }
 }
