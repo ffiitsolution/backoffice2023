@@ -2890,14 +2890,14 @@ public class ProcessDaoImpl implements ProcessDao {
             if (countDetail > 0) {
                 // query update detail
                 String queryDetailUpdate = "UPDATE T_DEV_DETAIL"
-                        + " SET DELIVERY_NO=:deliveryNo, QTY_PURCH=:qtyPurch, UOM_PURCH=:uomPurch, QTY_STOCK=:qtyStock, UOM_STOCK=:uomStock, TOTAL_QTY=:totalQty, USER_UPD=:userUpd, DATE_UPD=:dateUpd, TIME_UPD=:timeUpd"
+                        + " SET DELIVERY_NO=:deliveryNo, QTY_PURCH=:qtyWarehouse, UOM_PURCH=:uomWarehouse, QTY_STOCK=:qtyPurchase, UOM_STOCK=:uomPurchase, TOTAL_QTY=:totalQty, USER_UPD=:userUpd, DATE_UPD=:dateUpd, TIME_UPD=:timeUpd"
                         + " WHERE OUTLET_CODE=:outletCode AND OUTLET_TO=:outletTo AND REQUEST_NO=:requestNo AND ITEM_CODE=:itemCode";
                 jdbcTemplate.update(queryDetailUpdate, map);
             } else {
                 // query insert detail
                 String queryDetailInsert = " INSERT INTO T_DEV_DETAIL "
                         + " (OUTLET_CODE, OUTLET_TO, REQUEST_NO, DELIVERY_NO, ITEM_CODE, QTY_PURCH, UOM_PURCH, QTY_STOCK, UOM_STOCK, TOTAL_QTY, USER_UPD, DATE_UPD, TIME_UPD)"
-                        + " VALUES(:outletCode, :outletTo, :requestNo, :deliveryNo, :itemCode, :qtyPurch, :uomPurch, :qtyStock, :uomStock, :totalQty, :userUpd, :dateUpd, :timeUpd)";
+                        + " VALUES(:outletCode, :outletTo, :requestNo, :deliveryNo, :itemCode, :qtyWarehouse, :uomWarehouse, :qtyPurchase, :uomPurchase, :totalQty, :userUpd, :dateUpd, :timeUpd)";
                 jdbcTemplate.update(queryDetailInsert, map);
             }
         }
