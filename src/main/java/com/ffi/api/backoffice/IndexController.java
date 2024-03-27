@@ -3116,7 +3116,7 @@ public class IndexController {
 
     // query to get Delivery order By Dani 27 Des 2023
     @RequestMapping(value = "/get-delivery-order", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Digunakan untuk insert delivery order", response = Object.class)
+    @ApiOperation(value = "Digunakan untuk get delivery order", response = Object.class)
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 404, message = "The resource not found"),}
