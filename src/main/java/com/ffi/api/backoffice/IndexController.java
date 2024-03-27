@@ -4376,7 +4376,6 @@ public class IndexController {
         Response res = new Response();
         res.setData(viewServices.listMpcsMonitoring(balance));
         return res;
-    }
-
+    }    
     /////////////////// end aditya 22 Mar 2024
 }

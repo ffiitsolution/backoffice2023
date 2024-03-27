@@ -778,7 +778,7 @@ public class ViewDoaImpl implements ViewDao {
             qry += " AND a.STATUS IN ('A', 'I' )";
         }
 
-        qry += " ORDER BY a.status ASC, a.MPCS_GROUP ASC ";
+        qry += " ORDER BY a.status ASC, b.STATUS ASC, a.MPCS_GROUP ASC ";
         System.out.println("listMpcsHeader" + qry);
         List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
             @Override

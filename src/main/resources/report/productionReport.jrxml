@@ -819,7 +819,7 @@ ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{mpcsGroup} == null ? "Semua Group" : $P{mpcsGroup}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{mpcsGroup} == null ? "Semua Group" : $P{mpcsGroup} + " - " + $F{MPCS_DESCRIPTION}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="50" y="60" width="5" height="11" uuid="476e27dd-386a-4d55-86f7-c9ae05528e6c"/>
