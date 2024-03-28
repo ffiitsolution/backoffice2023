@@ -3344,15 +3344,9 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> data = gsn.fromJson(params, new TypeToken<Map<String, String>>() {
         }.getType());
-        ResponseMessage rm = new ResponseMessage();
-        if (processServices.insertMpcsProduction(data)) {
-            rm.setSuccess(true);
-            rm.setMessage("Insert Successfuly");
-        } else {
-            rm.setSuccess(false);
-            rm.setMessage("Insert  Failed");
-        }
-        return rm;
+        
+        return processServices.insertMpcsProduction(data); 
+
     }
 
     // Get List Daftar Menu Report  By Rafi 9 Jan 2024
