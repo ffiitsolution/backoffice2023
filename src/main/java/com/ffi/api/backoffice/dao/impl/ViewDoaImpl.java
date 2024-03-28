@@ -4402,7 +4402,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("notes", rs.getString("NOTES"));
                 rt.put("oilUse", rs.getString("OIL_USE"));
                 rt.put("maximumUse", rs.getString("MAXIMUM_USE"));
-                rt.put("progress", rs.getString("PROGRESS"));
+                rt.put("progress", rs.getDouble("PROGRESS"));
                 rt.put("userUpd", rs.getString("USER_UPD"));
                 rt.put("staffName", rs.getString("PIC"));
 
@@ -4415,7 +4415,7 @@ public class ViewDoaImpl implements ViewDao {
     ///////////////new method from aditya 30-01-2024////////////////////////////
     @Override
     public List<Map<String, Object>> listMpcsManagementFryer(Map<String, String> balance) {
-        String qry = "SELECT OUTLET_CODE, FRYER_TYPE, FRYER_DESCRIPTION, FRYER_NO, FRYER_MAXIMUM, ROUND((OIL_USE / CASE WHEN FRYER_TYPE = 'O' THEN 9 WHEN FRYER_TYPE = 'P' THEN 7 ELSE 1 END) ) AS OIL_USE, TO_CHAR(ROUND((((OIL_USE / CASE WHEN FRYER_TYPE = 'O' THEN 9 WHEN FRYER_TYPE = 'P' THEN 7 ELSE 1 END ) / FRYER_MAXIMUM) * 100 ),2), 'FM9999') AS PROGRESS FROM ( SELECT a.OUTLET_CODE, a.FRYER_TYPE, b.DESCRIPTION AS FRYER_DESCRIPTION, a.FRYER_TYPE_SEQ AS FRYER_NO, a.FRYER_TYPE_CNT AS OIL_USE, b.VALUE AS FRYER_MAXIMUM FROM M_MPCS_DETAIL a JOIN M_GLOBAL b ON a.FRYER_TYPE = b.CODE AND b.COND = 'FRYER' WHERE a.STATUS = 'A' AND a.OUTLET_CODE = :outletCode ) z GROUP BY OUTLET_CODE, FRYER_TYPE, FRYER_DESCRIPTION, OIL_USE, FRYER_MAXIMUM, FRYER_NO ORDER BY FRYER_TYPE ASC, FRYER_NO ASC";
+        String qry = "SELECT OUTLET_CODE, FRYER_TYPE, FRYER_DESCRIPTION, FRYER_NO, FRYER_MAXIMUM, OIL_USE, ROUND(((OIL_USE / FRYER_MAXIMUM) * 100 ),1) AS PROGRESS FROM ( SELECT a.OUTLET_CODE, a.FRYER_TYPE, b.DESCRIPTION AS FRYER_DESCRIPTION, a.FRYER_TYPE_SEQ AS FRYER_NO, a.FRYER_TYPE_CNT AS OIL_USE, b.VALUE AS FRYER_MAXIMUM FROM M_MPCS_DETAIL a JOIN M_GLOBAL b ON a.FRYER_TYPE = b.CODE AND b.COND = 'FRYER' WHERE a.STATUS = 'A' AND a.OUTLET_CODE = :outletCode ) z GROUP BY OUTLET_CODE, FRYER_TYPE, FRYER_DESCRIPTION, OIL_USE, FRYER_MAXIMUM, FRYER_NO ORDER BY FRYER_TYPE ASC, FRYER_NO ASC";
         Map prm = new HashMap();
         prm.put("outletCode", balance.get("outletCode"));
 
@@ -4430,7 +4430,7 @@ public class ViewDoaImpl implements ViewDao {
                 rt.put("fryerMaximum", rs.getString("FRYER_MAXIMUM"));
                 rt.put("oilUse", rs.getString("OIL_USE"));
                 rt.put("fryerNo", rs.getString("FRYER_NO"));
-                rt.put("progress", rs.getString("PROGRESS"));
+                rt.put("progress", rs.getDouble("PROGRESS"));
                 return rt;
             }
         });
@@ -4461,7 +4461,7 @@ public class ViewDoaImpl implements ViewDao {
             fryerEntry.put("progress", result.get("progress"));
 
             // Adding color based on the progress value
-            int progressValue = Integer.parseInt((String) result.get("progress"));
+            Double progressValue = (Double) result.get("progress");
             String color;
             if (progressValue >= 0 && progressValue <= 50) {
                 color = "success";
