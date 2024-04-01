@@ -3020,8 +3020,10 @@ public class ProcessDaoImpl implements ProcessDao {
     // Update Seq MPCS prevent error when insert after 23:30 //
     @Transactional
     @Override
-    public boolean insertMpcsProduction(Map<String, String> params) {
+    public ResponseMessage insertMpcsProduction(Map<String, String> params) {
 
+        ResponseMessage rm = new ResponseMessage();
+        
         Map prm = new HashMap();
         prm.put("userUpd", params.get("userUpd"));
         prm.put("dateUpd", params.get("dateUpd"));
@@ -3036,26 +3038,36 @@ public class ProcessDaoImpl implements ProcessDao {
 
         prm.put("fryerType", params.getOrDefault("fryerType", " "));
         prm.put("fryerTypeSeq", params.getOrDefault("fryerTypeSeq", " "));
+        
+        String checkOilTableQuery = "SELECT count(*) FROM all_tables WHERE table_name = 'M_OIL_CONV'";
+        int tableOilCount = jdbcTemplate.queryForObject(checkOilTableQuery, prm, Integer.class);
+        
+        if (tableOilCount < 1) {
+            rm.setSuccess(false);
+            rm.setMessage("Oil Conv table does not exist");
+            return rm;
+        }
+        
+        try {
+            String checkOilMappingExistQuery = "SELECT CONV FROM M_OIL_CONV moc WHERE FRYER_TYPE = :fryerType AND RECIPE_CODE = :recipeCode"; 
+            jdbcTemplate.queryForObject(checkOilMappingExistQuery, prm, Double.class);
+        } catch (EmptyResultDataAccessException e) {
+            rm.setSuccess(false);
+            rm.setMessage("Data Oil Conversion does not exist");
+            return rm;
+        }
 
         if (!prm.get("fryerType").equals("") || !prm.get("fryerTypeSeq").equals("")) {
-            if (prm.get("fryerType").equals("S")) {
-                String oilItemCode = "06-1002";
-                String updateFryer = "Update M_MPCS_DETAIL "
-                        + " SET FRYER_TYPE_CNT = (FRYER_TYPE_CNT + (SELECT (QTY_STOCK * :qtyMpcs) as total FROM M_RECIPE_DETAIL where RECIPE_CODE = :recipeCode AND ITEM_CODE = '" + oilItemCode + "' )), "
-                        + " DATE_UPD = :dateUpd, "
-                        + " TIME_UPD = :timeUpd, "
-                        + " USER_UPD = :userUpd "
-                        + " WHERE OUTLET_CODE = :outletCode AND FRYER_TYPE = :fryerType and FRYER_TYPE_SEQ = :fryerTypeSeq ";
-                jdbcTemplate.update(updateFryer, prm);
-            } else {
-                String updateFryer = "Update M_MPCS_DETAIL "
-                        + " SET FRYER_TYPE_CNT = (FRYER_TYPE_CNT + (SELECT (sum(QTY_STOCK) * :qtyMpcs) FROM m_recipe_product WHERE RECIPE_CODE = :recipeCode)), "
-                        + " DATE_UPD = :dateUpd, "
-                        + " TIME_UPD = :timeUpd, "
-                        + " USER_UPD = :userUpd "
-                        + " WHERE OUTLET_CODE = :outletCode AND FRYER_TYPE = :fryerType and FRYER_TYPE_SEQ = :fryerTypeSeq ";
-                jdbcTemplate.update(updateFryer, prm);
-            }
+            Double head_kg_conv = jdbcTemplate.queryForObject("SELECT CONV FROM M_OIL_CONV moc WHERE FRYER_TYPE = :fryerType AND RECIPE_CODE = :recipeCode", prm, double.class);
+            Double totalPcsProduction = jdbcTemplate.queryForObject("SELECT (sum(QTY_STOCK) * :qtyMpcs) FROM m_recipe_product WHERE RECIPE_CODE = :recipeCode", prm, double.class);
+            Double granTotalHeadKg = totalPcsProduction / head_kg_conv;
+            String updateFryer = "Update M_MPCS_DETAIL "
+                    + " SET FRYER_TYPE_CNT = (FRYER_TYPE_CNT + " + granTotalHeadKg + "), "
+                    + " DATE_UPD = :dateUpd, "
+                    + " TIME_UPD = :timeUpd, "
+                    + " USER_UPD = :userUpd "
+                    + " WHERE OUTLET_CODE = :outletCode AND FRYER_TYPE = :fryerType and FRYER_TYPE_SEQ = :fryerTypeSeq ";
+            jdbcTemplate.update(updateFryer, prm);
         }
 
         String getMpcsSeqQuery = "SELECT CASE WHEN :timeUpd > '233000' THEN 1 ELSE tsm.SEQ_MPCS END AS SEQ_MPCS "
@@ -3131,7 +3143,9 @@ public class ProcessDaoImpl implements ProcessDao {
                 updateInsertStockCard_out(newParam);
             }
         }
-        return true;
+        rm.setSuccess(true);
+        rm.setMessage("Insert Finish");
+        return rm;
     }
 
     // Update stock card detail from mpcs production
@@ -3270,19 +3284,19 @@ public class ProcessDaoImpl implements ProcessDao {
         prm.put("fryerTypeSeq", params.getOrDefault("fryerTypeSeq", " "));
 
         if (!prm.get("fryerType").equals("") || !prm.get("fryerTypeSeq").equals("")) {
-            if (prm.get("fryerType").equals("S")) {
-                String oilItemCode = "06-1002";
-                String updateFryer = "Update M_MPCS_DETAIL "
-                        + " SET FRYER_TYPE_CNT = (FRYER_TYPE_CNT - (SELECT (QTY_STOCK * :qtyMpcs) as total FROM M_RECIPE_DETAIL where RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup) AND ITEM_CODE = '" + oilItemCode + "' )) "
-                        + " WHERE OUTLET_CODE = :outletCode AND FRYER_TYPE = :fryerType and FRYER_TYPE_SEQ = :fryerTypeSeq ";
-                jdbcTemplate.update(updateFryer, prm);
-            } else {
-                String updateFryer = "Update M_MPCS_DETAIL "
-                        + " SET FRYER_TYPE_CNT = (FRYER_TYPE_CNT - (SELECT (sum(QTY_STOCK) * :qtyMpcs) FROM m_recipe_product WHERE RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup))) "
-                        + " WHERE OUTLET_CODE = :outletCode AND FRYER_TYPE = :fryerType and FRYER_TYPE_SEQ = :fryerTypeSeq ";
+            Double head_kg_conv = jdbcTemplate.queryForObject("SELECT CONV FROM M_OIL_CONV moc WHERE FRYER_TYPE = :fryerType AND RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup)", prm, double.class);
+            Double totalPcsProduction = jdbcTemplate.queryForObject("SELECT (sum(QTY_STOCK) * :qtyMpcs) FROM m_recipe_product WHERE RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup)", prm, double.class);
+            Double granTotalHeadKg = totalPcsProduction / head_kg_conv;
 
-                jdbcTemplate.update(updateFryer, prm);
-            }
+            String updateFryer = "Update M_MPCS_DETAIL "
+                    + " SET FRYER_TYPE_CNT = (FRYER_TYPE_CNT - "+granTotalHeadKg+"), "
+                    + " DATE_UPD = :dateUpd, "
+                    + " TIME_UPD = :timeUpd, "
+                    + " USER_UPD = :userUpd "
+                    + " WHERE OUTLET_CODE = :outletCode AND FRYER_TYPE = :fryerType and FRYER_TYPE_SEQ = :fryerTypeSeq ";
+
+            jdbcTemplate.update(updateFryer, prm);
+            
         }
 
         String updateQtyQuery = "UPDATE T_SUMM_MPCS "

@@ -2291,9 +2291,11 @@ public class ReportDaoImpl implements ReportDao {
             }
         })));
 
-        String query = "SELECT DISTINCT a.ITEM_CODE, b.ITEM_DESCRIPTION FROM T_STOCK_CARD a LEFT JOIN M_ITEM b ON " +
-                "a.ITEM_CODE = b.ITEM_CODE ORDER BY ITEM_CODE ASC OFFSET " + pageable.getOffset() + " ROWS FETCH NEXT " +
-                pageable.getPageSize() + " ROWS ONLY";
+//        String query = "SELECT DISTINCT a.ITEM_CODE, b.ITEM_DESCRIPTION FROM T_STOCK_CARD a LEFT JOIN M_ITEM b ON " +
+//                "a.ITEM_CODE = b.ITEM_CODE ORDER BY ITEM_CODE ASC OFFSET " + pageable.getOffset() + " ROWS FETCH NEXT " +
+//                pageable.getPageSize() + " ROWS ONLY";
+
+        String query = "SELECT * FROM (SELECT a.*, ROWNUM AS rn FROM ( SELECT DISTINCT a.ITEM_CODE, b.ITEM_DESCRIPTION FROM T_STOCK_CARD a LEFT JOIN M_ITEM b ON a.ITEM_CODE = b.ITEM_CODE ORDER BY a.ITEM_CODE ASC ) a) WHERE rn > "+pageable.getOffset()+" AND rn <= "+ (pageable.getOffset() + pageable.getPageSize());
 
         System.out.println(query);
 
@@ -3899,6 +3901,18 @@ public class ReportDaoImpl implements ReportDao {
         param.put("query1", query);
         System.out.println(param);
         ClassPathResource classPathResource = new ClassPathResource("report/laporanPesananBesar.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, param, connection);
+    }
+
+    /// report POS Summary Laporan Pagi by M Joko 26 Mar 2024
+    @Override
+    public JasperPrint jesperReportSummaryLaporanPagi(Map<String, Object> param, Connection connection) throws JRException, IOException {
+//        String query = "";
+//        param.put("outletBrand", query);
+        param.put("fromDate", param.get("date").toString());
+        System.out.println(param);
+        ClassPathResource classPathResource = new ClassPathResource("report/summaryLaporanPagi.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
         return JasperFillManager.fillReport(jasperReport, param, connection);
     }

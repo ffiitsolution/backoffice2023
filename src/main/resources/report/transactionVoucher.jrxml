@@ -122,7 +122,7 @@ ORDER BY
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA["Sub Total " + new SimpleDateFormat("dd MMM yyyy").format(new SimpleDateFormat("yyyy-mm-dd").parse($F{TRANS_DATE}))]]></textFieldExpression>
+					<textFieldExpression><![CDATA["Sub Total " + new SimpleDateFormat("dd MMM yyyy").format(new SimpleDateFormat("yyyy-MM-dd").parse($F{TRANS_DATE}))]]></textFieldExpression>
 				</textField>
 				<textField pattern="">
 					<reportElement x="380" y="11" width="172" height="18" uuid="bb9a0ab8-111b-4a38-a587-737d97c2b1f3"/>
@@ -361,7 +361,7 @@ ORDER BY
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$V{Group1_COUNT}.equals(1) ? new SimpleDateFormat("dd MMM yyyy").format(new SimpleDateFormat("yyyy-mm-dd").parse($F{TRANS_DATE})) : ""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{Group1_COUNT}.equals(1) ?  new SimpleDateFormat("dd MMM yyyy").format(new SimpleDateFormat("yyyy-MM-dd").parse($F{TRANS_DATE})) : ""]]></textFieldExpression>
 			</textField>
 			<textField pattern="">
 				<reportElement x="380" y="0" width="172" height="18" uuid="f497bc7a-4945-4ec5-b375-973cff3defd2"/>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="orderEntry" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isSummaryNewPage="true" uuid="0793d68f-3216-428e-b721-e2ccbd5a3839">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="orderEntry" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="0793d68f-3216-428e-b721-e2ccbd5a3839">
 	<property name="ireport.zoom" value="1.7715610000000013"/>
 	<property name="net.sf.jasperreports.export.xls.one.page.per.sheet" value="false"/>
 	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
@@ -152,7 +152,7 @@ ORDER BY
 	<group name="header">
 		<groupExpression><![CDATA[$F{ORDER_NO}]]></groupExpression>
 		<groupHeader>
-			<band height="25">
+			<band height="22">
 				<textField isBlankWhenNull="true">
 					<reportElement x="80" y="5" width="90" height="15" uuid="78e83d83-a172-4c2b-b637-def60bfa870c"/>
 					<textElement textAlignment="Center">
@@ -536,17 +536,17 @@ ORDER BY
 		</band>
 	</columnHeader>
 	<summary>
-		<band height="21" splitType="Stretch">
-			<line>
-				<reportElement x="0" y="1" width="555" height="1" uuid="4edb66f3-0832-4e3c-8e1e-d3ecaf30f057"/>
-			</line>
+		<band height="21">
 			<staticText>
-				<reportElement x="472" y="3" width="82" height="15" uuid="d16b1243-9822-4e75-94f6-d40a93890f69"/>
+				<reportElement x="470" y="3" width="82" height="15" uuid="d16b1243-9822-4e75-94f6-d40a93890f69"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[--End of Report--]]></text>
 			</staticText>
+			<line>
+				<reportElement x="-2" y="1" width="555" height="1" uuid="4edb66f3-0832-4e3c-8e1e-d3ecaf30f057"/>
+			</line>
 		</band>
 	</summary>
 </jasperReport>

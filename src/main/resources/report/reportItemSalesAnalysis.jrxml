@@ -667,7 +667,7 @@ ORDER BY
 				<textElement textAlignment="Center">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<text><![CDATA[ITEMSALES ANALYSIS REPORT]]></text>
+				<text><![CDATA[ITEM SALES ANALYSIS REPORT]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="825" y="88" width="255" height="11" uuid="eb716be0-58d4-4418-8d75-01fd5c534116"/>

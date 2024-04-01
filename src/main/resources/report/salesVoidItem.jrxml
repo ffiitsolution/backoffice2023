@@ -436,9 +436,6 @@ ORDER BY
 			</textField>
 		</band>
 	</detail>
-	<pageFooter>
-		<band height="29"/>
-	</pageFooter>
 	<summary>
 		<band height="28" splitType="Stretch">
 			<staticText>

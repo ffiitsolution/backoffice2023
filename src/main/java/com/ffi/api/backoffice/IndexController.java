@@ -3344,15 +3344,9 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> data = gsn.fromJson(params, new TypeToken<Map<String, String>>() {
         }.getType());
-        ResponseMessage rm = new ResponseMessage();
-        if (processServices.insertMpcsProduction(data)) {
-            rm.setSuccess(true);
-            rm.setMessage("Insert Successfuly");
-        } else {
-            rm.setSuccess(false);
-            rm.setMessage("Insert  Failed");
-        }
-        return rm;
+        
+        return processServices.insertMpcsProduction(data); 
+
     }
 
     // Get List Daftar Menu Report  By Rafi 9 Jan 2024
@@ -4376,9 +4370,8 @@ public class IndexController {
         Response res = new Response();
         res.setData(viewServices.listMpcsMonitoring(balance));
         return res;
-    }
-
-    /////////////////// end aditya 22 Mar 2024
+    }    
+    /////////////////// end aditya 22 Mar 2024    
 
         /////////////// new method from aditya 22-03-2024////////////////////////////
     @RequestMapping(value = "/list-oil-usage", produces = MediaType.APPLICATION_JSON_VALUE)
