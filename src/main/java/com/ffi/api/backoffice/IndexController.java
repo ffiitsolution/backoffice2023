@@ -4373,9 +4373,9 @@ public class IndexController {
     }    
     /////////////////// end aditya 22 Mar 2024    
 
-        /////////////// new method from aditya 22-03-2024////////////////////////////
+    /////////////// new method from dani 1 April 2024////////////////////////////
     @RequestMapping(value = "/list-oil-usage", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Digunakan untuk view List Level", response = Object.class)
+    @ApiOperation(value = "Digunakan untuk view List Oil Usage", response = Object.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 404, message = "The resource not found"), })
