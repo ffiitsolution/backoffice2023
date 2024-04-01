@@ -625,4 +625,9 @@ public class ViewServices {
     public List<Map<String, Object>> listMpcsMonitoring(Map<String, Object> ref) {
         return viewDao.listMpcsMonitoring(ref);
     }
+
+    // Get Oil Usage by Dani 1 April 2024
+    public List<Map<String, Object>> listOilUsage(Map<String, Object> balance) {
+        return viewDao.listOilUsage(balance);
+    }
 }

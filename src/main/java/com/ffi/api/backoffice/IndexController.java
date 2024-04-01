@@ -4379,4 +4379,20 @@ public class IndexController {
     }
 
     /////////////////// end aditya 22 Mar 2024
+
+        /////////////// new method from aditya 22-03-2024////////////////////////////
+    @RequestMapping(value = "/list-oil-usage", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk view List Level", response = Object.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 404, message = "The resource not found"), })
+    public @ResponseBody Response listOilUsage(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, Object> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        Response res = new Response();
+        res.setData(viewServices.listOilUsage(balance));
+        return res;
+    }
 }

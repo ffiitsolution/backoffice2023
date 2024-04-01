@@ -366,4 +366,6 @@ public interface ViewDao {
     // Get Report MPCS Monitoring by aditya 22 Mar 24
     List<Map<String, Object>> listMpcsMonitoring(Map<String, Object> ref);
     
+    // Get Oil Usage by Dani 1 April 2024
+    public List<Map<String, Object>> listOilUsage(Map<String, Object> balance);
 }

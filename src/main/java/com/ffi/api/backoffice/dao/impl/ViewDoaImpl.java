@@ -5016,4 +5016,17 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
+
+    
+    /////// list oil usage by Dani April 2024
+    public List<Map<String, Object>> listOilUsage(Map<String, Object> balance) {
+        String queryTable = "SELECT * FROM ALL_TABLES WHERE TABLE_NAME = 'M_OIL_CONV'";
+        int tableCheck = jdbcTemplate.queryForObject(queryTable, balance, Integer.class);
+        String query = "SELECT c.RECIPE_CODE, h.RECIPE_remark, g.description, '1/' || conv || ' ' ||uom AS conv "
+        + " FROM M_OIL_CONV c"
+        + " LEFT JOIN M_GLOBAL g on g.code = c.FRYER_TYPE "
+        + " LEFT JOIN M_RECIPE_HEADER h ON c.RECIPE_CODE  = h.RECIPE_CODE "
+        + " WHERE g.COND = 'FRYER'";
+        return jdbcTemplate.query(query, balance, new DynamicRowMapper());
+    }
 }
