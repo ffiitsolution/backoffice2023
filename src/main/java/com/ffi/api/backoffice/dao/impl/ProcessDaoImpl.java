@@ -3044,7 +3044,7 @@ public class ProcessDaoImpl implements ProcessDao {
         
         if (tableOilCount < 1) {
             rm.setSuccess(false);
-            rm.setMessage("Oil Conv table does not exist");
+            rm.setMessage("Oil Conv table tidak tersedia. Segera Hubungi IT Helpdesk");
             return rm;
         }
         
@@ -3053,7 +3053,7 @@ public class ProcessDaoImpl implements ProcessDao {
             jdbcTemplate.queryForObject(checkOilMappingExistQuery, prm, Double.class);
         } catch (EmptyResultDataAccessException e) {
             rm.setSuccess(false);
-            rm.setMessage("Data Oil Conversion does not exist");
+            rm.setMessage("Data Konversi minyak tidak tersedia di Oil Conv Table. Segera Hubungi IT Helpdesk");
             return rm;
         }
 
