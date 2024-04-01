@@ -4379,13 +4379,20 @@ public class IndexController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 404, message = "The resource not found"), })
-    public @ResponseBody Response listOilUsage(@RequestBody String param) throws IOException, Exception {
+    public @ResponseBody ResponseMessage listOilUsage(@RequestBody String param) throws IOException, Exception {
         Gson gsn = new Gson();
         Map<String, Object> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
 
-        Response res = new Response();
-        res.setData(viewServices.listOilUsage(balance));
+        ResponseMessage res = new ResponseMessage();
+        try {
+            res.setItem(viewServices.listOilUsage(balance));
+            res.setSuccess(true);
+            res.setMessage("Hit Successfuly..");
+        } catch (Exception ex) {
+            res.setSuccess(false);
+            res.setMessage(ex.getMessage());
+        }
         return res;
     }
 }
