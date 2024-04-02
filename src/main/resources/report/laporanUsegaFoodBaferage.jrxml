@@ -44,7 +44,7 @@ case when cd_trans='WST' then total else 0 end as WASTAGE,case when cd_trans='LO
 from (
 select item_code, case when cd_Trans = 'DEL'then 'PRD'else cd_Trans end as 
 cd_Trans, sum(quantity_in),sum(quantity),abs(sum(quantity_in)-sum(quantity)) as total from t_stock_card_detail 
-where outlet_code='0316' and trans_date between $P{fromDate} and $P{toDate} 
+where outlet_code=$P{outletCode} and trans_date between $P{fromDate} and $P{toDate} 
 group by item_code,case when cd_Trans = 'DEL'then 'PRD'else cd_Trans end 
 order by item_code,case when cd_Trans = 'DEL'then 'PRD'else cd_Trans end
 )
