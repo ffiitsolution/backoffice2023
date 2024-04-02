@@ -3882,8 +3882,8 @@ public class ReportDaoImpl implements ReportDao {
     /////// new method generate report Usage CD by Dani 14 Mar 2024
     @Override
     public JasperPrint jesperReportPesananBesar(Map<String, Object> param, Connection connection) throws JRException, IOException {
-        String query = " B.ORDER_TYPE IN ('BRD', 'CAT', 'BTA') " 
-        + " OR ( B.ORDER_TYPE IN( 'ETA', 'DRT', 'CSP') AND A.ITEM_QTY >= 30) ";
+        String query = " ( B.ORDER_TYPE IN ('BRD', 'CAT', 'BTA') " 
+        + " OR ( B.ORDER_TYPE IN( 'ETA', 'DRT', 'CSP') AND A.ITEM_QTY >= 30) )";
         String orderType = (String) param.get("orderType");
         if (orderType != null && orderType.equals("BRD")) {
             query = " B.ORDER_TYPE = 'BRD' ";

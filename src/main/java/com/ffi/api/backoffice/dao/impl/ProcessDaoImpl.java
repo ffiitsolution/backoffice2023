@@ -3040,7 +3040,7 @@ public class ProcessDaoImpl implements ProcessDao {
         prm.put("fryerTypeSeq", params.getOrDefault("fryerTypeSeq", " "));
         
         String checkOilTableQuery = "SELECT count(*) FROM all_tables WHERE table_name = 'M_OIL_CONV'";
-        int tableOilCount = jdbcTemplate.queryForObject(checkOilTableQuery, prm, Integer.class);
+        Integer tableOilCount = jdbcTemplate.queryForObject(checkOilTableQuery, prm, Integer.class);
         
         if (tableOilCount < 1) {
             rm.setSuccess(false);
