@@ -3039,26 +3039,24 @@ public class ProcessDaoImpl implements ProcessDao {
         prm.put("fryerType", params.getOrDefault("fryerType", " "));
         prm.put("fryerTypeSeq", params.getOrDefault("fryerTypeSeq", " "));
         
-        String checkOilTableQuery = "SELECT count(*) FROM all_tables WHERE table_name = 'M_OIL_CONV'";
-        Integer tableOilCount = jdbcTemplate.queryForObject(checkOilTableQuery, prm, Integer.class);
-        
-        if (tableOilCount < 1) {
-            rm.setSuccess(false);
-            rm.setMessage("Oil Conv table tidak tersedia. Segera Hubungi IT Helpdesk");
-            return rm;
-        }
-        
-        try {
-            String checkOilMappingExistQuery = "SELECT CONV FROM M_OIL_CONV moc WHERE FRYER_TYPE = :fryerType AND RECIPE_CODE = :recipeCode"; 
-            jdbcTemplate.queryForObject(checkOilMappingExistQuery, prm, Double.class);
-        } catch (EmptyResultDataAccessException e) {
-            rm.setSuccess(false);
-            rm.setMessage("Data Konversi minyak tidak tersedia di Oil Conv Table. Segera Hubungi IT Helpdesk");
-            return rm;
-        }
+        String OIL_ITEM_CODE = "06-1002";
 
         if (!prm.get("fryerType").equals("") || !prm.get("fryerTypeSeq").equals("")) {
-            Double head_kg_conv = jdbcTemplate.queryForObject("SELECT CONV FROM M_OIL_CONV moc WHERE FRYER_TYPE = :fryerType AND RECIPE_CODE = :recipeCode", prm, double.class);
+            try {
+                String checkOilMappingExistQuery = "SELECT TRIM(remark) FROM M_RECIPE_detail moc WHERE RECIPE_CODE = :recipeCode AND ITEM_CODE = '" + OIL_ITEM_CODE + "'"; 
+                String result = jdbcTemplate.queryForObject(checkOilMappingExistQuery, prm, String.class);
+                System.out.println("result :" + result);
+                if (result == null){
+                    rm.setSuccess(false);
+                    rm.setMessage("Data konversi minyak " + params.get("recipeCode") + " tidak tersedia di Tabel Master Recipe. Silakan Hubungi IT Helpdesk.");
+                    return rm; 
+                }
+            } catch (EmptyResultDataAccessException e) {
+                rm.setSuccess(false);
+                rm.setMessage("Data konversi minyak " + params.get("recipeCode") + " tidak tersedia di Tabel Master Recipe. Silakan Hubungi IT Helpdesk.");
+                return rm;
+            }
+            Double head_kg_conv = jdbcTemplate.queryForObject("SELECT TO_NUMBER(remark) AS REMARK FROM M_RECIPE_detail moc WHERE RECIPE_CODE = :recipeCode AND ITEM_CODE = '" + OIL_ITEM_CODE + "'", prm, Double.class);
             Double totalPcsProduction = jdbcTemplate.queryForObject("SELECT (sum(QTY_STOCK) * :qtyMpcs) FROM m_recipe_product WHERE RECIPE_CODE = :recipeCode", prm, double.class);
             Double granTotalHeadKg = totalPcsProduction / head_kg_conv;
             String updateFryer = "Update M_MPCS_DETAIL "
@@ -3283,8 +3281,10 @@ public class ProcessDaoImpl implements ProcessDao {
         prm.put("fryerType", params.getOrDefault("fryerType", " "));
         prm.put("fryerTypeSeq", params.getOrDefault("fryerTypeSeq", " "));
 
+        String OIL_ITEM_CODE = "06-1002";
+
         if (!prm.get("fryerType").equals("") || !prm.get("fryerTypeSeq").equals("")) {
-            Double head_kg_conv = jdbcTemplate.queryForObject("SELECT CONV FROM M_OIL_CONV moc WHERE FRYER_TYPE = :fryerType AND RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup)", prm, double.class);
+            Double head_kg_conv = jdbcTemplate.queryForObject("SELECT TO_NUMBER(remark) AS REMARK FROM M_RECIPE_detail moc WHERE RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup) AND ITEM_CODE = '" + OIL_ITEM_CODE + "'", prm, Double.class);
             Double totalPcsProduction = jdbcTemplate.queryForObject("SELECT (sum(QTY_STOCK) * :qtyMpcs) FROM m_recipe_product WHERE RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE MPCS_GROUP = :mpcsGroup)", prm, double.class);
             Double granTotalHeadKg = totalPcsProduction / head_kg_conv;
 

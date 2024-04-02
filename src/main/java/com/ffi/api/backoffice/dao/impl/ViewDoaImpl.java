@@ -1084,25 +1084,20 @@ public class ViewDoaImpl implements ViewDao {
 
     @Override
     public List<Map<String, Object>> listRecipeDetail(Map<String, String> ref) {
-        String qry = "select rd.recipe_code, rd.item_code, i.item_description, rd.qty_stock, rd.uom_stock "
+        String qry = "select rd.recipe_code, rd.item_code, i.item_description, rd.qty_stock, rd.uom_stock, "
+                + "CASE "
+                + " WHEN (rd.REMARK IS NOT NULL AND rd.remark != ' ') THEN '1/' ||rd.REMARK || ' ' || CASE WHEN mh.FRYER_TYPE = 'S' THEN 'Kg' ELSE 'Head' END "
+                + " ELSE NULL "
+                + " END AS oil_conv  "
                 + "from m_recipe_detail rd "
-                + "join m_item i on i.item_code = rd.item_code "
+                + "LEFT JOIN m_item i on rd.item_code = i.item_code "
+                + "LEFT JOIN M_RECIPE_HEADER h ON rd.RECIPE_CODE = h.RECIPE_CODE "
+                + "LEFT JOIN M_MPCS_HEADER mh ON mh.MPCS_GROUP = h.MPCS_GROUP "
                 + "where rd.recipe_code = :reCode ";
         Map prm = new HashMap();
         prm.put("reCode", ref.get("reCode"));
         System.err.println("q :" + qry);
-        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new RowMapper<Map<String, Object>>() {
-            @Override
-            public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
-                Map<String, Object> rt = new HashMap<String, Object>();
-                rt.put("reCode", rs.getString("recipe_code"));
-                rt.put("itemCode", rs.getString("item_code"));
-                rt.put("description", rs.getString("item_description"));
-                rt.put("qty", rs.getString("qty_stock"));
-                rt.put("uom", rs.getString("uom_stock"));
-                return rt;
-            }
-        });
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, prm, new DynamicRowMapper());
         return list;
     }
 
@@ -4967,33 +4962,33 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
-    
+
     ////////// new method view list master level 1 - 4 aditya 19 Mar 2024
     @Override
     public List<Map<String, Object>> listLevel(Map<String, Object> balance) {
         String level = (String) balance.get("level");
-    String qry;
-    
-    switch (level) {
-        case "1" -> qry = "SELECT CD_LEVEL_1, DESC_LEVEL_1 FROM M_LEVEL_1";
-        case "2" -> qry = "SELECT CD_LEVEL_2, DESC_LEVEL_2 FROM M_LEVEL_2";
-        case "3" -> qry = "SELECT CD_LEVEL_3, DESC_LEVEL_3 FROM M_LEVEL_3";
-        case "4" -> qry = "SELECT CD_LEVEL_4, DESC_LEVEL_4 FROM M_LEVEL_4";
-        default -> // Handle invalid level
-            throw new IllegalArgumentException("Invalid level: " + level);
+        String qry;
+
+        switch (level) {
+            case "1" -> qry = "SELECT CD_LEVEL_1, DESC_LEVEL_1 FROM M_LEVEL_1";
+            case "2" -> qry = "SELECT CD_LEVEL_2, DESC_LEVEL_2 FROM M_LEVEL_2";
+            case "3" -> qry = "SELECT CD_LEVEL_3, DESC_LEVEL_3 FROM M_LEVEL_3";
+            case "4" -> qry = "SELECT CD_LEVEL_4, DESC_LEVEL_4 FROM M_LEVEL_4";
+            default -> // Handle invalid level
+                throw new IllegalArgumentException("Invalid level: " + level);
+        }
+
+        List<Map<String, Object>> list = jdbcTemplate.query(qry, (ResultSet rs, int i) -> {
+            Map<String, Object> rt = new HashMap<>();
+            rt.put("cdLevel", rs.getString(1)); // Change index based on query
+            rt.put("descLevel", rs.getString(2)); // Change index based on query
+            return rt;
+        });
+        return list;
     }
 
-    List<Map<String, Object>> list = jdbcTemplate.query(qry, (ResultSet rs, int i) -> {
-        Map<String, Object> rt = new HashMap<>();
-        rt.put("cdLevel", rs.getString(1)); // Change index based on query
-        rt.put("descLevel", rs.getString(2)); // Change index based on query
-        return rt;
-    });
-    return list;
-    }
-    
     /////// done aditya 19 mar 24
-    
+
     @Override
      public List<Map<String, Object>> listMpcsMonitoring(Map<String, Object> balance) {
         String qry = "SELECT tsc.TRANS_DATE, tsc.MPCS_GROUP, tsc.OUTLET_CODE, tsc.ITEM_CODE, tsc.RECIPE_CODE, tsc.ITEM_DESCRIPTION, tsc.INTERVAL, COALESCE(expired.TIME_MPCS, '00:00') AS TIME_MPCS, COALESCE(expired.EXPIRED, '00:00') AS EXPIRED, tsc.MIN_STOCK, tsc.SISA FROM (SELECT d.TRANS_DATE, b.MPCS_GROUP, d.OUTLET_CODE, c.RECIPE_CODE, d.ITEM_CODE, e.ITEM_DESCRIPTION, e.MIN_STOCK, (d.QTY_BEGINNING + d.QTY_IN - d.QTY_OUT) AS SISA, mg.VALUE AS INTERVAL FROM M_GLOBAL mg LEFT JOIN M_RECIPE_HEADER b ON b.RECIPE_CODE = mg.CODE LEFT JOIN M_RECIPE_PRODUCT c ON c.RECIPE_CODE = b.RECIPE_CODE LEFT JOIN T_STOCK_CARD d ON d.ITEM_CODE = c.PRODUCT_CODE LEFT JOIN M_ITEM e ON c.PRODUCT_CODE = e.ITEM_CODE WHERE mg.CODE LIKE '%COK%' AND mg.STATUS = 'A' AND b.MPCS_GROUP IN ( SELECT b.MPCS_GROUP FROM M_GLOBAL mg LEFT JOIN M_RECIPE_HEADER b ON b.RECIPE_CODE = mg.CODE WHERE mg.CODE LIKE '%COK%' AND mg.STATUS = 'A' AND b.MPCS_GROUP IS NOT NULL AND b.STATUS = 'A' ) AND b.STATUS = 'A' AND d.TRANS_DATE = ( SELECT TRANS_DATE FROM M_OUTLET WHERE OUTLET_CODE = :outletCode ) ) tsc LEFT JOIN ( SELECT OUTLET_CODE, RECIPE_CODE, ITEM_CODE, MPCS_GROUP, ITEM_DESCRIPTION, TIME_MPCS, INTERVAL, MIN_STOCK, TO_CHAR(TO_DATE(TIME_MPCS, 'HH24:MI:SS') + (INTERVAL/1440),'HH24:MI' ) AS EXPIRED FROM ( SELECT a.OUTLET_CODE, b.RECIPE_CODE, e.ITEM_CODE, e.ITEM_DESCRIPTION, a.MPCS_GROUP, TO_CHAR(TO_DATE(a.TIME_UPD, 'HH24MISS'), 'HH24:MI') AS TIME_MPCS , c.VALUE AS INTERVAL, e.MIN_STOCK, ROW_NUMBER() OVER (PARTITION BY a.MPCS_GROUP ORDER BY a.TIME_MPCS DESC) AS rn FROM T_SUMM_MPCS a JOIN M_RECIPE_HEADER b ON a.MPCS_GROUP = b.MPCS_GROUP JOIN M_GLOBAL c ON b.RECIPE_CODE = c.CODE JOIN M_RECIPE_PRODUCT d ON c.CODE = d.RECIPE_CODE JOIN M_ITEM e ON d.PRODUCT_CODE = e.ITEM_CODE WHERE a.MPCS_GROUP IN ( SELECT b.MPCS_GROUP FROM M_GLOBAL mg LEFT JOIN M_RECIPE_HEADER mrh ON mrh.RECIPE_CODE = mg.CODE LEFT JOIN M_RECIPE_PRODUCT mrp ON mrp.RECIPE_CODE = mrh.RECIPE_CODE LEFT JOIN T_STOCK_CARD tsc ON tsc.ITEM_CODE = mrp.PRODUCT_CODE WHERE mg.CODE LIKE '%COK%' AND mg.STATUS = 'A' AND b.MPCS_GROUP IS NOT NULL AND b.STATUS = 'A' AND a.QTY_PROD <> 0 ) AND DATE_MPCS = ( SELECT TRANS_DATE FROM M_OUTLET WHERE OUTLET_CODE = :outletCode ) ) subquery WHERE rn = 1 ) expired ON tsc.ITEM_CODE = expired.ITEM_CODE ORDER BY tsc.RECIPE_CODE ASC, tsc.MPCS_GROUP ASC, tsc.ITEM_CODE ASC";
@@ -5020,7 +5015,6 @@ public class ViewDoaImpl implements ViewDao {
         return list;
     }
 
-    
     /////// list oil usage by Dani April 2024
     public List<Map<String, Object>> listOilUsage(Map<String, Object> balance) {
         String queryTable = "SELECT count(*) FROM ALL_TABLES WHERE TABLE_NAME = 'M_OIL_CONV'";
@@ -5029,11 +5023,19 @@ public class ViewDoaImpl implements ViewDao {
             throw new RuntimeException("Oil Conv table tidak tersedia. Segera Hubungi IT Helpdesk");
         }
 
-        String query = "SELECT c.RECIPE_CODE, h.RECIPE_remark, g.description, '1/' || conv || ' ' ||uom AS conv "
-        + " FROM M_OIL_CONV c "
-        + " LEFT JOIN M_GLOBAL g on g.code = c.FRYER_TYPE "
-        + " LEFT JOIN M_RECIPE_HEADER h ON c.RECIPE_CODE  = h.RECIPE_CODE "
-        + " WHERE g.COND = 'FRYER' and h.status = 'A'";
+        String OIL_ITEM_CODE = "06-1002";
+        String query = "SELECT d.RECIPE_CODE, mh.DESCRIPTION, h.MPCS_GROUP, mg.DESCRIPTION AS FRYER_TYPE, "
+            + "CASE "
+            + "    WHEN (d.REMARK IS NOT NULL AND d.remark != ' ') THEN '1/' ||d.REMARK || ' ' || CASE WHEN mh.FRYER_TYPE = 'S' THEN 'Kg' ELSE 'Head' END "
+            + "    ELSE NULL  "
+            + "END AS oil_conv "
+            + "FROM M_RECIPE_detail d "
+            + "LEFT JOIN M_RECIPE_HEADER h ON h.RECIPE_CODE = d.RECIPE_CODE "
+            + "LEFT JOIN M_MPCS_HEADER mh ON mh.MPCS_GROUP = h.MPCS_GROUP "
+            + "LEFT JOIN m_item mi ON d.ITEM_CODE  = mi.ITEM_CODE "
+            + "LEFT JOIN M_GLOBAL mg ON mh.FRYER_TYPE = mg.CODE "
+            + "WHERE d.remark IS NOT NULL AND d.REMARK != ' ' AND mg.COND = 'FRYER' "
+            + "AND d.item_code = '" + OIL_ITEM_CODE + "' AND h.status = 'A' ";
         return jdbcTemplate.query(query, balance, new DynamicRowMapper());
     }
 }
