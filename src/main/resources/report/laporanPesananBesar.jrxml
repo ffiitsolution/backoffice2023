@@ -102,6 +102,7 @@ ORDER BY
 	<field name="NOTES" class="java.lang.String"/>
 	<field name="TRANS_DATE" class="java.sql.Date"/>
 	<field name="TOTAL_SALES" class="java.math.BigDecimal"/>
+	<field name="ORDER_TYPE" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -153,7 +154,7 @@ ORDER BY
 				<text><![CDATA[Book No]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="365" y="97" width="95" height="11" uuid="d5fee8f5-b4e2-47ac-995b-e3dc248daf63">
+				<reportElement x="340" y="97" width="95" height="11" uuid="d5fee8f5-b4e2-47ac-995b-e3dc248daf63">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Left">
@@ -162,14 +163,14 @@ ORDER BY
 				<text><![CDATA[Address]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="463" y="97" width="57" height="11" uuid="ea91d73f-3279-41b2-9975-95f24cddbaf2"/>
+				<reportElement x="438" y="97" width="57" height="11" uuid="ea91d73f-3279-41b2-9975-95f24cddbaf2"/>
 				<textElement textAlignment="Left">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[TLP]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="520" y="97" width="73" height="11" uuid="870c78c6-7ccb-4ac8-8078-aed7f7919adb"/>
+				<reportElement x="495" y="97" width="73" height="11" uuid="870c78c6-7ccb-4ac8-8078-aed7f7919adb"/>
 				<textElement textAlignment="Left">
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -197,14 +198,14 @@ ORDER BY
 				<text><![CDATA[Keterangan]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="214" y="97" width="72" height="11" uuid="cdefb33a-9ef7-4eb5-85e3-2481f932049e"/>
+				<reportElement x="214" y="97" width="46" height="11" uuid="cdefb33a-9ef7-4eb5-85e3-2481f932049e"/>
 				<textElement textAlignment="Left">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Order Type]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="286" y="97" width="77" height="11" uuid="2d80b6d8-545f-4867-9839-09ed8e505dbb"/>
+				<reportElement x="261" y="97" width="77" height="11" uuid="2d80b6d8-545f-4867-9839-09ed8e505dbb"/>
 				<textElement textAlignment="Left">
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -354,6 +355,13 @@ ORDER BY
 				</textElement>
 				<text><![CDATA[Jam Cetak]]></text>
 			</staticText>
+			<staticText>
+				<reportElement x="568" y="97" width="26" height="11" uuid="7d61241a-5c05-4475-9093-4bf3fb61bceb"/>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Qty]]></text>
+			</staticText>
 		</band>
 	</pageHeader>
 	<detail>
@@ -395,16 +403,16 @@ ORDER BY
 				<textFieldExpression><![CDATA[$F{BOOK_NO}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight">
-				<reportElement x="214" y="2" width="72" height="12" uuid="24690bba-6386-482e-916a-61a2436ec143">
+				<reportElement x="214" y="2" width="46" height="12" uuid="24690bba-6386-482e-916a-61a2436ec143">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{ORDER_TYPE_DESC}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{ORDER_TYPE}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight">
-				<reportElement x="286" y="2" width="77" height="12" uuid="3af071e0-d35f-4235-b1bd-ba0dcffc8f82">
+				<reportElement x="261" y="2" width="77" height="12" uuid="3af071e0-d35f-4235-b1bd-ba0dcffc8f82">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -413,7 +421,7 @@ ORDER BY
 				<textFieldExpression><![CDATA[$F{CUSTOMER_NAME}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight">
-				<reportElement x="365" y="2" width="94" height="12" uuid="d931b451-11bf-4560-87cf-968d12f03f7b">
+				<reportElement x="340" y="2" width="94" height="12" uuid="d931b451-11bf-4560-87cf-968d12f03f7b">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -422,7 +430,7 @@ ORDER BY
 				<textFieldExpression><![CDATA[$F{ADDRESS_1} +" - "+ $F{ADDRESS_2}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight">
-				<reportElement x="463" y="2" width="57" height="12" uuid="1f8e4d3b-6e89-4fbc-a3c6-59e11f02520d">
+				<reportElement x="438" y="2" width="57" height="12" uuid="1f8e4d3b-6e89-4fbc-a3c6-59e11f02520d">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -431,7 +439,7 @@ ORDER BY
 				<textFieldExpression><![CDATA[$F{CUSTOMER_PHONE_NO}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight">
-				<reportElement x="520" y="2" width="73" height="12" uuid="43cff2bd-2888-4149-8c12-132f4eb837a3">
+				<reportElement x="495" y="2" width="73" height="12" uuid="43cff2bd-2888-4149-8c12-132f4eb837a3">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -483,6 +491,15 @@ ORDER BY
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{NOTES}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="568" y="2" width="26" height="12" uuid="e64d9254-df38-4440-8587-6856ce0ec63e">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ITEM_QTY}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
