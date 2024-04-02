@@ -1,5 +1,6 @@
 package com.ffi.api.backoffice;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ffi.api.backoffice.model.DetailOpname;
 import com.ffi.api.backoffice.model.HeaderOpname;
@@ -4371,7 +4372,7 @@ public class IndexController {
         res.setData(viewServices.listMpcsMonitoring(balance));
         return res;
     }    
-    /////////////////// end aditya 22 Mar 2024    
+    /////////////////// end aditya 22 Mar 2024  
 
     /////////////// new method from dani 1 April 2024////////////////////////////
     @RequestMapping(value = "/list-oil-usage", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -4395,4 +4396,27 @@ public class IndexController {
         }
         return res;
     }
+    
+    ///////////////new method from aditya 22-03-2024////////////////////////////
+//    @Scheduled(cron = "0 0/1 0-23 * * *") // dijalankan setiap 7.00, 7.15, 7.30, 7.45, 8.00, 8.15 dst
+    @Scheduled(cron = "0/30 * * * * *")
+    public void scheduledMonitoringMpcs() {
+        if (_OutletCode.isBlank()) {
+            messagingTemplate.convertAndSend("/topic/monitoring-mpcs", "Kode Outlet belum diatur di properties");
+        } else {
+            System.out.println("Executing scheduledKirimTerimaData... " + _OutletCode);
+            try {
+                Map<String, Object> param = new HashMap();
+                ObjectMapper objectMapper = new ObjectMapper();
+                param.put("outletCode", _OutletCode);
+                List<Map<String, Object>> list = viewServices.listMpcsMonitoring(param);
+                String json = objectMapper.writeValueAsString(list);
+                messagingTemplate.convertAndSend("/topic/monitoring-mpcs", json);
+            } catch (JsonProcessingException | MessagingException ex) {
+            }
+        }
+    }    
+    /////////////////// end aditya 22 Mar 2024 
+    
+    
 }
