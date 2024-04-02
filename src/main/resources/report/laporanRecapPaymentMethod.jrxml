@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="laporanRecapPaymentMethod" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="552a7890-4ce0-4e74-ab73-0edbf3b3bc88">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="laporanRecapPaymentMethod" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isSummaryWithPageHeaderAndFooter="true" uuid="552a7890-4ce0-4e74-ab73-0edbf3b3bc88">
 	<property name="ireport.zoom" value="1.771561000000001"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -357,7 +357,7 @@ LEFT JOIN M_OUTLET otl ON
 		</band>
 	</pageHeader>
 	<detail>
-		<band height="25" splitType="Stretch">
+		<band height="20" splitType="Stretch">
 			<textField>
 				<reportElement x="8" y="2" width="72" height="18" uuid="039c76a5-c8aa-4bea-96ee-e0a242e68370"/>
 				<textElement verticalAlignment="Middle">
@@ -402,35 +402,35 @@ LEFT JOIN M_OUTLET otl ON
 		<band splitType="Stretch"/>
 	</pageFooter>
 	<summary>
-		<band height="54" splitType="Stretch">
+		<band height="32" splitType="Stretch">
 			<line direction="BottomUp">
-				<reportElement x="8" y="7" width="537" height="1" uuid="2ea6f2a5-ac73-4245-8b45-807fc86ab842">
+				<reportElement x="8" y="1" width="537" height="1" uuid="2ea6f2a5-ac73-4245-8b45-807fc86ab842">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 				</reportElement>
 			</line>
 			<staticText>
-				<reportElement x="268" y="10" width="122" height="11" uuid="e34fcfd0-a6ae-48a3-b5dc-61bbb9557a7a"/>
+				<reportElement x="268" y="4" width="122" height="11" uuid="e34fcfd0-a6ae-48a3-b5dc-61bbb9557a7a"/>
 				<textElement textAlignment="Right">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Sub Total :]]></text>
 			</staticText>
 			<line direction="BottomUp">
-				<reportElement x="8" y="31" width="537" height="1" uuid="0fe8b027-07da-4f27-a25b-01f28752c95d">
+				<reportElement x="8" y="17" width="537" height="1" uuid="0fe8b027-07da-4f27-a25b-01f28752c95d">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 				</reportElement>
 			</line>
 			<textField>
-				<reportElement x="400" y="10" width="145" height="18" uuid="83a1f8da-d11a-449b-a678-8d0eb8e7edf0"/>
+				<reportElement x="400" y="4" width="145" height="18" uuid="83a1f8da-d11a-449b-a678-8d0eb8e7edf0"/>
 				<textElement textAlignment="Right" verticalAlignment="Top">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[new DecimalFormat("#,##0.00").format($V{sum_total_payment})]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="444" y="40" width="100" height="14" uuid="25b1920b-8dd8-4523-9ed8-0674a396acbc"/>
+				<reportElement x="444" y="18" width="100" height="14" uuid="25b1920b-8dd8-4523-9ed8-0674a396acbc"/>
 				<textElement textAlignment="Right">
 					<font isBold="true" isItalic="true"/>
 				</textElement>
