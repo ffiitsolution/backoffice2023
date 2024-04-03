@@ -5026,7 +5026,8 @@ public class ViewDoaImpl implements ViewDao {
         String OIL_ITEM_CODE = "06-1002";
         String query = "SELECT d.RECIPE_CODE, mh.DESCRIPTION, h.MPCS_GROUP, mg.DESCRIPTION AS FRYER_TYPE, "
             + "CASE "
-            + "    WHEN (d.REMARK IS NOT NULL AND d.remark != ' ') THEN '1/' ||d.REMARK || ' ' || CASE WHEN mh.FRYER_TYPE = 'S' THEN 'Kg' ELSE 'Head' END "
+            + "    WHEN (d.REMARK IS NOT NULL AND d.remark != ' ' AND d.remark != '1') THEN '1/' ||d.REMARK || ' ' || CASE WHEN mh.FRYER_TYPE = 'S' THEN 'Kg' ELSE 'Head' END "
+            + "    WHEN (d.REMARK = '1') THEN d.remark || ' ' || CASE WHEN mh.FRYER_TYPE = 'S' THEN 'Kg' ELSE 'Head' END"
             + "    ELSE NULL  "
             + "END AS oil_conv "
             + "FROM M_RECIPE_detail d "
