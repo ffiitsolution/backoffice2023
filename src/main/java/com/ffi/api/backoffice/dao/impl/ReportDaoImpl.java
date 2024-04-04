@@ -37,6 +37,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ffi.api.backoffice.dao.ReportDao;
 import com.ffi.api.backoffice.utils.DynamicRowMapper;
+import java.util.Calendar;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -3908,16 +3909,157 @@ public class ReportDaoImpl implements ReportDao {
     /// report POS Summary Laporan Pagi by M Joko 26 Mar 2024
     @Override
     public JasperPrint jesperReportSummaryLaporanPagi(Map<String, Object> param, Connection connection) throws JRException, IOException {
-        param.put("fromDate", param.get("date").toString());
-        String querySalesToday = "SELECT D.*, GROSS_SALES - TOTAL_CHARGE AS TOTAL_PENDAPATAN FROM ( SELECT COALESCE(TAXABLE, 0) TAXABLE , COALESCE(TAX, 0) TAX, COALESCE(PEMBULATAN, 0) PEMBULATAN, COALESCE(GROSS_SALES, 0) GROSS_SALES, COALESCE(BIAYA_ANTAR, 0) BIAYA_ANTAR, COALESCE(TAX_CHARGE, 0) TAX_CHARGE, COALESCE(REFUND, 0) REFUND, COALESCE(CUSTOMER, 0) CUSTOMER, COALESCE(TOTAL_DP_PAID, 0) TOTAL_DP_PAID, COALESCE(TRANSAKSI, 0) TRANSAKSI, COALESCE(TOTAL_DISCOUNT, 0) TOTAL_DISCOUNT, COALESCE(CUST_AVERAGE, 0) CUST_AVERAGE, COALESCE(TICKET_AVG, 0) TICKET_AVG, COALESCE(DONASI, 0) DONASI, SUM(NVL(TOTAL_CLAIM,0)) AS TOTAL_CLAIM, COALESCE(TOTAL_PAYMENT, 0) TOTAL_PAYMENT, COALESCE(TOTAL_CHARGE, 0) TOTAL_CHARGE , COALESCE(TOTAL_AMOUNT, 0) TOTAL_AMOUNT, COALESCE(CUSTOMER_EATIN,0) AS CUSTOMER_EATIN, COALESCE(CUSTOMER_TAKEAWAY, 0) AS CUSTOMER_TAKEAWAY, COALESCE(TRANSAKSI_EATIN, 0) AS TRANSAKSI_EATIN, COALESCE(TRANSAKSI_TAKEAWAY, 0) AS TRANSAKSI_TAKEAWAY FROM( SELECT (SUM(TOTAL_AMOUNT) - SUM(TOTAL_DISCOUNT)) TAXABLE, SUM(TOTAL_AMOUNT) TOTAL_AMOUNT, SUM(TOTAL_TAX) TAX, SUM(TOTAL_PAYMENT) TOTAL_PAYMENT, SUM(TOTAL_ROUNDING) PEMBULATAN, SUM(TOTAL_SALES) GROSS_SALES, SUM(CASE WHEN TRANS_TYPE IN ('TA', ' ') THEN TOTAL_CUSTOMER ELSE 0 END) AS CUSTOMER_TAKEAWAY, SUM(CASE WHEN TRANS_TYPE = 'EI' THEN TOTAL_CUSTOMER ELSE 0 END) AS CUSTOMER_EATIN, SUM(CASE WHEN TRANS_TYPE IN ('TA', ' ') THEN 1 ELSE 0 END) AS TRANSAKSI_TAKEAWAY, SUM(CASE WHEN TRANS_TYPE = 'EI' THEN 1 ELSE 0 END) AS TRANSAKSI_EATIN, SUM(TOTAL_CHARGE) BIAYA_ANTAR, SUM(TOTAL_TAX_CHARGE) AS TAX_CHARGE, SUM(TOTAL_REFUND) REFUND, SUM(TOTAL_CUSTOMER) CUSTOMER, SUM(TOTAL_DP_PAID) AS TOTAL_DP_PAID, COUNT(0) TRANSAKSI, SUM(TOTAL_DISCOUNT) TOTAL_DISCOUNT, SUM(TOTAL_CHARGE) TOTAL_CHARGE, ROUND((SUM(TOTAL_AMOUNT) - SUM(TOTAL_DISCOUNT)) / (NVL(SUM(TOTAL_CUSTOMER), 1))) CUST_AVERAGE, ROUND((SUM(TOTAL_AMOUNT) - SUM(TOTAL_DISCOUNT)) / (COUNT(1))) TICKET_AVG, SUM(TOTAL_DONATION) DONASI, 1 AS KODE FROM T_POS_BILL A WHERE (DELIVERY_STATUS IN (' ','CLS') OR DELIVERY_STATUS IS NULL) AND OUTLET_CODE IN (:outletCode) AND TRANS_DATE = :fromDate AND ORDER_TYPE IN (SELECT CODE FROM M_GLOBAL WHERE DESCRIPTION = 'GRPTP') ) A LEFT JOIN ( SELECT 1 AS KODE, ORDER_TYPE, 0 AS TOTAL_CLAIM FROM ( SELECT CASE WHEN A.CASHBANK = 'HDL' THEN 'HMD' WHEN A.CASHBANK = 'OPS' THEN 'ETA' WHEN A.CASHBANK = 'CSP' THEN 'CSP' ELSE A.CASHBANK END AS ORDER_TYPE, SUM(C.TOTAL_IN) AS TOTAL_CLAIM FROM T_PC_CLAIM_HDR A JOIN T_PC_HDR C ON A.OUTLET_CODE = C.OUTLET_CODE AND A.CLAIM_NO = C.TRANS_TO WHERE C.DATE_UPD = :fromDate  AND A.TYPE_PAYMENT = 'POT'GROUP BY CASE WHEN A.CASHBANK = 'HDL' THEN 'HMD' WHEN A.CASHBANK = 'OPS' THEN 'ETA' WHEN A.CASHBANK = 'CSP' THEN 'CSP' ELSE A.CASHBANK END,C.TRANS_NO ) WHERE ORDER_TYPE IN (SELECT CODE FROM M_GLOBAL WHERE DESCRIPTION = 'GRPTP') GROUP BY ORDER_TYPE ) B ON A.KODE = B.KODE GROUP BY TAXABLE, TAX, PEMBULATAN, GROSS_SALES, BIAYA_ANTAR, TAX_CHARGE, REFUND, CUSTOMER, TOTAL_DP_PAID, TRANSAKSI, TOTAL_DISCOUNT, CUST_AVERAGE, TICKET_AVG, DONASI, TOTAL_PAYMENT, TOTAL_CHARGE, TOTAL_AMOUNT, CUSTOMER_TAKEAWAY, CUSTOMER_EATIN, TRANSAKSI_TAKEAWAY, TRANSAKSI_EATIN ) D";
-        Map<String, Object> salesToday = jdbcTemplate.queryForObject(querySalesToday, param, new DynamicRowMapper());
+        long startTime = System.currentTimeMillis();
+        String dateString = param.get("date").toString();
+        String outletCode = param.get("outletCode").toString();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
+        DecimalFormat df = new DecimalFormat("#.##");
+        param.put("fromDate", dateString);
+        param.put("toDate", dateString);
+        Map<String, Object> dataBI = (Map<String, Object>) param.get("dataBI");
+        List<Map<String, Object>> listBudget = (List<Map<String, Object>>) dataBI.get("biListBudget");
+        Map<String, Object> dataBudget = listBudget.get(0);
+        Map<String, Object> paramToday = new HashMap();
+        Map<String, Object> paramWeek = new HashMap();
+        Map<String, Object> paramYear = new HashMap();
+        Map<String, Object> paramMtdActual = new HashMap();
+        Map<String, Object> paramMtdActualLastYear = new HashMap();
+        Map<String, Object> growthWeek = new HashMap();
+        Map<String, Object> growthYear = new HashMap();
+        Map<String, Object> achievedActual = new HashMap();
+        Map<String, Object> achievedLastYear = new HashMap();
+        try {
+            // param hari ini
+            Date dateToday = sdf.parse(dateString);
+            String fDateToday = sdf.format(dateToday);
+            paramToday.put("fromDate", fDateToday);
+            paramToday.put("toDate", fDateToday);
+            paramToday.put("outletCode", outletCode);
+            
+            // param 7 hari yg lalu
+            Calendar calendarWeek = Calendar.getInstance();
+            calendarWeek.setTime(dateToday);
+            calendarWeek.add(Calendar.DAY_OF_MONTH, -7);
+            Date dateLastWeek = calendarWeek.getTime();
+            String fDateLastWeek = sdf.format(dateLastWeek);
+            paramWeek.put("fromDate", fDateLastWeek);
+            paramWeek.put("toDate", fDateLastWeek);
+            paramWeek.put("outletCode", outletCode);
+            
+            // param 1 tahun yg lalu
+            Calendar calendarLastYear = Calendar.getInstance();
+            calendarLastYear.setTime(dateToday);
+            calendarLastYear.add(Calendar.YEAR, -1);
+            Date dateLastYear = calendarLastYear.getTime();
+            String fDateLastYear = sdf.format(dateLastYear);
+            paramYear.put("fromDate", fDateLastYear);
+            paramYear.put("toDate", fDateLastYear);
+            paramYear.put("outletCode", outletCode);
+            
+            // param MTD Actual
+            Calendar calendarMtdActual = Calendar.getInstance();
+            calendarMtdActual.setTime(dateToday);
+            calendarMtdActual.set(Calendar.DAY_OF_MONTH, 1);
+            Date firstDayOfMonth = calendarMtdActual.getTime();
+            String fFirstDayOfMonth = sdf.format(firstDayOfMonth);
+            paramMtdActual.put("fromDate", fFirstDayOfMonth);
+            paramMtdActual.put("toDate", dateString);
+            paramMtdActual.put("outletCode", outletCode);
+            
+            // param MTD Actual Last Year
+            Calendar calendarMtdActualLastYear = Calendar.getInstance();
+            calendarMtdActualLastYear.setTime(dateLastYear);
+            calendarMtdActualLastYear.set(Calendar.DAY_OF_MONTH, 1);
+            Date firstDayOfMonthLastYear = calendarMtdActualLastYear.getTime();
+            String fFirstDayOfMonthLastYear = sdf.format(firstDayOfMonthLastYear);
+            paramMtdActualLastYear.put("fromDate", fFirstDayOfMonthLastYear);
+            paramMtdActualLastYear.put("toDate", fDateLastYear);
+            paramMtdActualLastYear.put("outletCode", outletCode);
+        } catch (ParseException e) {
+            System.err.println(e.getMessage());
+        }
+        String querySalesToday = "SELECT D.*, GROSS_SALES - TOTAL_CHARGE AS TOTAL_PENDAPATAN FROM ( SELECT COALESCE(TAXABLE, 0) TAXABLE , COALESCE(TAX, 0) TAX, COALESCE(PEMBULATAN, 0) PEMBULATAN, COALESCE(GROSS_SALES, 0) GROSS_SALES, COALESCE(BIAYA_ANTAR, 0) BIAYA_ANTAR, COALESCE(TAX_CHARGE, 0) TAX_CHARGE, COALESCE(REFUND, 0) REFUND, COALESCE(CUSTOMER, 0) CUSTOMER, COALESCE(TOTAL_DP_PAID, 0) TOTAL_DP_PAID, COALESCE(TRANSAKSI, 0) TRANSAKSI, COALESCE(TOTAL_DISCOUNT, 0) TOTAL_DISCOUNT, COALESCE(CUST_AVERAGE, 0) CUST_AVERAGE, COALESCE(TICKET_AVG, 0) TICKET_AVG, COALESCE(DONASI, 0) DONASI, SUM(NVL(TOTAL_CLAIM,0)) AS TOTAL_CLAIM, COALESCE(TOTAL_PAYMENT, 0) TOTAL_PAYMENT, COALESCE(TOTAL_CHARGE, 0) TOTAL_CHARGE , COALESCE(TOTAL_AMOUNT, 0) TOTAL_AMOUNT, COALESCE(CUSTOMER_EATIN,0) AS CUSTOMER_EATIN, COALESCE(CUSTOMER_TAKEAWAY, 0) AS CUSTOMER_TAKEAWAY, COALESCE(TRANSAKSI_EATIN, 0) AS TRANSAKSI_EATIN, COALESCE(TRANSAKSI_TAKEAWAY, 0) AS TRANSAKSI_TAKEAWAY FROM( SELECT (SUM(TOTAL_AMOUNT) - SUM(TOTAL_DISCOUNT)) TAXABLE, SUM(TOTAL_AMOUNT) TOTAL_AMOUNT, SUM(TOTAL_TAX) TAX, SUM(TOTAL_PAYMENT) TOTAL_PAYMENT, SUM(TOTAL_ROUNDING) PEMBULATAN, SUM(TOTAL_SALES) GROSS_SALES, SUM(CASE WHEN TRANS_TYPE IN ('TA', ' ') THEN TOTAL_CUSTOMER ELSE 0 END) AS CUSTOMER_TAKEAWAY, SUM(CASE WHEN TRANS_TYPE = 'EI' THEN TOTAL_CUSTOMER ELSE 0 END) AS CUSTOMER_EATIN, SUM(CASE WHEN TRANS_TYPE IN ('TA', ' ') THEN 1 ELSE 0 END) AS TRANSAKSI_TAKEAWAY, SUM(CASE WHEN TRANS_TYPE = 'EI' THEN 1 ELSE 0 END) AS TRANSAKSI_EATIN, SUM(TOTAL_CHARGE) BIAYA_ANTAR, SUM(TOTAL_TAX_CHARGE) AS TAX_CHARGE, SUM(TOTAL_REFUND) REFUND, SUM(TOTAL_CUSTOMER) CUSTOMER, SUM(TOTAL_DP_PAID) AS TOTAL_DP_PAID, COUNT(0) TRANSAKSI, SUM(TOTAL_DISCOUNT) TOTAL_DISCOUNT, SUM(TOTAL_CHARGE) TOTAL_CHARGE, ROUND((SUM(TOTAL_AMOUNT) - SUM(TOTAL_DISCOUNT)) / (NVL(SUM(TOTAL_CUSTOMER), 1))) CUST_AVERAGE, ROUND((SUM(TOTAL_AMOUNT) - SUM(TOTAL_DISCOUNT)) / (COUNT(1))) TICKET_AVG, SUM(TOTAL_DONATION) DONASI, 1 AS KODE FROM T_POS_BILL A WHERE (DELIVERY_STATUS IN (' ','CLS') OR DELIVERY_STATUS IS NULL) AND OUTLET_CODE IN (:outletCode) AND TRANS_DATE BETWEEN :fromDate AND :toDate AND ORDER_TYPE IN (SELECT CODE FROM M_GLOBAL WHERE DESCRIPTION = 'GRPTP') ) A LEFT JOIN ( SELECT 1 AS KODE, ORDER_TYPE, 0 AS TOTAL_CLAIM FROM ( SELECT CASE WHEN A.CASHBANK = 'HDL' THEN 'HMD' WHEN A.CASHBANK = 'OPS' THEN 'ETA' WHEN A.CASHBANK = 'CSP' THEN 'CSP' ELSE A.CASHBANK END AS ORDER_TYPE, SUM(C.TOTAL_IN) AS TOTAL_CLAIM FROM T_PC_CLAIM_HDR A JOIN T_PC_HDR C ON A.OUTLET_CODE = C.OUTLET_CODE AND A.CLAIM_NO = C.TRANS_TO WHERE C.DATE_UPD BETWEEN :fromDate AND :toDate AND A.TYPE_PAYMENT = 'POT'GROUP BY CASE WHEN A.CASHBANK = 'HDL' THEN 'HMD' WHEN A.CASHBANK = 'OPS' THEN 'ETA' WHEN A.CASHBANK = 'CSP' THEN 'CSP' ELSE A.CASHBANK END,C.TRANS_NO ) WHERE ORDER_TYPE IN (SELECT CODE FROM M_GLOBAL WHERE DESCRIPTION = 'GRPTP') GROUP BY ORDER_TYPE ) B ON A.KODE = B.KODE GROUP BY TAXABLE, TAX, PEMBULATAN, GROSS_SALES, BIAYA_ANTAR, TAX_CHARGE, REFUND, CUSTOMER, TOTAL_DP_PAID, TRANSAKSI, TOTAL_DISCOUNT, CUST_AVERAGE, TICKET_AVG, DONASI, TOTAL_PAYMENT, TOTAL_CHARGE, TOTAL_AMOUNT, CUSTOMER_TAKEAWAY, CUSTOMER_EATIN, TRANSAKSI_TAKEAWAY, TRANSAKSI_EATIN ) D";
+        // sales hari ini
+        Map<String, Object> salesToday = jdbcTemplate.queryForObject(querySalesToday, paramToday, new DynamicRowMapper());
+        // sales 7 hari yg lalu
+        Map<String, Object> salesLastWeek = jdbcTemplate.queryForObject(querySalesToday, paramWeek, new DynamicRowMapper());
+        // growth sales hari ini vs 7 hari yg lalu
+        if(salesToday != null && salesLastWeek != null){
+            for (String key : salesToday.keySet()) {
+                Double valueToday = ((Number) salesToday.get(key)).doubleValue();
+                Double valueLastWeek = ((Number) salesLastWeek.get(key)).doubleValue();
+                if (!Objects.equals(valueToday, valueLastWeek)) {
+                    Double growth = (valueToday - valueLastWeek) / valueLastWeek * 100;
+                    growthWeek.put(key, df.format(growth));
+                } else {
+                    growthWeek.put(key, 0);
+                }
+            }
+        }
+        // sales 1 tahun yg lalu
+        Map<String, Object> salesLastYear = jdbcTemplate.queryForObject(querySalesToday, paramYear, new DynamicRowMapper());
+        // growth sales hari ini vs tahun lalu
+        if(salesToday != null && salesLastYear != null){
+            for (String key : salesToday.keySet()) {
+                Double valueToday = ((Number) salesToday.get(key)).doubleValue();
+                Double valueLastYear = ((Number) salesLastYear.get(key)).doubleValue();
+                if (!Objects.equals(valueToday, valueLastYear)) {
+                    Double growth = (valueToday - valueLastYear) / valueLastYear * 100;
+                    growthYear.put(key, df.format(growth));
+                } else {
+                    growthYear.put(key, 0);
+                }
+            }
+        }
+        // sales MTD Actual - tgl 1 sampai tanggal ini di bulan ini
+        Map<String, Object> salesMtdActual = jdbcTemplate.queryForObject(querySalesToday, paramMtdActual, new DynamicRowMapper());
+        // sales MTD Actual tahun kemarin - tgl 1 sampai tanggal ini di bulan ini di tahun kemarin
+        Map<String, Object> salesMtdActualLastYear = jdbcTemplate.queryForObject(querySalesToday, paramMtdActualLastYear, new DynamicRowMapper());
+        // achieved salesMtdActual vs budget dari BI
+        if(salesMtdActual != null && salesMtdActualLastYear != null){
+            Double actualTotalPendapatan = ((Number) salesMtdActual.get("totalPendapatan")).doubleValue();
+            Double budgetSales = Double.valueOf(dataBudget.getOrDefault("BUDGET_SALES", "0").toString());
+            Double actualTransaksi = ((Number) salesMtdActual.get("transaksi")).doubleValue();
+            Double budgetTransaksi = Double.valueOf(dataBudget.getOrDefault("BUDGET_TRANSACTION", "0").toString());
+            Double actualTicketAvg = ((Number) salesMtdActual.get("ticketAvg")).doubleValue();
+            Double budgetTicketAvg = budgetSales / budgetTransaksi;
+            achievedActual.put("totalPendapatan", df.format((actualTotalPendapatan / budgetSales * 100)));
+            achievedActual.put("transaksi", df.format((actualTransaksi / budgetTransaksi * 100)));
+            achievedActual.put("ticketAvg", df.format((actualTicketAvg / budgetTicketAvg * 100)));
+            achievedActual.put("month", dataBudget.getOrDefault("MONTH", "?").toString());
+        }
+        // achieved salesMtdActual vs salesMtdActualLastYear
+        if(salesMtdActual != null && salesMtdActualLastYear != null){
+            for (String key : salesMtdActual.keySet()) {
+                Double valueToday = ((Number) salesMtdActual.get(key)).doubleValue();
+                Double valueLastYear = ((Number) salesMtdActualLastYear.get(key)).doubleValue();
+                if (!Objects.equals(valueToday, valueLastYear)) {
+                    Double growth = valueToday / valueLastYear * 100;
+                    achievedLastYear.put(key, df.format(growth));
+                } else {
+                    achievedLastYear.put(key, 0);
+                }
+            }
+        }
+        
+        // cek jika tidak ada data kembalikan report null
         BigDecimal transaksi = (BigDecimal) salesToday.getOrDefault("transaksi", 0);
         if(transaksi.doubleValue() < 1){
             return new JasperPrint();
         }
         param.put("salesToday", salesToday);
+        param.put("salesLastWeek", salesLastWeek);
+        param.put("salesLastYear", salesLastYear);
+        param.put("salesMtdActual", salesMtdActual);
+        param.put("salesMtdLastYear", salesMtdActualLastYear);
+        param.put("growthWeek", growthWeek);
+        param.put("growthYear", growthYear);
+        param.put("achievedActual", achievedActual);
+        param.put("achievedLastYear", achievedLastYear);
         ClassPathResource classPathResource = new ClassPathResource("report/summaryLaporanPagi.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        double elapsedTimeSeconds = (double) (System.currentTimeMillis() - startTime) / 1000.0;
+        System.err.println("jesperReportSummaryLaporanPagi process in: " + elapsedTimeSeconds + " seconds");
         return JasperFillManager.fillReport(jasperReport, param, connection);
     }
     

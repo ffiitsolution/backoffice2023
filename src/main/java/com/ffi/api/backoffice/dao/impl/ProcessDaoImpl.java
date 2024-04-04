@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.ffi.api.backoffice.dao.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,7 +13,6 @@ import com.ffi.api.backoffice.utils.TableAliasUtil;
 import com.ffi.paging.ResponseMessage;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
@@ -39,8 +34,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
