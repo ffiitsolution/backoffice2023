@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.ffi.api.backoffice.dao.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,7 +13,6 @@ import com.ffi.api.backoffice.utils.TableAliasUtil;
 import com.ffi.paging.ResponseMessage;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
@@ -39,8 +34,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -302,7 +295,7 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("phoneNumber", balancetest1.get("phoneNumber"));
         param.put("mobilePhoneNumber", balancetest1.get("mobile"));
         param.put("employDate", balancetest1.get("employeeDate"));
-        param.put("resignDate", balancetest1.get("resignDate"));
+        param.put("resignDate", balancetest1.get("resignDate") == null || balancetest1.get("resignDate").isBlank() ? "1 JAN 1950" : balancetest1.get("resignDate"));
         param.put("positionCode", balancetest1.get("positionCode"));
 
         if (balancetest1.get("accessLevelCode").length() <= 3) {
@@ -361,7 +354,7 @@ public class ProcessDaoImpl implements ProcessDao {
         param.put("phoneNumber", balancetest1.get("phoneNumber"));
         param.put("mobilePhoneNumber", balancetest1.get("mobile"));
         param.put("employDate", balancetest1.get("employeeDate"));
-        param.put("resignDate", balancetest1.get("resignDate"));
+        param.put("resignDate", balancetest1.get("resignDate") == null || balancetest1.get("resignDate").isBlank() ? "1 JAN 1950" : balancetest1.get("resignDate"));
         param.put("positionCode", balancetest1.get("positionCode"));
 
         if (balancetest1.get("accessLevelCode").length() <= 3) {
@@ -4565,4 +4558,15 @@ public class ProcessDaoImpl implements ProcessDao {
     }
 
     //////////////// done aditya 14/03/2024
+    
+    ///////////////new method from dona 27-02-2023////////////////////////////
+    @Override
+    public void insertItem(Map<String, String> balance) {
+        String sql = "INSERT INTO M_ITEM (ITEM_CODE, CD_BRAND, ITEM_DESCRIPTION, CD_LEVEL_1, CD_LEVEL_2, CD_LEVEL_3, CD_LEVEL_4, AMT_COST, UOM_WAREHOUSE, CONV_WAREHOUSE, UOM_PURCHASE, CONV_STOCK, UOM_STOCK, CD_WAREHOUSE, FLAG_OTHERS, FLAG_MATERIAL, FLAG_HALF_FINISH, FLAG_FINISHED_GOOD, FLAG_OPEN_MARKET, FLAG_TRANSFER_LOC, FLAG_CANVASING, FLAG_STOCK, PLU, CD_SUPPLIER_DEFAULT, MIN_STOCK, MAX_STOCK, QTY_STOCK, CD_MENU_ITEM, CD_ITEM_LEFTOVER, STATUS, USER_UPD, DATE_UPD, TIME_UPD, FLAG_PAKET) VALUES(:itemCode, :cdBrand, :itemDescription, :cdLevel1, :cdLevel2, :cdLevel3, :cdLevel4, :amtCost, :uomWarehouse, :convWarehouse, :uomPurchase, :convStock, :uomStock, :cdWarehouse, :flagOther, :flagMaterial, :flagHalfFinish, :flagFinishedGood, :flagOpenMarket, :flagTransferLoc, :flagCanvasing, :flagStock, :plu, :cdSupplierDefault, :minStock, :maxStock, :qtyStock, :cdMenuItem, :cdItemLeftOver, :status, :userUpd, :dateUpd, :timeUpd, :flagPaket)";
+        Map param = new HashMap();
+        param.put("dateUpd", LocalDateTime.now().format(dateFormatter));
+        param.put("timeUpd", LocalDateTime.now().format(timeFormatter));
+        jdbcTemplate.update(sql, param);
+    }
+    /////////////////////////////////done
 }

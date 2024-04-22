@@ -371,4 +371,11 @@ public class ProcessServices {
         dao.insertPettyCashToBoffi(balance);
     }
     ///////// done aditya 08-03-2024
+    
+     ///////////////new method from dona 27-02-2023////////////////////////////
+
+    public void insertItem(Map<String, String> balance) {
+        dao.insertItem(balance);
+    }
+    ////////////////////done
 }

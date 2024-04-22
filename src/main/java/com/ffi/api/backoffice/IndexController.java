@@ -80,13 +80,13 @@ public class IndexController {
     AppUtil appUtil;
     
     @Autowired
+    AppConfig appConfig;
+    
+    @Autowired
     private FileLoggerUtil fileLoggerUtil;
     
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
-    
-    @Value("${app.outletCode}")
-    private String _OutletCode;
     
     @Value("${endpoint.master}")
     private String _UrlMaster;
@@ -3277,13 +3277,17 @@ public class IndexController {
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
         ResponseMessage rm = new ResponseMessage();
-        if (!balance.containsKey("outletCode")) {
+        String outletCode = balance.get("outletCode");
+        if(outletCode == null){
+            outletCode = appConfig.getOutletCode();
+        }
+        if (outletCode.isBlank()) {
             rm.setSuccess(false);
             rm.setMessage("Get Failed: outletCode required");
             return rm;
         }
         try {
-            rm.setItem(viewServices.outletInfo(balance.get("outletCode")));
+            rm.setItem(viewServices.outletInfo(outletCode));
             rm.setSuccess(true);
             rm.setMessage("Get Success");
         } catch (Exception e) {
@@ -4313,11 +4317,13 @@ public class IndexController {
     // @Scheduled(cron = "0 */30 * * * *") // dijalankan setiap 30 menit
     @Scheduled(cron = "0 0/15 0-23 * * *") // dijalankan setiap 7.00, 7.15, 7.30, 7.45, 8.00, 8.15 dst
     public void scheduledKirimTerimaData() {
-        if (_OutletCode.isBlank()) {
+        String outletCode = appConfig.getOutletCode();
+        if (outletCode.isBlank()) {
             messagingTemplate.convertAndSend("/topic", "Kode Outlet belum diatur di properties");
+            System.out.println("Kode Outlet belum diatur di properties");
         } else {
             messagingTemplate.convertAndSend("/topic", "Memulai Kirim Data Transaksi Terjadwal");
-            System.out.println("Executing scheduledKirimTerimaData... " + _OutletCode);
+            System.out.println("Executing scheduledKirimTerimaData... " + outletCode);
             try {
                 Map<String, Object> param = new HashMap();
                 LocalDateTime currentDateTime = LocalDateTime.now();
@@ -4326,8 +4332,8 @@ public class IndexController {
                 param.put("dateUpd", dateUpd);
                 param.put("timeUpd", timeUpd);
                 param.put("userUpd", "SYSTEM");
-                param.put("outletCode", _OutletCode);
-                param.put("outletId", _OutletCode);
+                param.put("outletCode", outletCode);
+                param.put("outletId", outletCode);
                 transferDataAll(param);
             } catch (Exception ex) {
                 System.err.println("Failed Executing scheduledKirimTerimaData: " + ex.getMessage());
@@ -4401,14 +4407,16 @@ public class IndexController {
 //    @Scheduled(cron = "0 0/1 0-23 * * *") // dijalankan setiap 7.00, 7.15, 7.30, 7.45, 8.00, 8.15 dst
     @Scheduled(cron = "0/30 * * * * *")
     public void scheduledMonitoringMpcs() {
-        if (_OutletCode.isBlank()) {
+        String outletCode = appConfig.getOutletCode();
+        if (outletCode.isBlank()) {
             messagingTemplate.convertAndSend("/topic/monitoring-mpcs", "Kode Outlet belum diatur di properties");
+            System.out.println("Kode Outlet belum diatur di properties");
         } else {
-            System.out.println("Executing scheduledKirimTerimaData... " + _OutletCode);
+            System.out.println("Executing scheduledMonitoringMpcs... " + outletCode);
             try {
                 Map<String, Object> param = new HashMap();
                 ObjectMapper objectMapper = new ObjectMapper();
-                param.put("outletCode", _OutletCode);
+                param.put("outletCode", outletCode);
                 List<Map<String, Object>> list = viewServices.listMpcsMonitoring(param);
                 String json = objectMapper.writeValueAsString(list);
                 messagingTemplate.convertAndSend("/topic/monitoring-mpcs", json);
@@ -4418,5 +4426,36 @@ public class IndexController {
     }    
     /////////////////// end aditya 22 Mar 2024 
     
+    //INSERT ITEM aditya 5 April 2024 =========================================================
+    @RequestMapping(value = "/insert-Item", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk insert Item", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage insertItem(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        ResponseMessage rm = new ResponseMessage();
+        try {
+            processServices.insertItem(balance);
+            rm.setSuccess(true);
+            rm.setMessage("Insert Success Successfuly");
+            
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Insert Failed Successfuly: " + e.getMessage());
+        }
+        
+        rm.setItem(list);
+        
+        return rm;
+    }
+    
+    ///////////////////////////// done aditya master insert item 5 April 2024
     
 }

@@ -2,10 +2,7 @@
 <!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="summaryLaporanPagi" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="44a51bcc-3581-4b9a-8768-8c9018180628">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="localhost"/>
-	<property name="com.jaspersoft.studio.data.sql.tables">
-		<![CDATA[Ik1fT1VUTEVUIiAsMTUsMTUsMmVhY2JhYzMtMDQ0Ny00OGNlLWI5ODItYjRmMDMwNzBmNDA1OyJN
-X1NUQUZGIiAsMTkzLDQ0MywzNWNhNzFmYS0zODg2LTQzMmMtYTFhNS0zNmQ5ZDI2N2VhY2U7]]>
-	</property>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<style name="Table_TH" mode="Opaque" backcolor="rgba(255, 255, 255, 0.0)">
 		<box>
 			<pen lineWidth="0.5" lineColor="#000000"/>
@@ -459,7 +456,7 @@ FROM (
         AND a.TRANS_DATE = $P{fromDate} 
     WHERE 
         b.ITEM_CODE IN ('A1-0001', 'A1-0002', 'A1-0004', 'A1-0005') 
-    GROUP BY b.ITEM_DESCRIPTION, a.CD_TRANS
+    GROUP BY b.ITEM_DESCRIPTION
     UNION ALL
     SELECT 
         'FREEMEAL' AS ITEM_DESCRIPTION,
@@ -475,7 +472,8 @@ FROM (
     WHERE 
         b.ITEM_CODE = 'A1-0002'
     GROUP BY b.ITEM_DESCRIPTION
-) c]]>
+) c
+  ORDER BY ITEM_DESCRIPTION]]>
 		</queryString>
 		<field name="ITEM_DESCRIPTION" class="java.lang.String">
 			<property name="com.jaspersoft.studio.field.name" value="ITEM_DESCRIPTION"/>
@@ -529,8 +527,9 @@ FROM (
         AND a.TRANS_DATE = $P{fromDate} 
     WHERE 
         b.ITEM_CODE IN ('A7-0011', 'A7-0009', 'A7-0002', 'A7-0013') 
-    GROUP BY b.ITEM_DESCRIPTION, a.CD_TRANS
-) c]]>
+    GROUP BY b.ITEM_DESCRIPTION
+) c
+  ORDER BY ITEM_DESCRIPTION]]>
 		</queryString>
 		<field name="ITEM_DESCRIPTION" class="java.lang.String">
 			<property name="com.jaspersoft.studio.field.name" value="ITEM_DESCRIPTION"/>
@@ -569,6 +568,15 @@ FROM (
 	<parameter name="dataBI" class="com.google.gson.internal.LinkedTreeMap" isForPrompting="false"/>
 	<parameter name="importList" class="java.util.List"/>
 	<parameter name="salesToday" class="java.util.Map" isForPrompting="false"/>
+	<parameter name="salesLastWeek" class="java.util.Map" isForPrompting="false"/>
+	<parameter name="fromDate7" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="growthWeek" class="java.util.Map" isForPrompting="false"/>
+	<parameter name="growthYear" class="java.util.Map" isForPrompting="false"/>
+	<parameter name="salesLastYear" class="java.util.Map" isForPrompting="false"/>
+	<parameter name="salesMtdActual" class="java.util.Map" isForPrompting="false"/>
+	<parameter name="salesMtdLastYear" class="java.util.Map" isForPrompting="false"/>
+	<parameter name="achievedActual" class="java.util.Map" isForPrompting="false"/>
+	<parameter name="achievedLastYear" class="java.util.Map" isForPrompting="false"/>
 	<queryString>
 		<![CDATA[SELECT mo."OUTLET_CODE",
 	mo."OUTLET_NAME",
@@ -894,83 +902,11 @@ WHERE
 				</textElement>
 				<text><![CDATA[SALES LAST WEEK]]></text>
 			</staticText>
-			<staticText>
-				<reportElement x="175" y="33" width="54" height="12" uuid="767ee1c8-d6b9-476f-aa33-9b063fb83e5e"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Amount]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="175" y="45" width="54" height="12" uuid="1eea1360-5df3-42b3-9000-75395d07d73e"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Transactions]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="175" y="57" width="54" height="12" uuid="f75b0162-e0f9-4d24-8fc3-9e12990e4b32"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Ticket Average]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="229" y="33" width="3" height="12" uuid="8148782e-8093-419e-a42b-fb7b9a7252d7"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[:]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="229" y="45" width="3" height="12" uuid="ca1cc58c-e7ac-46c4-bf89-298ee35fd07a"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[:]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="229" y="57" width="3" height="12" uuid="805adcd3-f900-46f6-a8ce-5eeecfadc409"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[:]]></text>
-			</staticText>
 			<line>
 				<reportElement x="171" y="31" width="129" height="1" uuid="7657d29d-ff17-451c-b12f-a9f9686288c2">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 			</line>
-			<textField pattern="#,##0.##" isBlankWhenNull="true">
-				<reportElement x="232" y="33" width="68" height="12" uuid="46480178-afac-4599-ad5e-af3936c15459">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box rightPadding="4"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[Double.parseDouble(String.valueOf($V{biSummaryLastWeek}.get("SALES")))]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.##" isBlankWhenNull="true">
-				<reportElement x="232" y="45" width="68" height="12" uuid="4978c89d-f552-47af-8928-a47b8d0d3f2f">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box rightPadding="4"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[Double.parseDouble(String.valueOf($V{biSummaryLastWeek}.get("BILLCOUNT")))]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.##" isBlankWhenNull="true">
-				<reportElement x="232" y="57" width="68" height="12" uuid="c2dba879-c681-41bf-8631-83ea05c7dddf">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box rightPadding="4"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[Double.parseDouble(String.valueOf($V{biSummaryLastWeek}.get("AVERAGETICKET")))]]></textFieldExpression>
-			</textField>
 			<rectangle radius="8">
 				<reportElement x="500" y="21" width="129" height="60" uuid="f8b824a1-cd8e-4d1d-aa95-d42dde17a537"/>
 			</rectangle>
@@ -986,83 +922,11 @@ WHERE
 				</textElement>
 				<text><![CDATA[SALES LAST YEAR]]></text>
 			</staticText>
-			<staticText>
-				<reportElement x="504" y="33" width="54" height="12" uuid="e486823b-942c-45e3-a382-335eec1e321e"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Amount]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="504" y="45" width="54" height="12" uuid="de84dc42-a8d4-41c0-9520-c6c5f913a5b7"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Transactions]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="504" y="57" width="54" height="12" uuid="99a7e6b8-93c6-4a0b-a5fa-1c6a0d97f778"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Ticket Average]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="558" y="33" width="3" height="12" uuid="6e1e9385-3193-41d8-887b-4502d024f4dc"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[:]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="558" y="45" width="3" height="12" uuid="7c44227b-2f04-47ef-b46c-deb3d852f325"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[:]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="558" y="57" width="3" height="12" uuid="202b395e-9dff-465d-8782-54a538bfe297"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[:]]></text>
-			</staticText>
 			<line>
 				<reportElement x="500" y="31" width="129" height="1" uuid="733cd679-1d68-4985-83ff-9a57d0619a93">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 			</line>
-			<textField pattern="#,##0.##">
-				<reportElement x="561" y="33" width="68" height="12" uuid="f50388e2-8ca0-4e21-a942-2dc4261b6edc">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box rightPadding="4"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[Double.parseDouble(String.valueOf($V{biLastYear}.get("SALES")))]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.##">
-				<reportElement x="561" y="45" width="68" height="12" uuid="564732b3-f01c-48f7-8d7c-e25744a90724">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box rightPadding="4"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[Double.parseDouble(String.valueOf($V{biLastYear}.get("BILL_COUNT")))]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.##">
-				<reportElement x="561" y="57" width="68" height="12" uuid="77c9a8c7-0eed-46ac-8005-645fa3ba8a17">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box rightPadding="4"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[Double.parseDouble(String.valueOf($V{biLastYear}.get("TICKET_AVG")))]]></textFieldExpression>
-			</textField>
 			<rectangle radius="8">
 				<reportElement x="337" y="21" width="129" height="60" uuid="98f8646a-d376-4d72-a8f5-b9094c556074"/>
 			</rectangle>
@@ -1104,16 +968,6 @@ WHERE
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 			</line>
-			<textField>
-				<reportElement x="427" y="33" width="29" height="12" uuid="31873b0e-7e28-464e-8a55-d29f1815dd4e">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box rightPadding="4"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[Double.parseDouble(String.valueOf($V{biGrowth}.get("AMOUNT")))]]></textFieldExpression>
-			</textField>
 			<staticText>
 				<reportElement x="456" y="33" width="10" height="12" uuid="402e2d93-46ef-421a-b798-8f5070640537"/>
 				<textElement verticalAlignment="Middle">
@@ -1128,16 +982,6 @@ WHERE
 				</textElement>
 				<text><![CDATA[%]]></text>
 			</staticText>
-			<textField>
-				<reportElement x="427" y="45" width="29" height="12" uuid="2ed67f07-c11d-4b5c-8814-41aee3d788af">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box rightPadding="4"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[Double.parseDouble(String.valueOf($V{biGrowth}.get("TRANS")))]]></textFieldExpression>
-			</textField>
 			<staticText>
 				<reportElement x="456" y="57" width="10" height="12" uuid="0c0ebbed-158b-4fdd-ad52-3b1b88497e30"/>
 				<textElement verticalAlignment="Middle">
@@ -1145,16 +989,6 @@ WHERE
 				</textElement>
 				<text><![CDATA[%]]></text>
 			</staticText>
-			<textField>
-				<reportElement x="427" y="57" width="29" height="12" uuid="eca54fbd-6d15-4fb6-bc3b-5e2d87204aa8">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box rightPadding="4"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[Double.parseDouble(String.valueOf($V{biGrowth}.get("TICKET_AVG_TW_LW")))]]></textFieldExpression>
-			</textField>
 			<rectangle radius="8">
 				<reportElement x="661" y="21" width="129" height="60" uuid="b861bd1e-349f-4a33-a6e6-101d03bd06b0"/>
 			</rectangle>
@@ -1168,106 +1002,13 @@ WHERE
 				<textElement textAlignment="Center">
 					<font size="8" isBold="true" isUnderline="false"/>
 				</textElement>
-				<text><![CDATA[GROWTH VS LAST YEAR ?]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="665" y="33" width="54" height="12" uuid="47342aec-7ef3-44c0-af81-f95491df1662"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Amount]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="665" y="45" width="54" height="12" uuid="002d8020-4032-41d3-be45-70a095b59d37"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Transactions]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="665" y="57" width="54" height="12" uuid="0013000d-2432-4859-8840-806cac75eb13"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Ticket Average]]></text>
+				<text><![CDATA[GROWTH VS LAST YEAR]]></text>
 			</staticText>
 			<line>
 				<reportElement x="661" y="31" width="129" height="1" uuid="0a411241-eefe-4e8d-9078-9c0ee90bacd9">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 			</line>
-			<textField>
-				<reportElement x="751" y="33" width="29" height="12" uuid="c1df8ede-6f2e-4140-bff4-78dbac68207a">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box rightPadding="4"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["4"]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="780" y="33" width="10" height="12" uuid="faaabf86-7fe8-43f1-952e-a575995bc5b8"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[%]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="780" y="45" width="10" height="12" uuid="e948bc90-acff-4531-8ae4-2a247b112f0f"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[%]]></text>
-			</staticText>
-			<textField>
-				<reportElement x="751" y="45" width="29" height="12" uuid="35801235-e9e7-484a-b128-037af1ec0560">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box rightPadding="4"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["4"]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="780" y="57" width="10" height="12" uuid="9b23f25a-9c9b-4981-83b0-67d2a9079619"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[%]]></text>
-			</staticText>
-			<textField>
-				<reportElement x="751" y="57" width="29" height="12" uuid="2eb951fc-76b5-450f-b1dd-ea40c2e6f27c">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box rightPadding="4"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["4"]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="719" y="33" width="32" height="12" forecolor="#00FF33" uuid="d4bdf84b-2c3d-4002-a150-09f647828edd"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="UpsideDown">
-					<font fontName="SansSerif" size="8"/>
-				</textElement>
-				<text><![CDATA[v]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="719" y="57" width="32" height="12" forecolor="#00FF33" uuid="f73db11d-2288-4884-af51-dc4be039ae99"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="UpsideDown">
-					<font fontName="SansSerif" size="8"/>
-				</textElement>
-				<text><![CDATA[v]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="719" y="45" width="32" height="12" forecolor="#FF0000" uuid="97dbc4e8-5de6-4b5d-bea9-8dd09dac80f9"/>
-				<textElement textAlignment="Center" verticalAlignment="Top">
-					<font fontName="SansSerif" size="8"/>
-				</textElement>
-				<text><![CDATA[v]]></text>
-			</staticText>
 			<rectangle radius="8">
 				<reportElement x="10" y="91" width="129" height="48" uuid="1ab3d63c-9ce3-4bfd-8100-2a7dbde29f24"/>
 			</rectangle>
@@ -1390,7 +1131,7 @@ WHERE
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[Double.parseDouble(String.valueOf($V{biMtdActual}.get("MTD_ACTUAL_AMOUNT")))]]></textFieldExpression>
+				<textFieldExpression><![CDATA[Double.parseDouble(String.valueOf($P{salesMtdActual}.get("totalPendapatan")))]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.##">
 				<reportElement x="232" y="115" width="68" height="12" uuid="23a6ef7c-262d-4b2c-9825-7c48a0d1bcc6">
@@ -1400,7 +1141,7 @@ WHERE
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[Double.parseDouble(String.valueOf($V{biMtdActual}.get("MTD_ACTUAL_TRANSACTION")))]]></textFieldExpression>
+				<textFieldExpression><![CDATA[Double.parseDouble(String.valueOf($P{salesMtdActual}.get("transaksi")))]]></textFieldExpression>
 			</textField>
 			<rectangle radius="8">
 				<reportElement x="500" y="91" width="129" height="48" uuid="f36c66cc-632e-423d-addb-65d601249d37">
@@ -1417,85 +1158,13 @@ WHERE
 				<textElement textAlignment="Center">
 					<font size="8" isBold="true" isUnderline="false"/>
 				</textElement>
-				<text><![CDATA[MTD LAST YEAR ?]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="504" y="103" width="54" height="12" uuid="a9e58383-94b7-40a5-9fa8-1f6703d1fb90"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Amount]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="504" y="115" width="54" height="12" uuid="8bb8c0b7-b225-4322-94b4-6d2f1a3172b4"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Transactions]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="504" y="127" width="54" height="12" uuid="c4216d7f-a160-4773-981a-ed2bde81e6f7"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Ticket Average]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="558" y="103" width="3" height="12" uuid="e2f867ee-4ffc-4a32-b3d9-5279010665c9"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[:]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="558" y="115" width="3" height="12" uuid="d046cfed-7358-4623-b38c-c0cfea9a617c"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[:]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="558" y="127" width="3" height="12" uuid="f6b2840a-fe01-43b7-95ee-baee18f8eb8a"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[:]]></text>
+				<text><![CDATA[MTD LAST YEAR]]></text>
 			</staticText>
 			<line>
 				<reportElement x="500" y="101" width="129" height="1" uuid="d07160f1-f512-4587-8bdf-8e11d2019348">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 			</line>
-			<textField pattern="#,##0.##">
-				<reportElement x="561" y="103" width="68" height="12" uuid="22261020-f31b-45bd-b767-407c7e79d24d">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box rightPadding="4"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["456.789.123,99"]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.##">
-				<reportElement x="561" y="115" width="68" height="12" uuid="51a0e83a-e62a-4bd5-80c7-f3c7479e77a4">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box rightPadding="4"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["456.789.123,99"]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.##">
-				<reportElement x="561" y="127" width="68" height="12" uuid="8963c644-1c8a-43d8-94d4-5126beb72fab">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box rightPadding="4"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["456.789.123,99"]]></textFieldExpression>
-			</textField>
 			<rectangle radius="8">
 				<reportElement x="337" y="91" width="129" height="48" uuid="a8336754-cc9b-4087-a96f-2be47067c62b"/>
 			</rectangle>
@@ -1517,106 +1186,13 @@ WHERE
 				<textElement textAlignment="Center">
 					<font size="8" isBold="true" isUnderline="false"/>
 				</textElement>
-				<text><![CDATA[ACHIEVED ?]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="665" y="103" width="54" height="12" uuid="9af88cd0-2c64-4739-b004-f6b67d94bbab"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Amount]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="665" y="115" width="54" height="12" uuid="202e217d-351b-46ca-b4de-936e893fb20b"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Transactions]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="665" y="127" width="54" height="12" uuid="400f43a3-0952-4e93-aeff-8c0ea5c7f460"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Ticket Average]]></text>
+				<text><![CDATA[ACHIEVED VS LAST YEAR]]></text>
 			</staticText>
 			<line>
 				<reportElement x="661" y="101" width="129" height="1" uuid="9f9ddf5d-44c2-43b9-ae6c-471c1069ea6d">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 			</line>
-			<textField>
-				<reportElement x="751" y="103" width="29" height="12" uuid="2a9757a0-514d-47de-8be8-730ad1097da2">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box rightPadding="4"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["4"]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="780" y="103" width="10" height="12" uuid="7ac7e319-f7fe-4b11-bdb6-a4107cc0336c"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[%]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="780" y="115" width="10" height="12" uuid="6cf63626-2f86-4a5d-89a9-c5343e3e4dd7"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[%]]></text>
-			</staticText>
-			<textField>
-				<reportElement x="751" y="115" width="29" height="12" uuid="a227fb86-68e1-426a-b7eb-9376b02d8f28">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box rightPadding="4"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["4"]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="780" y="127" width="10" height="12" uuid="3f1be393-3c6a-4bd7-ab6f-d71c582eaf8f"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[%]]></text>
-			</staticText>
-			<textField>
-				<reportElement x="751" y="127" width="29" height="12" uuid="81c4b7e1-53e9-48ac-97bc-86422042ec7f">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box rightPadding="4"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["4"]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="719" y="103" width="32" height="12" forecolor="#00FF33" uuid="7afd244f-872e-4d18-8b5c-bbc0ad51e9a6"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="UpsideDown">
-					<font fontName="SansSerif" size="8"/>
-				</textElement>
-				<text><![CDATA[v]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="719" y="127" width="32" height="12" forecolor="#00FF33" uuid="cc5f6b1b-58df-48e0-b31d-9433b275eab9"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="UpsideDown">
-					<font fontName="SansSerif" size="8"/>
-				</textElement>
-				<text><![CDATA[v]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="719" y="115" width="32" height="12" forecolor="#FF0000" uuid="8ff83009-ed60-46b8-b511-d9c2b15b1c6a"/>
-				<textElement textAlignment="Center" verticalAlignment="Top">
-					<font fontName="SansSerif" size="8"/>
-				</textElement>
-				<text><![CDATA[v]]></text>
-			</staticText>
 			<staticText>
 				<reportElement x="10" y="6" width="360" height="12" uuid="85d0cf09-4e69-42a2-a11d-a1e22eb2d987">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -1642,7 +1218,7 @@ WHERE
 				<text><![CDATA[__ SUMMARY REPORT TRANSACTION CASH AND NON-CASH]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement x="10" y="166" width="250" height="200" uuid="b6b2b123-a41f-4738-be72-cbc41081292e">
+				<reportElement stretchType="ElementGroupHeight" x="10" y="166" width="250" height="200" uuid="b6b2b123-a41f-4738-be72-cbc41081292e">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table 3_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table 3_CH"/>
@@ -2099,25 +1675,25 @@ WHERE
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["BI LAST UPDATED: " + $V{biLastUpdate}.get("TANGGAL") + " " + $V{biLastUpdate}.get("JAM")]]></textFieldExpression>
+				<textFieldExpression><![CDATA["BI BUDGET UPDATED: " + $V{biLastUpdate}.get("TANGGAL") + " " + $V{biLastUpdate}.get("JAM")]]></textFieldExpression>
 			</textField>
 			<image>
 				<reportElement x="405" y="33" width="12" height="12" uuid="8ef7deec-1b3a-4e6d-8567-e5166c13898f">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
-				<imageExpression><![CDATA[String.valueOf($V{biGrowth}.get("AMOUNT")).startsWith("-") ? "logo/arrow-down.png" : "logo/arrow-up.png"]]></imageExpression>
+				<imageExpression><![CDATA[String.valueOf($P{growthWeek}.get("totalPendapatan")).startsWith("-") ? "logo/arrow-down.png" : "logo/arrow-up.png"]]></imageExpression>
 			</image>
 			<image>
 				<reportElement x="405" y="45" width="12" height="12" uuid="407495b2-ef40-4528-a95e-4d2997a780a3">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
-				<imageExpression><![CDATA[String.valueOf($V{biGrowth}.get("TRANS")).startsWith("-") ? "logo/arrow-down.png" : "logo/arrow-up.png"]]></imageExpression>
+				<imageExpression><![CDATA[String.valueOf($P{growthWeek}.get("transaksi")).startsWith("-") ? "logo/arrow-down.png" : "logo/arrow-up.png"]]></imageExpression>
 			</image>
 			<image>
 				<reportElement x="405" y="57" width="12" height="12" uuid="4d0a2c10-527c-4be0-a4a7-4bbf88519931">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
-				<imageExpression><![CDATA[String.valueOf($V{biGrowth}.get("TICKET_AVG_TW_LW")).startsWith("-") ? "logo/arrow-down.png" : "logo/arrow-up.png"]]></imageExpression>
+				<imageExpression><![CDATA[String.valueOf($P{growthWeek}.get("ticketAvg")).startsWith("-") ? "logo/arrow-down.png" : "logo/arrow-up.png"]]></imageExpression>
 			</image>
 			<textField pattern="#,##0.##">
 				<reportElement x="337" y="91" width="129" height="12" uuid="28edb9fe-299c-42cc-992b-f007cf7782b7">
@@ -2127,7 +1703,7 @@ WHERE
 				<textElement textAlignment="Center" verticalAlignment="Top">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["ACHIEVED " + $V{biListArchieved}.get("MONTH")]]></textFieldExpression>
+				<textFieldExpression><![CDATA["ACHIEVED " + $P{achievedActual}.get("month")]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="393" y="103" width="3" height="12" uuid="e6ed5368-ceb7-4528-8e33-697e0f32a8d5"/>
@@ -2165,7 +1741,7 @@ WHERE
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[Double.parseDouble(String.valueOf($V{biListArchieved}.get("ARCHIVED_TRANS")))]]></textFieldExpression>
+				<textFieldExpression><![CDATA[Double.parseDouble(String.valueOf($P{achievedActual}.get("transaksi")))]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.##">
 				<reportElement x="396" y="103" width="60" height="12" uuid="ff5f489d-467b-480f-ad0a-ec0c11743a06">
@@ -2175,7 +1751,7 @@ WHERE
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[Double.parseDouble(String.valueOf($V{biListArchieved}.get("ARCHIVED_AMOUNT")))]]></textFieldExpression>
+				<textFieldExpression><![CDATA[Double.parseDouble(String.valueOf($P{achievedActual}.get("totalPendapatan")))]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="456" y="103" width="10" height="12" uuid="4aed5b63-848d-4daf-87f4-f3709f19b46e"/>
@@ -2537,6 +2113,626 @@ WHERE
 				</textElement>
 				<text><![CDATA[__ SUMMARY USAGE & SOLD - SIDE ITEM
 ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="173" y="33" width="54" height="12" uuid="af296166-aa25-4e76-92b1-8ebe39aee4d9"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Amount]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="227" y="69" width="3" height="12" uuid="f59291d1-1c9f-4887-82cd-bf8d3dd2047f"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="173" y="45" width="54" height="12" uuid="7f714f47-a357-44dc-a666-0b432d5d6ad1"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Transactions]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="173" y="57" width="54" height="12" uuid="2227abc0-76e5-45d6-b951-85e7c156692a"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Ticket Average]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="173" y="69" width="54" height="12" uuid="e26abb13-1647-4afc-980d-fd561a29179f"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Customer]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="227" y="33" width="3" height="12" uuid="5d25f4e8-27c1-4e40-9ab7-aa24dfbe8d76"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="227" y="57" width="3" height="12" uuid="57e16a73-0bf5-4537-a49e-1e404ddbb8d7"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="227" y="45" width="3" height="12" uuid="96bce0d8-2e62-4939-aaed-d147c2d98e99"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<textField pattern="#,##0.##">
+				<reportElement x="230" y="57" width="68" height="12" uuid="269bfadf-368c-42f2-8988-285c12a0b0ca">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box rightPadding="4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{salesLastWeek}.getOrDefault( "ticketAvg", 0 )]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.##">
+				<reportElement x="230" y="33" width="68" height="12" uuid="520a912d-4eec-47be-862f-3b1679220c9e">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box rightPadding="4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{salesLastWeek}.getOrDefault( "totalPendapatan", 0 )]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.##">
+				<reportElement x="230" y="45" width="68" height="12" uuid="9949213e-2d14-42e1-9953-10c0487b6da1">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box rightPadding="4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{salesLastWeek}.getOrDefault( "transaksi", 0 )]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.##">
+				<reportElement x="230" y="69" width="68" height="12" uuid="bac9c67a-96b8-43f1-beb3-3b12ff69a7b6">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box rightPadding="4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{salesLastWeek}.getOrDefault( "customer", 0 )]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="341" y="69" width="54" height="12" uuid="49c88bde-d312-4c49-adba-cb54d4cba82e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Customer]]></text>
+			</staticText>
+			<image>
+				<reportElement x="405" y="69" width="12" height="12" uuid="5e5edff5-bab5-4943-afbc-0d6eb31270b2">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[String.valueOf($P{growthWeek}.get("customer")).startsWith("-") ? "logo/arrow-down.png" : "logo/arrow-up.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="456" y="69" width="10" height="12" uuid="82fa561f-59f7-4522-8c9d-3ff8c1ad0842"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[%]]></text>
+			</staticText>
+			<textField pattern="#,##0.##">
+				<reportElement x="420" y="69" width="36" height="12" uuid="f7006085-a671-4a71-ad49-b8a81535c4c7">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box rightPadding="4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{growthWeek}.getOrDefault( "customer", 0 )]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.##">
+				<reportElement x="420" y="57" width="36" height="12" uuid="d6943f0f-4748-41a3-be0b-27416b5a5091">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box rightPadding="4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{growthWeek}.getOrDefault( "ticketAvg", 0 )]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.##">
+				<reportElement x="420" y="45" width="36" height="12" uuid="b0abc23e-87cb-48c6-8ed6-c03ce2a1cba3">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box rightPadding="4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{growthWeek}.getOrDefault( "transaksi", 0 )]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.##">
+				<reportElement x="420" y="33" width="36" height="12" uuid="dc6b1d7e-364e-4af4-bf09-a6f3cd86837b">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box rightPadding="4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{growthWeek}.getOrDefault( "totalPendapatan", 0 )]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="14" y="127" width="54" height="12" uuid="87ab2535-b663-4169-b661-51a344c7b433"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Ticket Average]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="68" y="127" width="3" height="12" uuid="301b2cd0-412d-491a-9553-615b5e768438"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<textField pattern="#,##0.##">
+				<reportElement x="71" y="127" width="68" height="12" uuid="7f811771-ae54-413d-adb9-44a902d3c97c">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box rightPadding="4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[Double.parseDouble(String.valueOf($V{biListBudget}.get("BUDGET_SALES"))) / Double.parseDouble(String.valueOf($V{biListBudget}.get("BUDGET_TRANSACTION")))]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="502" y="33" width="54" height="12" uuid="aade312d-b68a-41ce-8f26-4919187c3c8e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Amount]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="502" y="57" width="54" height="12" uuid="ebb16f9f-dcb3-4044-9f4f-867c00e13055"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Ticket Average]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="502" y="69" width="54" height="12" uuid="94f3e53c-a3e9-4f52-b069-72dd5833b8e0"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Customer]]></text>
+			</staticText>
+			<textField pattern="#,##0.##">
+				<reportElement x="559" y="69" width="68" height="12" uuid="25732b6d-1c3a-4dd0-9078-b2249438a7a0">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box rightPadding="4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{salesLastYear}.getOrDefault( "customer", 0 )]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.##">
+				<reportElement x="559" y="57" width="68" height="12" uuid="4b0b11b0-d8a3-43b1-826a-770304603c4a">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box rightPadding="4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{salesLastYear}.getOrDefault( "ticketAvg", 0 )]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="502" y="45" width="54" height="12" uuid="4b4d7c06-468f-4183-bf78-4839dab11f5f"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Transactions]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="556" y="33" width="3" height="12" uuid="ce9f107e-4a3f-48fa-b2b5-ae14ceba9260"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="556" y="69" width="3" height="12" uuid="feb4d618-2d80-45f2-a2c8-4a615940de75"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<textField pattern="#,##0.##">
+				<reportElement x="559" y="45" width="68" height="12" uuid="e5f10ab0-9536-468f-a1de-1f4826c38074">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box rightPadding="4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{salesLastYear}.getOrDefault( "transaksi", 0 )]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="556" y="57" width="3" height="12" uuid="7470d674-b769-4228-ae01-6a7a0387ebe9"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="556" y="45" width="3" height="12" uuid="2d1c01d5-48ce-4590-9a61-5d5aad1e7c48"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<textField pattern="#,##0.##">
+				<reportElement x="559" y="33" width="68" height="12" uuid="1242837e-b4da-4096-b435-6683ea9178e3">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box rightPadding="4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{salesLastYear}.getOrDefault( "totalPendapatan", 0 )]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="727" y="45" width="12" height="12" uuid="a0d98325-8580-4c3b-879e-52779923695e">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[String.valueOf($P{growthYear}.get("transaksi")).startsWith("-") ? "logo/arrow-down.png" : "logo/arrow-up.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="663" y="45" width="54" height="12" uuid="416eb10b-f5b2-45c5-b063-62c543ade4a0"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Transactions]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="663" y="57" width="54" height="12" uuid="c3d36f63-794b-47ba-a614-c34846b09839"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Ticket Average]]></text>
+			</staticText>
+			<image>
+				<reportElement x="727" y="69" width="12" height="12" uuid="1abfd6cc-9764-405a-be90-9779b3783a82">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[String.valueOf($P{growthYear}.get("customer")).startsWith("-") ? "logo/arrow-down.png" : "logo/arrow-up.png"]]></imageExpression>
+			</image>
+			<textField pattern="#,##0.##">
+				<reportElement x="742" y="33" width="36" height="12" uuid="33110fa4-0441-44c3-94dd-4690b00a0951">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box rightPadding="4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{growthYear}.getOrDefault( "totalPendapatan", 0 )]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="778" y="57" width="10" height="12" uuid="5b9c5a8b-f018-467b-a8f9-a54ba324b363"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[%]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="778" y="45" width="10" height="12" uuid="c13045a0-481f-4df9-a70a-e8bcaeaff547"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[%]]></text>
+			</staticText>
+			<image>
+				<reportElement x="727" y="57" width="12" height="12" uuid="e7d410b3-56bd-4f6a-882e-7ea05c623e78">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[String.valueOf($P{growthYear}.get("ticketAvg")).startsWith("-") ? "logo/arrow-down.png" : "logo/arrow-up.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="778" y="33" width="10" height="12" uuid="647d5287-f6ac-4647-8c3f-f356ad35acb7"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[%]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="778" y="69" width="10" height="12" uuid="b0933994-0cbb-4864-a33b-a3d95d3069c6"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[%]]></text>
+			</staticText>
+			<image>
+				<reportElement x="727" y="33" width="12" height="12" uuid="fbc3dae9-ee57-4d45-ba1f-31393a5d5f6d">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[String.valueOf($P{growthYear}.get("totalPendapatan")).startsWith("-") ? "logo/arrow-down.png" : "logo/arrow-up.png"]]></imageExpression>
+			</image>
+			<textField pattern="#,##0.##">
+				<reportElement x="742" y="57" width="36" height="12" uuid="7da1d412-296a-4e2c-aafd-f0559004a22f">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box rightPadding="4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{growthYear}.getOrDefault( "ticketAvg", 0 )]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.##">
+				<reportElement x="742" y="45" width="36" height="12" uuid="a16baa5e-858d-425c-84ff-45b05826bf0a">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box rightPadding="4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{growthYear}.getOrDefault( "transaksi", 0 )]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="663" y="69" width="54" height="12" uuid="25375500-4eb2-4fed-aab3-197ac618d445"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Customer]]></text>
+			</staticText>
+			<textField pattern="#,##0.##">
+				<reportElement x="742" y="69" width="36" height="12" uuid="79f20c82-9bba-40ae-a177-ab89919229c3">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box rightPadding="4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{growthYear}.getOrDefault( "customer", 0 )]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="663" y="33" width="54" height="12" uuid="413eb36f-e86f-4021-aa36-bb6e0543bf82"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Amount]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="175" y="127" width="54" height="12" uuid="2bc764e0-672c-4c10-b6f4-0ca58a633d33"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Ticket Average]]></text>
+			</staticText>
+			<textField pattern="#,##0.##">
+				<reportElement x="232" y="127" width="68" height="12" uuid="27dede0e-c1b2-4e27-a770-40b1f698ebbe">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box rightPadding="4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[Double.parseDouble(String.valueOf($P{salesMtdActual}.get("ticketAvg")))]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="229" y="127" width="3" height="12" uuid="1548b405-88a6-4f63-85b1-202e086f41e9"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<textField pattern="#,##0.##">
+				<reportElement x="396" y="127" width="60" height="12" uuid="1f06c4ed-f242-4870-83d7-9ddb28f3c966">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box rightPadding="4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[Double.parseDouble(String.valueOf($P{achievedActual}.get("ticketAvg")))]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="393" y="127" width="3" height="12" uuid="22dac847-ab03-43c4-bc02-36762b2689d7"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="339" y="127" width="54" height="12" uuid="ade89efb-2ee4-42e8-812d-639013ec8fd0">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Ticket Average]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="456" y="127" width="10" height="12" uuid="993902cb-8ec9-46a0-a524-31f4073cd423"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[%]]></text>
+			</staticText>
+			<textField pattern="#,##0.##">
+				<reportElement x="559" y="127" width="68" height="12" uuid="d26e2784-c209-49b0-9016-7ec5df34b6ca">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box rightPadding="4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[Double.parseDouble(String.valueOf($P{salesMtdLastYear}.get("ticketAvg")))]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.##">
+				<reportElement x="559" y="103" width="68" height="12" uuid="f987e060-bfbb-46f7-aaeb-87b0677ac9c7">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box rightPadding="4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[Double.parseDouble(String.valueOf($P{salesMtdLastYear}.get("totalPendapatan")))]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="556" y="127" width="3" height="12" uuid="977eb91e-43f4-4847-8441-d998b3366dda"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="556" y="103" width="3" height="12" uuid="2e31c425-5acb-4ebb-a362-46d88272fa8c"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="502" y="115" width="54" height="12" uuid="40dc1e92-5fb0-4278-95f8-7fc1f218c4f3"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Transactions]]></text>
+			</staticText>
+			<textField pattern="#,##0.##">
+				<reportElement x="559" y="115" width="68" height="12" uuid="163463f5-5893-4b20-b612-4bfbf2996e75">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box rightPadding="4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[Double.parseDouble(String.valueOf($P{salesMtdLastYear}.get("transaksi")))]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="556" y="115" width="3" height="12" uuid="37795cda-5205-48ab-a473-fb18da2cd3e2"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="502" y="103" width="54" height="12" uuid="cb29c7f3-cbc3-4bdc-b650-a9b30e47bd03"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Amount]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="502" y="127" width="54" height="12" uuid="c490a1ca-9340-4866-af1b-5818303d2072"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Ticket Average]]></text>
+			</staticText>
+			<textField pattern="#,##0.##">
+				<reportElement x="720" y="103" width="60" height="12" uuid="3d792166-f6ea-4fe7-a7f3-ddb9e2fdeb00">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box rightPadding="4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[Double.parseDouble(String.valueOf($P{achievedLastYear}.get("totalPendapatan")))]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.##">
+				<reportElement x="720" y="115" width="60" height="12" uuid="25c71670-0703-48b6-b530-a13b1050dff7">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box rightPadding="4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[Double.parseDouble(String.valueOf($P{achievedLastYear}.get("transaksi")))]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="663" y="103" width="54" height="12" uuid="15121157-6387-4eb4-883b-ded52b5f1f7f"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Amount]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="780" y="103" width="10" height="12" uuid="1a287ca9-0c3e-4eef-88b0-310c191c3787"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[%]]></text>
+			</staticText>
+			<textField pattern="#,##0.##">
+				<reportElement x="720" y="127" width="60" height="12" uuid="409bb678-c755-4243-8101-c1d545824bd0">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box rightPadding="4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[Double.parseDouble(String.valueOf($P{achievedLastYear}.get("ticketAvg")))]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="717" y="115" width="3" height="12" uuid="160417f4-8107-4180-89b9-64144354f069"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="663" y="115" width="54" height="12" uuid="dceb2ed1-d715-43b7-b52c-5a6f58acc4e2"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Transactions]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="717" y="103" width="3" height="12" uuid="892a0e02-5191-4dd1-af7e-b84ca1feb2fc"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="663" y="127" width="54" height="12" uuid="1d423001-a69d-426d-ab7d-5ac397b5f916">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Ticket Average]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="780" y="115" width="10" height="12" uuid="ec3c053b-5aa1-4842-a1b8-39db8703f335"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[%]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="717" y="127" width="3" height="12" uuid="c60d779f-588f-42e1-a9ff-5b58ea770d3f"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="780" y="127" width="10" height="12" uuid="41a95bad-cd9a-4c26-a727-8e45f3bdbab6"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[%]]></text>
 			</staticText>
 		</band>
 	</detail>
