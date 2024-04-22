@@ -83,11 +83,11 @@ FROM (
 	SELECT
 	a.POS_CODE,
 		COUNT(0) TTL_BILL,
-		b.total_amount AS TTL_AMT,
-	b.qty AS TTL_ITEM
+		COALESCE(b.total_amount, 0) AS TTL_AMT,
+		COALESCE(b.qty, 0) AS TTL_ITEM
 FROM
 	T_POS_BILL a
-JOIN
+LEFT JOIN
 		(
 	SELECT
 		POS_CODE ,
@@ -297,13 +297,13 @@ $P{transDate}
 		<groupHeader>
 			<band height="232">
 				<componentElement>
-					<reportElement x="1" y="192" width="567" height="40" uuid="c3f75293-d92d-4c12-9618-187b9b277617">
+					<reportElement x="1" y="192" width="567" height="40" printWhenGroupChanges="Group1" uuid="c3f75293-d92d-4c12-9618-187b9b277617">
 						<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 						<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 						<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
 						<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
 					</reportElement>
-					<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" whenNoDataType="AllSectionsNoDetail">
 						<datasetRun subDataset="DatasetSales" uuid="dc74eb19-c361-437d-884d-371e0776f7cb">
 							<datasetParameter name="outletCode">
 								<datasetParameterExpression><![CDATA[$P{outletCode}]]></datasetParameterExpression>
@@ -1056,7 +1056,7 @@ $P{transDate}
 						<property name="com.jaspersoft.studio.table.style.column_header" value="Table 1_CH"/>
 						<property name="com.jaspersoft.studio.table.style.detail" value="Table 1_TD"/>
 					</reportElement>
-					<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" whenNoDataType="AllSectionsNoDetail">
 						<datasetRun subDataset="DatasetTest" uuid="0aae7a85-ee0d-4d25-8512-ab83016b01ba">
 							<datasetParameter name="outletCode">
 								<datasetParameterExpression><![CDATA[$P{outletCode}]]></datasetParameterExpression>
