@@ -4426,5 +4426,36 @@ public class IndexController {
     }    
     /////////////////// end aditya 22 Mar 2024 
     
+    //INSERT ITEM aditya 5 April 2024 =========================================================
+    @RequestMapping(value = "/insert-Item", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk insert Item", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage insertItem(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+        
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        ResponseMessage rm = new ResponseMessage();
+        try {
+            processServices.insertItem(balance);
+            rm.setSuccess(true);
+            rm.setMessage("Insert Success Successfuly");
+            
+        } catch (Exception e) {
+            rm.setSuccess(false);
+            rm.setMessage("Insert Failed Successfuly: " + e.getMessage());
+        }
+        
+        rm.setItem(list);
+        
+        return rm;
+    }
+    
+    ///////////////////////////// done aditya master insert item 5 April 2024
     
 }

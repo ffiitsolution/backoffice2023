@@ -214,4 +214,7 @@ public interface ProcessDao {
     
     ///////// integration from pettycash to boffi aditya 08-03-2024     
     public void insertPettyCashToBoffi(Map<String, String> mapping);
+    
+    public void insertItem(Map<String, String> mapping);
+    ///////////////new method from dona 28-02-2023////////////////////////////
 }
