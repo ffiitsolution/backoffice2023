@@ -1008,11 +1008,23 @@ public class IndexController {
     )
     public @ResponseBody
     ResponseMessage insertStaff(@RequestBody String param) throws JRException, IOException, Exception {
+        ResponseMessage rm = new ResponseMessage();
         Gson gsn = new Gson();
         Map<String, String> balancetest1 = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
+        // validasi cek jika staff code sudah ada by M Joko - 23 Apr 2024
+        Map<String, Object> cekPrm = new HashMap();
+        cekPrm.put("outletCode", balancetest1.get("outletCode"));
+        cekPrm.put("staffCode", balancetest1.get("staffCode"));
+        cekPrm.put("staffPosCode", balancetest1.get("staffPosCode"));
+        Integer cek = viewServices.checkStaffCode(cekPrm);
+        System.out.println("checkStaffCode: " + cek);
+        if(cek > 0){
+            rm.setSuccess(false);
+            rm.setMessage("Insert Failed : Kode User atau ID Card Cek Telah ada");
+            return rm;
+        }
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        ResponseMessage rm = new ResponseMessage();
         try {
             processServices.insertStaff(balancetest1);
             rm.setSuccess(true);
@@ -1035,11 +1047,23 @@ public class IndexController {
     )
     public @ResponseBody
     ResponseMessage updateStaff(@RequestBody String param) throws JRException, IOException, Exception {
+        ResponseMessage rm = new ResponseMessage();
         Gson gsn = new Gson();
         Map<String, String> balancetest = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
+        // validasi cek jika staff code sudah ada by M Joko - 23 Apr 2024
+        Map<String, Object> cekPrm = new HashMap();
+        cekPrm.put("outletCode", balancetest.get("outletCode"));
+        cekPrm.put("staffCode", balancetest.get("staffCode"));
+        cekPrm.put("staffPosCode", balancetest.get("staffPosCode"));
+        Integer cek = viewServices.checkStaffCode(cekPrm);
+        System.out.println("checkStaffCode: " + cek);
+        if(cek > 2){
+            rm.setSuccess(false);
+            rm.setMessage("Insert Failed : Kode User atau ID Card Cek Telah ada");
+            return rm;
+        }
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        ResponseMessage rm = new ResponseMessage();
         try {
             processServices.updateStaff(balancetest);
             rm.setSuccess(true);
@@ -4420,6 +4444,7 @@ public class IndexController {
                 List<Map<String, Object>> list = viewServices.listMpcsMonitoring(param);
                 String json = objectMapper.writeValueAsString(list);
                 messagingTemplate.convertAndSend("/topic/monitoring-mpcs", json);
+                appConfig.doBeepMpcs();
             } catch (JsonProcessingException | MessagingException ex) {
             }
         }

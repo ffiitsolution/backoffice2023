@@ -1,5 +1,6 @@
 package com.ffi.api.backoffice;
 
+import java.awt.Toolkit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,63 +31,28 @@ public class AppConfig {
 
     @Autowired
     private Environment environment;
-//
-//    @Bean
-//    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-//        PropertySourcesPlaceholderConfigurer configurer = new PropertySourcesPlaceholderConfigurer();
-//        configurer.setLocation(new FileSystemResource(PROPERTIES_PATH));
-//        return configurer;
-//    }
-//
-//    @Bean
-//    public PropertySourcesLogger propertySourcesLogger() {
-//        return new PropertySourcesLogger();
-//    }
-//
-//    private static class PropertySourcesLogger implements ApplicationListener<ContextRefreshedEvent> {
-//        @Autowired
-//        private Environment environment;
-//
-//        @Override
-//        public void onApplicationEvent(ContextRefreshedEvent event) {
-//            System.err.println("Applied Property Sources:");
-////            for (PropertySource<?> propertySource : environment.getPropertySources()) {
-////                System.err.println("- " + propertySource.getName());
-////            }
-//        }
-//    }
-//
-//    @Bean
-//    public DataSource dataSource() {
-//        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-//        dataSource.setDriverClassName("oracle.jdbc.driver.OracleDriver");
-//        dataSource.setUrl(get("spring.datasource.url"));
-//        dataSource.setUsername(get("spring.datasource.username"));
-//        dataSource.setPassword(get("spring.datasource.password"));
-//        System.err.println(dataSource);
-//        return dataSource;
-//    }
-//
-//    @Bean
-//    public JdbcTemplate jdbcTemplate() {
-//        return new JdbcTemplate(dataSource());
-//    }
+    
+    public void doBeepMpcs() {
+        // Custom pattern: 3 short beeps with pauses in between
+        beep(100);
+        pause(500);
+        beep(100);
+        pause(500);
+        beep(100);
+    }
+    
+    public void beep(int duration) {
+        Toolkit.getDefaultToolkit().beep();
+        pause(duration);
+    }
 
-//    @Bean
-//    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-//        LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-//        em.setDataSource(dataSource());
-//        em.setPackagesToScan("com.ffi.api.backoffice.model");
-//        em.setJpaProperties(additionalProperties());
-//        return em;
-//    }
-//
-//    @Bean
-//    public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
-//        JpaTransactionManager transactionManager = new JpaTransactionManager();
-//        transactionManager.setEntityManagerFactory(emf);
-//        return transactionManager;
-//    }
+    public void pause(int duration) {
+        try {
+            Thread.sleep(duration);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Bean
     public JavaMailSender mailSender() {

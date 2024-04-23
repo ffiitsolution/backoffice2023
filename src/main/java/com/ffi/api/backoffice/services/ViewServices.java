@@ -630,4 +630,9 @@ public class ViewServices {
     public List<Map<String, Object>> listOilUsage(Map<String, Object> balance) {
         return viewDao.listOilUsage(balance);
     }
+
+    // Validasi cek staff code by M Joko 23 Apr 24
+    public Integer checkStaffCode(Map<String, Object> balance) {
+        return viewDao.checkStaffCode(balance);
+    }
 }

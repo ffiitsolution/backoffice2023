@@ -368,4 +368,7 @@ public interface ViewDao {
     
     // Get Oil Usage by Dani 1 April 2024
     public List<Map<String, Object>> listOilUsage(Map<String, Object> balance);
+    
+    // Validasi cek staff code by M Joko 23 Apr 24
+    Integer checkStaffCode(Map<String, Object> ref);
 }

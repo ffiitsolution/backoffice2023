@@ -1179,6 +1179,19 @@ public class ViewDoaImpl implements ViewDao {
         });
         return list;
     }
+    
+    // Validasi cek staff code by M Joko 23 Apr 24
+    @Override
+    public Integer checkStaffCode(Map<String, Object> ref) {
+        String qry = "SELECT ROWNUM FROM M_STAFF ms WHERE ms.STAFF_CODE = :staffCode AND ms.OUTLET_CODE = :outletCode";
+        System.err.println("q checkStaffCode:" + qry);
+        List<Map<String, Object>> a = jdbcTemplate.query(qry, ref, new DynamicRowMapper());
+        String qry2 = "SELECT ROWNUM FROM M_POS_STAFF mps WHERE mps.OUTLET_CODE = :outletCode AND (mps.STAFF_CODE = :staffPosCode OR mps.STAFF_POS_CODE = :staffPosCode)";
+        System.err.println("q2 checkStaffCode:" + qry);
+        List<Map<String, Object>> b = jdbcTemplate.query(qry2, ref, new DynamicRowMapper());
+        return a.size() + b.size();
+    }
+    
     // ========================================================== MODULE MASTER GLOBAL (M_GLOBAL) ==========================================================================================//  
     //VIEW REGION DATA MASTER GLOBAL (M_GLOBAL)
 
