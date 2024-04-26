@@ -364,7 +364,7 @@ ORDER BY mgo.DESCRIPTION]]>
 		</field>
 		<variable name="SUM_SALES" class="java.math.BigDecimal" calculation="Sum">
 			<variableExpression><![CDATA[$F{SALES}]]></variableExpression>
-			<initialValueExpression><![CDATA[0]]></initialValueExpression>
+			<initialValueExpression><![CDATA[BigDecimal.ZERO]]></initialValueExpression>
 		</variable>
 		<variable name="SUM_TRANSACTION" class="java.math.BigDecimal" calculation="Sum">
 			<variableExpression><![CDATA[$F{TRANSACTIONS}]]></variableExpression>
@@ -577,6 +577,9 @@ FROM (
 	<parameter name="salesMtdLastYear" class="java.util.Map" isForPrompting="false"/>
 	<parameter name="achievedActual" class="java.util.Map" isForPrompting="false"/>
 	<parameter name="achievedLastYear" class="java.util.Map" isForPrompting="false"/>
+	<parameter name="isTemporary" class="java.lang.String">
+		<defaultValueExpression><![CDATA["0"]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[SELECT mo."OUTLET_CODE",
 	mo."OUTLET_NAME",
@@ -764,6 +767,15 @@ WHERE
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 			</line>
+			<staticText>
+				<reportElement x="359" y="33" width="94" height="20" forecolor="#CC0704" uuid="9cd5fec6-596f-4f0a-85c5-2165533dad8b">
+					<printWhenExpression><![CDATA[$P{isTemporary}.equalsIgnoreCase( "1" )]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TEMPORARY]]></text>
+			</staticText>
 		</band>
 	</title>
 	<detail>
@@ -1741,7 +1753,7 @@ WHERE
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[Double.parseDouble(String.valueOf($P{achievedActual}.get("transaksi")))]]></textFieldExpression>
+				<textFieldExpression><![CDATA[Double.parseDouble($P{achievedActual}.get("transaksi").toString())]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.##">
 				<reportElement x="396" y="103" width="60" height="12" uuid="ff5f489d-467b-480f-ad0a-ec0c11743a06">
