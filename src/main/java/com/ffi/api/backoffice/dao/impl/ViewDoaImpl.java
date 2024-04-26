@@ -1897,12 +1897,14 @@ public class ViewDoaImpl implements ViewDao {
     @Override
     public List<Map<String, Object>> listCounter(Map<String, String> balance) {
 
-        String qry = "SELECT ORDER_ID || LPAD(COUNTNO, 4, '0') AS ORDER_ID FROM ( "
-                + "SELECT :month || a.YEAR AS ORDER_ID,A.COUNTER_NO+1 AS COUNTNO FROM M_COUNTER A "
+//        Query for Order ID 
+        String qry = "SELECT TO_CHAR(b.trans_date, 'YYMMdd') || LPAD(A.COUNTER_NO+1, 4, 0) AS ORDER_ID "
+                + "FROM M_COUNTER A "
                 + "LEFT JOIN M_OUTLET B "
                 + "ON B.OUTLET_CODE=A.OUTLET_CODE "
-                + "WHERE A.YEAR = :year AND A.MONTH= :month AND A.TRANS_TYPE = :transType AND A.OUTLET_CODE= :outletCode)";
+                + "WHERE A.YEAR = TO_CHAR(b.trans_date, 'YYYY') AND A.MONTH= TO_CHAR(b.trans_date, 'MM') AND A.TRANS_TYPE = :transType AND A.OUTLET_CODE= :outletCode ";
 
+//        Query for Order NO
         if (balance.get("transType").equals("RO") || balance.get("transType").equals("PO")) {
             qry = "SELECT ORDER_ID || LPAD(COUNTNO, 4, '0') AS ORDER_ID FROM ( "
                     + "SELECT :outletCode || SUBSTR(:year, -2) || :month AS ORDER_ID,A.COUNTER_NO+1 AS COUNTNO FROM M_COUNTER A "
