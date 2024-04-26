@@ -1710,17 +1710,15 @@ public class ProcessDaoImpl implements ProcessDao {
         Map balance = new HashMap();
         balance.put("outletCode", outletCode);
         LocalDate transDate = this.jdbcTemplate.queryForObject("SELECT TRANS_DATE FROM M_OUTLET WHERE OUTLET_CODE = :outletCode", balance, LocalDate.class);
-//        String month = String.valueOf(transDate.getMonthValue());
-        String month = String.format("%02d", transDate.getMonthValue());
-        System.out.println(month);
-        String year = String.valueOf(transDate.getYear());
-
         String typeReturn = param.getAsJsonPrimitive("typeReturn").getAsString();
 
         //Getting last number for Return Order
-        String noID = returnOrderCounter(year, month, "ID", param.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
-        String noReturn = returnOrderCounter(year, month, "RTR", param.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
+        String noID = returnOrderCounter(transDate, "ID", param.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
+        String noReturn = returnOrderCounter(transDate, "RTR", param.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
 
+        System.out.println("Return ID: "+ noID);
+        System.out.println("Return No: "+ noReturn);
+        
         //Insert Header
         String queryHeader = "INSERT INTO T_RETURN_HEADER (OUTLET_CODE, TYPE_RETURN, RETURN_ID, RETURN_NO, RETURN_DATE,"
                 + " RETURN_TO, REMARK, STATUS, USER_UPD, DATE_UPD, TIME_UPD) VALUES (:outletCode, :typeReturn, :returnId,"
@@ -1846,33 +1844,22 @@ public class ProcessDaoImpl implements ProcessDao {
         }
     }
 
-    public String returnOrderCounter(String year, String month, String transType, String outletCode) {
+    public String returnOrderCounter(LocalDate transDate, String transType, String outletCode) {
         if (transType.equalsIgnoreCase("ID")) {
-            String dateMonth = month.concat("-").concat(year);
-            String outletCodeQuery = outletCode;
-            if (outletCodeQuery.charAt(0) == '0') {
-                outletCodeQuery = outletCodeQuery.substring(1);
-            }
-            String sqlId = "select to_char(nvl(max(substr(RETURN_ID, -3)) + 1, 1), 'fm000') as no_urut "
-                    + "from T_RETURN_HEADER "
-                    + "where RETURN_ID like '" + outletCodeQuery.concat("0").concat(month) + "%' "
-                    + "and to_char(RETURN_DATE,'mm-yyyy') = :dateMonth";
-            System.err.println("Query for Id :" + sqlId);
-            Map paramId = new HashMap();
-            paramId.put("dateMonth", dateMonth);
-            return jdbcTemplate.queryForObject(sqlId, paramId, new RowMapper() {
-                @Override
-                public Object mapRow(ResultSet rs, int i) throws SQLException {
-                    return rs.getString("no_urut") == null ? outletCode.concat("0").concat(month).concat("0001") : outletCode.concat("0").concat(month).concat(rs.getString("no_urut"));
-                }
-            }).toString();
-
+            Date date = java.sql.Date.valueOf(transDate);
+            String firstString = new SimpleDateFormat("YYMMdd").format(date);
+            String sqlId = "select to_char(nvl(max(substr(RETURN_ID, -3)) + 1, 1), 'fm0000') as no_urut "
+                    + "from T_RETURN_HEADER where RETURN_ID like '" + firstString + "%' ";
+            String secondString = jdbcTemplate.queryForObject(sqlId, new HashMap<>(), String.class);
+            return firstString + "" + secondString;
         }
+        
+        String month = String.format("%02d", transDate.getMonthValue());
+        String year = String.valueOf(transDate.getYear());
         String sql = "select to_char(counter, 'fm0000') as no_urut from ( "
                 + "select max(counter_no) + 1 as counter from m_counter "
                 + "where outlet_code = :outletCode and trans_type = :transType and year = :year and month = to_number(:month) "
                 + ") tbl";
-        System.err.println("Query for No Urut :" + sql);
         Map param = new HashMap();
         param.put("year", year);
         param.put("month", month);
