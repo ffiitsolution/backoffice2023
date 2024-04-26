@@ -450,7 +450,7 @@ ORDER BY
 				</textElement>
 				<textFieldExpression><![CDATA[$F{CONV_STOCK} + " " + $F{UOM_STOCK} + "/" + $F{UOM_PURCHASE}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0">
+			<textField>
 				<reportElement x="308" y="0" width="56" height="15" uuid="d3a57d89-f578-4338-90c2-568c24ce2c47"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
@@ -471,7 +471,7 @@ ORDER BY
 				</textElement>
 				<textFieldExpression><![CDATA[$F{QTY_OUT}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0">
+			<textField>
 				<reportElement x="530" y="0" width="56" height="15" uuid="8663877d-64ab-40d3-a0ed-7e642b5097b8"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>

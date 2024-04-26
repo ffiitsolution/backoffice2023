@@ -269,7 +269,7 @@ ORDER BY
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="11" isBold="true"/>
 				</textElement>
-				<text><![CDATA[INVENTORY MOVEMENT detail]]></text>
+				<text><![CDATA[INVENTORY MOVEMENT DETAIL]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="65" y="0" width="112" height="11" uuid="aa7c332d-d421-4356-9c2c-60f49274fd89"/>
@@ -551,14 +551,14 @@ ORDER BY
 				</textElement>
 				<textFieldExpression><![CDATA["(" + $F{CONV_STOCK} + " " + $F{UOM_STOCK} + "/" + $F{UOM_PURCHASE} + ")"]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0">
+			<textField>
 				<reportElement x="242" y="0" width="61" height="15" uuid="f60a1a42-dcbc-406d-babb-ebb4a7024a98"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{STOCK_BEGIN}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0">
+			<textField>
 				<reportElement x="303" y="0" width="50" height="15" uuid="399bd5a6-67f1-43fb-8a4c-8b7e21d06f46"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
@@ -600,7 +600,7 @@ ORDER BY
 				</textElement>
 				<textFieldExpression><![CDATA[$F{ADJUSTMENT}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0">
+			<textField>
 				<reportElement x="585" y="0" width="65" height="15" uuid="342fe465-1048-4d26-a5f7-13711d1fcbca"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
