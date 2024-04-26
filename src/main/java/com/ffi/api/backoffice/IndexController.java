@@ -31,6 +31,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -63,31 +64,31 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 public class IndexController {
-    
+
     @Autowired
     ViewServices viewServices;
-    
+
     @Autowired
     ProcessServices processServices;
-    
+
     @Autowired
     ReportServices reportServices;
-    
+
     @Autowired
     TableAliasUtil tableAliasUtil;
-    
+
     @Autowired
     AppUtil appUtil;
-    
+
     @Autowired
     AppConfig appConfig;
-    
+
     @Autowired
     private FileLoggerUtil fileLoggerUtil;
-    
+
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
-    
+
     @Value("${endpoint.master}")
     private String _UrlMaster;
 
@@ -100,7 +101,7 @@ public class IndexController {
         map.put("output", "welcome");
         return map;
     }
-    
+
     @RequestMapping(value = "/ping")
     public @ResponseBody
     Map<String, Object> ping() {
@@ -108,7 +109,7 @@ public class IndexController {
         map.put("output", "Connection is Successfully");
         return map;
     }
-    
+
     @MessageMapping("/hello")
     @SendTo("/topic/greetings")
     public ResponseMessage greeting(String message) throws Exception {
@@ -138,7 +139,7 @@ public class IndexController {
         List<Map<String, Object>> list = new ArrayList<>();
         ResponseMessage rm = new ResponseMessage();
         rm.setItem(new ArrayList());
-        
+
         list = viewServices.loginJson(balance);
 
         /// inactive tidak boleh login by M Joko - 24 Jan 2024
@@ -163,7 +164,7 @@ public class IndexController {
             rm.setSuccess(false);
             rm.setMessage("Failed : " + e.getMessage());
         }
-        
+
         list.add(map);
         rm.setItem(list);
         return rm;
@@ -183,21 +184,21 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         ResponseMessage rm = new ResponseMessage();
         try {
             processServices.insertSupplier(balance);
             rm.setSuccess(true);
             rm.setMessage("Insert Success Successfuly");
-            
+
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Insert Failed Successfuly: " + e.getMessage());
         }
-        
+
         rm.setItem(list);
-        
+
         return rm;
     }
 
@@ -214,13 +215,13 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, Object> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         Response res = new Response();
         res.setData(viewServices.listSupplier(balance));
         return res;
-        
+
     }
-    
+
     @RequestMapping(value = "/update-supplier", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk update supplier", response = Object.class)
     @ApiResponses(value = {
@@ -238,14 +239,14 @@ public class IndexController {
             processServices.updateSupplier(balance);
             rm.setSuccess(true);
             rm.setMessage("Update Success Successfuly");
-            
+
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Update Failed Successfuly: " + e.getMessage());
         }
-        
+
         rm.setItem(list);
-        
+
         return rm;
     }
     ///////////done
@@ -263,12 +264,12 @@ public class IndexController {
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        
+
         Response res = new Response();
         res.setData(viewServices.listItemSupplier(balance));
         return res;
     }
-    
+
     @RequestMapping(value = "/update-item-supplier", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view list supplier item", response = Object.class)
     @ApiResponses(value = {
@@ -286,17 +287,17 @@ public class IndexController {
             processServices.updateItemSupplier(balance);
             rm.setSuccess(true);
             rm.setMessage("Update Success Successfuly");
-            
+
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Update Failed Successfuly: " + e.getMessage());
         }
-        
+
         rm.setItem(list);
-        
+
         return rm;
     }
-    
+
     @RequestMapping(value = "/insert-item-supplier", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view list supplier item", response = Object.class)
     @ApiResponses(value = {
@@ -314,17 +315,17 @@ public class IndexController {
             processServices.insertItemSupplier(balance);
             rm.setSuccess(true);
             rm.setMessage("Update Success Successfuly");
-            
+
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Update Failed Successfuly: " + e.getMessage());
         }
-        
+
         rm.setItem(list);
-        
+
         return rm;
     }
-    
+
     @RequestMapping(value = "/list-master-item", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view master item", response = Object.class)
     @ApiResponses(value = {
@@ -341,7 +342,7 @@ public class IndexController {
         res.setData(viewServices.listMasterItem(balance));
         return res;
     }
-    
+
     @RequestMapping(value = "/list-supplier-item", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view mpcs", response = Object.class)
     @ApiResponses(value = {
@@ -357,7 +358,7 @@ public class IndexController {
         Response res = new Response();
         res.setData(viewServices.listDataItemSupplier(balance));
         return res;
-        
+
     }
 
     ///////////////done 
@@ -378,7 +379,7 @@ public class IndexController {
         res.setData(viewServices.listMpcs(balance));
         return res;
     }
-    
+
     @RequestMapping(value = "/update-frayer", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk update mpcs", response = Object.class)
     @ApiResponses(value = {
@@ -390,24 +391,24 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         ResponseMessage rm = new ResponseMessage();
         try {
             processServices.updateFrayer(balance);
             rm.setSuccess(true);
             rm.setMessage("Update Success Successfuly");
-            
+
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Update Failed Successfuly: " + e.getMessage());
         }
-        
+
         rm.setItem(list);
-        
+
         return rm;
     }
-    
+
     @RequestMapping(value = "/list-itemcost", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view item cost", response = Object.class)
     @ApiResponses(value = {
@@ -415,14 +416,14 @@ public class IndexController {
         @ApiResponse(code = 404, message = "The resource not found"),}
     )
     public @ResponseBody
-    
+
     Response listItemCost(@RequestBody String param) throws IOException, Exception {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        
+
         Response res = new Response();
         res.setData(viewServices.listItemCost(balance));
         return res;
@@ -436,7 +437,7 @@ public class IndexController {
         @ApiResponse(code = 404, message = "The resource not found")
     }
     )
-    
+
     public @ResponseBody
     Response listMenuGroup(@RequestBody String param) {
         Gson gsn = new Gson();
@@ -457,7 +458,7 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         Response response = new Response();
         response.setData(viewServices.listMenuGroupTipeOrder(balance));
         return response;
@@ -471,12 +472,12 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         Response response = new Response();
         response.setData(viewServices.listMenuGroupOutletLimit(balance));
         return response;
     }
-    
+
     @RequestMapping(value = "/list-item-price", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan Harga ITEM ", response = Object.class)
     @ApiResponses(value = {
@@ -484,7 +485,7 @@ public class IndexController {
         @ApiResponse(code = 404, message = "The resource not found")
     }
     )
-    
+
     public @ResponseBody
     Response listItemPrice(@RequestBody String param) {
         Gson gsn = new Gson();
@@ -496,7 +497,7 @@ public class IndexController {
         res.setData(viewServices.listItemPrice(balance));
         return res;
     }
-    
+
     @RequestMapping(value = "/list-item-detail", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan Detail Item ", response = Object.class)
     @ApiResponses(value = {
@@ -504,7 +505,7 @@ public class IndexController {
         @ApiResponse(code = 404, message = "The resource not found")
     }
     )
-    
+
     public @ResponseBody
     Response listItemDetail(@RequestBody String param) {
         Gson gsn = new Gson();
@@ -516,7 +517,7 @@ public class IndexController {
         res.setData(viewServices.listItemDetail(balance));
         return res;
     }
-    
+
     @RequestMapping(value = "/list-modifier", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan Modifier Item ", response = Object.class)
     @ApiResponses(value = {
@@ -524,7 +525,7 @@ public class IndexController {
         @ApiResponse(code = 404, message = "The resource not found")
     }
     )
-    
+
     public @ResponseBody
     Response listModifier(@RequestBody String param) {
         Gson gsn = new Gson();
@@ -536,7 +537,7 @@ public class IndexController {
         res.setData(viewServices.listModifier(balance));
         return res;
     }
-    
+
     @RequestMapping(value = "/list-special-price", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Menampilkan Modifier Item ", response = Object.class)
     @ApiResponses(value = {
@@ -544,7 +545,7 @@ public class IndexController {
         @ApiResponse(code = 404, message = "The resource not found")
     }
     )
-    
+
     public @ResponseBody
     Response listSpecialPrice(@RequestBody String param) {
         Gson gsn = new Gson();
@@ -570,14 +571,14 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        
+
         Response res = new Response();
         res.setData(viewServices.listMasterCity(balance));
         return res;
     }
-    
+
     @RequestMapping(value = "/list-position", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view master item", response = Object.class)
     @ApiResponses(value = {
@@ -589,14 +590,14 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        
+
         Response res = new Response();
         res.setData(viewServices.listPosition(balance));
         return res;
     }
-    
+
     @RequestMapping(value = "/list-mpcs-header", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view master item", response = Object.class)
     @ApiResponses(value = {
@@ -613,7 +614,7 @@ public class IndexController {
         res.setData(viewServices.listMpcsHeader(balance));
         return res;
     }
-    
+
     @RequestMapping(value = "/list-master-item-for-supplier", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view master item", response = Object.class)
     @ApiResponses(value = {
@@ -625,9 +626,9 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        
+
         Response res = new Response();
         res.setData(viewServices.listMasterItemSupplier(balance));
         return res;
@@ -647,15 +648,15 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> logan = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        
+
         Response res = new Response();
         res.setData(viewServices.listOutlet(logan));
         return res;
-        
+
     }
-    
+
     @RequestMapping(value = "/list-pos", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view supplier", response = Object.class)
     @ApiResponses(value = {
@@ -667,15 +668,15 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> logan = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        
+
         Response res = new Response();
         res.setData(viewServices.listPos(logan));
         return res;
-        
+
     }
-    
+
     @RequestMapping(value = "/type-pos", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view supplier", response = Object.class)
     @ApiResponses(value = {
@@ -687,15 +688,15 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> logan = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        
+
         Response res = new Response();
         res.setData(viewServices.listTypePos(logan));
         return res;
-        
+
     }
-    
+
     @RequestMapping(value = "/item", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view supplier", response = Object.class)
     @ApiResponses(value = {
@@ -707,7 +708,7 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> logan = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         if (logan.get("paket").equalsIgnoreCase("E")) {
             Map<String, Object> sddParam = new HashMap<>();
@@ -720,9 +721,9 @@ public class IndexController {
         res.setData(list);
         res.setRecordsTotal(list.size());
         return res;
-        
+
     }
-    
+
     @RequestMapping(value = "/insert-pos", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk update mpcs", response = Object.class)
     @ApiResponses(value = {
@@ -740,17 +741,17 @@ public class IndexController {
             processServices.insertPos(balance);
             rm.setSuccess(true);
             rm.setMessage("Insert Success Successfuly");
-            
+
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Insert Failed Successfuly: " + e.getMessage());
         }
-        
+
         rm.setItem(list);
-        
+
         return rm;
     }
-    
+
     @RequestMapping(value = "/update-pos", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk update mpcs", response = Object.class)
     @ApiResponses(value = {
@@ -762,21 +763,21 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new com.google.gson.reflect.TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         ResponseMessage rm = new ResponseMessage();
         try {
             processServices.updatePos(balance);
             rm.setSuccess(true);
             rm.setMessage("Update Success Successfuly");
-            
+
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Update Failed Successfuly: " + e.getMessage());
         }
-        
+
         rm.setItem(list);
-        
+
         return rm;
     }
 
@@ -987,7 +988,7 @@ public class IndexController {
             }
     )
     public @ResponseBody
-    
+
     Response listStaff(@RequestBody String param) throws JRException, IOException, Exception {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
@@ -997,7 +998,7 @@ public class IndexController {
         res.setData(viewServices.listStaff(balance));
         return res;
     }
-    
+
     @RequestMapping(value = "/insert-staff", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk Insert Data", response = Object.class)
     @ApiResponses(value
@@ -1017,9 +1018,12 @@ public class IndexController {
         cekPrm.put("outletCode", balancetest1.get("outletCode"));
         cekPrm.put("staffCode", balancetest1.get("staffCode"));
         cekPrm.put("staffPosCode", balancetest1.get("staffPosCode"));
-        Integer cek = viewServices.checkStaffCode(cekPrm);
-        System.out.println("checkStaffCode: " + cek);
-        if(cek > 0){
+        Integer cekStaffCode = viewServices.checkStaffCode(cekPrm);
+        cekPrm.put("type", "POS");
+        Integer cekPosCode = viewServices.checkStaffCode(cekPrm);
+        System.out.println("checkStaffCode: " + cekStaffCode);
+        System.out.println("cekPosCode: " + cekPosCode);
+        if (cekPosCode > 0 && cekStaffCode > 0) {
             rm.setSuccess(false);
             rm.setMessage("Insert Failed : Kode User atau ID Card Cek Telah ada");
             return rm;
@@ -1056,9 +1060,12 @@ public class IndexController {
         cekPrm.put("outletCode", balancetest.get("outletCode"));
         cekPrm.put("staffCode", balancetest.get("staffCode"));
         cekPrm.put("staffPosCode", balancetest.get("staffPosCode"));
-        Integer cek = viewServices.checkStaffCode(cekPrm);
-        System.out.println("checkStaffCode: " + cek);
-        if(cek > 2){
+        Integer checkStaffCode = viewServices.checkStaffCode(cekPrm);
+        System.out.println("checkStaffCode: " + checkStaffCode);
+        cekPrm.put("type", "POS");
+        Integer checkPosCode = viewServices.checkStaffCode(cekPrm);
+        System.out.println("checkPosCode: " + checkPosCode);
+        if (checkStaffCode > 0 && checkPosCode > 0) {
             rm.setSuccess(false);
             rm.setMessage("Insert Failed : Kode User atau ID Card Cek Telah ada");
             return rm;
@@ -1134,7 +1141,7 @@ public class IndexController {
                 @ApiResponse(code = 404, message = "The resource not found")
             }
     )
-    
+
     public @ResponseBody
     Response listOutlets(@RequestBody String param) throws JRException, IOException, Exception {
         Gson gsn = new Gson();
@@ -1156,7 +1163,7 @@ public class IndexController {
             }
     )
     public @ResponseBody
-    
+
     Response listViewFormStaff(@RequestBody String param) throws JRException, IOException, Exception {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
@@ -1166,7 +1173,7 @@ public class IndexController {
         res.setData(viewServices.listViewFormStaff(balance));
         return res;
     }
-    
+
     @RequestMapping(value = "/list-viewposition", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk View Data", response = Object.class)
     @ApiResponses(value
@@ -1176,7 +1183,7 @@ public class IndexController {
             }
     )
     public @ResponseBody
-    
+
     Response listViewPosition(@RequestBody String param) throws JRException, IOException, Exception {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
@@ -1197,7 +1204,7 @@ public class IndexController {
             }
     )
     public @ResponseBody
-    
+
     Response listViewAccessLevel(@RequestBody String param) throws JRException, IOException, Exception {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
@@ -1218,7 +1225,7 @@ public class IndexController {
             }
     )
     public @ResponseBody
-    
+
     Response listViewGroupUser(@RequestBody String param) throws JRException, IOException, Exception {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
@@ -1333,13 +1340,13 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> logan = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        
+
         Response res = new Response();
         res.setData(viewServices.viewArea(logan));
         return res;
-        
+
     }
     //View list type 29-maret 2023================================================================================================
 
@@ -1354,13 +1361,13 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> logan = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        
+
         Response res = new Response();
         res.setData(viewServices.viewTypeStore(logan));
         return res;
-        
+
     }
 
     ///////////////new method from dona 29-03-2023////////////////////////////
@@ -1376,7 +1383,7 @@ public class IndexController {
         res.setData(viewServices.listGlobal(param));
         return res;
     }
-    
+
     @RequestMapping(value = "/insert-fryer", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk insert fryer", response = Object.class)
     @ApiResponses(value = {
@@ -1388,21 +1395,21 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         ResponseMessage rm = new ResponseMessage();
         try {
             processServices.insertFryer(balance);
             rm.setSuccess(true);
             rm.setMessage("Insert Success Successfuly");
-            
+
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Insert Failed Successfuly: " + e.getMessage());
         }
-        
+
         rm.setItem(list);
-        
+
         return rm;
     }
 
@@ -1423,7 +1430,7 @@ public class IndexController {
         res.setData(viewServices.listGlobalCond(balance));
         return res;
     }
-    
+
     @RequestMapping(value = "/list-master-global", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk list global cond", response = Object.class)
     @ApiResponses(value = {
@@ -1439,7 +1446,7 @@ public class IndexController {
         res.setData(viewServices.listMasterGlobal(balance));
         return res;
     }
-    
+
     @RequestMapping(value = "/insert-master-global", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk insert master global", response = Object.class)
     @ApiResponses(value = {
@@ -1457,7 +1464,7 @@ public class IndexController {
             processServices.insertMasterGlobal(balance);
             rm.setSuccess(true);
             rm.setMessage("Insert Success Successfuly");
-            
+
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Insert Failed Successfuly: " + e.getMessage());
@@ -1465,7 +1472,7 @@ public class IndexController {
         rm.setItem(list);
         return rm;
     }
-    
+
     @RequestMapping(value = "/update-master-global", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk update master global", response = Object.class)
     @ApiResponses(value = {
@@ -1483,7 +1490,7 @@ public class IndexController {
             processServices.updateMasterGlobal(balance);
             rm.setSuccess(true);
             rm.setMessage("Update Success Successfuly");
-            
+
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Update Failed Successfuly: " + e.getMessage());
@@ -1509,7 +1516,7 @@ public class IndexController {
         res.setData(viewServices.listOrderHeader(balance));
         return res;
     }
-    
+
     @RequestMapping(value = "/insert-order-header", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk insert master global", response = Object.class)
     @ApiResponses(value = {
@@ -1528,7 +1535,7 @@ public class IndexController {
             processServices.updateMCounter(balance);
             rm.setSuccess(true);
             rm.setMessage("Insert Success");
-            
+
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Insert Failed: " + e.getMessage());
@@ -1618,7 +1625,7 @@ public class IndexController {
         rm.setItem(list);
         return rm;
     }
-    
+
     @RequestMapping(value = "/update-order-detail", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk update order detail", response = Object.class)
     @ApiResponses(value = {
@@ -1636,7 +1643,7 @@ public class IndexController {
             processServices.updateOrderDetail(balance);
             rm.setSuccess(true);
             rm.setMessage("Update Success Successfuly");
-            
+
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Update Failed Successfuly: " + e.getMessage());
@@ -1682,7 +1689,7 @@ public class IndexController {
             processServices.updateMasterCounter(balance);
             rm.setSuccess(true);
             rm.setMessage("Update Success Successfuly");
-            
+
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Update Failed Successfuly: " + e.getMessage());
@@ -1704,12 +1711,12 @@ public class IndexController {
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        
+
         Response res = new Response();
         res.setData(viewServices.ViewOrderDetail(balance));
         return res;
     }
-    
+
     @RequestMapping(value = "/list-item-detail-opname", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view list item detail stock opname", response = Object.class)
     @ApiResponses(value = {
@@ -1726,7 +1733,7 @@ public class IndexController {
         res.setData(viewServices.listItemDetailOpname(balance));
         return res;
     }
-    
+
     @RequestMapping(value = "/list-edit-item-detail-opname", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view list item detail stock opname", response = Object.class)
     @ApiResponses(value = {
@@ -1743,7 +1750,7 @@ public class IndexController {
         res.setData(viewServices.listEditItemDetailOpname(balance));
         return res;
     }
-    
+
     @RequestMapping(value = "/list-header-opname", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view list item detail stock opname", response = Object.class)
     @ApiResponses(value = {
@@ -1760,7 +1767,7 @@ public class IndexController {
         res.setData(viewServices.listHeaderOpname(balance));
         return res;
     }
-    
+
     @RequestMapping(value = "/insert-opname-header", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk insert transaksi opname header", response = Object.class)
     @ApiResponses(value = {
@@ -1776,14 +1783,14 @@ public class IndexController {
         Map<String, Object> map = new LinkedHashMap<String, Object>();
         List<Map<String, Object>> list1 = new ArrayList<Map<String, Object>>();
         ResponseMessage rm = new ResponseMessage();
-        
+
         DateFormat dateFormat = new SimpleDateFormat("MMM");
         DateFormat year = new SimpleDateFormat("YYYY");
         String sDate1 = balance.getOpnameDate();
         Date date1 = new SimpleDateFormat("dd-MMM-yy").parse(sDate1);
         String toMonth = dateFormat.format(date1);
         String toYear = year.format(date1);
-        
+
         String cekOpnameHdr = viewServices.cekOpname(balance.getOutletCode(), toMonth.toUpperCase(), toYear);
         try {
             if (cekOpnameHdr.equals("0")) {
@@ -1801,13 +1808,13 @@ public class IndexController {
         }
         if (rm.getMessage().equals("Insert Success")) {
             processServices.updateMCounterSop(balance.getTransType(), balance.getOutletCode());
-            
+
         }
         list.add(map);
         rm.setItem(list);
         return rm;
     }
-    
+
     @RequestMapping(value = "/insert-opname-detail", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk insert transaksi opname detail", response = Object.class)
     @ApiResponses(value = {
@@ -1833,12 +1840,12 @@ public class IndexController {
             rm.setMessage("Nilai maksimum terlampaui, mohon cek kembali jumlah item.");
             return rm;
         }
-        
+
         try {
             processServices.inserOpnameDetail(opnameDtls);
             rm.setSuccess(true);
             rm.setMessage("Insert Success Successfuly");
-            
+
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Insert Failed Successfuly: " + e.getMessage());
@@ -1846,7 +1853,7 @@ public class IndexController {
         rm.setItem(list);
         return rm;
     }
-    
+
     @RequestMapping(value = "/insert-stock-card-detail", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk insert transaksi opname header", response = Object.class)
     @ApiResponses(value = {
@@ -1861,11 +1868,11 @@ public class IndexController {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         String status = "";
         ResponseMessage rm = new ResponseMessage();
-        
+
         try {
             processServices.insertSoToScDtl(balance);
             rm.setSuccess(true);
-            
+
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Insert Stock Card Failed: " + e.getMessage());
@@ -1873,7 +1880,7 @@ public class IndexController {
         rm.setItem(list);
         return rm;
     }
-    
+
     @RequestMapping(value = "/cek-sync-item", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk insert transaksi opname header", response = Object.class)
     @ApiResponses(value = {
@@ -1888,12 +1895,12 @@ public class IndexController {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         String status = "";
         ResponseMessage rm = new ResponseMessage();
-        
+
         String totalHq = viewServices.cekItemHq();
-        
+
         String cekItem = viewServices.cekItem();
         int b = Integer.valueOf(cekItem);
-        
+
         try {
             if (b == 0) {
                 rm.setSuccess(true);
@@ -1909,7 +1916,7 @@ public class IndexController {
         rm.setItem(list);
         return rm;
     }
-    
+
     @Transactional
     @RequestMapping(value = "/send-data-to-warehouse", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk insert transaksi opname header", response = Object.class)
@@ -1925,14 +1932,14 @@ public class IndexController {
         List<Map<String, Object>> list = new ArrayList<>();
         String status = "";
         ResponseMessage rm = new ResponseMessage();
-        
+
         try {
             processServices.checkInventoryAvailability();
             processServices.sendDataToWarehouse(balance);
-            
+
             rm.setSuccess(true);
             rm.setMessage("Insert Successfuly");
-            
+
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Insert Failed: " + e.getMessage());
@@ -1970,7 +1977,7 @@ public class IndexController {
         rm.setData(list);
         return rm;
     }
-    
+
     @RequestMapping(value = "/view-ord-header", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view list header order (ditampilkan untuk menu Receiving)", response = Object.class)
     @ApiResponses(value = {
@@ -1999,7 +2006,7 @@ public class IndexController {
         rm.setData(list);
         return rm;
     }
-    
+
     @RequestMapping(value = "/view-rcv-detail", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view list header order", response = Object.class)
     @ApiResponses(value = {
@@ -2049,7 +2056,7 @@ public class IndexController {
             //prosesServices.updateMCounter(balance);
             rm.setSuccess(true);
             rm.setMessage("Insert Success Successfuly");
-            
+
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Insert Failed Successfuly: " + e.getMessage());
@@ -2224,7 +2231,7 @@ public class IndexController {
         rm.setItem(list);
         return rm;
     }
-    
+
     @RequestMapping(value = "/view-mpcs-temp", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view MPCS Template", response = Object.class)
     @ApiResponses(value = {
@@ -2249,7 +2256,7 @@ public class IndexController {
         rm.setData(list);
         return rm;
     }
-    
+
     @RequestMapping(value = "/view-mpcs-plan", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view MPCS Plan / Projection", response = Object.class)
     @ApiResponses(value = {
@@ -2274,7 +2281,7 @@ public class IndexController {
         rm.setData(list);
         return rm;
     }
-    
+
     @RequestMapping(value = "/mpcs-project", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk insert MPCS Plan / Project", response = Object.class)
     @ApiResponses(value = {
@@ -2353,7 +2360,7 @@ public class IndexController {
         }
         return rm;
     }
-    
+
     @RequestMapping(value = "/list-supplier-gudang-return", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk melihat list supplier dan gudang di return order", response = Object.class)
     @ApiResponses(value = {
@@ -2377,7 +2384,7 @@ public class IndexController {
         }
         return rm;
     }
-    
+
     @RequestMapping(value = "/list-item-supplier-gudang-return", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk melihat list item supplier dan gudang di return order", response = Object.class)
     @ApiResponses(value = {
@@ -2491,7 +2498,7 @@ public class IndexController {
             }
             detailParam.clear();
         }
-        
+
         if (hdr && dtl) {
             rm.setSuccess(true);
             rm.setMessage("Insert Done Successfuly");
@@ -2499,7 +2506,7 @@ public class IndexController {
             rm.setSuccess(false);
             rm.setMessage("Failed to Insert");
         }
-        
+
         return rm;
     }
 
@@ -2571,7 +2578,7 @@ public class IndexController {
 //
         rm.setItem(list);
         return rm;
-        
+
     }
 
     ///////////////done 
@@ -2615,12 +2622,12 @@ public class IndexController {
         @ApiResponse(code = 404, message = "The resource not found"),}
     )
     public @ResponseBody
-    
+
     Response listDetailOderbyOrderno(@RequestBody String param) throws IOException, Exception {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         Response res = new Response();
         res.setData(viewServices.listDetailOderbyOrderno(balance));
         return res;
@@ -2634,13 +2641,13 @@ public class IndexController {
         @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 404, message = "The resource not found"),}
     )
-    
+
     public @ResponseBody
     Response listQueryStockCard(@RequestBody String param) throws IOException, Exception {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         Response res = new Response();
         res.setData(viewServices.listQueryStockCard(balance));
         return res;
@@ -2654,13 +2661,13 @@ public class IndexController {
         @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 404, message = "The resource not found"),}
     )
-    
+
     public @ResponseBody
     Response listQueryStockCardDetail(@RequestBody String param) throws IOException, Exception {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         Response res = new Response();
         res.setData(viewServices.listQueryStockCardDetail(balance));
         return res;
@@ -2675,7 +2682,7 @@ public class IndexController {
         @ApiResponse(code = 404, message = "The resource not found")
     }
     )
-    
+
     public @ResponseBody
     Response listMenuGroupCodeDetail(@RequestBody String param) {
         Gson gsn = new Gson();
@@ -2720,7 +2727,7 @@ public class IndexController {
         @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 404, message = "The resource not found"),}
     )
-    
+
     @Transactional
     public @ResponseBody
     ResponseMessage sendDataOutletToWarehouse(@RequestBody String param) throws IOException, Exception {
@@ -2729,14 +2736,14 @@ public class IndexController {
         }.getType());
         List<Map<String, Object>> list = new ArrayList<>();
         ResponseMessage rm = new ResponseMessage();
-        
+
         try {
             processServices.checkInventoryAvailability();
             processServices.sendDataOutletToWarehouse(balance);
-            
+
             rm.setSuccess(true);
             rm.setMessage("Insert Successfuly");
-            
+
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Insert Failed: " + e.getMessage());
@@ -2781,7 +2788,7 @@ public class IndexController {
         List<Map<String, Object>> listMPosActive = viewServices.listMPosActive(balance);
         List<Map<String, Object>> lastEod = viewServices.lastEod(balance);
         Map<String, Object> prevEod = lastEod.get(0);
-        
+
         for (int i = 0; i < listMPosActive.size(); i++) {
             var mPos = listMPosActive.get(i);
             String posCode = mPos.get("posCode").toString();
@@ -2814,14 +2821,14 @@ public class IndexController {
                 }
             }
         }
-        
+
         d.put("success", false);
         d.put("errors", errors);
         d.put("prevEod", prevEod);
         d.put("listMPosActive", listMPosActive);
         d.put("listPosOpen", posOpen);
         d.put("message", "Process End of Day Success");
-        
+
         if (!errors.isEmpty()) {
             d.put("message", "Process End of Day Failed");
             data.add(d);
@@ -2829,7 +2836,7 @@ public class IndexController {
             fileLoggerUtil.logActivity("/process-eod", "End Of Day", "PROCESS", balance.getOrDefault("actUser", "SYSTEM"), balance.getOrDefault("actName", "SYSTEM"), "", Boolean.FALSE, "", prms);
             return res;
         }
-        
+
         try {
             processServices.insertTStockCard(balance);
             processServices.insertTEodHist(balance);
@@ -2885,7 +2892,7 @@ public class IndexController {
         @ApiResponse(code = 404, message = "The resource not found")
     }
     )
-    
+
     public @ResponseBody
     Response listMpcsPlan(@RequestBody String param) {
         Gson gsn = new Gson();
@@ -2907,7 +2914,7 @@ public class IndexController {
         @ApiResponse(code = 404, message = "The resource not found")
     }
     )
-    
+
     public @ResponseBody
     Map<String, Object> listMpcsProduction(@RequestBody String param) throws Exception {
         Gson gsn = new Gson();
@@ -2934,7 +2941,7 @@ public class IndexController {
         @ApiResponse(code = 404, message = "The resource not found")
     }
     )
-    
+
     public @ResponseBody
     Response mpcsProductionDetail(@RequestBody String param) {
         Gson gsn = new Gson();
@@ -2956,7 +2963,7 @@ public class IndexController {
         @ApiResponse(code = 404, message = "The resource not found")
     }
     )
-    
+
     public @ResponseBody
     Response mpcsProductionRecipe(@RequestBody String param) {
         Gson gsn = new Gson();
@@ -2976,7 +2983,7 @@ public class IndexController {
         @ApiResponse(code = 404, message = "The resource not found")
     }
     )
-    
+
     public @ResponseBody
     Response mpcsProductionProductResult(@RequestBody String param) {
         Gson gsn = new Gson();
@@ -2990,7 +2997,7 @@ public class IndexController {
 
     ///////////////  NEW METHOD UPDATE MPCS PLAN  BY DONA 14 DEC 2023////////////////////
     @RequestMapping(value = "/update-mpcs-plan", produces = MediaType.APPLICATION_JSON_VALUE)
-    
+
     @ApiOperation(value = "Digunakan untuk update MPCS plan", response = Object.class)
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
@@ -3007,14 +3014,14 @@ public class IndexController {
             processServices.updateMpcsPlan(balance);
             rm.setSuccess(true);
             rm.setMessage("Update Success Successfuly");
-            
+
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Update Failed Successfuly: " + e.getMessage());
         }
-        
+
         rm.setItem(list);
-        
+
         return rm;
     }
     /////////////////////////////DONE//////////////////////////////////// 
@@ -3052,7 +3059,7 @@ public class IndexController {
         rm.setData(this.viewServices.listDeliveryOrderHdr(balance));
         return rm;
     }
-    
+
     @RequestMapping(value = "/generate-delivery-order-freemeal", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "query list delivery order", response = Object.class)
     @ApiResponses(value = {
@@ -3096,13 +3103,13 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, Object> data = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         var rm = new ResponseMessage();
         try {
             processServices.insertUpdateDeliveryOrder(data);
             rm.setSuccess(true);
             rm.setMessage("Success Successfuly");
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             rm.setSuccess(false);
@@ -3110,7 +3117,7 @@ public class IndexController {
         }
         return rm;
     }
-    
+
     @RequestMapping(value = "/delivery-order-check-exist-no-request", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk insert delivery order", response = Object.class)
     @ApiResponses(value = {
@@ -3122,7 +3129,7 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> data = gsn.fromJson(param, new TypeToken<Map<String, String>>() {
         }.getType());
-        
+
         var rm = new ResponseMessage();
         try {
             List<Boolean> list = new ArrayList<>();
@@ -3130,7 +3137,7 @@ public class IndexController {
             rm.setSuccess(true);
             rm.setMessage("Success Successfuly");
             rm.setItem(list);
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             rm.setSuccess(false);
@@ -3151,7 +3158,7 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> data = gsn.fromJson(param, new TypeToken<Map<String, String>>() {
         }.getType());
-        
+
         var rm = new ResponseMessage();
         try {
             List<Map<String, Object>> list = new ArrayList<>();
@@ -3159,7 +3166,7 @@ public class IndexController {
             rm.setSuccess(true);
             rm.setMessage("Success Successfuly");
             rm.setItem(list);
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             rm.setSuccess(false);
@@ -3180,7 +3187,7 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> data = gsn.fromJson(param, new TypeToken<Map<String, String>>() {
         }.getType());
-        
+
         var rm = new ResponseMessage();
         try {
             processServices.checkInventoryAvailability();
@@ -3207,7 +3214,7 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> data = gsn.fromJson(param, new TypeToken<Map<String, String>>() {
         }.getType());
-        
+
         var rm = new ResponseMessage();
         try {
             rm.setSuccess(true);
@@ -3233,7 +3240,7 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> data = gsn.fromJson(param, new TypeToken<Map<String, String>>() {
         }.getType());
-        
+
         var rm = new ResponseMessage();
         try {
             rm.setSuccess(true);
@@ -3275,7 +3282,7 @@ public class IndexController {
     )
     public @ResponseBody
     ResponseMessage getListDaftarMenuReport() throws JRException, IOException, Exception {
-        
+
         var rm = new ResponseMessage();
         try {
             rm.setSuccess(true);
@@ -3288,7 +3295,7 @@ public class IndexController {
         }
         return rm;
     }
-    
+
     @RequestMapping(value = "/get-outlet-info", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk ambil data outlet di halaman login by M Joko - 4 Jan 2024", response = Object.class)
     @ApiResponses(value = {
@@ -3302,7 +3309,7 @@ public class IndexController {
         }.getType());
         ResponseMessage rm = new ResponseMessage();
         String outletCode = balance.get("outletCode");
-        if(outletCode == null){
+        if (outletCode == null) {
             outletCode = appConfig.getOutletCode();
         }
         if (outletCode.isBlank()) {
@@ -3361,7 +3368,7 @@ public class IndexController {
         res.setRecordsFiltered(list.size());
         return res;
     }
-    
+
     @RequestMapping(value = "/insert-mpcs-production", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk menambah mpcs produksi bedasarkan waktu, update akumulasi kuantitas dan menambah data MPCS history by Fathur 8 Jan 2024", response = Object.class)
     @ApiResponses(value = {
@@ -3373,8 +3380,8 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> data = gsn.fromJson(params, new TypeToken<Map<String, String>>() {
         }.getType());
-        
-        return processServices.insertMpcsProduction(data); 
+
+        return processServices.insertMpcsProduction(data);
 
     }
 
@@ -3430,7 +3437,7 @@ public class IndexController {
         res.setData(viewServices.listOrderTypeReportDp());
         return res;
     }
-    
+
     @RequestMapping(value = "/delete-mpcs-production", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk menghapus mpcs produksi detail by Fathur 11 Jan 2024", response = Object.class)
     @ApiResponses(value = {
@@ -3444,7 +3451,7 @@ public class IndexController {
         }.getType());
         return processServices.deleteMpcsProduction(data);
     }
-    
+
     @RequestMapping(value = "/get-id-absensi", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk mengambil data user absensi by id by M Joko 16 Jan 2024", response = Object.class)
     @ApiResponses(value = {
@@ -3470,7 +3477,7 @@ public class IndexController {
         rm.setItem(new ArrayList());
         return rm;
     }
-    
+
     @RequestMapping(value = "/insert-absensi", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk menyimpan data user absensi by id by M Joko 16 Jan 2024", response = Object.class)
     @ApiResponses(value = {
@@ -3504,20 +3511,20 @@ public class IndexController {
         JsonObject balance = gsn.fromJson(param, JsonObject.class);
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         ResponseMessage rm = new ResponseMessage();
-        
+
         try {
             processServices.insertMpcsManagementFryer(balance);
             rm.setSuccess(true);
             rm.setMessage("Insert Success Successfuly");
-            
+
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Insert Failed : " + e.getMessage());
             System.err.println(e);
         }
-        
+
         rm.setItem(list);
-        
+
         return rm;
     }
 
@@ -3609,7 +3616,7 @@ public class IndexController {
                         System.out.println("Error Insert Table " + table + " At " + dateError);
                     }
                 }
-                
+
                 if (listError.isEmpty()) {
                     rm.setSuccess(true);
                     rm.setMessage("Copy " + listTable.size() + " Table for " + dateUpd + " Successfuly");
@@ -3622,12 +3629,12 @@ public class IndexController {
             } catch (Exception e) {
                 rm.setSuccess(false);
                 rm.setMessage("Insert Failed: " + e.getMessage());
-                
+
             }
         }
         return rm;
     }
-    
+
     @RequestMapping(value = "/copy-selected", method = RequestMethod.POST)
     public @ResponseBody
     ResponseMessage copySelected(@RequestBody Map<String, Object> param)
@@ -3636,7 +3643,7 @@ public class IndexController {
         List<String> nameTable = (List<String>) param.get("listTable");
         String dateUpd = (String) param.get("dateUpd");
         String timeUpd = (String) param.get("timeUpd");
-        
+
         System.out.println("Copy Selected Table Start at " + dateUpd);
         List<String> listError = new ArrayList<>();
         try {
@@ -3659,7 +3666,7 @@ public class IndexController {
                         System.out.println("Done Insert Table " + table);
                     }
                 }
-                
+
                 if (listError.isEmpty()) {
                     rm.setSuccess(true);
                     rm.setMessage("Copy " + nameTable.size() + " Table for " + dateUpd + " Successfuly");
@@ -3676,7 +3683,7 @@ public class IndexController {
         }
         return rm;
     }
-    
+
     @RequestMapping(value = "/copy-single", method = RequestMethod.POST)
     public @ResponseBody
     ResponseMessage copyPaste(@RequestBody Map<String, Object> param) throws IOException, Exception {
@@ -3781,7 +3788,7 @@ public class IndexController {
         }
         return rm;
     }
-    
+
     @RequestMapping(value = "/transfer-data-selected", method = RequestMethod.POST)
     public @ResponseBody
     ResponseMessage transferDataSelected(@RequestBody Map<String, Object> param) throws IOException, Exception {
@@ -3798,7 +3805,7 @@ public class IndexController {
             if (dateCopy == null || "".equals(dateCopy)) {
                 dateCopy = new SimpleDateFormat("dd-MMM-yyyy").format(Calendar.getInstance().getTime());
             }
-            
+
             System.out.println("Transfer Data Selected Table Start at " + dateCopy);
             List<String> listError = new ArrayList<>();
             try {
@@ -3815,7 +3822,7 @@ public class IndexController {
 //                        System.out.println("Done Transfer Table " + table);
 //                    }
                     }
-                    
+
                     if (listError.isEmpty()) {
                         rm.setSuccess(true);
                         rm.setMessage("Copy " + nameTable.size() + " Table for " + dateCopy + " Successfuly");
@@ -3833,7 +3840,7 @@ public class IndexController {
         }
         return rm;
     }
-    
+
     @RequestMapping(value = "/transfer-data-single", method = RequestMethod.POST)
     public @ResponseBody
     ResponseMessage transferDataSingle(@RequestBody Map<String, Object> param) throws IOException, Exception {
@@ -3909,7 +3916,7 @@ public class IndexController {
         }
         return rm;
     }
-    
+
     @RequestMapping(value = "/mpcs-production-list-fryer", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List Fryer pada menu MPCS production tambah pemasakan by Fathur", response = Object.class)
     @ApiResponses(value = {
@@ -3987,7 +3994,7 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         Response res = new Response();
         res.setData(viewServices.listWarehouseFSD(balance));
         return res;
@@ -4016,7 +4023,7 @@ public class IndexController {
     ResponseMessage updateRecipe(@RequestBody Map<String, Object> param) throws IOException, Exception {
         return processServices.updateRecipe(param);
     }
-    
+
     @RequestMapping(value = "/remove-empty-order", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk menghapus order entry yang memiliki qty besar 0 dan qty kecil 0 by Fathur 15 Feb 2024", response = Object.class)
     @ApiResponses(value = {
@@ -4071,7 +4078,7 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         Response res = new Response();
         res.setData(viewServices.listmenuApplicationAccess(balance));
         return res;
@@ -4089,16 +4096,16 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> logan = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         list = viewServices.itemDetail(logan);
         Response res = new Response();
         res.setData(list);
         res.setRecordsTotal(list.size());
         return res;
-        
+
     }
-    
+
     @RequestMapping(value = "/order-detail-temporary-list", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get order detail temporary list by Fathur 23 Feb 24", response = Object.class)
     @ApiResponses(value = {
@@ -4111,7 +4118,7 @@ public class IndexController {
         Map<String, String> logan = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
         Response res = new Response();
-        
+
         try {
             List<Map<String, Object>> list = new ArrayList<>();
             list = viewServices.orderDetailTemporaryList(logan);
@@ -4121,7 +4128,7 @@ public class IndexController {
             throw new Error(e.getMessage());
         }
         return res;
-        
+
     }
 
     ///// adit list outlet detail 21 Feb 2024 
@@ -4136,13 +4143,13 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> logan = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        
+
         Response res = new Response();
         res.setData(viewServices.listOutletDetail(logan));
         return res;
-        
+
     }
 
     ///// adit list outlet detail group 21 Feb 2024 
@@ -4157,13 +4164,13 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> logan = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        
+
         Response res = new Response();
         res.setData(viewServices.listOutletDetailGroup(logan));
         return res;
-        
+
     }
 
     ///// adit list outlet detail Type Order group 21 Feb 2024 
@@ -4178,13 +4185,13 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> logan = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        
+
         Response res = new Response();
         res.setData(viewServices.listOutletDetailTypeOrder(logan));
         return res;
-        
+
     }
 
     ///// adit Update outlet detail 21 Feb 2024 
@@ -4199,24 +4206,24 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new com.google.gson.reflect.TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         ResponseMessage rm = new ResponseMessage();
         try {
             processServices.updateOutlet(balance);
             rm.setSuccess(true);
             rm.setMessage("Update Success Successfuly");
-            
+
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Update Failed Successfuly: " + e.getMessage());
         }
-        
+
         rm.setItem(list);
-        
+
         return rm;
     }
-    
+
     @RequestMapping(value = "/update-item", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk update item", response = Object.class)
     @ApiResponses(value = {
@@ -4234,14 +4241,14 @@ public class IndexController {
             processServices.updateItem(balance);
             rm.setSuccess(true);
             rm.setMessage("Update Success Successfuly");
-            
+
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Update Failed Successfuly: " + e.getMessage());
         }
-        
+
         rm.setItem(list);
-        
+
         return rm;
     }
 
@@ -4260,17 +4267,17 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, Object> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         Map<String, String> headerParam = new HashMap<String, String>();
         headerParam.put("outletCode", balance.get("outletCode").toString());
-        headerParam.put("userUpd", balance.get("userUpd").toString());        
+        headerParam.put("userUpd", balance.get("userUpd").toString());
         List items = (List) balance.get("items");
         List errors = new ArrayList();
         for (int i = 0; i < items.size(); i++) {
             Map<String, Object> itemx = (Map<String, Object>) items.get(i);
-            headerParam.put("itemCode", itemx.get("itemCode").toString());            
-            headerParam.put("totalQty", itemx.get("totalQty").toString());            
-            headerParam.put("remark", itemx.get("remark").toString());            
+            headerParam.put("itemCode", itemx.get("itemCode").toString());
+            headerParam.put("totalQty", itemx.get("totalQty").toString());
+            headerParam.put("remark", itemx.get("remark").toString());
             try {
                 processServices.insertPettyCashToBoffi(headerParam);
                 System.out.println("Success Insert Detail ke-" + i);
@@ -4288,7 +4295,7 @@ public class IndexController {
         }
         return rm;
     }
-    
+
     @RequestMapping(value = "/update-mpcs", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk update mpcs", response = Object.class)
     @ApiResponses(value = {
@@ -4300,21 +4307,21 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         ResponseMessage rm = new ResponseMessage();
         try {
             processServices.updateMpcs(balance);
             rm.setSuccess(true);
             rm.setMessage("Update Success Successfuly");
-            
+
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Update Failed Successfuly: " + e.getMessage());
         }
-        
+
         rm.setItem(list);
-        
+
         return rm;
     }
     //////// done aditya 08-03-2024
@@ -4377,14 +4384,13 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, Object> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         Response res = new Response();
         res.setData(viewServices.listLevel(balance));
         return res;
     }
 
     /////////////////// end aditya 19 Mar 2024
-    
     ///////////////new method from aditya 22-03-2024////////////////////////////
     @RequestMapping(value = "/list-mpcs-monitoring", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view List Level", response = Object.class)
@@ -4397,20 +4403,21 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, Object> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         Response res = new Response();
         res.setData(viewServices.listMpcsMonitoring(balance));
         return res;
-    }    
+    }
     /////////////////// end aditya 22 Mar 2024  
 
     /////////////// new method from dani 1 April 2024////////////////////////////
     @RequestMapping(value = "/list-oil-usage", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk view Tabel Konversi Minyak", response = Object.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 404, message = "The resource not found"), })
-    public @ResponseBody ResponseMessage listOilUsage(@RequestBody String param) throws IOException, Exception {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),})
+    public @ResponseBody
+    ResponseMessage listOilUsage(@RequestBody String param) throws IOException, Exception {
         Gson gsn = new Gson();
         Map<String, Object> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
@@ -4426,7 +4433,7 @@ public class IndexController {
         }
         return res;
     }
-    
+
     ///////////////new method from aditya 22-03-2024////////////////////////////
 //    @Scheduled(cron = "0 0/1 0-23 * * *") // dijalankan setiap 7.00, 7.15, 7.30, 7.45, 8.00, 8.15 dst
     @Scheduled(cron = "0/30 * * * * *")
@@ -4448,9 +4455,9 @@ public class IndexController {
             } catch (JsonProcessingException | MessagingException ex) {
             }
         }
-    }    
+    }
     /////////////////// end aditya 22 Mar 2024 
-    
+
     //INSERT ITEM aditya 5 April 2024 =========================================================
     @RequestMapping(value = "/insert-Item", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Digunakan untuk insert Item", response = Object.class)
@@ -4463,24 +4470,51 @@ public class IndexController {
         Gson gsn = new Gson();
         Map<String, String> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
         }.getType());
-        
+
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         ResponseMessage rm = new ResponseMessage();
         try {
             processServices.insertItem(balance);
             rm.setSuccess(true);
             rm.setMessage("Insert Success Successfuly");
-            
+
         } catch (Exception e) {
             rm.setSuccess(false);
             rm.setMessage("Insert Failed Successfuly: " + e.getMessage());
         }
-        
+
         rm.setItem(list);
-        
+
         return rm;
     }
-    
     ///////////////////////////// done aditya master insert item 5 April 2024
     
+    // Validasi cek staff code by M Joko 25 Apr 24
+    @RequestMapping(value = "/cek-staff-code", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Digunakan untuk cek staff code di Master User", response = Object.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 404, message = "The resource not found"),}
+    )
+    public @ResponseBody
+    ResponseMessage cekStaffCode(@RequestBody String param) throws IOException, Exception {
+        Gson gsn = new Gson();
+        Map<String, Object> balance = gsn.fromJson(param, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        ResponseMessage rm = new ResponseMessage();
+        try {
+            Integer cek = viewServices.checkStaffCode(balance);
+            rm.setItem(new ArrayList<>(Collections.nCopies(cek, " ")));
+            rm.setSuccess(true);
+            rm.setMessage("Success");
+
+        } catch (Exception e) {
+            rm.setItem(new ArrayList());
+            rm.setSuccess(false);
+            rm.setMessage("Failed: " + e.getMessage());
+        }
+
+        return rm;
+    }
 }
