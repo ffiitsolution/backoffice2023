@@ -1448,32 +1448,23 @@ public class ProcessDaoImpl implements ProcessDao {
     //End
 
     //Add Insert to Wastage Header & Detail by KP (03-08-2023)
-    public String wastageCounter(String year, String month, String transType, String outletCode) {
+    public String wastageCounter(String wastageDate, String transType, String outletCode) {
         if (transType.equalsIgnoreCase("ID")) {
-            String dateMonth = month.concat("-").concat(year);
-            String outletCodeQuery = outletCode;
-            if (outletCodeQuery.charAt(0) == '0') {
-                outletCodeQuery = outletCodeQuery.substring(1);
-            }
-            String sqlId = "select to_char(nvl(max(substr(wastage_id, -3)) + 1, 1), 'fm000') as no_urut "
-                    + "from t_wastage_header "
-                    + "where wastage_id like '" + outletCodeQuery.concat("0").concat(month) + "%' "
-                    + "and to_char(wastage_date,'mm-yyyy') = :dateMonth";
-            System.err.println("Query for Id :" + sqlId);
-            Map paramId = new HashMap();
-            paramId.put("dateMonth", dateMonth);
-            return jdbcTemplate.queryForObject(sqlId, paramId, new RowMapper() {
-                @Override
-                public Object mapRow(ResultSet rs, int i) throws SQLException {
-                    return rs.getString("no_urut") == null ? outletCode.concat("0").concat(month).concat("0001") : outletCode.concat("0").concat(month).concat(rs.getString("no_urut"));
-                }
-            }).toString();
+            String firstString = new SimpleDateFormat("YYMMdd").format(new Date(wastageDate));
+            String sqlId = "select to_char(nvl(max(substr(wastage_id, -3)) + 1, 1), 'fm0000') as no_urut "
+                    + "from t_wastage_header where wastage_id like '" + firstString + "%' ";
+            String secondString = jdbcTemplate.queryForObject(sqlId, new HashMap<>(), String.class);
+            return firstString + "" +secondString;
         }
+        
+        DateFormat df = new SimpleDateFormat("MM");
+        DateFormat dfYear = new SimpleDateFormat("yyyy");
+        String month = df.format(new Date(wastageDate));
+        String year = dfYear.format(new Date(wastageDate));
         String sql = "select to_char(counter, 'fm0000') as no_urut from ( "
                 + "select max(counter_no) + 1 as counter from m_counter "
                 + "where outlet_code = :outletCode and trans_type = :transType and year = :year and month = :month "
                 + ") tbl";
-        System.err.println("Query for No Urut :" + sql);
         Map param = new HashMap();
         param.put("year", year);
         param.put("month", month);
@@ -1515,7 +1506,7 @@ public class ProcessDaoImpl implements ProcessDao {
     public void InsertWastageDetail(Map<String, String> balance) {
         String qy = "INSERT INTO t_wastage_detail (OUTLET_CODE, WASTAGE_ID, WASTAGE_NO, ITEM_CODE, QUANTITY, UOM_STOCK, ITEM_TO, USER_UPD, DATE_UPD, TIME_UPD)"
                 + " VALUES(:outletCode, :wastageId, :wastageNo, :itemCode, :qty, :uom, :itemTo, :userUpd, :dateUpd, :timeUpd)";
-        System.err.println("q detail:" + qy);
+
         Map param = new HashMap();
         param.put("outletCode", balance.get("outletCode"));
         param.put("wastageId", balance.get("wastageId"));
@@ -1532,12 +1523,8 @@ public class ProcessDaoImpl implements ProcessDao {
 
     @Override
     public void InsertWastageHeaderDetail(JsonObject balancing) {
-        DateFormat df = new SimpleDateFormat("MM");
-        DateFormat dfYear = new SimpleDateFormat("yyyy");
         String wastageDate = balancing.getAsJsonObject().getAsJsonPrimitive("wastageDate").getAsString();
-        String month = df.format(new Date(wastageDate));
-        String year = dfYear.format(new Date(wastageDate));
-
+        
         //Getting last number for Wastage/Leftover
         String transType = balancing.getAsJsonObject().getAsJsonPrimitive("transType").getAsString();
         if (transType.contains("W")) {
@@ -1545,15 +1532,15 @@ public class ProcessDaoImpl implements ProcessDao {
         } else {
             transType = "LOV";
         }
-        String opNo = wastageCounter(year, month, transType,
-                balancing.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
-        String opId = wastageCounter(year, month, "ID",
-                balancing.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
+        String opNo = wastageCounter(wastageDate, transType, balancing.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
+        String opId = wastageCounter(wastageDate, "ID", balancing.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
+
+        System.out.println("Wastage No: " + opNo);
+        System.out.println("Wastage Id: " + opId);
 
         //Header
         String sql = "insert into t_wastage_header(OUTLET_CODE, TYPE_TRANS, WASTAGE_ID, WASTAGE_NO, WASTAGE_DATE, REMARK, STATUS, USER_UPD, DATE_UPD, TIME_UPD) "
                 + "values (:outletCode, :transType, :wastageId, :wastageNo, :wastageDate, :remark, :status, :userUpd, :dateUpd, :timeUpd)";
-        System.err.println("q header :" + sql);
         Map param = new HashMap();
         param.put("outletCode", balancing.getAsJsonObject().getAsJsonPrimitive("outletCode").getAsString());
         param.put("transType", balancing.getAsJsonObject().getAsJsonPrimitive("transType").getAsString());
