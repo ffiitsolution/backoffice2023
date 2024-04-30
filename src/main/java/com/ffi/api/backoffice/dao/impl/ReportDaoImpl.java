@@ -3370,6 +3370,10 @@ public class ReportDaoImpl implements ReportDao {
         hashMap.put("detail", param.get("detail"));
         hashMap.put("isDownloadCsv", param.get("isDownloadCsv"));
 
+        String querySumProductResult = "SELECT sum(QTY_STOCK) FROM M_RECIPE_PRODUCT mrp WHERE RECIPE_CODE = (SELECT RECIPE_CODE FROM M_RECIPE_HEADER mrh WHERE mrh.MPCS_GROUP = :mpcsGroup)";
+        Integer totalQtyProduct = jdbcTemplate.queryForObject(querySumProductResult, hashMap, Integer.class);
+        hashMap.put("totalQtyProduct", totalQtyProduct);
+        
         String reportPath;
         if ("Jam Aktual".equals(param.get("detail"))) {
             reportPath = "report/productionReportActualTime.jrxml";

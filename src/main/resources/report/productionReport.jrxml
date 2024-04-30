@@ -4,7 +4,7 @@
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Sample DB"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<subDataset name="Dataset1" uuid="62af214d-d557-45b3-b892-08dd6cd59c41">
 		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter"/>
@@ -29,57 +29,70 @@
 	<parameter name="detail" class="java.lang.String"/>
 	<parameter name="isDownloadCsv" class="java.lang.Boolean"/>
 	<parameter name="Parameter1" class="java.lang.String"/>
+	<parameter name="totalQtyProduct" class="java.lang.Integer"/>
 	<queryString language="SQL">
-		<![CDATA[SELECT 
-	tsm.DATE_MPCS,
-    mmh.MPCS_GROUP,
-    mmh.DESCRIPTION AS MPCS_DESCRIPTION,
-    mrh.RECIPE_CODE,
-    mrh.RECIPE_REMARK,
-    mi.ITEM_CODE AS RECIPE_ITEM_CODE,
-    mi.ITEM_DESCRIPTION AS RECIPE_ITEM,
-    mrd.QTY_STOCK AS RECIPE_ITEM_STOCK,
-    mrd.UOM_STOCK AS RECIPE_UOM_STOCK,
-    mi2.ITEM_CODE AS PRODUCT_ITEM_CODE,
-    mi2.ITEM_DESCRIPTION AS PRODUCT_ITEM,
-    mrp.QTY_STOCK AS PRODUCT_ITEM_STOCK,
-    mrp.UOM_STOCK AS PRODUCT_ITEM_UOM,
-    tsm.TIME_MPCS,
-    COALESCE(tsm.QTY_PROJ, 0) AS QTY_PROJ,
-    COALESCE(tsm.QTY_ACC_PROJ, 0) AS QTY_ACC_PROJ,
-    COALESCE(tsm.QTY_PROD, 0) AS QTY_PROD,
-    COALESCE(tsm.QTY_ACC_PROD, 0) AS QTY_ACC_PROD,
-    COALESCE(tsm.QTY_SOLD, 0) AS QTY_SOLD,
-    COALESCE(tsm.QTY_ACC_SOLD, 0) AS QTY_ACC_SOLD,
-    COALESCE(tsm.QTY_REJECT, 0) AS QTY_REJECT,
-    COALESCE(tsm.QTY_ACC_REJECT, 0) AS QTY_ACC_REJECT,
-    COALESCE(tsm.QTY_WASTAGE, 0) AS QTY_WASTAGE,
-    COALESCE(tsm.QTY_ACC_WASTAGE, 0) AS QTY_ACC_WASTAGE,
-    COALESCE(tsm.QTY_ONHAND, 0) AS QTY_ONHAND,
-    COALESCE(tsm.QTY_ACC_ONHAND, 0) AS QTY_ACC_ONHAND,
-    COALESCE(tsm.QTY_VARIANCE, 0) AS QTY_VARIANCE,
-    COALESCE(tsm.QTY_ACC_VARIANCE, 0) AS QTY_ACC_VARIANCE,
-    COALESCE(tsm.QTY_IN, 0) AS QTY_IN,
-    COALESCE(tsm.QTY_OUT, 0) AS QTY_OUT,
-    mo.OUTLET_NAME,
-    mo.TYPE,
-    mo.ADDRESS_1,
-    mo.ADDRESS_2,
-    mo.PHONE
-FROM 
-    T_SUMM_MPCS tsm
-JOIN M_OUTLET mo ON tsm.OUTLET_CODE = mo.OUTLET_CODE
-JOIN M_MPCS_HEADER mmh ON mmh.MPCS_GROUP = tsm.MPCS_GROUP 
-JOIN M_RECIPE_HEADER mrh ON mrh.MPCS_GROUP = tsm.MPCS_GROUP
-JOIN M_RECIPE_DETAIL mrd ON mrh.RECIPE_CODE = mrd.RECIPE_CODE
-JOIN M_ITEM mi ON mrd.ITEM_CODE = mi.ITEM_CODE
-JOIN M_RECIPE_PRODUCT mrp ON mrh.RECIPE_CODE = mrp.RECIPE_CODE
-JOIN M_ITEM mi2 ON mi2.ITEM_CODE = mrp.PRODUCT_CODE
-WHERE 
-    tsm.OUTLET_CODE = $P{outletCode} 
-    AND ($P{mpcsGroup} IS NULL OR tsm.MPCS_GROUP = $P{mpcsGroup})
-    AND tsm.DATE_MPCS BETWEEN $P{fromDate} AND $P{toDate}
-ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS') ASC, mi.ITEM_DESCRIPTION ASC]]>
+		<![CDATA[SELECT a.*, b.RECIPE_ITEM_COUNT FROM (
+    SELECT 
+        tsm.DATE_MPCS,
+        mmh.MPCS_GROUP,
+        mmh.DESCRIPTION AS MPCS_DESCRIPTION,
+        mrh.RECIPE_CODE,
+        mrh.RECIPE_REMARK,
+        mi.ITEM_CODE AS RECIPE_ITEM_CODE,
+        mi.ITEM_DESCRIPTION AS RECIPE_ITEM,
+        mrd.QTY_STOCK AS RECIPE_ITEM_STOCK,
+        mrd.UOM_STOCK AS RECIPE_UOM_STOCK,
+        mi2.ITEM_CODE AS PRODUCT_ITEM_CODE,
+        mi2.ITEM_DESCRIPTION AS PRODUCT_ITEM,
+        mrp.QTY_STOCK AS PRODUCT_ITEM_STOCK,
+        mrp.UOM_STOCK AS PRODUCT_ITEM_UOM,
+        tsm.TIME_MPCS,
+        COALESCE(tsm.QTY_PROJ, 0) AS QTY_PROJ,
+        COALESCE(tsm.QTY_ACC_PROJ, 0) AS QTY_ACC_PROJ,
+        COALESCE(tsm.QTY_PROD, 0) AS QTY_PROD,
+        COALESCE(tsm.QTY_ACC_PROD, 0) AS QTY_ACC_PROD,
+        COALESCE(tsm.QTY_SOLD, 0) AS QTY_SOLD,
+        COALESCE(tsm.QTY_ACC_SOLD, 0) AS QTY_ACC_SOLD,
+        COALESCE(tsm.QTY_REJECT, 0) AS QTY_REJECT,
+        COALESCE(tsm.QTY_ACC_REJECT, 0) AS QTY_ACC_REJECT,
+        COALESCE(tsm.QTY_WASTAGE, 0) AS QTY_WASTAGE,
+        COALESCE(tsm.QTY_ACC_WASTAGE, 0) AS QTY_ACC_WASTAGE,
+        COALESCE(tsm.QTY_ONHAND, 0) AS QTY_ONHAND,
+        COALESCE(tsm.QTY_ACC_ONHAND, 0) AS QTY_ACC_ONHAND,
+        COALESCE(tsm.QTY_VARIANCE, 0) AS QTY_VARIANCE,
+        COALESCE(tsm.QTY_ACC_VARIANCE, 0) AS QTY_ACC_VARIANCE,
+        COALESCE(tsm.QTY_IN, 0) AS QTY_IN,
+        COALESCE(tsm.QTY_OUT, 0) AS QTY_OUT,
+        mo.OUTLET_NAME,
+        mo.TYPE,
+        mo.ADDRESS_1,
+        mo.ADDRESS_2,
+        mo.PHONE
+    FROM 
+        T_SUMM_MPCS tsm
+    JOIN M_OUTLET mo ON tsm.OUTLET_CODE = mo.OUTLET_CODE
+    JOIN M_MPCS_HEADER mmh ON mmh.MPCS_GROUP = tsm.MPCS_GROUP 
+    JOIN M_RECIPE_HEADER mrh ON mrh.MPCS_GROUP = tsm.MPCS_GROUP
+    JOIN M_RECIPE_DETAIL mrd ON mrh.RECIPE_CODE = mrd.RECIPE_CODE
+    JOIN M_ITEM mi ON mrd.ITEM_CODE = mi.ITEM_CODE
+    JOIN M_RECIPE_PRODUCT mrp ON mrh.RECIPE_CODE = mrp.RECIPE_CODE
+    JOIN M_ITEM mi2 ON mi2.ITEM_CODE = mrp.PRODUCT_CODE
+    WHERE 
+        tsm.OUTLET_CODE = $P{outletCode} 
+        AND ($P{mpcsGroup} IS NULL OR tsm.MPCS_GROUP = $P{mpcsGroup})
+        AND tsm.DATE_MPCS BETWEEN $P{fromDate} AND $P{toDate}
+    ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS') ASC, mi.ITEM_DESCRIPTION ASC
+) a 
+LEFT JOIN (
+    SELECT
+        mrh.RECIPE_CODE,
+        COUNT(mrd.ITEM_CODE) AS RECIPE_ITEM_COUNT
+    FROM
+        M_RECIPE_HEADER mrh
+    JOIN M_RECIPE_DETAIL mrd ON mrh.RECIPE_CODE = mrd.RECIPE_CODE
+    GROUP BY
+        mrh.RECIPE_CODE
+) b ON a.RECIPE_CODE = b.RECIPE_CODE]]>
 	</queryString>
 	<field name="DATE_MPCS" class="java.sql.Timestamp">
 		<property name="com.jaspersoft.studio.field.name" value="DATE_MPCS"/>
@@ -221,7 +234,22 @@ ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS
 		<property name="com.jaspersoft.studio.field.name" value="PHONE"/>
 		<property name="com.jaspersoft.studio.field.label" value="PHONE"/>
 	</field>
+	<field name="RECIPE_ITEM_COUNT" class="java.lang.Integer"/>
 	<variable name="countMyGroup" class="java.lang.Integer" resetType="Group" resetGroup="MPCS" incrementType="Group" incrementGroup="Time" calculation="Count">
+		<variableExpression><![CDATA[""]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<variable name="SEQ_RECIPE" class="java.lang.Integer" resetType="Group" resetGroup="Time" incrementType="Group" incrementGroup="Recipe Group" calculation="Count">
+		<variableExpression><![CDATA[""]]></variableExpression>
+		<initialValueExpression><![CDATA[1]]></initialValueExpression>
+	</variable>
+	<variable name="sum_qty_product_result" class="java.lang.Double" resetType="Group" resetGroup="Time" calculation="Sum">
+		<variableExpression><![CDATA[$F{PRODUCT_ITEM_STOCK}]]></variableExpression>
+	</variable>
+	<variable name="SUM_TEMP" class="java.lang.Integer" resetType="Group" resetGroup="Time" calculation="Sum">
+		<variableExpression><![CDATA[$F{PRODUCT_ITEM_STOCK}]]></variableExpression>
+	</variable>
+	<variable name="prod_counter" class="java.lang.Integer" resetType="Group" resetGroup="Recipe Group" calculation="Count">
 		<variableExpression><![CDATA[""]]></variableExpression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
@@ -269,7 +297,7 @@ ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS
 	<group name="Time">
 		<groupExpression><![CDATA[$F{TIME_MPCS}]]></groupExpression>
 		<groupHeader>
-			<band height="16">
+			<band height="21">
 				<textField>
 					<reportElement x="527" y="0" width="46" height="14" uuid="8ed63339-8dd6-4698-98eb-079b8877d2b6">
 						<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="a824e5ff-3ca6-431c-bbfe-df3e5ec7f4a4"/>
@@ -436,7 +464,7 @@ ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS
 					<reportElement x="0" y="15" width="802" height="1" uuid="32a58a17-24d6-4c82-aa1c-e37bc913608e"/>
 				</line>
 			</band>
-			<band height="35">
+			<band height="43">
 				<printWhenExpression><![CDATA[$F{QTY_PROD} != null && $F{QTY_PROD}.compareTo(BigDecimal.ZERO) > 0]]></printWhenExpression>
 				<staticText>
 					<reportElement x="73" y="0" width="61" height="20" uuid="01fa527d-71a0-4e94-8482-49ad04bef9da"/>
@@ -445,20 +473,6 @@ ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS
 					</textElement>
 					<text><![CDATA[Kode Resep  : ]]></text>
 				</staticText>
-				<staticText>
-					<reportElement x="73" y="16" width="100" height="17" uuid="726230f5-06a5-4d3e-8d76-7b19dde79c2f"/>
-					<textElement verticalAlignment="Middle">
-						<font size="8" isBold="true"/>
-					</textElement>
-					<text><![CDATA[Bahan yang dipakai]]></text>
-				</staticText>
-				<staticText>
-					<reportElement x="308" y="16" width="70" height="17" uuid="642cd5b1-d09e-4a0b-9634-83fc215ac112"/>
-					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font size="8" isBold="true"/>
-					</textElement>
-					<text><![CDATA[Qty]]></text>
-				</staticText>
 				<textField>
 					<reportElement x="134" y="0" width="240" height="20" uuid="5f6ad65d-654c-485f-8d99-ca93da80caee"/>
 					<textElement verticalAlignment="Middle">
@@ -466,60 +480,54 @@ ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS
 					</textElement>
 					<textFieldExpression><![CDATA[$F{RECIPE_CODE} + " " + $F{RECIPE_REMARK}]]></textFieldExpression>
 				</textField>
-				<line>
-					<reportElement x="73" y="34" width="354" height="1" uuid="6a37e0a3-8b90-4dfa-829b-d03b07c60e67"/>
-				</line>
-			</band>
-		</groupHeader>
-		<groupFooter>
-			<band height="34">
-				<printWhenExpression><![CDATA[$F{QTY_PROD} != null && $F{QTY_PROD}.compareTo(BigDecimal.ZERO) > 0]]></printWhenExpression>
 				<staticText>
-					<reportElement x="308" y="-1" width="70" height="15" uuid="0333a94e-f69c-467d-8629-613dca8801cf"/>
-					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font size="8" isBold="true"/>
-					</textElement>
-					<text><![CDATA[Qty]]></text>
-				</staticText>
-				<staticText>
-					<reportElement x="73" y="-1" width="100" height="15" uuid="4b30aac9-d57f-4c45-ae3a-4d57ed9719a5"/>
+					<reportElement x="73" y="20" width="87" height="20" uuid="0572375b-340f-4c83-b98d-7089d2f17054"/>
 					<textElement verticalAlignment="Middle">
 						<font size="8" isBold="true"/>
 					</textElement>
-					<text><![CDATA[Hasil Produksi]]></text>
+					<text><![CDATA[Bahan yang dipakai]]></text>
 				</staticText>
+				<staticText>
+					<reportElement x="342" y="20" width="44" height="20" uuid="6c48f0b1-4666-425a-bc08-77085df32122"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[QTY]]></text>
+				</staticText>
+				<line>
+					<reportElement x="73" y="40" width="301" height="1" uuid="18d03ec2-07d3-4a7c-80cc-06f9645c5caa"/>
+				</line>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="Recipe Group">
+		<groupExpression><![CDATA[$F{RECIPE_ITEM_CODE}]]></groupExpression>
+		<groupHeader>
+			<band height="18">
+				<printWhenExpression><![CDATA[$F{QTY_PROD} != null && $F{QTY_PROD}.compareTo(BigDecimal.ZERO) > 0]]></printWhenExpression>
 				<textField>
-					<reportElement x="143" y="16" width="165" height="12" uuid="6adaf351-f0a9-4947-81b4-e0c14c9bd1c5">
-						<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="7e6b0a05-5ce2-4878-bf2a-ae573229c8d1"/>
-					</reportElement>
-					<textElement textAlignment="Left" verticalAlignment="Middle">
+					<reportElement x="150" y="0" width="170" height="18" uuid="73215a50-ecf1-4dfe-a6b0-7340f5b8bbbb"/>
+					<textElement verticalAlignment="Middle">
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$F{PRODUCT_ITEM}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$F{RECIPE_ITEM}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="73" y="16" width="70" height="12" uuid="31d80eeb-c0c7-40a7-9c10-d54fd644051b">
-						<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="7e6b0a05-5ce2-4878-bf2a-ae573229c8d1"/>
-					</reportElement>
-					<textElement textAlignment="Left" verticalAlignment="Middle">
+					<reportElement x="73" y="0" width="61" height="18" uuid="2e4bc902-f91e-46db-8444-a9aa270e52e6"/>
+					<textElement verticalAlignment="Middle">
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$P{isDownloadCsv}.equals(true) ? "'" + $F{PRODUCT_ITEM_CODE} : $F{PRODUCT_ITEM_CODE}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$F{RECIPE_ITEM_CODE}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="308" y="16" width="70" height="12" uuid="9698108c-61e5-451e-a3c2-4bf35bbc8ed1">
-						<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="7e6b0a05-5ce2-4878-bf2a-ae573229c8d1"/>
-					</reportElement>
+					<reportElement x="336" y="0" width="74" height="18" uuid="470d4215-4ff5-4139-bee7-b0c47016ac38"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0.000").format($F{QTY_PROD}) + " " + $F{PRODUCT_ITEM_UOM}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$F{RECIPE_ITEM_STOCK}.doubleValue() * ($F{QTY_PROD}.doubleValue() /  $P{totalQtyProduct}) + " " + $F{RECIPE_UOM_STOCK}]]></textFieldExpression>
 				</textField>
-				<line>
-					<reportElement x="73" y="14" width="354" height="1" uuid="dcb5f1e9-3299-4ec0-b407-06a9f2343f56"/>
-				</line>
 			</band>
-		</groupFooter>
+		</groupHeader>
 	</group>
 	<columnHeader>
 		<band height="138" splitType="Stretch">
@@ -873,35 +881,41 @@ ORDER BY tsm.DATE_MPCS ASC, tsm.MPCS_GROUP ASC, TO_DATE(tsm.TIME_MPCS, 'HH24MISS
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="14">
-			<printWhenExpression><![CDATA[$F{QTY_PROD} != null && $F{QTY_PROD}.compareTo(BigDecimal.ZERO) > 0]]></printWhenExpression>
-			<textField>
-				<reportElement x="143" y="0" width="165" height="12" uuid="8fa70615-50b9-4760-b5b0-d6ea50ddab21">
-					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="7e6b0a05-5ce2-4878-bf2a-ae573229c8d1"/>
-				</reportElement>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font size="8"/>
+		<band height="22">
+			<printWhenExpression><![CDATA[$V{SEQ_RECIPE} == $F{RECIPE_ITEM_COUNT} && $F{QTY_PROD} != null && $F{QTY_PROD}.compareTo(BigDecimal.ZERO) > 0 && $V{prod_counter} ==  1]]></printWhenExpression>
+			<line>
+				<reportElement x="73" y="21" width="301" height="1" uuid="2a6294b9-9175-4d2d-bff7-411978b81953"/>
+			</line>
+			<staticText>
+				<reportElement x="73" y="1" width="87" height="20" uuid="b177dbe3-90ee-4a1d-9af7-e6cf23c4cd9f"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{RECIPE_ITEM}]]></textFieldExpression>
-			</textField>
+				<text><![CDATA[Hasil Produksi]]></text>
+			</staticText>
+		</band>
+		<band height="18">
+			<printWhenExpression><![CDATA[$V{SEQ_RECIPE} == $F{RECIPE_ITEM_COUNT} && $F{QTY_PROD} != null && $F{QTY_PROD}.compareTo(BigDecimal.ZERO) > 0]]></printWhenExpression>
 			<textField>
-				<reportElement x="73" y="0" width="70" height="12" uuid="8e0dd9b5-690c-42bc-bd55-68e251edb8ff">
-					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="7e6b0a05-5ce2-4878-bf2a-ae573229c8d1"/>
-				</reportElement>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{isDownloadCsv}.equals(true) ? "'" + $F{RECIPE_ITEM_CODE} : $F{RECIPE_ITEM_CODE}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="308" y="0" width="70" height="12" uuid="cf986d87-1374-4df9-9d48-bff4ff7cac9c">
-					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="7e6b0a05-5ce2-4878-bf2a-ae573229c8d1"/>
-				</reportElement>
+				<reportElement x="336" y="0" width="74" height="18" uuid="0b445b02-8dbb-4e1e-91aa-094e063e63e5"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[(($F{RECIPE_ITEM_STOCK} == null || $F{QTY_PROD} == null || $F{PRODUCT_ITEM_STOCK} == null || $F{PRODUCT_ITEM_STOCK}.equals(BigDecimal.ZERO)) ? BigDecimal.ZERO : 
-    ($F{RECIPE_ITEM_STOCK}.multiply($F{QTY_PROD})).divide($F{PRODUCT_ITEM_STOCK}, 3, BigDecimal.ROUND_HALF_UP)) + " " + $F{RECIPE_UOM_STOCK}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new java.text.DecimalFormat("#").format($F{PRODUCT_ITEM_STOCK}.doubleValue() * ($F{QTY_PROD}.doubleValue() /  $P{totalQtyProduct})) + " " + $F{PRODUCT_ITEM_UOM}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="150" y="0" width="170" height="18" uuid="93efae61-d58f-402e-aa3b-b3d35042c06f"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PRODUCT_ITEM}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="73" y="0" width="61" height="18" uuid="7df09fad-1c56-4a01-aee2-fd97e3259480"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PRODUCT_ITEM_CODE}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
