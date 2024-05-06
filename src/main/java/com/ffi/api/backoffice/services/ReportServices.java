@@ -301,5 +301,9 @@ public class ReportServices {
     public JasperPrint jesperReportSummaryLaporanPagi(Map<String, Object> param, Connection connection) throws JRException, IOException {
         return dao.jesperReportSummaryLaporanPagi(param, connection);
     }
-
+    
+    /// new report POS Transaction Payment By EDC
+    public JasperPrint jasperReportTransactionPaymentByEdc(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        return dao.jasperReportTransactionPaymentByEdc(param, connection);
+    }
 }

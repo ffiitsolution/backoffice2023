@@ -1057,14 +1057,14 @@ public class ReportDaoImpl implements ReportDao {
             hashMap.put("outletCode", param.get("outletCode"));
             hashMap.put("fromDate", param.get("fromDate"));
             hashMap.put("toDate", param.get("toDate"));
-        } else if ((param.get("typeReport").equals("Report Menu & Detail Modifier") || param.get("typeReport").equals("Sales by Date") || param.get("typeReport").equals("Sales by Item") || param.get("typeReport").equals("Report Sales Item By Time") || param.get("typeReport").equals("Sales by Time") || param.get("typeReport").equals("Summary Sales by Item Code")) && param.get("typeParam").equals("Pos")) {
+        } else if ((param.get("typeReport").equals("Report Menu & Detail Modifier") || param.get("typeReport").equals("Sales by Date") || param.get("typeReport").equals("Sales by Item") || param.get("typeReport").equals("Report Sales Item By Time") || param.get("typeReport").equals("Sales by Time") || param.get("typeReport").equals("Refund Report") || param.get("typeReport").equals("Summary Sales by Item Code")) && param.get("typeParam").equals("Pos")) {
             query = "SELECT a.POS_CODE, b.POS_DESCRIPTION FROM t_pos_bill a LEFT JOIN M_POS b ON a.POS_CODE = "
                     + "b.POS_CODE WHERE a.OUTLET_CODE =:outletCode AND a.TRANS_DATE BETWEEN :fromDate AND :toDate AND "
                     + "a.delivery_status = 'CLS' GROUP BY a.POS_CODE, b.POS_DESCRIPTION ORDER BY a.POS_CODE ASC";
             hashMap.put("outletCode", param.get("outletCode"));
             hashMap.put("fromDate", param.get("fromDate"));
             hashMap.put("toDate", param.get("toDate"));
-        } else if ((param.get("typeReport").equals("Report Menu & Detail Modifier") || param.get("typeReport").equals("Sales by Date") || param.get("typeReport").equals("Sales by Item") || param.get("typeReport").equals("Report Sales Item By Time") || param.get("typeReport").equals("Sales by Time") || param.get("typeReport").equals("Summary Sales by Item Code")) && param.get("typeParam").equals("Cashier")) {
+        } else if ((param.get("typeReport").equals("Report Menu & Detail Modifier") || param.get("typeReport").equals("Sales by Date") || param.get("typeReport").equals("Sales by Item") || param.get("typeReport").equals("Report Sales Item By Time") || param.get("typeReport").equals("Sales by Time") || param.get("typeReport").equals("Refund Report") || param.get("typeReport").equals("Summary Sales by Item Code")) && param.get("typeParam").equals("Cashier")) {
             query = "SELECT a.CASHIER_CODE, b.STAFF_NAME FROM t_pos_bill a LEFT JOIN M_POS_STAFF b ON a.CASHIER_CODE ="
                     + " b.STAFF_POS_CODE WHERE a.OUTLET_CODE =:outletCode AND a.TRANS_DATE BETWEEN :fromDate AND :toDate "
                     + "AND a.delivery_status = 'CLS' AND b.ACCESS_level = 'KSR' AND b.STATUS = 'A' GROUP BY "
@@ -1072,7 +1072,7 @@ public class ReportDaoImpl implements ReportDao {
             hashMap.put("outletCode", param.get("outletCode"));
             hashMap.put("fromDate", param.get("fromDate"));
             hashMap.put("toDate", param.get("toDate"));
-        } else if ((param.get("typeReport").equals("Report Menu & Detail Modifier") || param.get("typeReport").equals("Sales by Date") || param.get("typeReport").equals("Sales by Item") || param.get("typeReport").equals("Report Sales Item By Time") || param.get("typeReport").equals("Sales by Time") || param.get("typeReport").equals("Summary Sales by Item Code")) && param.get("typeParam").equals("Shift")) {
+        } else if ((param.get("typeReport").equals("Report Menu & Detail Modifier") || param.get("typeReport").equals("Sales by Date") || param.get("typeReport").equals("Sales by Item") || param.get("typeReport").equals("Report Sales Item By Time") || param.get("typeReport").equals("Sales by Time") || param.get("typeReport").equals("Refund Report") ||  param.get("typeReport").equals("Summary Sales by Item Code")) && param.get("typeParam").equals("Shift")) {
             query = "SELECT a.SHIFT_CODE, CASE WHEN a.SHIFT_CODE = 'S1' THEN 'Shift 1' WHEN SHIFT_CODE = 'S2' THEN "
                     + "'Shift 2' ELSE 'Shift 3' END AS SHIFT_NAME FROM t_pos_bill a WHERE a.OUTLET_CODE =:outletCode"
                     + " AND a.TRANS_DATE BETWEEN :fromDate AND :toDate AND a.delivery_status = 'CLS' GROUP BY "
@@ -1108,7 +1108,7 @@ public class ReportDaoImpl implements ReportDao {
             hashMap.put("outletCode", param.get("outletCode"));
             hashMap.put("fromDate", param.get("fromDate"));
             hashMap.put("toDate", param.get("toDate"));
-        } else if (param.get("typeReport").equals("Transaction by Payment Type") && param.get("typeParam").equals("Payment Type")) {
+        } else if (param.get("typeReport").equals("Transaction by Payment Type")  && param.get("typeParam").equals("Payment Type")) {
             query = "SELECT a.PAYMENT_TYPE_CODE, b.DESCRIPTION FROM (SELECT A.PAYMENT_TYPE_CODE,A.PAYMENT_METHOD_CODE,"
                     + "B.POS_CODE,B.SHIFT_CODE,B.CASHIER_CODE FROM M_PAYMENT_METHOD A, T_POS_BILL B, T_POS_BILL_PAYMENT"
                     + " C WHERE B.OUTLET_CODE = :outletCode AND B.TRANS_DATE BETWEEN :fromDate AND :toDate AND"
@@ -1163,6 +1163,45 @@ public class ReportDaoImpl implements ReportDao {
             hashMap.put("fromTime", param.get("fromTime"));
             hashMap.put("toTime", param.get("toTime"));
         } else if (param.get("typeReport").equals("Transaction by Payment Type") && param.get("typeParam").equals("Shift")) {
+            query = "SELECT a.SHIFT_CODE, CASE WHEN a.SHIFT_CODE = 'S1' THEN 'Shift 1' WHEN SHIFT_CODE = 'S2' THEN " +
+                    "'Shift 2' ELSE 'Shift 3' END AS SHIFT_NAME FROM (SELECT A.PAYMENT_TYPE_CODE,A.PAYMENT_METHOD_CODE," +
+                    "B.POS_CODE,B.SHIFT_CODE,B.CASHIER_CODE FROM M_PAYMENT_METHOD A, T_POS_BILL B, T_POS_BILL_PAYMENT" +
+                    " C WHERE B.OUTLET_CODE = :outletCode AND B.TRANS_DATE BETWEEN :fromDate AND :toDate AND" +
+                    " B.BILL_TIME BETWEEN :fromTime AND :toTime AND A.OUTLET_CODE = B.OUTLET_CODE AND B.OUTLET_CODE =" +
+                    " C.OUTLET_CODE AND B.TRANS_DATE = C.TRANS_DATE AND A.PAYMENT_METHOD_CODE = C.PAYMENT_METHOD_CODE" +
+                    " AND B.POS_CODE = C.POS_CODE AND B.BILL_NO = C.BILL_NO) a GROUP BY a.SHIFT_CODE";
+            hashMap.put("outletCode", param.get("outletCode"));
+            hashMap.put("fromDate", param.get("fromDate"));
+            hashMap.put("toDate", param.get("toDate"));
+            hashMap.put("fromTime", param.get("fromTime"));
+            hashMap.put("toTime", param.get("toTime"));
+        } else if (param.get("typeReport").equals("Transaction Payment By EDC") && param.get("typeParam").equals("Pos")) {
+            query = "SELECT a.POS_CODE, b.POS_DESCRIPTION FROM (SELECT A.PAYMENT_TYPE_CODE,A.PAYMENT_METHOD_CODE," +
+                    "B.POS_CODE,B.SHIFT_CODE,B.CASHIER_CODE FROM M_PAYMENT_METHOD A, T_POS_BILL B, " +
+                    "T_POS_BILL_PAYMENT C WHERE B.OUTLET_CODE = :outletCode AND B.TRANS_DATE BETWEEN :fromDate AND " +
+                    ":toDate AND B.BILL_TIME BETWEEN :fromTime AND :toTime AND A.OUTLET_CODE = B.OUTLET_CODE AND " +
+                    "B.OUTLET_CODE = C.OUTLET_CODE AND B.TRANS_DATE = C.TRANS_DATE AND A.PAYMENT_METHOD_CODE = " +
+                    "C.PAYMENT_METHOD_CODE AND B.POS_CODE = C.POS_CODE AND B.BILL_NO = C.BILL_NO) a LEFT JOIN M_POS " +
+                    "b ON a.POS_CODE = b.POS_CODE GROUP BY a.POS_CODE, b.POS_DESCRIPTION";
+            hashMap.put("outletCode", param.get("outletCode"));
+            hashMap.put("fromDate", param.get("fromDate"));
+            hashMap.put("toDate", param.get("toDate"));
+            hashMap.put("fromTime", param.get("fromTime"));
+            hashMap.put("toTime", param.get("toTime"));
+        } else if (param.get("typeReport").equals("Transaction Payment By EDC") && param.get("typeParam").equals("Cashier")) {
+            query = "SELECT a.CASHIER_CODE, b.STAFF_NAME FROM (SELECT A.PAYMENT_TYPE_CODE,A.PAYMENT_METHOD_CODE," +
+                    "B.POS_CODE,B.SHIFT_CODE,B.CASHIER_CODE FROM M_PAYMENT_METHOD A, T_POS_BILL B, T_POS_BILL_PAYMENT" +
+                    " C WHERE B.OUTLET_CODE = :outletCode AND B.TRANS_DATE BETWEEN :fromDate AND :toDate AND" +
+                    " B.BILL_TIME BETWEEN :fromTime AND :toTime AND A.OUTLET_CODE = B.OUTLET_CODE AND B.OUTLET_CODE =" +
+                    " C.OUTLET_CODE AND B.TRANS_DATE = C.TRANS_DATE AND A.PAYMENT_METHOD_CODE = C.PAYMENT_METHOD_CODE " +
+                    "AND B.POS_CODE = C.POS_CODE AND B.BILL_NO = C.BILL_NO) a LEFT JOIN M_POS_STAFF b ON " +
+                    "a.CASHIER_CODE = b.STAFF_POS_CODE GROUP BY a.CASHIER_CODE, b.STAFF_NAME";
+            hashMap.put("outletCode", param.get("outletCode"));
+            hashMap.put("fromDate", param.get("fromDate"));
+            hashMap.put("toDate", param.get("toDate"));
+            hashMap.put("fromTime", param.get("fromTime"));
+            hashMap.put("toTime", param.get("toTime"));
+        } else if (param.get("typeReport").equals("Transaction Payment By EDC") && param.get("typeParam").equals("Shift")) {
             query = "SELECT a.SHIFT_CODE, CASE WHEN a.SHIFT_CODE = 'S1' THEN 'Shift 1' WHEN SHIFT_CODE = 'S2' THEN "
                     + "'Shift 2' ELSE 'Shift 3' END AS SHIFT_NAME FROM (SELECT A.PAYMENT_TYPE_CODE,A.PAYMENT_METHOD_CODE,"
                     + "B.POS_CODE,B.SHIFT_CODE,B.CASHIER_CODE FROM M_PAYMENT_METHOD A, T_POS_BILL B, T_POS_BILL_PAYMENT"
@@ -1325,13 +1364,13 @@ public class ReportDaoImpl implements ReportDao {
                 } else if (param.get("typeReport").equals("Cashier By Date") && param.get("typeParam").equals("Shift")) {
                     rt.put("shiftCode", rs.getString("SHIFT_CODE"));
                     rt.put("shiftName", rs.getString("SHIFT_NAME"));
-                } else if ((param.get("typeReport").equals("Report Menu & Detail Modifier") || param.get("typeReport").equals("Sales by Date") || param.get("typeReport").equals("Sales by Item") || param.get("typeReport").equals("Report Sales Item By Time") || param.get("typeReport").equals("Sales by Time") || param.get("typeReport").equals("Summary Sales by Item Code")) && param.get("typeParam").equals("Pos")) {
+                } else if ((param.get("typeReport").equals("Report Menu & Detail Modifier") || param.get("typeReport").equals("Sales by Date") || param.get("typeReport").equals("Sales by Item") || param.get("typeReport").equals("Report Sales Item By Time") || param.get("typeReport").equals("Sales by Time") || param.get("typeReport").equals("Refund Report") || param.get("typeReport").equals("Summary Sales by Item Code")) && param.get("typeParam").equals("Pos")) {
                     rt.put("posCode", rs.getString("POS_CODE"));
                     rt.put("posDescription", rs.getString("POS_DESCRIPTION"));
-                } else if ((param.get("typeReport").equals("Report Menu & Detail Modifier") || param.get("typeReport").equals("Sales by Date") || param.get("typeReport").equals("Sales by Item") || param.get("typeReport").equals("Report Sales Item By Time") || param.get("typeReport").equals("Sales by Time") || param.get("typeReport").equals("Summary Sales by Item Code")) && param.get("typeParam").equals("Cashier")) {
+                } else if ((param.get("typeReport").equals("Report Menu & Detail Modifier") || param.get("typeReport").equals("Sales by Date") || param.get("typeReport").equals("Sales by Item") || param.get("typeReport").equals("Report Sales Item By Time") || param.get("typeReport").equals("Sales by Time") || param.get("typeReport").equals("Refund Report") || param.get("typeReport").equals("Summary Sales by Item Code")) && param.get("typeParam").equals("Cashier")) {
                     rt.put("cashierCode", rs.getString("CASHIER_CODE"));
                     rt.put("staffName", rs.getString("STAFF_NAME"));
-                } else if ((param.get("typeReport").equals("Report Menu & Detail Modifier") || param.get("typeReport").equals("Sales by Date") || param.get("typeReport").equals("Sales by Item") || param.get("typeReport").equals("Report Sales Item By Time") || param.get("typeReport").equals("Sales by Time") || param.get("typeReport").equals("Summary Sales by Item Code")) && param.get("typeParam").equals("Shift")) {
+                } else if ((param.get("typeReport").equals("Report Menu & Detail Modifier") || param.get("typeReport").equals("Sales by Date") || param.get("typeReport").equals("Sales by Item") || param.get("typeReport").equals("Report Sales Item By Time") || param.get("typeReport").equals("Sales by Time") || param.get("typeReport").equals("Refund Report") || param.get("typeReport").equals("Summary Sales by Item Code")) && param.get("typeParam").equals("Shift")) {
                     rt.put("shiftCode", rs.getString("SHIFT_CODE"));
                     rt.put("shiftName", rs.getString("SHIFT_NAME"));
                 } else if (param.get("typeReport").equals("Receipt Maintenance") && param.get("typeParam").equals("Pos")) {
@@ -1358,7 +1397,17 @@ public class ReportDaoImpl implements ReportDao {
                 } else if (param.get("typeReport").equals("Transaction by Payment Type") && param.get("typeParam").equals("Cashier")) {
                     rt.put("cashierCode", rs.getString("CASHIER_CODE"));
                     rt.put("staffName", rs.getString("STAFF_NAME"));
-                } else if (param.get("typeReport").equals("Transaction by Payment Type") && param.get("typeParam").equals("Shift")) {
+                } 
+                else if (param.get("typeReport").equals("Transaction by Payment Type") && param.get("typeParam").equals("Shift")) {
+                    rt.put("shiftCode", rs.getString("SHIFT_CODE"));
+                    rt.put("shiftName", rs.getString("SHIFT_NAME"));
+                } else if (param.get("typeReport").equals("Transaction Payment By EDC") && param.get("typeParam").equals("Pos")) {
+                    rt.put("posCode", rs.getString("POS_CODE"));
+                    rt.put("posDescription", rs.getString("POS_DESCRIPTION"));
+                } else if (param.get("typeReport").equals("Transaction Payment By EDC") && param.get("typeParam").equals("Cashier")) {
+                    rt.put("cashierCode", rs.getString("CASHIER_CODE"));
+                    rt.put("staffName", rs.getString("STAFF_NAME"));
+                } else if (param.get("typeReport").equals("Transaction Payment By EDC") && param.get("typeParam").equals("Shift")) {
                     rt.put("shiftCode", rs.getString("SHIFT_CODE"));
                     rt.put("shiftName", rs.getString("SHIFT_NAME"));
                 } else if (param.get("typeReport").equals("Sales by Date") && param.get("typeParam").equals("Order Type")) {
@@ -4087,4 +4136,80 @@ public class ReportDaoImpl implements ReportDao {
         return map;
     }
 
+    //////// 
+    @Override
+    public JasperPrint jasperReportTransactionPaymentByEdc(Map<String, Object> param, Connection connection) throws JRException, IOException {
+        Map<String, Object> hashMap = new HashMap<>();
+        hashMap.put("outletBrand", param.get("outletBrand"));
+        hashMap.put("transDate1", param.get("fromDate"));
+        hashMap.put("transDate2", param.get("toDate"));
+        hashMap.put("outletCode", param.get("outletCode"));
+        hashMap.put("billTime1", param.get("fromTime"));
+        hashMap.put("billTime2", param.get("toTime"));
+        hashMap.put("user", param.get("user"));
+        hashMap.put("validasi", param.containsKey("validasi") ? param.get("validasi") : "Semua");
+        System.out.println(param);
+
+        List<Map<String, Object>> listPos = (List<Map<String, Object>>) param.get("pos");
+        StringBuilder posCode = new StringBuilder();
+        if (listPos.size() == 1) {
+            hashMap.put("posCode", "Semua");
+            hashMap.put("posCode1", "000");
+            hashMap.put("posCode2", "zzz");
+        } else {
+            for (Map<String, Object> object : listPos) {
+                if (object.containsKey("posCode1")) {
+                    hashMap.put("posCode1", object.get("posCode1"));
+                    posCode.append(object.get("posName1")).append(" s/d ");
+                } else {
+                    hashMap.put("posCode2", object.get("posCode2"));
+                    posCode.append(object.get("posName2"));
+                }
+                hashMap.put("posCode", posCode.toString());
+            }
+        }
+
+        List<Map<String, Object>> listCashier = (List<Map<String, Object>>) param.get("cashier");
+        StringBuilder cashierCode = new StringBuilder();
+        if (listCashier.size() == 1) {
+            hashMap.put("cashierCode", "Semua");
+            hashMap.put("cashierCode1", "000");
+            hashMap.put("cashierCode2", "zzz");
+        } else {
+            for (Map<String, Object> object : listCashier) {
+                if (object.containsKey("cashierCode1")) {
+                    hashMap.put("cashierCode1", object.get("cashierCode1"));
+                    cashierCode.append(object.get("cashierName1")).append(" s/d ");
+                } else {
+                    hashMap.put("cashierCode2", object.get("cashierCode2"));
+                    cashierCode.append(object.get("cashierName2"));
+                }
+                hashMap.put("cashierCode", cashierCode.toString());
+            }
+        }
+
+        List<Map<String, Object>> listShift = (List<Map<String, Object>>) param.get("shift");
+        StringBuilder shiftCode = new StringBuilder();
+        if (listShift.size() == 1) {
+            hashMap.put("shiftCode", "Semua");
+            hashMap.put("shiftCode1", "000");
+            hashMap.put("shiftCode2", "zzz");
+        } else {
+            for (Map<String, Object> object : listShift) {
+                if (object.containsKey("shiftCode1")) {
+                    hashMap.put("shiftCode1", object.get("shiftCode1"));
+                    shiftCode.append(object.get("shiftName1")).append(" s/d ");
+                } else {
+                    hashMap.put("shiftCode2", object.get("shiftCode2"));
+                    shiftCode.append(object.get("shiftName2"));
+                }
+                hashMap.put("shiftCode", shiftCode.toString());
+            }
+        }
+
+        ClassPathResource classPathResource = new ClassPathResource("report/reportTransactionEDC.jrxml");
+        JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+        return JasperFillManager.fillReport(jasperReport, hashMap, connection);
+    }
+    
 }

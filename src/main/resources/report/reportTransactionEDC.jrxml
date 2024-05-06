@@ -1,12 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reportTransactionPayment" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="2199a4a4-d84c-439c-a7b3-ef917db9409d">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reportTransactionPayment" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="2199a4a4-d84c-439c-a7b3-ef917db9409d">
 	<property name="ireport.zoom" value="1.3310000000000106"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Localhost"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
 	<subDataset name="dataset1" uuid="fa74d7b4-6630-4492-94d0-52d556ac0fca">
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Localhost"/>
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 		<parameter name="outletCode" class="java.lang.String">
 			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 		</parameter>
@@ -52,180 +63,53 @@
 		<parameter name="shiftCode2" class="java.lang.String">
 			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 		</parameter>
+		<parameter name="validasi" class="java.lang.String"/>
 		<queryString>
-			<![CDATA[SELECT
-	a.TRANS_DATE,
-	a.PAYMENT_METHOD,
-	b.DESCRIPTION,
-	SUM(a.PAYMENT_USED)
-FROM
-	(
-	SELECT
-		A.OUTLET_CODE,
-		A.TRANS_DATE,
-		TO_DATE(A.BILL_TIME, 'hh24:mi:ss') AS BILL_TIME,
-		A.POS_CODE,
-		B.STAFF_NAME,
-		A.SHIFT_CODE,
-		A.BILL_NO,
-		A.PAYMENT_AMOUNT,
-		A.PAYMENT_USED,
-		A.ORDER_TYPE,
-		C.OUTLET_NAME,
-		C.ADDRESS_1,
-		C.ADDRESS_2,
-		C.CITY,
-		C.TYPE,
-		C.PHONE,
-		D.DESCRIPTION AS PAYMENT_TYPE,
-		E.DESCRIPTION AS PAYMENT_METHOD,
-		F.PAYMENT_USED_TOTAL
-	FROM
-		(
-		SELECT
-			B.OUTLET_CODE,
-			B.TRANS_DATE,
-			A.PAYMENT_TYPE_CODE,
-			A.PAYMENT_METHOD_CODE,
-			B.POS_CODE,
-			B.SHIFT_CODE,
-			B.CASHIER_CODE,
-			B.BILL_NO,
-			B.BILL_TIME,
-			B.ORDER_TYPE,
-			C.PAYMENT_AMOUNT,
-			C.PAYMENT_USED
-		FROM
-			M_PAYMENT_METHOD A,
-			T_POS_BILL B,
-			T_POS_BILL_PAYMENT C
-		WHERE
-			B.OUTLET_CODE = $P{outletCode}
-			AND B.TRANS_DATE BETWEEN $P{transDate1} AND $P{transDate2}
-			AND B.POS_CODE BETWEEN $P{posCode1} AND $P{posCode2}
-			AND B.CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
-			AND B.BILL_TIME BETWEEN $P{billTime1} AND $P{billTime2}
-			AND A.PAYMENT_TYPE_CODE BETWEEN $P{paymentType1} AND $P{paymentType2}
-			AND A.PAYMENT_METHOD_CODE BETWEEN $P{paymentMethod1} AND $P{paymentMethod2}
-			AND B.SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
-			AND A.OUTLET_CODE = B.OUTLET_CODE
-			AND B.OUTLET_CODE = C.OUTLET_CODE
-			AND B.TRANS_DATE = C.TRANS_DATE
-			AND A.PAYMENT_METHOD_CODE = C.PAYMENT_METHOD_CODE
-			AND B.POS_CODE = C.POS_CODE
-			AND B.BILL_NO = C.BILL_NO
-) A
-	LEFT JOIN (
-		SELECT
-			OUTLET_CODE,
-			STAFF_POS_CODE,
-			STAFF_NAME
-		FROM
-			M_POS_STAFF
-		WHERE
-			STATUS = 'A'
-			AND ACCESS_LEVEL = 'KSR'
-) B ON
-		A.OUTLET_CODE = B.OUTLET_CODE
-		AND A.CASHIER_CODE = B.STAFF_POS_CODE
-	LEFT JOIN (
-		SELECT
-			OUTLET_CODE,
-			OUTLET_NAME,
-			ADDRESS_1,
-			ADDRESS_2,
-			PHONE,
-			CITY,
-			TYPE
-		FROM
-			M_OUTLET
-) C ON
-		A.OUTLET_CODE = C.OUTLET_CODE
-	LEFT JOIN (
-		SELECT
-			COND,
-			CODE,
-			DESCRIPTION
-		FROM
-			M_GLOBAL
-		WHERE
-			COND LIKE '%PAY_TYPE%'
-) D ON
-		A.PAYMENT_TYPE_CODE = D.CODE
-	LEFT JOIN (
-		SELECT
-			COND,
-			CODE,
-			DESCRIPTION
-		FROM
-			M_GLOBAL
-		WHERE
-			COND LIKE '%PAY_METHOD%'
-) E ON
-		A.PAYMENT_METHOD_CODE = E.CODE
-	LEFT JOIN (
-		SELECT
-			OUTLET_CODE,
-			PAYMENT_TYPE_CODE,
-			SUM(PAYMENT_USED) AS PAYMENT_USED_TOTAL
-		FROM
-			(
-			SELECT
-				B.OUTLET_CODE,
-				B.TRANS_DATE,
-				A.PAYMENT_TYPE_CODE,
-				C.PAYMENT_USED
-			FROM
-				M_PAYMENT_METHOD A,
-				T_POS_BILL B,
-				T_POS_BILL_PAYMENT C
-			WHERE
-				B.OUTLET_CODE = $P{outletCode}
-				AND B.TRANS_DATE BETWEEN $P{transDate1} AND $P{transDate2}
-				AND B.POS_CODE BETWEEN $P{posCode1} AND $P{posCode2}
-				AND B.CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
-				AND B.BILL_TIME BETWEEN $P{billTime1} AND $P{billTime2}
-				AND A.PAYMENT_TYPE_CODE BETWEEN $P{paymentType1} AND $P{paymentType2}
-				AND A.PAYMENT_METHOD_CODE BETWEEN $P{paymentMethod1} AND $P{paymentMethod2}
-				AND B.SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
-				AND A.OUTLET_CODE = B.OUTLET_CODE
-				AND B.OUTLET_CODE = C.OUTLET_CODE
-				AND B.TRANS_DATE = C.TRANS_DATE
-				AND A.PAYMENT_METHOD_CODE = C.PAYMENT_METHOD_CODE
-				AND B.POS_CODE = C.POS_CODE
-				AND B.BILL_NO = C.BILL_NO
-    )
-		GROUP BY
-			OUTLET_CODE,
-			PAYMENT_TYPE_CODE
-) F ON
-		A.PAYMENT_TYPE_CODE = F.PAYMENT_TYPE_CODE
-	ORDER BY
-		A.TRANS_DATE,
-		A.PAYMENT_TYPE_CODE,
-		A.PAYMENT_METHOD_CODE,
-		A.POS_CODE,
-		A.SHIFT_CODE,
-		A.BILL_NO,
-		A.BILL_TIME
-) a LEFT JOIN M_GLOBAL b ON COND = 'ORDER_TYPE' AND a.ORDER_TYPE = b.CODE
-GROUP BY
-	a.PAYMENT_METHOD,
-	b.DESCRIPTION,
-	a.TRANS_DATE
-ORDER BY
-	a.TRANS_DATE, a.PAYMENT_METHOD ASC]]>
+			<![CDATA[select sum(payment_amount), TRANS_DATE, DESCRIPTION, PAYMENT_METHOD FROM (
+SELECT a.payment_amount, a.TRANS_DATE, j.description AS DESCRIPTION, d.description AS PAYMENT_METHOD  
+FROM t_pos_bill_payment_detail a 
+LEFT JOIN T_POS_BILL_PAYMENT b ON a.BILL_NO=b.BILL_NO AND a.POS_CODE=b.POS_CODE AND (b.payment_method_code <> 'CSH' AND b.payment_method_code <> 'VCR') 
+LEFT JOIN M_pos_STAFF c ON a.USER_UPD = c.STAFF_POS_CODE 
+LEFT JOIN M_GLOBAL d ON d.CODE =a.PAYMENT_METHOD_CODE AND d.cond='PAY_METHOD' 
+LEFT JOIN M_PAYMENT_METHOD e ON a.PAYMENT_METHOD_CODE=e.PAYMENT_METHOD_CODE AND e.PAYMENT_TYPE_CODE='DBT' AND e.status='A'
+LEFT JOIN M_GLOBAL f ON f.CODE =e.PAYMENT_TYPE_CODE 
+LEFT JOIN T_POS_BILL G ON a.POS_CODE=g.POS_CODE AND a.BILL_NO=g.BILL_NO AND g.delivery_status='CLS'  
+LEFT JOIN M_pos_STAFF h ON b.PAYMENT_MANAGER_CODE = h.STAFF_POS_CODE
+LEFT JOIN M_OUTLET i ON a.OUTLET_CODE = i.OUTLET_CODE 
+LEFT JOIN M_GLOBAL j ON g.order_type = j.code AND j.cond = 'ORDER_TYPE'
+WHERE a.TRANS_DATE BETWEEN $P{transDate1} AND $P{transDate2} 
+		AND g.POS_CODE BETWEEN $P{posCode1} AND $P{posCode2}
+        AND g.CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+        AND g.BILL_TIME BETWEEN $P{billTime1} AND $P{billTime2}
+        AND g.SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2} AND a.PAYMENT_METHOD_CODE <> 'VCR' AND (
+		    ($P{validasi} = 'Manual' AND b.PAYMENT_MANAGER_CODE NOT IN (NULL, '', ' '))
+		    OR
+		    ($P{validasi} = 'Otomatis' AND b.PAYMENT_MANAGER_CODE IN (NULL, '', ' '))
+		    OR 
+		    ($P{validasi} NOT IN ('Manual', 'Otomatis'))
+		    OR 
+		    $P{validasi} IS NULL 
+		    )
+)
+GROUP BY TRANS_DATE,DESCRIPTION, PAYMENT_METHOD
+ORDER BY TRANS_DATE, PAYMENT_METHOD ASC]]>
 		</queryString>
+		<field name="SUM(PAYMENT_AMOUNT)" class="java.math.BigDecimal">
+			<property name="com.jaspersoft.studio.field.name" value="SUM(PAYMENT_AMOUNT)"/>
+			<property name="com.jaspersoft.studio.field.label" value="SUM(PAYMENT_AMOUNT)"/>
+		</field>
 		<field name="TRANS_DATE" class="java.sql.Timestamp">
 			<property name="com.jaspersoft.studio.field.name" value="TRANS_DATE"/>
 			<property name="com.jaspersoft.studio.field.label" value="TRANS_DATE"/>
+		</field>
+		<field name="DESCRIPTION" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="DESCRIPTION"/>
+			<property name="com.jaspersoft.studio.field.label" value="DESCRIPTION"/>
 		</field>
 		<field name="PAYMENT_METHOD" class="java.lang.String">
 			<property name="com.jaspersoft.studio.field.name" value="PAYMENT_METHOD"/>
 			<property name="com.jaspersoft.studio.field.label" value="PAYMENT_METHOD"/>
 		</field>
-		<field name="DESCRIPTION" class="java.lang.String"/>
-		<field name="SUM(A.PAYMENT_USED)" class="java.math.BigDecimal"/>
 	</subDataset>
 	<parameter name="outletCode" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
@@ -279,243 +163,40 @@ ORDER BY
 	<parameter name="shiftCode" class="java.lang.String"/>
 	<parameter name="outletBrand" class="java.lang.String"/>
 	<parameter name="user" class="java.lang.String"/>
+	<parameter name="validasi" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[SELECT
-LISTAGG(I.VOUCHER_REF_NO, ', ') WITHIN GROUP (ORDER BY I.VOUCHER_REF_NO) AS voucher_refs,
-    H.OUTLET_CODE,
-    H.TRANS_DATE,
-    H.BILL_TIME,
-    H.POS_CODE,
-    H.STAFF_NAME,
-    H.SHIFT_CODE,
-    H.BILL_NO,
-    H.PAYMENT_AMOUNT,
-    H.PAYMENT_USED,
-    H.OUTLET_NAME,
-    H.ADDRESS_1,
-    H.ADDRESS_2,
-    H.CITY,
-    H.TYPE,
-    H.PHONE,
-    H.PAYMENT_TYPE,
-    H.PAYMENT_METHOD,
-    H.PAYMENT_USED_TOTAL,
-    H.PRINT_NAME
-FROM (
-SELECT
-	G.*,
-    COALESCE(ms.STAFF_NAME, ms.STAFF_FULL_NAME, $P{user}) AS PRINT_NAME
-FROM (
-SELECT
-    A.OUTLET_CODE,
-    A.TRANS_DATE,
-    TO_DATE(A.BILL_TIME, 'hh24:mi:ss') AS BILL_TIME,
-    A.POS_CODE,
-    B.STAFF_NAME,
-    A.SHIFT_CODE,
-    A.BILL_NO,
-    A.PAYMENT_AMOUNT,
-    A.PAYMENT_USED,
-    C.OUTLET_NAME,
-    C.ADDRESS_1,
-    C.ADDRESS_2,
-    C.CITY,
-    C.TYPE,
-    C.PHONE,
-    D.DESCRIPTION AS PAYMENT_TYPE,
-    E.DESCRIPTION AS PAYMENT_METHOD,
-    F.PAYMENT_USED_TOTAL
-FROM (
-    SELECT
-        B.OUTLET_CODE,
-        B.TRANS_DATE,
-        A.PAYMENT_TYPE_CODE,
-        A.PAYMENT_METHOD_CODE,
-        B.POS_CODE,
-        B.SHIFT_CODE,
-        B.CASHIER_CODE,
-        B.BILL_NO,
-        B.BILL_TIME,
-        C.PAYMENT_AMOUNT,
-        C.PAYMENT_USED
-    FROM
-        M_PAYMENT_METHOD A,
-        T_POS_BILL B,
-        T_POS_BILL_PAYMENT C
-    WHERE
-        B.OUTLET_CODE = $P{outletCode}
-        AND B.TRANS_DATE BETWEEN $P{transDate1} AND $P{transDate2}
-        AND B.POS_CODE BETWEEN $P{posCode1} AND $P{posCode2}
-        AND B.CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
-        AND B.BILL_TIME BETWEEN $P{billTime1} AND $P{billTime2}
-        AND A.PAYMENT_TYPE_CODE BETWEEN $P{paymentType1} AND $P{paymentType2}
-        AND A.PAYMENT_METHOD_CODE BETWEEN $P{paymentMethod1} AND $P{paymentMethod2}
-        AND B.SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
-        AND A.OUTLET_CODE = B.OUTLET_CODE
-        AND B.OUTLET_CODE = C.OUTLET_CODE
-        AND B.TRANS_DATE = C.TRANS_DATE
-        AND A.PAYMENT_METHOD_CODE = C.PAYMENT_METHOD_CODE
-        AND B.POS_CODE = C.POS_CODE
-        AND B.BILL_NO = C.BILL_NO
-) A
-LEFT JOIN (
-    SELECT
-        OUTLET_CODE,
-        STAFF_POS_CODE,
-        STAFF_NAME
-    FROM
-        M_POS_STAFF
-    WHERE
-        STATUS = 'A'
-        AND ACCESS_LEVEL = 'KSR'
-) B ON A.OUTLET_CODE = B.OUTLET_CODE AND A.CASHIER_CODE = B.STAFF_POS_CODE
-LEFT JOIN (
-    SELECT
-        OUTLET_CODE,
-        OUTLET_NAME,
-        ADDRESS_1,
-        ADDRESS_2,
-        PHONE,
-        CITY,
-        TYPE
-    FROM
-        M_OUTLET
-) C ON A.OUTLET_CODE = C.OUTLET_CODE
-LEFT JOIN (
-    SELECT
-        COND,
-        CODE,
-        DESCRIPTION
-    FROM
-        M_GLOBAL
-    WHERE
-        COND LIKE '%PAY_TYPE%'
-) D ON A.PAYMENT_TYPE_CODE = D.CODE
-LEFT JOIN (
-    SELECT
-        COND,
-        CODE,
-        DESCRIPTION
-    FROM
-        M_GLOBAL
-    WHERE
-        COND LIKE '%PAY_METHOD%'
-) E ON A.PAYMENT_METHOD_CODE = E.CODE
-LEFT JOIN (
-    SELECT
-        OUTLET_CODE,
-        PAYMENT_TYPE_CODE,
-        SUM(PAYMENT_USED) AS PAYMENT_USED_TOTAL
-    FROM (
-        SELECT
-            B.OUTLET_CODE,
-            B.TRANS_DATE,
-            A.PAYMENT_TYPE_CODE,
-            C.PAYMENT_USED
-        FROM
-            M_PAYMENT_METHOD A,
-            T_POS_BILL B,
-            T_POS_BILL_PAYMENT C
-        WHERE
-            B.OUTLET_CODE = $P{outletCode}
-            AND B.TRANS_DATE BETWEEN $P{transDate1} AND $P{transDate2}
-            AND B.POS_CODE BETWEEN $P{posCode1} AND $P{posCode2}
-            AND B.CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
-            AND B.BILL_TIME BETWEEN $P{billTime1} AND $P{billTime2}
-            AND A.PAYMENT_TYPE_CODE BETWEEN $P{paymentType1} AND $P{paymentType2}
-            AND A.PAYMENT_METHOD_CODE BETWEEN $P{paymentMethod1} AND $P{paymentMethod2}
-            AND B.SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2}
-            AND A.OUTLET_CODE = B.OUTLET_CODE
-            AND B.OUTLET_CODE = C.OUTLET_CODE
-            AND B.TRANS_DATE = C.TRANS_DATE
-            AND A.PAYMENT_METHOD_CODE = C.PAYMENT_METHOD_CODE
-            AND B.POS_CODE = C.POS_CODE
-            AND B.BILL_NO = C.BILL_NO
-    )
-    GROUP BY
-        OUTLET_CODE,
-        PAYMENT_TYPE_CODE
-) F ON A.PAYMENT_TYPE_CODE = F.PAYMENT_TYPE_CODE
-ORDER BY
-    A.TRANS_DATE,
-    A.PAYMENT_TYPE_CODE,
-    A.PAYMENT_METHOD_CODE,
-    A.POS_CODE,
-    A.SHIFT_CODE,
-    A.BILL_NO,
-    A.BILL_TIME
-   ) G
-LEFT JOIN M_STAFF ms ON $P{user} = ms.STAFF_CODE
-) H 
-LEFT JOIN T_POS_BILL_PAYMENT_DETAIL I ON H.BILL_NO = I.BILL_NO
-GROUP BY 
-    H.OUTLET_CODE,
-    H.TRANS_DATE,
-    H.BILL_TIME,
-    H.POS_CODE,
-    H.STAFF_NAME,
-    H.SHIFT_CODE,
-    H.BILL_NO,
-    H.PAYMENT_AMOUNT,
-    H.PAYMENT_USED,
-    H.OUTLET_NAME,
-    H.ADDRESS_1,
-    H.ADDRESS_2,
-    H.CITY,
-    H.TYPE,
-    H.PHONE,
-    H.PAYMENT_TYPE,
-    H.PAYMENT_METHOD,
-    H.PAYMENT_USED_TOTAL,
-    H.PRINT_NAME
-ORDER BY
-    H.TRANS_DATE,
-    H.PAYMENT_TYPE,
-    H.PAYMENT_METHOD,
-    H.POS_CODE,
-    H.SHIFT_CODE,
-    H.BILL_NO,
-    H.BILL_TIME]]>
+		<![CDATA[SELECT a.TRANS_DATE, a.OUTLET_CODE, i.OUTLET_NAME, i.ADDRESS_1, i.ADDRESS_2, i.PHONE,f.DESCRIPTION AS PAYMENT_TYPE,d.DESCRIPTION AS PAYMENT_METHOD,a.POS_CODE,g.SHIFT_CODE,c.STAFF_NAME,a.BILL_NO,a.VOUCHER_REF_NO AS VOUCHER_REFS,h.STAFF_NAME AS PAYMENT_MANAGER_CODE,TO_DATE(g.BILL_TIME, 'hh24:mi:ss') AS BILL_TIME,a.PAYMENT_AMOUNT AS PAYMENT_USED, COALESCE(j.STAFF_NAME, j.STAFF_FULL_NAME, $P{user}) AS PRINT_NAME  
+FROM t_pos_bill_payment_detail a 
+LEFT JOIN T_POS_BILL_PAYMENT b ON a.BILL_NO=b.BILL_NO AND a.POS_CODE=b.POS_CODE AND (b.payment_method_code <> 'CSH' AND b.payment_method_code <> 'VCR')
+LEFT JOIN M_pos_STAFF c ON a.USER_UPD = c.STAFF_POS_CODE 
+LEFT JOIN M_GLOBAL d ON d.CODE =a.PAYMENT_METHOD_CODE AND d.cond='PAY_METHOD' 
+LEFT JOIN M_PAYMENT_METHOD e ON a.PAYMENT_METHOD_CODE=e.PAYMENT_METHOD_CODE AND e.PAYMENT_TYPE_CODE='DBT' AND e.status='A'
+LEFT JOIN M_GLOBAL f ON f.CODE =e.PAYMENT_TYPE_CODE 
+LEFT JOIN T_POS_BILL g ON a.POS_CODE=g.POS_CODE AND a.BILL_NO=g.BILL_NO AND g.delivery_status='CLS'  
+LEFT JOIN M_pos_STAFF h ON b.PAYMENT_MANAGER_CODE = h.STAFF_POS_CODE
+LEFT JOIN M_OUTLET i ON a.OUTLET_CODE = i.OUTLET_CODE 
+LEFT JOIN M_STAFF j ON $P{user} = j.STAFF_CODE
+WHERE a.TRANS_DATE BETWEEN $P{transDate1} AND $P{transDate2} AND g.POS_CODE BETWEEN $P{posCode1} AND $P{posCode2}
+        AND g.CASHIER_CODE BETWEEN $P{cashierCode1} AND $P{cashierCode2}
+        AND g.BILL_TIME BETWEEN $P{billTime1} AND $P{billTime2}
+        AND g.SHIFT_CODE BETWEEN $P{shiftCode1} AND $P{shiftCode2} AND a.PAYMENT_METHOD_CODE <> 'VCR' AND (
+		    ($P{validasi} = 'Manual' AND b.PAYMENT_MANAGER_CODE NOT IN (NULL, '', ' '))
+		    OR
+		    ($P{validasi} = 'Otomatis' AND b.PAYMENT_MANAGER_CODE IN (NULL, '', ' '))
+		    OR 
+		    ($P{validasi} NOT IN ('Manual', 'Otomatis'))
+		    OR 
+		    $P{validasi} IS NULL 
+		    )
+ORDER BY a.TRANS_DATE, f.DESCRIPTION, a.pos_code,g.shift_code ASC]]>
 	</queryString>
-	<field name="VOUCHER_REFS" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="VOUCHER_REFS"/>
-		<property name="com.jaspersoft.studio.field.label" value="VOUCHER_REFS"/>
-	</field>
-	<field name="OUTLET_CODE" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="OUTLET_CODE"/>
-		<property name="com.jaspersoft.studio.field.label" value="OUTLET_CODE"/>
-	</field>
 	<field name="TRANS_DATE" class="java.sql.Timestamp">
 		<property name="com.jaspersoft.studio.field.name" value="TRANS_DATE"/>
 		<property name="com.jaspersoft.studio.field.label" value="TRANS_DATE"/>
 	</field>
-	<field name="BILL_TIME" class="java.sql.Timestamp">
-		<property name="com.jaspersoft.studio.field.name" value="BILL_TIME"/>
-		<property name="com.jaspersoft.studio.field.label" value="BILL_TIME"/>
-	</field>
-	<field name="POS_CODE" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="POS_CODE"/>
-		<property name="com.jaspersoft.studio.field.label" value="POS_CODE"/>
-	</field>
-	<field name="STAFF_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="STAFF_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="STAFF_NAME"/>
-	</field>
-	<field name="SHIFT_CODE" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="SHIFT_CODE"/>
-		<property name="com.jaspersoft.studio.field.label" value="SHIFT_CODE"/>
-	</field>
-	<field name="BILL_NO" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="BILL_NO"/>
-		<property name="com.jaspersoft.studio.field.label" value="BILL_NO"/>
-	</field>
-	<field name="PAYMENT_AMOUNT" class="java.math.BigDecimal">
-		<property name="com.jaspersoft.studio.field.name" value="PAYMENT_AMOUNT"/>
-		<property name="com.jaspersoft.studio.field.label" value="PAYMENT_AMOUNT"/>
-	</field>
-	<field name="PAYMENT_USED" class="java.math.BigDecimal">
-		<property name="com.jaspersoft.studio.field.name" value="PAYMENT_USED"/>
-		<property name="com.jaspersoft.studio.field.label" value="PAYMENT_USED"/>
+	<field name="OUTLET_CODE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="OUTLET_CODE"/>
+		<property name="com.jaspersoft.studio.field.label" value="OUTLET_CODE"/>
 	</field>
 	<field name="OUTLET_NAME" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="OUTLET_NAME"/>
@@ -529,14 +210,6 @@ ORDER BY
 		<property name="com.jaspersoft.studio.field.name" value="ADDRESS_2"/>
 		<property name="com.jaspersoft.studio.field.label" value="ADDRESS_2"/>
 	</field>
-	<field name="CITY" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="CITY"/>
-		<property name="com.jaspersoft.studio.field.label" value="CITY"/>
-	</field>
-	<field name="TYPE" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="TYPE"/>
-		<property name="com.jaspersoft.studio.field.label" value="TYPE"/>
-	</field>
 	<field name="PHONE" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="PHONE"/>
 		<property name="com.jaspersoft.studio.field.label" value="PHONE"/>
@@ -549,23 +222,42 @@ ORDER BY
 		<property name="com.jaspersoft.studio.field.name" value="PAYMENT_METHOD"/>
 		<property name="com.jaspersoft.studio.field.label" value="PAYMENT_METHOD"/>
 	</field>
-	<field name="PAYMENT_USED_TOTAL" class="java.math.BigDecimal">
-		<property name="com.jaspersoft.studio.field.name" value="PAYMENT_USED_TOTAL"/>
-		<property name="com.jaspersoft.studio.field.label" value="PAYMENT_USED_TOTAL"/>
+	<field name="POS_CODE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="POS_CODE"/>
+		<property name="com.jaspersoft.studio.field.label" value="POS_CODE"/>
+	</field>
+	<field name="SHIFT_CODE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="SHIFT_CODE"/>
+		<property name="com.jaspersoft.studio.field.label" value="SHIFT_CODE"/>
+	</field>
+	<field name="STAFF_NAME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="STAFF_NAME"/>
+		<property name="com.jaspersoft.studio.field.label" value="STAFF_NAME"/>
+	</field>
+	<field name="BILL_NO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="BILL_NO"/>
+		<property name="com.jaspersoft.studio.field.label" value="BILL_NO"/>
+	</field>
+	<field name="VOUCHER_REFS" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="VOUCHER_REFS"/>
+		<property name="com.jaspersoft.studio.field.label" value="VOUCHER_REFS"/>
+	</field>
+	<field name="PAYMENT_MANAGER_CODE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="PAYMENT_MANAGER_CODE"/>
+		<property name="com.jaspersoft.studio.field.label" value="PAYMENT_MANAGER_CODE"/>
+	</field>
+	<field name="BILL_TIME" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="BILL_TIME"/>
+		<property name="com.jaspersoft.studio.field.label" value="BILL_TIME"/>
+	</field>
+	<field name="PAYMENT_USED" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="PAYMENT_USED"/>
+		<property name="com.jaspersoft.studio.field.label" value="PAYMENT_USED"/>
 	</field>
 	<field name="PRINT_NAME" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="PRINT_NAME"/>
 		<property name="com.jaspersoft.studio.field.label" value="PRINT_NAME"/>
 	</field>
-	<variable name="PAYMENT_USED_TOTAL_1" class="java.lang.Integer" resetType="Group" resetGroup="Group by Payment Type" calculation="Count">
-		<variableExpression><![CDATA[$F{PAYMENT_USED_TOTAL}]]></variableExpression>
-	</variable>
-	<variable name="PAYMENT_USED_TOTAL_2" class="java.math.BigDecimal" resetType="Group" resetGroup="Group by Payment Type" calculation="Sum">
-		<variableExpression><![CDATA[$F{PAYMENT_USED_TOTAL}]]></variableExpression>
-	</variable>
-	<variable name="TOTAL_PAYMENT" class="java.math.BigDecimal" resetType="Group" resetGroup="Group by Payment Type" calculation="Sum">
-		<variableExpression><![CDATA[$F{PAYMENT_USED}]]></variableExpression>
-	</variable>
 	<variable name="GRAND_TOTAL_PAYMENT" class="java.math.BigDecimal" calculation="Sum">
 		<variableExpression><![CDATA[$F{PAYMENT_USED}]]></variableExpression>
 	</variable>
@@ -581,9 +273,9 @@ ORDER BY
 	<group name="summary">
 		<groupExpression><![CDATA[$F{OUTLET_CODE}]]></groupExpression>
 		<groupFooter>
-			<band height="55">
+			<band height="63">
 				<componentElement>
-					<reportElement x="1" y="36" width="554" height="18" uuid="a9df41f3-f6eb-4ece-ac50-4aef4871cb0a"/>
+					<reportElement x="246" y="45" width="554" height="18" uuid="a9df41f3-f6eb-4ece-ac50-4aef4871cb0a"/>
 					<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
 						<datasetRun subDataset="dataset1" uuid="c7c3ca13-fb73-485a-86c4-375c5b906c97">
 							<datasetParameter name="outletCode">
@@ -646,7 +338,7 @@ ORDER BY
 								<textElement textAlignment="Right">
 									<font size="8" isBold="true"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{SUM(A.PAYMENT_USED)}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{SUM(PAYMENT_AMOUNT)}]]></textFieldExpression>
 							</textField>
 							<textField>
 								<reportElement x="203" y="1" width="109" height="17" uuid="ef7165c5-63e2-467e-912e-ba9021a7c0a6"/>
@@ -666,38 +358,38 @@ ORDER BY
 					</jr:list>
 				</componentElement>
 				<staticText>
-					<reportElement x="0" y="3" width="135" height="15" isPrintInFirstWholeBand="true" uuid="27d759e5-1634-40fd-91e0-938fcd68a353"/>
+					<reportElement x="0" y="12" width="135" height="15" isPrintInFirstWholeBand="true" uuid="27d759e5-1634-40fd-91e0-938fcd68a353"/>
 					<textElement>
 						<font size="10" isBold="true" isItalic="true"/>
 					</textElement>
 					<text><![CDATA[Summary Method Total :]]></text>
 				</staticText>
 				<line>
-					<reportElement x="1" y="0" width="554" height="1" uuid="1d2d9f15-cf41-442b-ac9a-c3a085a03d61"/>
+					<reportElement x="1" y="1" width="800" height="1" uuid="1d2d9f15-cf41-442b-ac9a-c3a085a03d61"/>
 				</line>
 				<staticText>
-					<reportElement x="138" y="20" width="67" height="15" isPrintInFirstWholeBand="true" uuid="7b4f57a9-ab73-4472-a5af-4f781f55f490"/>
+					<reportElement x="383" y="29" width="66" height="15" isPrintInFirstWholeBand="true" uuid="7b4f57a9-ab73-4472-a5af-4f781f55f490"/>
 					<textElement>
 						<font size="10" isBold="true" isItalic="false"/>
 					</textElement>
 					<text><![CDATA[Date]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="204" y="20" width="109" height="15" isPrintInFirstWholeBand="true" uuid="af437c5e-5fc7-4939-9bf9-342aab32f3fb"/>
+					<reportElement x="449" y="29" width="108" height="15" isPrintInFirstWholeBand="true" uuid="af437c5e-5fc7-4939-9bf9-342aab32f3fb"/>
 					<textElement>
 						<font size="10" isBold="true" isItalic="false"/>
 					</textElement>
 					<text><![CDATA[Order Type]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="312" y="20" width="106" height="15" isPrintInFirstWholeBand="true" uuid="2b0d7c69-2b97-49c9-844e-39fdfdd0aca7"/>
+					<reportElement x="557" y="29" width="106" height="15" isPrintInFirstWholeBand="true" uuid="2b0d7c69-2b97-49c9-844e-39fdfdd0aca7"/>
 					<textElement>
 						<font size="10" isBold="true" isItalic="false"/>
 					</textElement>
 					<text><![CDATA[Payment Method]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="417" y="20" width="132" height="15" isPrintInFirstWholeBand="true" uuid="075049c2-4d86-499d-9a05-4693cd56c86d"/>
+					<reportElement x="663" y="29" width="137" height="15" isPrintInFirstWholeBand="true" uuid="075049c2-4d86-499d-9a05-4693cd56c86d"/>
 					<textElement textAlignment="Right">
 						<font size="10" isBold="true" isItalic="false"/>
 					</textElement>
@@ -709,7 +401,7 @@ ORDER BY
 	<group name="Group By TransDate">
 		<groupExpression><![CDATA[$F{TRANS_DATE}]]></groupExpression>
 		<groupHeader>
-			<band height="22">
+			<band height="23">
 				<textField pattern="dd MMMMM yyyy">
 					<reportElement x="5" y="1" width="133" height="20" uuid="d450cb7e-a43f-486a-aee1-af6df61fb7b2"/>
 					<textElement verticalAlignment="Middle">
@@ -718,14 +410,14 @@ ORDER BY
 					<textFieldExpression><![CDATA[$F{TRANS_DATE}]]></textFieldExpression>
 				</textField>
 				<line>
-					<reportElement x="0" y="21" width="555" height="1" uuid="798262a5-8c05-429a-a479-a5ce10c96666"/>
+					<reportElement x="0" y="22" width="801" height="1" uuid="798262a5-8c05-429a-a479-a5ce10c96666"/>
 				</line>
 			</band>
 		</groupHeader>
 		<groupFooter>
 			<band height="21">
 				<textField>
-					<reportElement x="93" y="0" width="293" height="20" uuid="f522c5e3-083d-462b-b364-ce86e3923355"/>
+					<reportElement x="456" y="1" width="184" height="20" uuid="f522c5e3-083d-462b-b364-ce86e3923355"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="8" isBold="true"/>
 					</textElement>
@@ -733,15 +425,15 @@ ORDER BY
 new SimpleDateFormat("dd MMMM yyyy").format($F{TRANS_DATE}) + " :"]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="386" y="0" width="47" height="20" uuid="004493d9-5e9c-4c5f-89bd-c6cfd0e29c98"/>
-					<textElement textAlignment="Right">
+					<reportElement x="640" y="1" width="80" height="20" uuid="004493d9-5e9c-4c5f-89bd-c6cfd0e29c98"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="8" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$V{Group By TransDate_COUNT}]]></textFieldExpression>
 				</textField>
 				<textField pattern="#,##0.00">
-					<reportElement x="454" y="0" width="100" height="20" uuid="0a000dbb-2b5c-48eb-84e0-4d12c1db7ae6"/>
-					<textElement textAlignment="Right">
+					<reportElement x="720" y="1" width="80" height="20" uuid="0a000dbb-2b5c-48eb-84e0-4d12c1db7ae6"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="8" isBold="true" isItalic="false"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$V{grandTotalPayment}]]></textFieldExpression>
@@ -752,37 +444,9 @@ new SimpleDateFormat("dd MMMM yyyy").format($F{TRANS_DATE}) + " :"]]></textField
 	<group name="Group by Payment Type">
 		<groupExpression><![CDATA[$F{PAYMENT_TYPE}]]></groupExpression>
 		<groupFooter>
-			<band height="25">
+			<band height="7">
 				<line>
-					<reportElement x="0" y="0" width="555" height="1" uuid="587ca2ce-534a-4fdf-ae79-44de9b792872"/>
-				</line>
-				<line>
-					<reportElement x="0" y="24" width="555" height="1" uuid="2e01fc71-debf-41ff-a64e-2b4bb3902498"/>
-				</line>
-				<textField>
-					<reportElement x="146" y="1" width="240" height="23" uuid="8a0b0b36-2f23-48f3-9adc-299b4416e7f0"/>
-					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font size="8" isBold="true"/>
-					</textElement>
-					<textFieldExpression><![CDATA["TOTAL " + $F{PAYMENT_TYPE} + "  TANGGAL  " +
-new SimpleDateFormat("dd MMMM yyyy").format($F{TRANS_DATE}) + " :"]]></textFieldExpression>
-				</textField>
-				<textField pattern="#,##0.00">
-					<reportElement x="454" y="1" width="100" height="24" uuid="9c02b867-961e-45c1-b76e-746638b2b39a"/>
-					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font size="8" isBold="true"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$V{TOTAL_PAYMENT}]]></textFieldExpression>
-				</textField>
-				<textField>
-					<reportElement x="386" y="1" width="47" height="23" uuid="b5aa5bb9-d39f-4686-a392-abfd8d27bfa3"/>
-					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font size="8" isBold="true"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$V{Group by Payment Type_COUNT}]]></textFieldExpression>
-				</textField>
-				<line>
-					<reportElement x="0" y="24" width="555" height="1" uuid="2542bb7e-5446-4e5e-b2c3-494e45653fde"/>
+					<reportElement x="0" y="1" width="801" height="1" uuid="587ca2ce-534a-4fdf-ae79-44de9b792872"/>
 				</line>
 			</band>
 		</groupFooter>
@@ -793,62 +457,76 @@ new SimpleDateFormat("dd MMMM yyyy").format($F{TRANS_DATE}) + " :"]]></textField
 	<pageHeader>
 		<band height="153" splitType="Stretch">
 			<line>
-				<reportElement x="0" y="127" width="555" height="1" uuid="8069ffe9-95bb-4159-bd2f-5b2177779927"/>
+				<reportElement x="0" y="128" width="801" height="1" uuid="8069ffe9-95bb-4159-bd2f-5b2177779927"/>
 			</line>
 			<line>
-				<reportElement x="0" y="148" width="555" height="1" uuid="b6afa7a5-0616-436a-9efc-33bb3c89dfd8"/>
+				<reportElement x="0" y="149" width="801" height="1" uuid="b6afa7a5-0616-436a-9efc-33bb3c89dfd8"/>
 			</line>
 			<staticText>
-				<reportElement x="5" y="128" width="70" height="20" uuid="7a57291c-eb49-4f2b-8c67-e208a6ea9918"/>
+				<reportElement x="1" y="128" width="79" height="20" uuid="7a57291c-eb49-4f2b-8c67-e208a6ea9918"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Payment Type]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="75" y="128" width="65" height="20" uuid="51d3de3a-7612-40ec-980f-3e3e612134aa"/>
+				<reportElement x="80" y="128" width="80" height="20" uuid="51d3de3a-7612-40ec-980f-3e3e612134aa">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Payment Method]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="150" y="128" width="28" height="20" uuid="5da9091d-6dbf-43a4-86a1-2d692ed4c397"/>
-				<textElement verticalAlignment="Middle">
+				<reportElement x="160" y="128" width="60" height="20" uuid="5da9091d-6dbf-43a4-86a1-2d692ed4c397">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[POS#]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="178" y="128" width="32" height="20" uuid="46e43c21-2cc2-4a54-9a0f-04c1b0f674dc"/>
+				<reportElement x="220" y="128" width="60" height="20" uuid="46e43c21-2cc2-4a54-9a0f-04c1b0f674dc">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Shift]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="218" y="128" width="50" height="20" uuid="d3409f23-70b3-4a38-97d0-e27a81c2baa3"/>
+				<reportElement x="280" y="128" width="60" height="20" uuid="d3409f23-70b3-4a38-97d0-e27a81c2baa3">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Cashier]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="268" y="128" width="70" height="20" uuid="9610b9f3-f6b1-4ee5-a399-76cd631abcce"/>
+				<reportElement x="340" y="128" width="110" height="20" uuid="9610b9f3-f6b1-4ee5-a399-76cd631abcce">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Bill No.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="440" y="128" width="50" height="20" uuid="42ca6ee4-d2c8-455b-a264-497de7f10e1e"/>
+				<reportElement x="663" y="128" width="56" height="20" uuid="42ca6ee4-d2c8-455b-a264-497de7f10e1e">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Time]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="490" y="128" width="64" height="20" uuid="1bec8df2-2a64-481b-8b69-2a2ce3304595"/>
+				<reportElement x="720" y="128" width="80" height="20" uuid="1bec8df2-2a64-481b-8b69-2a2ce3304595">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -862,60 +540,46 @@ new SimpleDateFormat("dd MMMM yyyy").format($F{TRANS_DATE}) + " :"]]></textField
 				<text><![CDATA[Periode]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1" y="113" width="75" height="13" uuid="599b4577-db20-404e-b959-cb1ba3b59c52"/>
+				<reportElement x="600" y="100" width="75" height="13" uuid="599b4577-db20-404e-b959-cb1ba3b59c52"/>
 				<textElement>
 					<font size="9" isUnderline="false"/>
 				</textElement>
 				<text><![CDATA[Jam]]></text>
 			</staticText>
 			<textField textAdjust="StretchHeight">
-				<reportElement x="440" y="100" width="115" height="13" uuid="2381115e-f62b-4959-ae98-d11c3e3ea2f2"/>
+				<reportElement x="675" y="87" width="127" height="13" uuid="2381115e-f62b-4959-ae98-d11c3e3ea2f2"/>
 				<textElement>
 					<font size="9" isUnderline="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[" : " + $P{shiftCode}]]></textFieldExpression>
 			</textField>
-			<textField textAdjust="StretchHeight">
-				<reportElement x="440" y="87" width="115" height="13" uuid="c413500b-fd8d-402b-9f76-8b7371bce008"/>
-				<textElement>
-					<font size="9" isUnderline="false"/>
-				</textElement>
-				<textFieldExpression><![CDATA[" : " + $P{paymentMethod}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement x="360" y="74" width="80" height="13" uuid="e22f6683-f885-47e5-bd58-7c6019581cc9"/>
+				<reportElement x="600" y="74" width="75" height="13" uuid="838014ec-8f7d-4177-8451-d8d8fb69013c"/>
 				<textElement>
 					<font size="9" isUnderline="false"/>
 				</textElement>
-				<text><![CDATA[Payment Type]]></text>
+				<text><![CDATA[Type Approval ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="360" y="87" width="80" height="13" uuid="838014ec-8f7d-4177-8451-d8d8fb69013c"/>
-				<textElement>
-					<font size="9" isUnderline="false"/>
-				</textElement>
-				<text><![CDATA[Payment Method]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="360" y="100" width="80" height="13" uuid="0d35d5b3-9ce1-4cbe-af60-a8dcd00601a3"/>
+				<reportElement x="600" y="87" width="75" height="13" uuid="0d35d5b3-9ce1-4cbe-af60-a8dcd00601a3"/>
 				<textElement>
 					<font size="9" isUnderline="false"/>
 				</textElement>
 				<text><![CDATA[Shift]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="76" y="113" width="214" height="13" uuid="030bfa62-7016-4085-8759-4368c5e6835b"/>
+				<reportElement x="675" y="100" width="127" height="13" uuid="030bfa62-7016-4085-8759-4368c5e6835b"/>
 				<textElement>
 					<font size="9" isUnderline="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[" : " + new SimpleDateFormat("HH:mm:ss").format(new SimpleDateFormat("HHmmss").parse($P{billTime1})) + " s/d " + new SimpleDateFormat("HH:mm:ss").format(new SimpleDateFormat("HHmmss").parse($P{billTime2}))]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight">
-				<reportElement x="440" y="74" width="115" height="13" uuid="4ae25fd6-704f-4eec-8f9d-9b29450e00b2"/>
+				<reportElement x="675" y="74" width="127" height="13" uuid="4ae25fd6-704f-4eec-8f9d-9b29450e00b2"/>
 				<textElement>
 					<font size="9" isUnderline="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[" : " + $P{paymentType}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[" : " + $P{validasi}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight">
 				<reportElement x="76" y="74" width="213" height="13" uuid="c7f541ce-460a-4fd3-bfe6-d07f6dbb3ae3"/>
@@ -925,11 +589,11 @@ new SimpleDateFormat("dd MMMM yyyy").format($F{TRANS_DATE}) + " :"]]></textField
 				<textFieldExpression><![CDATA[" : " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{transDate1})) + " s/d " + new SimpleDateFormat("dd/MM/yyyy").format(new SimpleDateFormat("dd-MMM-yy").parse($P{transDate2}))]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="13" y="55" width="527" height="15" uuid="22c566b1-a23e-4dfc-8d68-81f21cdd7acd"/>
+				<reportElement x="0" y="55" width="799" height="15" uuid="22c566b1-a23e-4dfc-8d68-81f21cdd7acd"/>
 				<textElement textAlignment="Center">
 					<font size="11" isBold="true"/>
 				</textElement>
-				<text><![CDATA[TRANSACTION BY PAYMENT TYPE REPORT]]></text>
+				<text><![CDATA[TRANSACTION PAYMENT BY EDC REPORT]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="1" y="100" width="75" height="13" uuid="9af18eab-eca0-410e-989c-70755743cedc"/>
@@ -960,56 +624,56 @@ new SimpleDateFormat("dd MMMM yyyy").format($F{TRANS_DATE}) + " :"]]></textField
 				<textFieldExpression><![CDATA[" : "  +  $P{posCode}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="440" y="20" width="115" height="11" uuid="e44a067b-9876-4565-b453-f7fc56b520b5"/>
+				<reportElement x="729" y="24" width="71" height="11" uuid="e44a067b-9876-4565-b453-f7fc56b520b5"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="374" y="0" width="66" height="11" uuid="8eb639a9-7d13-4b09-a36c-c5fc64beb066"/>
+				<reportElement x="663" y="2" width="66" height="11" uuid="8eb639a9-7d13-4b09-a36c-c5fc64beb066"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Halaman]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="374" y="30" width="66" height="11" uuid="7a368285-f2e6-42fb-bfe9-2aaeea547555"/>
+				<reportElement x="663" y="35" width="66" height="11" uuid="7a368285-f2e6-42fb-bfe9-2aaeea547555"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Jam Cetak]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="374" y="10" width="66" height="11" uuid="fa086dbb-4da2-4d4f-aa6c-9df6c009ca22"/>
+				<reportElement x="663" y="13" width="66" height="11" uuid="fa086dbb-4da2-4d4f-aa6c-9df6c009ca22"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[User Cetak]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="440" y="10" width="115" height="11" uuid="92d542f8-0433-413c-95c1-765ccb68e5c8"/>
+				<reportElement x="729" y="13" width="71" height="11" uuid="92d542f8-0433-413c-95c1-765ccb68e5c8"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " +($F{PRINT_NAME}.equals( null ) || $F{PRINT_NAME}.equals( "null" ) ? $P{user} : $F{PRINT_NAME})]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="374" y="20" width="66" height="11" uuid="1407d48b-e053-4fa0-8f7e-b88eae17b4ea"/>
+				<reportElement x="663" y="24" width="66" height="11" uuid="1407d48b-e053-4fa0-8f7e-b88eae17b4ea"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Tanggal Cetak]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="440" y="30" width="115" height="11" uuid="e00240f9-1606-489c-b112-4205bcff5e53"/>
+				<reportElement x="729" y="35" width="71" height="11" uuid="e00240f9-1606-489c-b112-4205bcff5e53"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[": " + new SimpleDateFormat("HH:mm:ss").format(new Date())]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="440" y="0" width="115" height="11" uuid="8cbae057-a5d6-4ffa-ba3e-e9cb740cdf2b"/>
+				<reportElement x="729" y="2" width="71" height="11" uuid="8cbae057-a5d6-4ffa-ba3e-e9cb740cdf2b"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -1058,18 +722,29 @@ new SimpleDateFormat("dd MMMM yyyy").format($F{TRANS_DATE}) + " :"]]></textField
 				<imageExpression><![CDATA[$P{outletBrand} != null && !$P{outletBrand}.isEmpty() ? "logo/logo" + $P{outletBrand}.toLowerCase().substring(0, 1).toUpperCase() + $P{outletBrand}.toLowerCase().substring(1) + ".png" : "logo/logoKfc.png"]]></imageExpression>
 			</image>
 			<staticText>
-				<reportElement x="338" y="128" width="102" height="20" uuid="e6def4bb-945b-4a38-b7ea-9234822d04fd"/>
+				<reportElement x="456" y="128" width="100" height="20" uuid="e6def4bb-945b-4a38-b7ea-9234822d04fd">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Validasi No.]]></text>
 			</staticText>
+			<staticText>
+				<reportElement x="568" y="128" width="92" height="20" uuid="957b5bae-8868-48a3-8d74-b03bc15d1b9a">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Approval ]]></text>
+			</staticText>
 		</band>
 	</pageHeader>
 	<detail>
-		<band height="26" splitType="Stretch">
+		<band height="20" splitType="Stretch">
 			<textField>
-				<reportElement x="5" y="7" width="70" height="14" uuid="2ba325e3-8e81-4694-93a4-a5d7d77683c5">
+				<reportElement x="1" y="6" width="79" height="14" uuid="2ba325e3-8e81-4694-93a4-a5d7d77683c5">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement>
@@ -1078,28 +753,31 @@ new SimpleDateFormat("dd MMMM yyyy").format($F{TRANS_DATE}) + " :"]]></textField
 				<textFieldExpression><![CDATA[$F{PAYMENT_TYPE}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="75" y="7" width="75" height="14" uuid="4a83f402-8f2d-44c9-8a7a-7832352c9898"/>
+				<reportElement x="80" y="6" width="80" height="14" uuid="4a83f402-8f2d-44c9-8a7a-7832352c9898"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{PAYMENT_METHOD}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="150" y="7" width="28" height="14" uuid="db821f50-875c-436f-814d-974f55819866"/>
-				<textElement>
+				<reportElement x="160" y="6" width="60" height="14" uuid="db821f50-875c-436f-814d-974f55819866">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{POS_CODE}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="178" y="7" width="32" height="14" uuid="421acf25-66f2-4a4d-98cc-236c04f0f893"/>
+				<reportElement x="220" y="6" width="60" height="14" uuid="421acf25-66f2-4a4d-98cc-236c04f0f893"/>
 				<textElement textAlignment="Center" verticalAlignment="Top">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{SHIFT_CODE}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight">
-				<reportElement x="218" y="7" width="50" height="14" uuid="2e6ae3e5-ab19-4090-b2f8-fcedf654e40e">
+				<reportElement x="280" y="6" width="60" height="14" uuid="2e6ae3e5-ab19-4090-b2f8-fcedf654e40e">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<printWhenExpression><![CDATA[!$F{STAFF_NAME}.equals( null )]]></printWhenExpression>
 				</reportElement>
 				<textElement>
@@ -1108,56 +786,69 @@ new SimpleDateFormat("dd MMMM yyyy").format($F{TRANS_DATE}) + " :"]]></textField
 				<textFieldExpression><![CDATA[$F{STAFF_NAME}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="268" y="7" width="70" height="14" uuid="9c3f6e96-1744-4842-b1cb-492496ff09d3"/>
+				<reportElement x="340" y="6" width="110" height="14" uuid="9c3f6e96-1744-4842-b1cb-492496ff09d3">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{BILL_NO}]]></textFieldExpression>
 			</textField>
 			<textField pattern="HH:mm:ss">
-				<reportElement x="440" y="7" width="50" height="14" uuid="4a44ef4a-780c-400d-89df-d4692e78f4df"/>
+				<reportElement x="663" y="6" width="56" height="14" uuid="4a44ef4a-780c-400d-89df-d4692e78f4df"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{BILL_TIME}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
-				<reportElement x="490" y="7" width="64" height="14" uuid="c9531fca-f8c5-4792-9d35-77621d60dda9"/>
+				<reportElement x="720" y="6" width="80" height="14" uuid="c9531fca-f8c5-4792-9d35-77621d60dda9"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{PAYMENT_USED}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight">
-				<reportElement x="338" y="7" width="102" height="14" isRemoveLineWhenBlank="true" uuid="8a9b0fb2-e234-4b94-91d7-c5859de754fd"/>
+				<reportElement x="456" y="6" width="100" height="14" isRemoveLineWhenBlank="true" uuid="8a9b0fb2-e234-4b94-91d7-c5859de754fd">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{PAYMENT_METHOD}.trim().equalsIgnoreCase( "Cash" ) ? " " : $F{VOUCHER_REFS}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{VOUCHER_REFS}]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="568" y="6" width="92" height="14" isRemoveLineWhenBlank="true" uuid="150b4371-e56e-4452-8172-ae083067bc3b">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PAYMENT_MANAGER_CODE}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
 	<summary>
 		<band height="50" splitType="Stretch">
 			<line>
-				<reportElement x="0" y="33" width="555" height="1" uuid="3c7551f7-aecc-4880-9fca-42ea80953d55"/>
+				<reportElement x="0" y="34" width="801" height="1" uuid="3c7551f7-aecc-4880-9fca-42ea80953d55"/>
 			</line>
 			<staticText>
-				<reportElement x="463" y="34" width="100" height="15" uuid="2feb481d-6d83-48b8-afb8-b7241d639f8a"/>
-				<textElement>
+				<reportElement x="700" y="35" width="100" height="15" uuid="2feb481d-6d83-48b8-afb8-b7241d639f8a"/>
+				<textElement textAlignment="Right">
 					<font size="8" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[--End of Report--]]></text>
 			</staticText>
 			<textField pattern="#,##0.00">
-				<reportElement x="418" y="0" width="133" height="15" uuid="5ff7da6d-9276-4227-a9b6-db031edac308"/>
+				<reportElement x="663" y="9" width="137" height="15" uuid="5ff7da6d-9276-4227-a9b6-db031edac308"/>
 				<textElement textAlignment="Right">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{summary}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="312" y="0" width="100" height="15" uuid="771a92e8-f43a-478f-9d20-78cc197a1784"/>
+				<reportElement x="557" y="9" width="106" height="15" uuid="771a92e8-f43a-478f-9d20-78cc197a1784"/>
 				<textElement>
 					<font size="8" isBold="true"/>
 				</textElement>
